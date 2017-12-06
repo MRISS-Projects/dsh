@@ -1,10 +1,51 @@
             ------
             Welcome to DSH-rest-api
             ------
-            AUTHOR
+            Marcelo Riss
             ------
-            DATE
+            2017-12-05
            
-WELCOME
+DSH Rest API
 
-[images/under-construction.jpg]
+ This Rest API should have basically 3 methods:
+ 
+ * <<<uploadFile>>>: upload a PDF or HTML.
+ 
+   * Receive the file
+   
+   * Store the file at mongoDB, creating a line in a document
+     collection having:
+     
+     * Token
+     
+     * Unique hash for the file
+     
+     * File contents
+     
+     * Keyworkds field
+     
+     * Most Relevant sentence field
+     
+     * Success/Error message field
+     
+   * Queue a request for processing the file at RabbitMQ
+   
+   * Return the request token to the user
+   
+ * <<<getStatus>>>: probe the system using the token to get the processing status, returning
+ 
+   * Status:
+   
+     * InProgress
+   
+     * Success
+   
+     * Error
+     
+   * Message: error/success message. Empty in case of status = InProgress
+ 
+ * <<<getResult>>>: in case of processing result as success, get the resulting processing data:
+ 
+   * List of keywords.
+   
+   * List of most relevant sentences associated with their paragraphs.

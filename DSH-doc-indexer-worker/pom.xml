@@ -15,10 +15,10 @@
 	-->
 
 	<!-- THE BASICS -->
-	<groupId>com.mriss.dsh</groupId>
-	<artifactId>DSH-rest-api</artifactId>
+	<groupId>com.mriss.products</groupId>
+	<artifactId>DSH-doc-indexer-worker</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -33,28 +33,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-solr</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web-services</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-integration</artifactId>
-		</dependency>		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -79,27 +63,12 @@
 		<skin.groupId>org.apache.maven.skins</skin.groupId>
 		<logo.image>images/logo.jpg</logo.image>
 		
-<!-- 		<webapp.deployment.url>http://vis-dali-001.americas.hpqcorp.net:8080/manager/html</webapp.deployment.url> -->
-
-		<!-- this property should be set at the parent. If this is not the case, set it here -->
-<!-- 		<tomcat.deploy.phase>pre-integration-test</tomcat.deploy.phase> -->
-
-		<!-- this should match a server id at global settings.xml having the tomcat admin user and password -->
-<!-- 		<tomcat.seven.server>tomcat7-server</tomcat.seven.server> -->
-
 		<jenkins.view>${project.parent.artifactId}</jenkins.view>
 	</properties>
 
 	<!-- BUILD SETTINGS -->
 	<build>
 		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<filtering>true</filtering>
-			</resource>
 			<resource>
 				<directory>src/site</directory>
 				<includes>
@@ -117,7 +86,14 @@
 					<exclude>**/*.apt</exclude>
 				</excludes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
-			</resource>				
+			</resource>		
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
 		</resources>	
 		<plugins>
 			<plugin>
@@ -147,61 +123,15 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<id>create-time-stamp</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>create-timestamp</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
-					<timestampPropertyName>timestamp</timestampPropertyName>
-				</configuration>
-			</plugin>								
-		</plugins>	
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>buildnumber-maven-plugin</artifactId>
-										<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>create-timestamp</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>		
+		</plugins>
+	
 	</build>
 <!-- 	<reporting> -->
 <!-- 	</reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>DSH-rest-api</name>
-	<description>Document Smart Highlights REST API</description>
+	<name>DSH-doc-indexer-worker</name>
+	<description>DSH Document Indexer Worker</description>
 	<!--  <url>...</url>-->
 	<!--  <inceptionYear>...</inceptionYear>-->
 	<!--  <licenses>...</licenses>-->
@@ -221,6 +151,6 @@
 	<!--  <repositories>...</repositories>-->
 	<!--  <pluginRepositories>...</pluginRepositories>-->
 	<!--  <distributionManagement>...</distributionManagement>-->
-<!-- 	<profiles> -->
+<!-- 	 <profiles> -->
 <!-- 	</profiles> -->
 </project>
