@@ -22,16 +22,37 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.7.18</version>
+				<groupId>com.mriss.products.dsh</groupId>
+				<artifactId>DSH-rest-api</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>1.1.6</version>
-			</dependency>		
-		</dependencies>
+				<groupId>com.mriss.products.dsh</groupId>
+				<artifactId>DSH-doc-indexer-worker</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mriss.products.dsh</groupId>
+				<artifactId>DSH-data</artifactId>
+				<version>${project.version}</version>
+			</dependency>			
+			<dependency>
+				<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+				<artifactId>DSH-keyword-extractor</artifactId>
+				<version>${project.version}</version>
+			</dependency>			
+			<dependency>
+				<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+				<artifactId>DSH-top-sentences-extractor</artifactId>
+				<version>${project.version}</version>
+			</dependency>			
+			<dependency>
+				<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+				<artifactId>DSH-doc-processor-worker</artifactId>
+				<version>${project.version}</version>
+			</dependency>			
+						
+		</dependencies>	
 	</dependencyManagement>
 	
 	<!-- <modules>...</modules> -->
@@ -278,6 +299,7 @@
 <!-- 	 <profiles> -->
 <!-- 	</profiles> -->
   <modules>
+  	<module>DSH-data</module>
     <module>DSH-rest-api</module>
     <module>DSH-doc-indexer-worker</module>
     <module>DSH-doc-analyser</module>

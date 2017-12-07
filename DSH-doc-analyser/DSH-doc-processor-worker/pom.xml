@@ -27,7 +27,7 @@
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>	
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,9 +47,12 @@
 			<artifactId>spring-boot-starter-data-solr</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.1.6</version>
+			<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+			<artifactId>DSH-keyword-extractor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+			<artifactId>DSH-top-sentences-extractor</artifactId>
 		</dependency>
 	</dependencies>
 	<!-- <dependencyManagement>...</dependencyManagement> -->
@@ -133,8 +136,8 @@
 	<!-- <inceptionYear>...</inceptionYear> -->
 	<!-- <licenses>...</licenses> -->
 	<!-- <organization>...</organization> -->
-<!-- 	<developers> -->
-<!-- 	</developers> -->
+	<!-- <developers> -->
+	<!-- </developers> -->
 	<!-- <contributors>...</contributors> -->
 
 	<!-- ENVIRONMENT SETTINGS -->
@@ -148,6 +151,6 @@
 	<!-- <repositories>...</repositories> -->
 	<!-- <pluginRepositories>...</pluginRepositories> -->
 	<!-- <distributionManagement>...</distributionManagement> -->
-<!-- 	<profiles> -->
-<!-- 	</profiles> -->
+	<!-- <profiles> -->
+	<!-- </profiles> -->
 </project>

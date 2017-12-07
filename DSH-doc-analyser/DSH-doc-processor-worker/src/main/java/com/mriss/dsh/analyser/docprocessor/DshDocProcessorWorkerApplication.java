@@ -1,4 +1,4 @@
-package com.mriss.dsh.analyser.keywords;
+package com.mriss.dsh.analyser.docprocessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

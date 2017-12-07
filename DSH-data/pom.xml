@@ -14,9 +14,9 @@
 
 	<!-- THE BASICS -->
 	<groupId>com.mriss.products.dsh</groupId>
-	<artifactId>DSH-rest-api</artifactId>
+	<artifactId>DSH-data</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -35,38 +35,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web-services</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-integration</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.restdocs</groupId>
-			<artifactId>spring-restdocs-mockmvc</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.mriss.products.dsh</groupId>
-			<artifactId>DSH-data</artifactId>		
-		</dependency>		
 	</dependencies>
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->
@@ -200,8 +175,8 @@
 	<!-- </reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>DSH-rest-api</name>
-	<description>Document Smart Highlights REST API</description>
+	<name>DSH-data</name>
+	<description>Document Smart Highlights Data Access Module</description>
 	<!-- <url>...</url> -->
 	<!-- <inceptionYear>...</inceptionYear> -->
 	<!-- <licenses>...</licenses> -->
