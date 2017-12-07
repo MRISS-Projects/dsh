@@ -1,0 +1,22 @@
+            ------
+            Welcome to DSH-top-sentences-extractor
+            ------
+            Marcelo Riss
+            ------
+            2017-12-06
+           
+Document Smart Highliths Top Sentences  Extractor
+
+ The extraction of top sentences is achieved appling typical {{{https://en.wikipedia.org/wiki/Automatic_summarization}automatic summarization}}
+ techniques like extractive summarization or {{{https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction}keyphrase extraction}}.
+   
+ * The sentence relevance is calculated taking into account two main criteria:
+ 
+   * Similarity of the sentence with the title: using the algorithm provided from
+     {{{https://doi.org/10.1016/j.csl.2016.01.003}this paper}}
+          
+   * Multiple combinations of the TF/IDF of each term of the sentence, using the top-sentences
+     extraction mechanism described above.
+   
+ * The sum of two criteria will define the score. The best scored sentences are returned
+   aside with their respective paragraph numbers.

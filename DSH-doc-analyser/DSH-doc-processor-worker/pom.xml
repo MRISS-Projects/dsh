@@ -5,16 +5,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>dsh</artifactId>
-		<groupId>com.mriss.products</groupId>
+		<artifactId>DSH-doc-analyser</artifactId>
+		<groupId>com.mriss.products.dsh</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
 	<!-- THE BASICS -->
-	<groupId>com.mriss.products.dsh</groupId>
-	<artifactId>DSH-doc-indexer-worker</artifactId>
+	<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+	<artifactId>DSH-doc-processor-worker</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<dependencyManagement>
@@ -27,7 +27,7 @@
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>
+	</dependencyManagement>	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,7 +60,7 @@
 		<skin.groupId>org.apache.maven.skins</skin.groupId>
 		<logo.image>images/logo.jpg</logo.image>
 
-		<jenkins.view>${project.parent.artifactId}</jenkins.view>
+		<jenkins.view>dsh</jenkins.view>
 	</properties>
 
 	<!-- BUILD SETTINGS -->
@@ -127,14 +127,14 @@
 	<!-- </reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>DSH-doc-indexer-worker</name>
-	<description>DSH Document Indexer Worker</description>
+	<name>DSH-doc-processor-worker</name>
+	<description>Document Smart Highlights Document Processor Worker</description>
 	<!-- <url>...</url> -->
 	<!-- <inceptionYear>...</inceptionYear> -->
 	<!-- <licenses>...</licenses> -->
 	<!-- <organization>...</organization> -->
-	<!-- <developers> -->
-	<!-- </developers> -->
+<!-- 	<developers> -->
+<!-- 	</developers> -->
 	<!-- <contributors>...</contributors> -->
 
 	<!-- ENVIRONMENT SETTINGS -->
@@ -148,6 +148,6 @@
 	<!-- <repositories>...</repositories> -->
 	<!-- <pluginRepositories>...</pluginRepositories> -->
 	<!-- <distributionManagement>...</distributionManagement> -->
-	<!-- <profiles> -->
-	<!-- </profiles> -->
+<!-- 	<profiles> -->
+<!-- 	</profiles> -->
 </project>

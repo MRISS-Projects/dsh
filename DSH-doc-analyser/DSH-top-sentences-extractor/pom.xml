@@ -5,16 +5,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>dsh</artifactId>
-		<groupId>com.mriss.products</groupId>
+		<artifactId>DSH-doc-analyser</artifactId>
+		<groupId>com.mriss.products.dsh</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
 	<!-- THE BASICS -->
-	<groupId>com.mriss.products.dsh</groupId>
-	<artifactId>DSH-doc-indexer-worker</artifactId>
+	<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+	<artifactId>DSH-top-sentences-extractor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<dependencyManagement>
@@ -27,30 +27,21 @@
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>
+	</dependencyManagement>	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-solr</artifactId>
-		</dependency>
+		</dependency>				
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
 			<version>1.1.6</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->
@@ -60,7 +51,7 @@
 		<skin.groupId>org.apache.maven.skins</skin.groupId>
 		<logo.image>images/logo.jpg</logo.image>
 
-		<jenkins.view>${project.parent.artifactId}</jenkins.view>
+		<jenkins.view>dsh</jenkins.view>
 	</properties>
 
 	<!-- BUILD SETTINGS -->
@@ -127,14 +118,14 @@
 	<!-- </reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>DSH-doc-indexer-worker</name>
-	<description>DSH Document Indexer Worker</description>
+	<name>DSH-top-sentences-extractor</name>
+	<description>Document Smart Highlights Top Sentences Extractor</description>
 	<!-- <url>...</url> -->
 	<!-- <inceptionYear>...</inceptionYear> -->
 	<!-- <licenses>...</licenses> -->
 	<!-- <organization>...</organization> -->
-	<!-- <developers> -->
-	<!-- </developers> -->
+<!-- 	<developers> -->
+<!-- 	</developers> -->
 	<!-- <contributors>...</contributors> -->
 
 	<!-- ENVIRONMENT SETTINGS -->
@@ -148,6 +139,6 @@
 	<!-- <repositories>...</repositories> -->
 	<!-- <pluginRepositories>...</pluginRepositories> -->
 	<!-- <distributionManagement>...</distributionManagement> -->
-	<!-- <profiles> -->
-	<!-- </profiles> -->
+<!-- 	<profiles> -->
+<!-- 	</profiles> -->
 </project>
