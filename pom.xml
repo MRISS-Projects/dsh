@@ -35,7 +35,12 @@
 				<groupId>com.mriss.products.dsh</groupId>
 				<artifactId>DSH-data</artifactId>
 				<version>${project.version}</version>
-			</dependency>			
+			</dependency>
+			<dependency>
+				<groupId>com.mriss.products.dsh</groupId>
+				<artifactId>dsh-test-dataset</artifactId>
+				<version>${project.version}</version>
+			</dependency>									
 			<dependency>
 				<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
 				<artifactId>DSH-keyword-extractor</artifactId>
@@ -299,6 +304,7 @@
 <!-- 	 <profiles> -->
 <!-- 	</profiles> -->
   <modules>
+    <module>dsh-test-dataset</module>  
   	<module>DSH-data</module>
     <module>DSH-rest-api</module>
     <module>DSH-doc-indexer-worker</module>

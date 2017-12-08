@@ -14,35 +14,11 @@
 
 	<!-- THE BASICS -->
 	<groupId>com.mriss.products.dsh</groupId>
-	<artifactId>DSH-data</artifactId>
+	<artifactId>dsh-test-dataset</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${spring.boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-solr</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<!-- <dependencies> -->
+	<!-- </dependencies> -->
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->
 	<properties>
@@ -51,29 +27,12 @@
 		<skin.groupId>org.apache.maven.skins</skin.groupId>
 		<logo.image>images/logo.jpg</logo.image>
 
-		<!-- <webapp.deployment.url>http://vis-dali-001.americas.hpqcorp.net:8080/manager/html</webapp.deployment.url> -->
-
-		<!-- this property should be set at the parent. If this is not the case, 
-			set it here -->
-		<!-- <tomcat.deploy.phase>pre-integration-test</tomcat.deploy.phase> -->
-
-		<!-- this should match a server id at global settings.xml having the tomcat 
-			admin user and password -->
-		<!-- <tomcat.seven.server>tomcat7-server</tomcat.seven.server> -->
-
 		<jenkins.view>${project.parent.artifactId}</jenkins.view>
 	</properties>
 
 	<!-- BUILD SETTINGS -->
 	<build>
 		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<filtering>true</filtering>
-			</resource>
 			<resource>
 				<directory>src/site</directory>
 				<includes>
@@ -92,6 +51,19 @@
 				</excludes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+			</resource>		
 		</resources>
 		<plugins>
 			<plugin>
@@ -122,81 +94,30 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<id>create-time-stamp</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>create-timestamp</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
-					<timestampPropertyName>timestamp</timestampPropertyName>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-remote-resources-plugin</artifactId>
-				<configuration>
-					<resourceBundles>
-						<resourceBundle>com.mriss.products.dsh:dsh-test-dataset:${project.version}</resourceBundle>
-					</resourceBundles>
-				</configuration>
 				<executions>
 					<execution>
 						<goals>
-							<goal>process</goal>
+							<goal>bundle</goal>
 						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
-							<attached>false</attached>
-						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<includes>
+						<include>**</include>
+					</includes>
+					<resourcesDirectory>${basedir}/src/test/resources</resourcesDirectory>
+				</configuration>
 			</plugin>			
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>buildnumber-maven-plugin</artifactId>
-										<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>create-timestamp</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+
 	</build>
 	<!-- <reporting> -->
 	<!-- </reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>DSH-data</name>
-	<description>Document Smart Highlights Data Access Module</description>
+	<name>dsh-test-dataset</name>
+	<description>Document Smart Highlight Test Dataset</description>
 	<!-- <url>...</url> -->
 	<!-- <inceptionYear>...</inceptionYear> -->
 	<!-- <licenses>...</licenses> -->
