@@ -83,6 +83,34 @@ public class Document {
 	public String getTitle() {
 		return title;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((fileHash == null) ? 0 : fileHash.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Document other = (Document) obj;
+		if (fileHash == null) {
+			if (other.fileHash != null)
+				return false;
+		} else if (!fileHash.equals(other.fileHash))
+			return false;
+		return true;
+	}
+	
+	
 	
 	
 	
