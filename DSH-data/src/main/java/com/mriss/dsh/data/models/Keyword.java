@@ -43,7 +43,10 @@ public class Keyword {
 			return false;
 		return true;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "Keyword [value=" + value + ", score=" + score + "]";
+	}
 
 }
