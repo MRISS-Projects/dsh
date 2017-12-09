@@ -72,6 +72,28 @@ TBD.
 
 ## Configuration
 
+### Mongo DB Access Properties
+
+Edit the maven user `settings.xml` typically at $HOME/.m2 (or %HOMEPATH%\.m2 at windows) folder and
+add a default activated profile similar to this:
+
+```xml
+<profile>
+	<id>development-properties</id>
+	<activation>
+		<activeByDefault>true</activeByDefault>
+	</activation>
+	<properties>
+		<mongo.host>localhost</mongo.host>
+		<mongo.port>27017</mongo.port>
+		<mongo.user>dshuser</mongo.user>
+		<mongo.password>[password you have configured in the steps above when installing mongo]</mongo.password>
+	</properties>
+</profile>
+```
+
+Or add the properties at any default activated profile already present at `settings.xml` file.
+
 ## Usage
 
 ## Release Notes
