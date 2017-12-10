@@ -72,8 +72,18 @@
 				<includes>
 					<include>**</include>
 				</includes>
+				<excludes>
+					<exclude>applicationContext.xml</exclude>
+				</excludes>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>applicationContext.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>			
 			<resource>
 				<directory>src/site</directory>
 				<includes>
@@ -139,6 +149,26 @@
 					<timestampPropertyName>timestamp</timestampPropertyName>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<configuration>
+					<resourceBundles>
+						<resourceBundle>com.mriss.products.dsh:dsh-test-dataset:${project.version}</resourceBundle>
+					</resourceBundles>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<attached>false</attached>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
 		<pluginManagement>
 			<plugins>
