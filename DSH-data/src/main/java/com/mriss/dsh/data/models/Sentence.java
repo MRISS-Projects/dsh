@@ -1,6 +1,6 @@
 package com.mriss.dsh.data.models;
 
-public class Sentence {
+public class Sentence implements Comparable<Sentence> {
 	
 	private String value;
 	
@@ -58,6 +58,11 @@ public class Sentence {
 	public String toString() {
 		return "Sentence [value=" + value + ", score=" + score + ", paragraph="
 				+ paragraph + "]";
+	}
+
+	@Override
+	public int compareTo(Sentence o) {
+		return SentenceSorter.getInstance().compare(this, o);
 	}
 
 	

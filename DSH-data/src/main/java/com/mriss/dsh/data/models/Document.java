@@ -13,10 +13,14 @@ import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Id;
 
 public class Document {
 	
 	final static Logger logger = LoggerFactory.getLogger(Document.class);
+	
+	@Id
+    private String id;
 	
 	private String title;
 	
@@ -28,7 +32,24 @@ public class Document {
 	
 	private SortedSet<Sentence> relevantSentences;
 	
-	private byte[] originalFileContents;	
+	private byte[] originalFileContents;
+	
+	public Document() {
+		
+	}
+
+	public Document(String id, String title, String token, String fileHash,
+			SortedSet<Keyword> keyWords, SortedSet<Sentence> relevantSentences,
+			byte[] originalFileContents) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.token = token;
+		this.fileHash = fileHash;
+		this.keyWords = keyWords;
+		this.relevantSentences = relevantSentences;
+		this.originalFileContents = originalFileContents;
+	}
 
 	public Document(String title) throws NoSuchAlgorithmException {
 		this.title = title;
@@ -125,6 +146,21 @@ public class Document {
 		} else if (!fileHash.equals(other.fileHash))
 			return false;
 		return true;
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "Document [id=" + id + ", title=" + title + ", token=" + token
+				+ ", fileHash=" + fileHash + ", keyWords=" + keyWords
+				+ ", relevantSentences=" + relevantSentences + "]";
 	}
 	
 }

@@ -74,7 +74,7 @@ TBD.
 
 ### Mongo DB Access Properties
 
-Edit the maven user `settings.xml` typically at $HOME/.m2 (or %HOMEPATH%\.m2 at windows) folder and
+Edit the maven user `settings.xml` file typically at `$HOME/.m2` (or `%HOMEPATH%\.m2` at windows) folder and
 add a default activated profile similar to this:
 
 ```xml

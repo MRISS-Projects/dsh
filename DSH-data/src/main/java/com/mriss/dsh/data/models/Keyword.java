@@ -1,6 +1,6 @@
 package com.mriss.dsh.data.models;
 
-public class Keyword {
+public class Keyword implements Comparable<Keyword> {
 	
 	private String value;
 	
@@ -47,6 +47,11 @@ public class Keyword {
 	@Override
 	public String toString() {
 		return "Keyword [value=" + value + ", score=" + score + "]";
+	}
+
+	@Override
+	public int compareTo(Keyword o) {
+		return KeywordSorter.getInstance().compare(this, o);
 	}
 
 }

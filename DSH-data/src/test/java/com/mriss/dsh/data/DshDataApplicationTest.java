@@ -9,14 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.mriss.dsh.data.DshDataApplication;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DshDataApplicationTest {
 	
 	final static Logger logger = LoggerFactory.getLogger(DshDataApplicationTest.class);
-
+	
 	@BeforeClass
 	public static void setUp() throws Exception {
 		logger.info("This is a log message!!!");
@@ -35,6 +33,7 @@ public class DshDataApplicationTest {
 	
 	@Test
 	public void contextLoads() {
+		
 	}
 	
 	

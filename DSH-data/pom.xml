@@ -72,8 +72,18 @@
 				<includes>
 					<include>**</include>
 				</includes>
+				<excludes>
+					<exclude>applicationContext.xml</exclude>
+				</excludes>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>applicationContext.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>			
 			<resource>
 				<directory>src/site</directory>
 				<includes>
