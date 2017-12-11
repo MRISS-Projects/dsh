@@ -6,7 +6,8 @@ import com.mriss.dsh.data.models.Document;
 
 /**
  * This service should use other services to handle documents storage (database) and
- * document data queuing systems.
+ * document data queuing systems. If using fields to store document instances, classes
+ * implementing this interface should be scoped as <code>request</code>.
  * 
  * @author riss
  */
