@@ -18,20 +18,22 @@
 		</int:interceptors>
 	</int:channel>
 
+	<int:channel id="toRabbitResponse" />
+			    	
 	<int-amqp:outbound-channel-adapter
 		channel="toRabbit" amqp-template="amqpTemplate"
 		exchange-name-expression="'si.test.exchange'" routing-key-expression="'si.test.binding'"
 		confirm-correlation-expression="payload" confirm-ack-channel="good"
 		confirm-nack-channel="errors" return-channel="returns" />
 
-	<int:transformer input-channel="good" output-channel="loggingChannel"
+	<int:transformer input-channel="good" output-channel="toRabbitResponse"
 		expression="payload + ' sent ok'" />
 
-	<int:transformer input-channel="errors" output-channel="loggingChannel"
+	<int:transformer input-channel="errors" output-channel="toRabbitResponse"
 		expression="payload + ' send failed'" />
 
 	<int:transformer input-channel="returns"
-		output-channel="loggingChannel"
+		output-channel="toRabbitResponse"
 		expression="payload + ' returned: ' + headers['amqp_returnReplyText']" />
 
 	<int:logging-channel-adapter id="loggingChannel"
