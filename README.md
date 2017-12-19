@@ -14,6 +14,8 @@ ${project.version}
 
 * MongoDB 3.4
 
+* RabbitMQ 3.6.14
+
 ### Installing/Building the Application
 
 #### MongoDB
@@ -69,6 +71,23 @@ ${project.version}
 ##### Linux
 
 TBD.
+
+#### RabitMQ
+
+##### Windows
+
+1. Follow the instructions at [http://www.rabbitmq.com/install-windows.html](http://www.rabbitmq.com/install-windows.html)
+2. Enable the ports mentioned at the link above at the firewall.
+3. Enable the management plugin:
+
+   ```
+    rabbitmq-plugins.bat enable rabbitmq_management
+	rabbitmq-service.bat stop  
+    rabbitmq-service.bat remove	
+	rabbitmq-service.bat install  
+	rabbitmq-service.bat start   
+   ``` 
+3. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest. 
 
 ## Configuration
 
