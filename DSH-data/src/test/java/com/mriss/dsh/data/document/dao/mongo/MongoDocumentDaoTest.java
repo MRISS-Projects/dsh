@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mriss.dsh.data.models.Document;
@@ -33,7 +34,7 @@ public class MongoDocumentDaoTest {
 	final static Logger logger = LoggerFactory.getLogger(MongoDocumentDaoTest.class);
 
 	@Autowired(required=true)
-	@Qualifier("docTitleConstructor")
+	@Qualifier("docTitleConstructor1")
 	private Document docTitleConstructor;	
 	
 	@Autowired(required=true)
@@ -131,9 +132,10 @@ public class MongoDocumentDaoTest {
 
 }
 
+@Configuration
 class MongoDocumentDaoTestConfiguration {
 	
-	@Bean(name="docTitleConstructor")
+	@Bean(name="docTitleConstructor1")
 	public Document getDocumentWithTitleAndContents() throws Exception {
 		return new Document(IOUtils.toByteArray(new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"))), "Russia-Trump: FBI chief Wray defends agency");
 	}

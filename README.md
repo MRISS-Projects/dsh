@@ -77,8 +77,8 @@ TBD.
 ##### Windows
 
 1. Follow the instructions at [http://www.rabbitmq.com/install-windows.html](http://www.rabbitmq.com/install-windows.html)
-  1. Enable the ports mentioned at the link above at the firewall.
-2. Enable the management plugin:
+2. Enable the ports mentioned at the link above at the firewall.
+3. Enable the management plugin:
 
    ```
     rabbitmq-plugins.bat enable rabbitmq_management

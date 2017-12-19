@@ -184,6 +184,26 @@
 					<timestampPropertyName>timestamp</timestampPropertyName>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<configuration>
+					<resourceBundles>
+						<resourceBundle>com.mriss.products.dsh:dsh-test-dataset:${project.version}</resourceBundle>
+					</resourceBundles>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<attached>false</attached>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>						
 		</plugins>
 		<pluginManagement>
 			<plugins>
