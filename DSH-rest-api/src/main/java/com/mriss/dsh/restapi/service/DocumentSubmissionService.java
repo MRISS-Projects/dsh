@@ -28,10 +28,11 @@ public interface DocumentSubmissionService {
 	 * fields are not empty, then the old token for the old document should be
 	 * returned. If set to <code>false</code> no test is executed and a new token 
 	 * for a newly generated document should be returned.
+	 * @param documentTitle the document title
 	 * @return the token (new or old) of the document created (or retrieved from database)
 	 * @see Document
 	 */
-	String getTokenFromDocument(InputStream originalDocumentContents, boolean useCache);
+	String getTokenFromDocument(InputStream originalDocumentContents, String documentTitle, boolean useCache) throws DocumentSubmissionException;
 	
 	/**
 	 * This method should preferable be implemented to be asynchronous. It should use
@@ -42,6 +43,6 @@ public interface DocumentSubmissionService {
 	 * the method should do nothing.
 	 * @see Document
 	 */
-	void storeDocumentAndQueueForProcessing();
-
+	void storeDocumentAndQueueForProcessing() throws DocumentSubmissionException ;
+	
 }

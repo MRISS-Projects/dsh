@@ -18,8 +18,8 @@
 		</int:interceptors>
 	</int:channel>
 
-	<int:channel id="toRabbitResponse" />
-			    	
+	<int:publish-subscribe-channel id="toRabbitResponse" />
+				    	
 	<int-amqp:outbound-channel-adapter
 		channel="toRabbit" amqp-template="amqpTemplate"
 		exchange-name-expression="'si.test.exchange'" routing-key-expression="'si.test.binding'"
