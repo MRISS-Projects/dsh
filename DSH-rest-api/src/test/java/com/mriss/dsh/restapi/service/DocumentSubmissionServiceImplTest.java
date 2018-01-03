@@ -79,7 +79,7 @@ public class DocumentSubmissionServiceImplTest {
 		assertEquals(token, token1);
 		
 		synchronized (queueService) {
-			queueService.wait();
+			queueService.wait(3000);
 		}
 		
 	}

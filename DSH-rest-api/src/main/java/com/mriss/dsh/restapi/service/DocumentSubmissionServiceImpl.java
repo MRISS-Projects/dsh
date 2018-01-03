@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -60,6 +61,7 @@ public class DocumentSubmissionServiceImpl implements DocumentSubmissionService 
 	}
 
 	@Override
+	@Async
 	public void storeDocumentAndQueueForProcessing() {
 		if (document != null && storeDocument) {
 			docHandlingService.storeDocument(this.document);
