@@ -53,6 +53,11 @@ public class DocumentSubmissionServiceImplTest {
 			clean = true;
 		}
 	}
+	
+	@Test(expected =  DocumentSubmissionException.class)
+	public void testException() throws DocumentSubmissionException {
+		service.getTokenFromDocument(null, "Russia-Trump: FBI chief Wray defends agency", false);
+	}
 
 	@Test
 	public void testGetTokenFromDocument() throws FileNotFoundException, DocumentSubmissionException, InterruptedException {
@@ -85,7 +90,8 @@ public class DocumentSubmissionServiceImplTest {
 	}
 
 	private void simulateDocProcessing(String token) {
-		Document d = dao.findDocumentByToken(token);
+		Document d = null;
+		while (d == null) d = dao.findDocumentByToken(token);
 		assertNotNull(d);
 		d.addKeyword(new Keyword("test", 0.5d));
 		d.addSentence(new Sentence("test sentence", 0.6d, 1));
