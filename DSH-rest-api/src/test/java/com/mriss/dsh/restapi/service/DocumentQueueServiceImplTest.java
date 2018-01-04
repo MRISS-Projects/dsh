@@ -8,12 +8,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import com.mriss.dsh.restapi.DshRestApplication;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
+@ContextConfiguration(locations = { "classpath:/dequeue-docId-context.xml" }, classes = {DshRestApplication.class} )
 public class DocumentQueueServiceImplTest {
 	
 	@Autowired
@@ -29,6 +34,7 @@ public class DocumentQueueServiceImplTest {
 			service.wait();
 		}
 		verify(messageHandler).handleMessage(any());
+		Thread.sleep(3000);
 	}
 
 }

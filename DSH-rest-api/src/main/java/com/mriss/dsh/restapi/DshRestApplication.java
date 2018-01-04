@@ -6,10 +6,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @ComponentScan(basePackages={"com.mriss.dsh"})
 @ImportResource(locations = { "classpath:/enqueue-docId-context.xml" })
+@EnableAsync
 public class DshRestApplication {
 	
 	final static Logger logger = LoggerFactory.getLogger(DshRestApplication.class);
