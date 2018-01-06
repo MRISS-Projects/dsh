@@ -34,13 +34,17 @@ public class Document {
 	
 	private byte[] originalFileContents;
 	
+	private DocumentStatus documentStatus;
+	
+	private String documentStatusMessage;
+	
 	public Document() {
 		
 	}
 
 	public Document(String id, String title, String token, String fileHash,
 			SortedSet<Keyword> keyWords, SortedSet<Sentence> relevantSentences,
-			byte[] originalFileContents) {
+			byte[] originalFileContents, DocumentStatus documentStatus, String documentStatusMessage) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -49,13 +53,17 @@ public class Document {
 		this.keyWords = keyWords;
 		this.relevantSentences = relevantSentences;
 		this.originalFileContents = originalFileContents;
+		this.documentStatus = documentStatus;
+		this.documentStatusMessage = documentStatusMessage;
 	}
 
 	public Document(String title) throws NoSuchAlgorithmException {
 		this.title = title;
 		token = getNewToken();
 		keyWords = new TreeSet<Keyword>(KeywordSorter.getInstance());
-		relevantSentences = new TreeSet<Sentence>(SentenceSorter.getInstance());			
+		relevantSentences = new TreeSet<Sentence>(SentenceSorter.getInstance());
+		documentStatus = DocumentStatus.CREATED;
+		documentStatusMessage = DocumentStatus.CREATED.getStatusMessage();
 	}
 	
 	public Document(byte[] originalFileContents, String title) throws Exception {
@@ -156,10 +164,18 @@ public class Document {
 		this.id = id;
 	}
 
+	public DocumentStatus getDocumentStatus() {
+		return documentStatus;
+	}
+
+	public String getDocumentStatusMessage() {
+		return documentStatusMessage;
+	}
+
 	@Override
 	public String toString() {
 		return "Document [id=" + id + ", title=" + title + ", token=" + token
-				+ ", fileHash=" + fileHash + ", keyWords=" + keyWords
+				+ ", fileHash=" + fileHash + ", keyWords=" + keyWords + documentStatus.getStatusDescription()
 				+ ", relevantSentences=" + relevantSentences + "]";
 	}
 	

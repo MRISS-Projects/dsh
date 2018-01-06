@@ -1,5 +1,6 @@
 package com.mriss.dsh.data.document.dao.mongo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mriss.dsh.data.models.Document;
+import com.mriss.dsh.data.models.DocumentStatus;
 import com.mriss.dsh.data.models.Keyword;
 import com.mriss.dsh.data.models.Sentence;
 
@@ -81,8 +83,10 @@ public class MongoDocumentDaoTest {
 		Document d = dao.findDocumentById(id);
 		assertNotNull(d);
 		assertTrue(d.equals(docTitleConstructor));
+		assertEquals(DocumentStatus.CREATED, d.getDocumentStatus());
 		logger.info("document(): " + d);
-		assertNull(dao.findDocumentById("398j"));
+		d = dao.findDocumentById("398j");
+		assertNull(d);
 	}
 
 	@Test
@@ -104,6 +108,7 @@ public class MongoDocumentDaoTest {
 		for (Iterator<Document> iterator = docs.iterator(); iterator.hasNext();) {
 			Document document = (Document) iterator.next();
 			assertTrue(document.equals(docTitleConstructor));
+			assertEquals(DocumentStatus.CREATED, document.getDocumentStatus());
 		}
 		docs = dao.findDocumentsByHash("1234");
 		assertNotNull(docs);
@@ -125,6 +130,7 @@ public class MongoDocumentDaoTest {
 		assertNotNull(id);
 		Document d = dao.findDocumentByToken(docTitleConstructor.getToken());
 		assertNotNull(d);
+		assertEquals(DocumentStatus.CREATED, d.getDocumentStatus());
 		assertTrue(d.equals(docTitleConstructor));
 		d = dao.findDocumentByToken("1234");
 		assertNull(d);

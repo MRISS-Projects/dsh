@@ -49,6 +49,14 @@ public class DocumentTest {
 	private Document anotherDocument;	
 
 	@Test
+	public void testDocumentStatus() {
+		assertEquals(DocumentStatus.CREATED, docTitleContentsFromStreamConstructor.getDocumentStatus());
+		assertEquals(DocumentStatus.CREATED, docTitleContentsConstructor.getDocumentStatus());
+		assertEquals(DocumentStatus.CREATED, docTitleConstructor.getDocumentStatus());
+		assertEquals(DocumentStatus.CREATED, anotherDocument.getDocumentStatus());
+	}
+	
+	@Test
 	public void testHashCode() {
 		assertNotNull(docTitleContentsFromStreamConstructor.hashCode());
 		assertNotNull(docTitleContentsConstructor.hashCode());
