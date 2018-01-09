@@ -171,6 +171,11 @@ public class Document {
 	public String getDocumentStatusMessage() {
 		return documentStatusMessage;
 	}
+	
+	public void transitionStatus(TransitionType transitionType) {
+		this.documentStatus = this.documentStatus.transition(transitionType);
+		this.documentStatusMessage = this.documentStatus.getStatusMessage();
+	}
 
 	@Override
 	public String toString() {
@@ -178,5 +183,7 @@ public class Document {
 				+ ", fileHash=" + fileHash + ", keyWords=" + keyWords + documentStatus.getStatusDescription()
 				+ ", relevantSentences=" + relevantSentences + "]";
 	}
+	
+	
 	
 }

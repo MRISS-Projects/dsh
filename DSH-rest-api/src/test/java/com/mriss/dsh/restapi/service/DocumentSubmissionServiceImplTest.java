@@ -22,6 +22,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.mriss.dsh.data.document.dao.mongo.MongoDocumentDao;
 import com.mriss.dsh.data.models.Document;
+import com.mriss.dsh.data.models.DocumentStatus;
 import com.mriss.dsh.data.models.Keyword;
 import com.mriss.dsh.data.models.Sentence;
 
@@ -33,16 +34,19 @@ public class DocumentSubmissionServiceImplTest {
 	@Autowired
 	DocumentQueueService queueService;
 	
-	@InjectMocks
-	@Autowired
-	DocumentSubmissionService service;
+	@Autowired(required = true)
+	private DocumentHandlingService docHandlingService;
 	
 	@Autowired(required=true)
-	private MongoDocumentDao dao;
-	
+	private MongoDocumentDao dao;	
+
 	@Mock
 	DocumentEnqueueResponseMessageHandler messageHandler;
 	
+	@InjectMocks
+	@Autowired
+	DocumentSubmissionService service;
+			
 	private static boolean clean =  false;
 
 	@Before
@@ -64,24 +68,50 @@ public class DocumentSubmissionServiceImplTest {
 
 		Mockito.doCallRealMethod().when(messageHandler).setDocument(Mockito.any());
 		Mockito.doCallRealMethod().when(messageHandler).handleMessage(Mockito.any());
+		Mockito.doCallRealMethod().when(messageHandler).setDocHandlingService(Mockito.any());
+		
+		messageHandler.setDocHandlingService(docHandlingService);
 
+		Mockito.when(messageHandler.isOk(Mockito.any())).thenReturn(true);
 		InputStream is = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"));				
 		String token = service.getTokenFromDocument(is, "Russia-Trump: FBI chief Wray defends agency", false);
 		assertNotNull(token);
 		service.storeDocumentAndQueueForProcessing();
+		synchronized (service) {
+			service.wait(5000);
+		}
 		simulateDocProcessing(token);
 		is = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"));
 		String token1 = service.getTokenFromDocument(is, "Russia-Trump: FBI chief Wray defends agency", true);
 		assertEquals(token, token1);
+		Document d = dao.findDocumentByToken(token);
+		assertEquals(d.getDocumentStatus(), DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS);		
 		
+		Mockito.when(messageHandler.isOk(Mockito.any())).thenReturn(true);
 		is = new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf"));
 		token = service.getTokenFromDocument(is, "Emails show Trump Tower meeting follow-up", true);
 		assertNotNull(token);
 		service.storeDocumentAndQueueForProcessing();
+		synchronized (service) {
+			service.wait(5000);
+		}		
 		simulateDocProcessing(token);
 		is = new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf"));
 		token1 = service.getTokenFromDocument(is, "Emails show Trump Tower meeting follow-up", true);
 		assertEquals(token, token1);
+		d = dao.findDocumentByToken(token);
+		assertEquals(d.getDocumentStatus(), DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS);		
+		
+		Mockito.when(messageHandler.isOk(Mockito.any())).thenReturn(false);
+		is = new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf"));
+		token = service.getTokenFromDocument(is, "Emails show Trump Tower meeting follow-up", false);
+		assertNotNull(token);
+		service.storeDocumentAndQueueForProcessing();
+		synchronized (service) {
+			service.wait(5000);
+		}
+		d = dao.findDocumentByToken(token);
+		assertEquals(d.getDocumentStatus(), DocumentStatus.QUEUED_FOR_INDEXING_ERROR);
 		
 		synchronized (queueService) {
 			queueService.wait(3000);
