@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.mriss.dsh.data.models.Document;
+import com.mriss.dsh.data.models.TransitionType;
 
 @Component
 @RequestScope(proxyMode=ScopedProxyMode.TARGET_CLASS)
@@ -19,7 +20,7 @@ public class DocumentEnqueueResponseMessageHandler implements DocumentEnqueueMes
 	
 	final static Logger logger = LoggerFactory.getLogger(DocumentEnqueueResponseMessageHandler.class);
 	
-	@Autowired
+	@Autowired(required = true)
 	private DocumentHandlingService docHandlingService;
 	
 	@Autowired
@@ -31,8 +32,17 @@ public class DocumentEnqueueResponseMessageHandler implements DocumentEnqueueMes
 	@Override
 	public void handleMessage(Message<?> message) throws MessagingException {
 		logger.info("Processing enqueue process response for message: " + message + ". Document: " + submittedDocument);
-		//TODO handle error success/error of enqueue process, set the status at the document and store at the database.
+		if (isOk(message)) {
+			submittedDocument.transitionStatus(TransitionType.SUCCESS);
+		} else {
+			submittedDocument.transitionStatus(TransitionType.ERROR);
+		}
+		if (docHandlingService != null) docHandlingService.storeDocument(submittedDocument);
 		if (this.channel != null) this.channel.unsubscribe(this);
+	}
+
+	boolean isOk(Message<?> message) {
+		return ((String) message.getPayload()).indexOf("sent ok") != -1;
 	}
 
 	@Override
@@ -41,4 +51,9 @@ public class DocumentEnqueueResponseMessageHandler implements DocumentEnqueueMes
 		this.submittedDocument = document;
 	}
 
+	public void setDocHandlingService(DocumentHandlingService docHandlingService) {
+		this.docHandlingService = docHandlingService;
+	}
+
+	
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.mriss.dsh.data.models.Document;
+import com.mriss.dsh.data.models.TransitionType;
 
 @Service
 @RequestScope(proxyMode=ScopedProxyMode.TARGET_CLASS)
@@ -64,8 +65,18 @@ public class DocumentSubmissionServiceImpl implements DocumentSubmissionService 
 	@Async
 	public void storeDocumentAndQueueForProcessing() {
 		if (document != null && storeDocument) {
-			docHandlingService.storeDocument(this.document);
-			docQueueService.enqueueDocumentId(document.getId(), messageHandler);
+			document.transitionStatus(TransitionType.NEUTRAL);
+			docHandlingService.storeDocument(this.document);			
+			try {
+				docQueueService.enqueueDocumentId(document.getId(), messageHandler);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				document.transitionStatus(TransitionType.ERROR);
+				docHandlingService.storeDocument(document);
+			}
+		}
+		synchronized (this) {
+			this.notifyAll();
 		}
 	}
 
