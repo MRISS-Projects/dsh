@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.mriss.dsh.data.document.dao.mongo.MongoDocumentDao;
+import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
 import com.mriss.dsh.data.models.DocumentStatus;
 import com.mriss.dsh.data.models.Keyword;
@@ -38,7 +38,7 @@ public class DocumentSubmissionServiceImplTest {
 	private DocumentHandlingService docHandlingService;
 	
 	@Autowired(required=true)
-	private MongoDocumentDao dao;	
+	private DocumentDao dao;	
 
 	@Mock
 	DocumentEnqueueResponseMessageHandler messageHandler;
@@ -85,7 +85,7 @@ public class DocumentSubmissionServiceImplTest {
 		String token1 = service.getTokenFromDocument(is, "Russia-Trump: FBI chief Wray defends agency", true);
 		assertEquals(token, token1);
 		Document d = dao.findDocumentByToken(token);
-		assertEquals(d.getDocumentStatus(), DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS);		
+		assertEquals(DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS, d.getDocumentStatus());		
 		
 		Mockito.when(messageHandler.isOk(Mockito.any())).thenReturn(true);
 		is = new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf"));
@@ -100,7 +100,7 @@ public class DocumentSubmissionServiceImplTest {
 		token1 = service.getTokenFromDocument(is, "Emails show Trump Tower meeting follow-up", true);
 		assertEquals(token, token1);
 		d = dao.findDocumentByToken(token);
-		assertEquals(d.getDocumentStatus(), DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS);		
+		assertEquals(DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS, d.getDocumentStatus());		
 		
 		Mockito.when(messageHandler.isOk(Mockito.any())).thenReturn(false);
 		is = new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf"));
@@ -111,7 +111,7 @@ public class DocumentSubmissionServiceImplTest {
 			service.wait(5000);
 		}
 		d = dao.findDocumentByToken(token);
-		assertEquals(d.getDocumentStatus(), DocumentStatus.QUEUED_FOR_INDEXING_ERROR);
+		assertEquals(DocumentStatus.QUEUED_FOR_INDEXING_ERROR, d.getDocumentStatus());
 		
 		synchronized (queueService) {
 			queueService.wait(3000);
