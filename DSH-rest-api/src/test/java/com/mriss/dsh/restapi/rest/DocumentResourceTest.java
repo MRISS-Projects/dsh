@@ -1,7 +1,9 @@
 package com.mriss.dsh.restapi.rest;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,6 +65,10 @@ public class DocumentResourceTest {
 	@Qualifier("testFile1")
 	private File testFile1;
 
+	@Autowired(required = true)
+	@Qualifier("testFile2")
+	private File testFile2;
+
 	final static Logger logger = LoggerFactory.getLogger(DocumentResourceTest.class);
 
 	private static boolean clean = false;
@@ -115,7 +121,7 @@ public class DocumentResourceTest {
 		TokenDto tDto = new ObjectMapper().readerFor(TokenDto.class).readValue(contentAsString);
 		Document document = dao.findDocumentByToken(tDto.getToken());
 		assertNotNull(document);
-		asssertEquals(DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS, document.getDocumentStatus());
+		assertEquals(DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS, document.getDocumentStatus());
 		
 		// Second request to test new instances of document submission service and message handler
 		
@@ -148,15 +154,10 @@ public class DocumentResourceTest {
 		contentAsString = result.getResponse().getContentAsString();
 		logger.info("Document submission response: " + contentAsString);
 		tDto = new ObjectMapper().readerFor(TokenDto.class).readValue(contentAsString);
+		document = dao.findDocumentByToken(tDto.getToken());
 		assertNotNull(document);
-		asssertEquals(DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS, document.getDocumentStatus());
+		assertEquals(DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS, document.getDocumentStatus());
 
-	}
-	
-	private void asssertEquals(DocumentStatus queuedForIndexingSuccess,
-			DocumentStatus documentStatus) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Test
@@ -176,9 +177,10 @@ public class DocumentResourceTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(contentType))
 				.andExpect(
-						jsonPath("token", is("ERROR")))
+						jsonPath("token", org.hamcrest.Matchers.notNullValue()))
 				.andExpect(
-						jsonPath("message", org.hamcrest.Matchers.startsWith("Error submitting file: ")
+						jsonPath("message",
+								org.hamcrest.Matchers.notNullValue()
 								))
 				.andReturn();
 
@@ -193,6 +195,76 @@ public class DocumentResourceTest {
 
 	}
 	
+	@Test
+	public void testStatus() throws Exception {
+		
+		MockMultipartFile firstFile = new MockMultipartFile("contents", "edition.cnn.com-1.pdf", "application/pdf", new FileInputStream(testFile2));
+
+		startRequest();
+		
+		MvcResult result = mockMvc
+				.perform(
+						MockMvcRequestBuilders
+								.multipart("/v1/dsh/document/submit")
+								.file(firstFile)
+								.param("title",
+										"Emails show Trump Tower meeting follow-up"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(contentType))
+				.andExpect(
+						jsonPath("token", org.hamcrest.Matchers.notNullValue()))
+				.andExpect(
+						jsonPath("message",
+								org.hamcrest.Matchers.notNullValue()
+								))
+				.andReturn();
+
+		synchronized (this) {
+			this.wait(5000);
+		}
+		
+		endRequest();
+		
+		String contentAsString = result.getResponse().getContentAsString();
+		logger.info("Document submission response: " + contentAsString);
+		TokenDto tDto = new ObjectMapper().readerFor(TokenDto.class).readValue(contentAsString);
+
+		startRequest();
+		
+		mockMvc.perform(get("/v1/dsh/document/status/" + tDto.getToken()))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType(contentType))
+					.andExpect(
+							jsonPath("status", is(DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS.getStatusDescription())))
+					.andExpect(
+							jsonPath("message", is (DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS.getStatusMessage())
+					))
+				.andReturn();
+		
+		endRequest();
+		
+	}
+	
+	@Test
+	public void testStatusTokenNotFound() throws Exception {
+		
+		startRequest();
+		
+		mockMvc
+				.perform(get("/v1/dsh/document/status/12344353"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(contentType))
+				.andExpect(
+						jsonPath("status", is(DocumentResource.TOKEN_NOT_FOUND)))
+				.andExpect(
+						jsonPath("message", is (DocumentResource.TOKEN_NOT_FOUND_MESSAGE + "12344353")
+								))
+				.andReturn();
+		
+		endRequest();
+		
+	}
+
 
 	protected void startRequest() {
 		request = new MockHttpServletRequest();
@@ -215,4 +287,9 @@ class DocumentResourceTestTestConfiguration {
 		return new File("target/test-classes/pdf/bbc-news-1.pdf");
 	}
 
+	@Bean(name = "testFile2")
+	public File getTestFile2() throws Exception {
+		return new File("target/test-classes/pdf/edition.cnn.com-1.pdf");
+	}
+	
 }
