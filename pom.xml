@@ -298,7 +298,23 @@
 	<prerequisites>
 		<maven>3.3.9</maven>
 	</prerequisites>
-	<!--  <repositories>...</repositories>-->
+	<repositories>
+		<repository> 
+	        <id>repository.spring.release</id> 
+	        <name>Spring GA Repository</name> 
+	        <url>http://repo.spring.io/release</url> 
+	    </repository>
+	    <repository> 
+	        <id>repository.spring.milestone</id> 
+	        <name>Spring Milestone Repository</name> 
+	        <url>http://repo.spring.io/milestone</url> 
+	    </repository>
+	    <repository> 
+	        <id>repository.spring.snapshot</id> 
+	        <name>Spring Snapshot Repository</name> 
+	        <url>http://repo.spring.io/snapshot</url> 
+	    </repository>	    	    	
+	</repositories>
 	<!--  <pluginRepositories>...</pluginRepositories>-->
 	<!--  <distributionManagement>...</distributionManagement>-->
 <!-- 	 <profiles> -->
