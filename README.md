@@ -12,9 +12,13 @@ ${project.version}
 
 ### Pre-requisites
 
-* MongoDB 3.4
+* MongoDB 3.4 (windows 10)
 
-* RabbitMQ 3.6.14
+* MongoDB 3.6.2 (Ubuntu 16.04LTS)
+
+* RabbitMQ 3.6.14 (windows 10)
+
+* RabbitMQ 3.7.2-1 (Ubuntu 16.04LTS)
 
 ### Installing/Building the Application
 
@@ -68,9 +72,53 @@ ${project.version}
    connect-mongo.bat [your dshuser passoword]
    ```
 
-##### Linux
+##### Linux Ubuntu 16.04LTS
 
-TBD.
+1. Install MongoDB following the instructions at [https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+2. Enable security following general guidelines at [this link](https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332)
+3. Start MongoDB service
+
+   ```
+   sudo service mongod start
+   ```
+4. In another prompt connect to mongo
+
+   ```
+   mongo --host 127.0.0.1:27017
+   ```
+5. Create super user
+
+   ```
+   $ use admin
+   $ db.createUser(
+   {
+     user: "superAdmin",
+     pwd: "[your admin password]",
+     roles: [ { role: "root", db: "admin" } ]
+    })   
+   ```
+6. Disconnect and re-connect at mongo as super user:
+
+   ```
+   ./connect-mongo-super-user.sh [your admin password]
+   ```
+7. Create user access (readWrite) for specific dsh database
+
+   ```
+   $ use dsh
+   $ db.createUser(
+     {
+      user: "dshuser",
+      pwd: "[your password]",
+      roles: [ "readWrite"]
+     })   
+   ```
+   
+8. Disconnect and re-connect at mongo as specific user:
+
+   ```
+   ./connect-mongo.sh [your dshuser passoword]
+   ```
 
 #### RabitMQ
 
@@ -87,7 +135,22 @@ TBD.
 	rabbitmq-service.bat install  
 	rabbitmq-service.bat start   
    ``` 
-3. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest. 
+3. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
+
+##### Linux Ubuntu 16.04LTS
+
+1. Follow the instructions at [https://www.rabbitmq.com/install-debian.html](https://www.rabbitmq.com/install-debian.html)
+   1. As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above
+   1. Or follow the instructions at the link and add RabbitMQ Ubuntu repositories before to run the `apt-get install`.
+2. Enable the management plugin:
+
+   ```
+    sudo rabbitmq-plugins enable rabbitmq_management
+	service rabbitmq-server stop  
+	service rabbitmq-server start
+   ``` 
+3. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
+ 
 
 ## Configuration
 
