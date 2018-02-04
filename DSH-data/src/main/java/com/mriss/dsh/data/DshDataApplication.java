@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ImportResource(locations = { "classpath:/applicationContext.xml" })
+@ImportResource(locations = { "classpath:/dshApplicationContext.xml" })
 public class DshDataApplication {
 	
 	final static Logger logger = LoggerFactory.getLogger(DshDataApplication.class);

@@ -65,6 +65,7 @@ public class DocumentResource {
 
 	private void validateParameters(String title, MultipartFile contents)
 			throws DocumentSubmissionException {
+		log.info("Document title: " + title);
 		if (StringUtils.isBlank(title) || contents == null) {
 			throw new DocumentSubmissionException("Document title and contents can't be null.");
 		}
