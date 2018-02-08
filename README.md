@@ -285,7 +285,7 @@ Start the server and access the application swagger UI at: `http://localhost:808
 
 ### Running Application Using Spring Boot Maven Plugin
 
-Go to `DSH-rest-api` module root folder project run:
+Go to `DSH-rest-api` module root folder project, by using `cd DSH-rest-api`  at the sources root, and run:
 
 ```
 mvn spring-boot:run
@@ -310,6 +310,20 @@ Wait until the application boots up. Typically when the following output is pres
 Start the server and access the application swagger UI at: `http://localhost:8080/swagger-ui.html`.
 
 ### Swagger User Interface
+
+Swagger UI has two methods for a document resource:
+
+* submit: uploads a PDF file and returns a token.
+
+* status: use the token returned in the first method to ask for the document processing status. At the moment
+  the only status would be `QUEUED_FOR_INDEXING_SUCCESS`.
+  
+![Swagger UI](/src/site/resources/images/swagger-ui.png)
+
+In order to use the methods, click on the method and after in the `Try it out` button (firstly for the submit method).
+
+A new form will open with the fields to fulfill. In case of submit you will need to choose a file to upload and
+inform its title. In case of status, you just needs to enter the the token returned by the previous method.
 
 ## Release Notes
 
