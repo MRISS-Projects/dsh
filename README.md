@@ -323,7 +323,7 @@ Swagger UI has two methods for a document resource:
 In order to use the methods, click on the method and after in the `Try it out` button (firstly for the submit method).
 
 A new form will open with the fields to fulfill. In case of submit you will need to choose a file to upload and
-inform its title. In case of status, you just needs to enter the the token returned by the previous method.
+inform its title. In case of `status`, you just needs to enter the the token returned by the previous `submit` method call.
 
 ## Release Notes
 
