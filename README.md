@@ -318,7 +318,7 @@ Swagger UI has two methods for a document resource:
 * status: use the token returned in the first method to ask for the document processing status. At the moment
   the only status would be `QUEUED_FOR_INDEXING_SUCCESS`.
   
-![Swagger UI](/src/site/resources/images/swagger-ui.png)
+![Swagger UI](/src/site/resources/images/swagger-ui.jpg)
 
 In order to use the methods, click on the method and after in the `Try it out` button (firstly for the submit method).
 
