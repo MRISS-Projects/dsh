@@ -9,7 +9,7 @@ DSH Rest API
 
  This Rest API should have basically 3 methods:
  
- * <<<uploadFile>>>: upload a PDF or HTML.
+ * <<<submit>>>: upload a PDF or HTML.
  
    * Receive the file
    

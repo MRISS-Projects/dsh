@@ -6,7 +6,59 @@ ${project.version}
 
 ## Introduction
 
+Welcome to **DSH - Document Smart Highlights**. Document Smart Hightlights aims 
+to provide a set of web services to allow uploading
+of PDF and HTML files and return a list of keywords and most relevant sentences.
+This system applies state of the art algorithms, using NLP techniques to produce
+both the list of keywords and most relevant sentences. This last one, using
+automatic document summarization techniques. More details at the [wiki](/wiki).
+
+This project is distributed as source code. In order to generate the application
+to run it is needed to install the pre-requisites and compile. No binaries distribution
+is provided for now. The final application is a java `.WAR` file which can be]
+dropped in a standard java servlet container.
+
+The goals for this project are basically two:
+
+1. Implement a NLP based system to extract relevant information from PDF files in
+a potentially scalable fashion by using NoSql databases and Queues. This infrastructure
+stores requests and chain a worflow of operations (workers) which will do the operations
+of keyword and relevant sentences extraction. All provided as a web service REST API.
+
+2. Learn concepts of NLP associated with scaleable cloud based REST API building. The
+technology used is java based, so as another goal here we can mention the build
+learning process using [Spring Framework](http://spring.io/) in order to build the 
+API and infrastructure.
+
+As part of the goals is learning about technologies, comments and contributions are
+welcome. However, this is not a final product, application or concept. Just a
+point for experimentation and proofing. 
+
+If anyone out there is interested in contribute or apply this project on a more
+product-oriented environment, please get in touch through the email:
+marcelo.riss@gmail.com.
+ 
 ## Package/Folders Description
+
+* **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
+  Additionally this module defines a [workflow](/wiki/Workflow) to map the status progress 
+  of a document processing request.
+* **DSH-doc-analyzer**:  This is a container module to have the keyword and relevant sentences
+  extractor modules. One extra module to dequeue documents to be analyzed and
+  call the extractors.
+  * **DSH-doc-processor-worker**: The keyword extraction is executed by setting scores to 
+    each term in the document's text.
+  * **DSH-keyword-extractor**: The keyword extraction is executed by setting scores to each term in
+    the document's text.
+  * **DSH-top-sentences-extractor**: The extraction of top sentences is achieved applying typical [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization) techniques like extractive summarization or [key phrase extraction](https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction).
+* **DSH-doc-indexer-worker**: dequeues a document id from a queue, gets the document from the
+  database and send it for indexing at [SOLR](https://lucene.apache.org/solr/). 
+  Besides indexing, this module will extract the text,
+  paragraphs, sentences on each paragraph and terms on each sentence.
+* **DSH-rest-api**: this module is the real application to be deployed or installed on a
+  servlet container. It is the entry point for document submission, document processing
+  status querying and document processing results (keywords and relevant sentences) querying.
+* **dsh-test-dataset**: default and common data set of files used for automated testing.
 
 ## Installation
 
@@ -30,7 +82,132 @@ ${project.version}
 
 #### Java
 
+##### Download and Installation
+
+ 1. Download a J2SE JDK 1.8 platform from [http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+    1. **IMPORTANT NOTE**: Download and install **JDK, not a JRE**. Avoid 
+       downloading packages with J2EE and/or net beans. 
+       Search the download page for Java SE Development Kit (JDK) or 
+       JDK 8 Update XX.
+             
+ 2. Windows
+    1. There should be a .exe windows installer. Just follow the
+       instructions.
+       
+ 3. Linux	
+    1. Download the .tar.gz file. After downloading it, uncompress it at a folder of your preference.
+    2. Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:
+    
+       ```
+       ln -s jdk1.8.0_XX java (where XX is the update number of your download)
+       ```
+
+##### Setting environment variables
+
+###### Linux
+
+1. Open the file `/home/[YOUR_USER]/.profile`. This file might be hidden.
+   If it does not appear at your home folder, using the file explorer, type
+   `Ctrl+h`. Go to the end of the file and add:
+       
+    ```
+    export JAVA_HOME=/your/jdk/parent/folder
+   export PATH=$JAVA_HOME/bin:$PATH
+   ```
+
+###### Windows 
+
+1. Open Control Panel go to System, Advanced system settings, `Environment
+   Variables` button.     
+2. At the System Variables section, click New.
+3. Set JAVA_HOME and point to the root of JDK folder.
+4. Search for the variable named <<Path>> in the list, click on it and press 
+   Edit.
+5. Prepend the value with:
+ 
+   ```
+   %JAVA_HOME%\bin;
+   ```
+
+##### Verifying the installation
+
+1. Open a command prompt and type:
+ 
+   ```
+   java -version
+   ```
+2. The result should be something like:
+
+    ```
+   java version "1.8.0_45"
+   Java(TM) SE Runtime Environment (build 1.8.0_45-b14)
+   Java HotSpot(TM) 64-Bit Server VM (build 25.45-b02, mixed mode)
+   ```
+
 #### Maven
+
+1. Dowload maven **3.3.9** from [http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip](http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip)    
+2. Unzip it on a folder of your preference
+3. Set environment variables.
+   1. Linux   
+      1. Put it at your `$HOME/.profile` file
+             
+         ```
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+         export PATH=$M2_HOME/bin:$PATH
+         export MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'
+         ```    
+      2. If you already have java set up, your `.profile`, it 
+         should look like this: 
+
+         ```
+         export JAVA_HOME=/your/jdk/parent/folder/java
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+         export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
+         export MAVEN_OPTS='-Xmx1024m'
+         ```
+      3. Logout and login again.            
+      4. Test by opening a terminal and typing:
+             
+         ```
+         mvn -version
+         ```
+      5. The result should be similar to:
+             
+         ```
+         Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
+         Apache Maven 3.3.1 (cab6659f9874fa96462afef40fcf6bc033d58c1c; 2015-03-13T17:10:27-03:00)
+         Maven home: /home/riss/apps/maven
+         Java version: 1.8.0_45, vendor: Oracle Corporation
+         Java home: /home/riss/apps/jdk1.8.0_45/jre
+         Default locale: en_US, platform encoding: UTF-8
+         OS name: "linux", version: "3.13.0-55-generic", arch: "amd64", family: "unix"
+         ```
+    2. Windows       
+       1. Open Control Panel go to System, Advanced system settings, **Environment Variables** button.
+       2. At the System Variables section, click New.
+       3. Set `M2_HOME` and point to the root of maven folder.
+       4. Search for the variable `Path` in the list, click on it and press Edit.
+       5. Put the maven bin folder right after java home:
+             
+          ```
+          %JAVA_HOME%\bin;%M2_HOME%\bin;
+          ```   
+       6. Set the variable `MAVEN_OPTS`.
+			 
+          ```
+          MAVEN_OPTS=-Xmx1024m
+          ```	 
+       7. The result should be similar to:
+             
+          ```
+          Apache Maven 3.3.9 (0728685237757ffbf44136acec0402957f723d9a; 2013-09-17 12:22:22-0300)
+          Maven home: C:\data\apache-maven-3.3.9
+          Java version: 1.8.0_45, vendor: Oracle Corporation
+          Java home: C:\Program Files\Java\jdk1.8.0_45\jre
+          Default locale: en_US, platform encoding: Cp1252
+          OS name: "windows 8.1", version: "6.3", arch: "amd64", family: "dos"
+          ```
 
 #### MongoDB
 
@@ -40,15 +217,15 @@ ${project.version}
 2. Enable security following general guidelines at [this link](https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332)
 3. Start MongoDB:
 
-   ```
-   "C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe"
-   ```
-5. In another prompt connect to MongoDB
+    ```
+    "C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe"
+    ```
+4. In another prompt connect to MongoDB
 
    ```
    "C:\Program Files\MongoDB\Server\3.4\bin\mongo.exe"
    ```
-4. Create super user
+5. Create super user
 
    ```
    $ use admin
@@ -59,12 +236,12 @@ ${project.version}
      roles: [ { role: "root", db: "admin" } ]
     })   
    ```
-5. Disconnect and re-connect at MongoDB as super user:
+6. Disconnect and re-connect at MongoDB as super user:
 
    ```
    connect-mongo-super-user.bat [your admin password]
    ```
-6. Create user access (readWrite) for specific dsh database
+7. Create user access (readWrite) for specific dsh database
 
    ```
    $ use dsh
@@ -75,7 +252,7 @@ ${project.version}
       roles: [ "readWrite"]
      })   
    ```
-7. Disconnect and re-connect at MongoDB as specific user:
+8. Disconnect and re-connect at MongoDB as specific user:
 
    ```
    connect-mongo.bat [your dshuser passoword]
@@ -138,25 +315,25 @@ ${project.version}
 3. Enable the management plugin:
 
    ```
-    rabbitmq-plugins.bat enable rabbitmq_management
-	rabbitmq-service.bat stop  
-    rabbitmq-service.bat remove	
-	rabbitmq-service.bat install  
-	rabbitmq-service.bat start   
+   rabbitmq-plugins.bat enable rabbitmq_management
+   rabbitmq-service.bat stop  
+   rabbitmq-service.bat remove	
+   rabbitmq-service.bat install  
+   rabbitmq-service.bat start   
    ``` 
-3. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
+4. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
 
 ##### Linux Ubuntu 16.04LTS
 
-1. Follow the instructions at [https://www.rabbitmq.com/install-debian.html](https://www.rabbitmq.com/install-debian.html)
-   1. As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above
-   1. Or follow the instructions at the link and add RabbitMQ Ubuntu repositories before to run the `apt-get install`.
+ 1. Follow the instructions at [https://www.rabbitmq.com/install-debian.html](https://www.rabbitmq.com/install-debian.html)
+     1. As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above
+     1. Or follow the instructions at the link and add RabbitMQ Ubuntu repositories before to run the `apt-get install`.
 2. Enable the management plugin:
 
    ```
-    sudo rabbitmq-plugins enable rabbitmq_management
-	service rabbitmq-server stop  
-	service rabbitmq-server start
+   sudo rabbitmq-plugins enable rabbitmq_management
+   service rabbitmq-server stop  
+   service rabbitmq-server start
    ``` 
 3. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
  
@@ -169,7 +346,6 @@ ${project.version}
 
 ```
 mvn clean install
-
 ```
 #### Tomcat
 

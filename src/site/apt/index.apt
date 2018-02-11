@@ -9,7 +9,7 @@ Document Smart Hightlights
 
  Document Smart Hightlights aims to provide a set of web services to allow uploading
  of PDF and HTML files and return a list of keywords and most relevant sentences.
- Thi system applies state of the art algorithms, using NLP techniques to produce
+ This system applies state of the art algorithms, using NLP techniques to produce
  both the list of keywords and most relevant sentences. This last one, using
  automatic document summarization techniques.
  
