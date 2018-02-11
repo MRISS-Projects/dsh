@@ -345,6 +345,7 @@ marcelo.riss@gmail.com.
 3. At the root dsh folder type:
 
 ```
+./install-parent-pom.sh
 mvn clean install
 ```
 #### Tomcat
