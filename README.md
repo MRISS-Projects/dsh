@@ -11,7 +11,7 @@ to provide a set of web services to allow uploading
 of PDF and HTML files and return a list of keywords and most relevant sentences.
 This system applies state of the art algorithms, using NLP techniques to produce
 both the list of keywords and most relevant sentences. This last one, using
-automatic document summarization techniques. More details at the [wiki](/wiki).
+automatic document summarization techniques. More details at the [wiki](https://github.com/MRISS-Projects/dsh/wiki).
 
 This project is distributed as source code. In order to generate the application
 to run it is needed to install the pre-requisites and compile. No binaries distribution
@@ -41,7 +41,7 @@ marcelo.riss@gmail.com.
 ## Package/Folders Description
 
 * **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
-  Additionally this module defines a [workflow](/wiki/Workflow) to map the status progress 
+  Additionally this module defines a [workflow](https://github.com/MRISS-Projects/dsh/wiki/Workflow) to map the status progress 
   of a document processing request.
 * **DSH-doc-analyzer**:  This is a container module to have the keyword and relevant sentences
   extractor modules. One extra module to dequeue documents to be analyzed and
