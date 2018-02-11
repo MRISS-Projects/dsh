@@ -36,6 +36,7 @@ public class DocumentSubmissionServiceImpl implements DocumentSubmissionService 
 	@Override
 	public String getTokenFromDocument(InputStream originalDocumentContents, String documentTitle,
 			boolean useCache) throws DocumentSubmissionException {
+		logger.info("DocumentSubmissionServiceImpl.this(): " + this);
 		try {
 			this.document = new Document(originalDocumentContents, documentTitle);
 			messageHandler.setDocument(this.document);			

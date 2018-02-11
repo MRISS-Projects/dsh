@@ -4,10 +4,5 @@
 
 	<display-name>DSH REST API Application</display-name>
 
-	<servlet>
-		<servlet-name>InitServlet</servlet-name>
-		<servlet-class>com.mriss.dsh.restapi.InitServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
 	
 </web-app>

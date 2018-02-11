@@ -27,5 +27,7 @@ public interface DocumentHandlingService {
 	 * empty
 	 */
 	public Document getDocumentByHash(String hash);
+	
+	public Document getDocumentByToken(String token);
 
 }

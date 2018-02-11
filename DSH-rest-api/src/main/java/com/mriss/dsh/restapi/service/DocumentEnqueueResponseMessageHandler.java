@@ -4,20 +4,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.annotation.Scope;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
 
 import com.mriss.dsh.data.models.Document;
 import com.mriss.dsh.data.models.TransitionType;
 
 @Component
-@RequestScope(proxyMode=ScopedProxyMode.TARGET_CLASS)
+@Scope(scopeName="prototype")
 public class DocumentEnqueueResponseMessageHandler implements DocumentEnqueueMessageHandler {
-	
+		
 	final static Logger logger = LoggerFactory.getLogger(DocumentEnqueueResponseMessageHandler.class);
 	
 	@Autowired(required = true)
@@ -31,6 +30,7 @@ public class DocumentEnqueueResponseMessageHandler implements DocumentEnqueueMes
 
 	@Override
 	public void handleMessage(Message<?> message) throws MessagingException {
+		logger.info("DocumentEnqueueResponseMessageHandler.this(): " + this);
 		logger.info("Processing enqueue process response for message: " + message + ". Document: " + submittedDocument);
 		if (isOk(message)) {
 			submittedDocument.transitionStatus(TransitionType.SUCCESS);

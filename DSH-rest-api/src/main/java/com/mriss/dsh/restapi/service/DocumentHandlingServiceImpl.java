@@ -31,4 +31,11 @@ public class DocumentHandlingServiceImpl implements DocumentHandlingService {
 		return null;
 	}
 
+	@Override
+	public Document getDocumentByToken(String token) {
+		Document d = dao.findDocumentByToken(token);
+		return d;
+	}
+
+	
 }

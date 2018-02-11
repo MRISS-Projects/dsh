@@ -7,8 +7,8 @@
            
 Document Smart Highliths Top Sentences  Extractor
 
- The extraction of top sentences is achieved appling typical {{{https://en.wikipedia.org/wiki/Automatic_summarization}automatic summarization}}
- techniques like extractive summarization or {{{https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction}keyphrase extraction}}.
+ The extraction of top sentences is achieved applying typical {{{https://en.wikipedia.org/wiki/Automatic_summarization}automatic summarization}}
+ techniques like extractive summarization or {{{https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction}key phrase extraction}}.
    
  * The sentence relevance is calculated taking into account two main criteria:
  

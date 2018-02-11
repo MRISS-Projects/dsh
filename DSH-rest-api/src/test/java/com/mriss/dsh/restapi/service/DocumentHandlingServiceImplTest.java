@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.mriss.dsh.data.document.dao.mongo.MongoDocumentDao;
+import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
 import com.mriss.dsh.data.models.Keyword;
 import com.mriss.dsh.data.models.Sentence;
@@ -35,7 +35,7 @@ public class DocumentHandlingServiceImplTest {
 	private Document docForTest1;	
 	
 	@Autowired(required=true)
-	private MongoDocumentDao dao;
+	private DocumentDao dao;
 	
 	@Autowired(required=true)
 	private DocumentHandlingService service;	
