@@ -1,11 +1,6 @@
 <project name="${project.name}">
 	<version position="right" />
 	<publishDate position="right" format="yyyy-MM-dd - hh:mm:ss" />
-	<bannerLeft>
-		<name>DSH-top-sentences-extractor</name>
-		<src>${logo.image}</src>
-		<href>${main.server}/site/${release.type}/products/DSH-top-sentences-extractor</href>
-	</bannerLeft>
 	<skin>
 		<groupId>${skin.groupId}</groupId>
 		<artifactId>${skin.artifactId}</artifactId>
