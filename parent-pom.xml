@@ -315,6 +315,7 @@
 <!-- 						<issueManagementSystems> -->
 <!-- 							<issueManagementSystem>Trac</issueManagementSystem> -->
 <!-- 						</issueManagementSystems> -->
+						<includeOpenIssues>false</includeOpenIssues>
 						<runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
 <!-- 						<issueTypes> -->
 <!-- 							<fix>defect</fix> -->
@@ -469,11 +470,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changes-plugin</artifactId>
 				<version>${changes.plugin.version}</version>
-<!-- 				<configuration> -->
-<!-- 					<tracUser>${trac.user}</tracUser> -->
-<!-- 					<tracPassword>${trac.password}</tracPassword> -->
-<!-- 					<query>${trac.query}</query> -->
-<!-- 				</configuration> -->
+				<configuration>
+					<includeOpenIssues>false</includeOpenIssues>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -683,7 +682,7 @@
 									<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
 									<aggregate>false</aggregate>
 									<includeReports>false</includeReports>
-									<siteDirectory>foo/bar</siteDirectory>
+									<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
 								</configuration>
 							</execution>							
 						</executions>
@@ -709,9 +708,29 @@
 								</configuration>
 							</execution>
 						</executions>
-					</plugin>					
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-changes-plugin</artifactId>
+						<version>${changes.plugin.version}</version>
+						<configuration>
+							<onlyCurrentVersion>true</onlyCurrentVersion>						
+						</configuration>
+					</plugin>										
 				</plugins>
 			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-changes-plugin</artifactId>
+						<version>${changes.plugin.version}</version>
+						<configuration>
+							<onlyCurrentVersion>true</onlyCurrentVersion>						
+						</configuration>
+					</plugin>															
+				</plugins>
+			</reporting>
 		</profile>		
 		<profile>
 			<id>deployment</id>
@@ -748,7 +767,7 @@
 									<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
 									<aggregate>false</aggregate>
 									<includeReports>false</includeReports>
-									<siteDirectory>foo/bar</siteDirectory>
+									<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
 								</configuration>
 							</execution>														
 						</executions>
