@@ -86,6 +86,9 @@
 		<trac.release.history.number>22</trac.release.history.number>
 		
 		<spring.boot.version>2.0.0.M6</spring.boot.version>
+		
+		<!-- Project root name used as root folder name for site generation. Used to get files to publish site at github -->
+		<project.root.name>dsh</project.root.name>
 
 	</properties>
 

@@ -794,6 +794,27 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-publish-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>publish-to-github</id>
+								<phase>site-deploy</phase>
+								<goals>
+									<goal>publish-scm</goal>
+								</goals>
+								<configuration>
+									<serverId>github</serverId>
+									<scmBranch>master</scmBranch>
+									<checkinComment>Publishing  DSH site ${project.version}</checkinComment>
+									<pubScmUrl>scm:git:https://github.com/MRISS-Projects/dsh-docs</pubScmUrl>
+									<content>/tmp/sites/${release.type}/${project.root.name}</content>								
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>		

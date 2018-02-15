@@ -37,6 +37,10 @@ point for experimentation and proofing.
 If anyone out there is interested in contribute or apply this project on a more
 product-oriented environment, please get in touch through the email:
 marcelo.riss@gmail.com.
+
+Wiki: https://github.com/MRISS-Projects/dsh/wiki
+
+Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
  
 ## Package/Folders Description
 
