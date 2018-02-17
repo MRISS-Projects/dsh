@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
-	
+
 	<parent>
 		<groupId>com.mriss</groupId>
 		<artifactId>mriss-parent</artifactId>
@@ -40,28 +41,28 @@
 				<groupId>com.mriss.products.dsh</groupId>
 				<artifactId>dsh-test-dataset</artifactId>
 				<version>${project.version}</version>
-			</dependency>									
+			</dependency>
 			<dependency>
 				<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
 				<artifactId>DSH-keyword-extractor</artifactId>
 				<version>${project.version}</version>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
 				<artifactId>DSH-top-sentences-extractor</artifactId>
 				<version>${project.version}</version>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
 				<artifactId>DSH-doc-processor-worker</artifactId>
 				<version>${project.version}</version>
-			</dependency>			
-						
-		</dependencies>	
+			</dependency>
+
+		</dependencies>
 	</dependencyManagement>
-	
+
 	<!-- <modules>...</modules> -->
-	
+
 	<properties>
 
 		<skin.version>1.6</skin.version>
@@ -69,7 +70,7 @@
 		<skin.groupId>org.apache.maven.skins</skin.groupId>
 		<logo.image>images/logo.jpg</logo.image>
 
-		<webapp.deployment.url/>
+		<webapp.deployment.url />
 		<group.id.path>${project.parent.artifactId}/${project.artifactId}</group.id.path>
 
 		<jenkins.view>${project.artifactId}</jenkins.view>
@@ -81,13 +82,14 @@
 		<announcement.introduction>My announcement introduction</announcement.introduction>
 
 		<is.parent.pom>false</is.parent.pom>
-		
+
 		<!-- TODO: Replace this to a project description and url at github -->
 		<trac.release.history.number>22</trac.release.history.number>
-		
+
 		<spring.boot.version>2.0.0.M6</spring.boot.version>
-		
-		<!-- Project root name used as root folder name for site generation. Used to get files to publish site at github -->
+
+		<!-- Project root name used as root folder name for site generation. Used 
+			to get files to publish site at github -->
 		<project.root.name>dsh</project.root.name>
 
 	</properties>
@@ -216,8 +218,8 @@
 	<!-- <inceptionYear>...</inceptionYear> -->
 	<!-- <licenses>...</licenses> -->
 	<!-- <organization>...</organization> -->
-<!-- 	<developers> -->
-<!-- 	</developers> -->
+	<!-- <developers> -->
+	<!-- </developers> -->
 	<!-- <contributors>...</contributors> -->
 
 	<!-- ENVIRONMENT SETTINGS -->
@@ -233,47 +235,167 @@
 		<maven>3.3.9</maven>
 	</prerequisites>
 	<repositories>
-		<repository> 
-	        <id>repository.spring.release</id> 
-	        <name>Spring GA Repository</name> 
-	        <url>http://repo.spring.io/release</url> 
-	    </repository>
-	    <repository> 
-	        <id>repository.spring.milestone</id> 
-	        <name>Spring Milestone Repository</name> 
-	        <url>http://repo.spring.io/milestone</url> 
-	    </repository>
-	    <repository> 
-	        <id>repository.spring.snapshot</id> 
-	        <name>Spring Snapshot Repository</name> 
-	        <url>http://repo.spring.io/snapshot</url> 
-	    </repository>	    	    	
+		<repository>
+			<id>repository.spring.release</id>
+			<name>Spring GA Repository</name>
+			<url>http://repo.spring.io/release</url>
+		</repository>
+		<repository>
+			<id>repository.spring.milestone</id>
+			<name>Spring Milestone Repository</name>
+			<url>http://repo.spring.io/milestone</url>
+		</repository>
+		<repository>
+			<id>repository.spring.snapshot</id>
+			<name>Spring Snapshot Repository</name>
+			<url>http://repo.spring.io/snapshot</url>
+		</repository>
 	</repositories>
 	<pluginRepositories>
-		<pluginRepository> 
-	        <id>repository.spring.release</id> 
-	        <name>Spring GA Repository</name> 
-	        <url>http://repo.spring.io/release</url> 
-	    </pluginRepository>
-	    <pluginRepository> 
-	        <id>repository.spring.milestone</id> 
-	        <name>Spring Milestone Repository</name> 
-	        <url>http://repo.spring.io/milestone</url> 
-	    </pluginRepository>
-	    <pluginRepository> 
-	        <id>repository.spring.snapshot</id> 
-	        <name>Spring Snapshot Repository</name> 
-	        <url>http://repo.spring.io/snapshot</url> 
-	    </pluginRepository>	    	    				
-	</pluginRepositories>	
-	<!--  <distributionManagement>...</distributionManagement>-->
-<!-- 	 <profiles> -->
-<!-- 	</profiles> -->
-  <modules>
-    <module>dsh-test-dataset</module>  
-  	<module>DSH-data</module>
-    <module>DSH-rest-api</module>
-    <module>DSH-doc-indexer-worker</module>
-    <module>DSH-doc-analyser</module>
-  </modules>
+		<pluginRepository>
+			<id>repository.spring.release</id>
+			<name>Spring GA Repository</name>
+			<url>http://repo.spring.io/release</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>repository.spring.milestone</id>
+			<name>Spring Milestone Repository</name>
+			<url>http://repo.spring.io/milestone</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>repository.spring.snapshot</id>
+			<name>Spring Snapshot Repository</name>
+			<url>http://repo.spring.io/snapshot</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<!-- <distributionManagement>...</distributionManagement> -->
+	<!-- <profiles> -->
+	<!-- </profiles> -->
+	<modules>
+		<module>dsh-test-dataset</module>
+		<module>DSH-data</module>
+		<module>DSH-rest-api</module>
+		<module>DSH-doc-indexer-worker</module>
+		<module>DSH-doc-analyser</module>
+	</modules>
+	<profiles>
+		<profile>
+			<id>deployment</id>
+			<properties>
+				<project.build.version>${project.version} - ${timestamp}</project.build.version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>buildnumber-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>create-time-stamp</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>create-timestamp</goal>
+								</goals>
+								<inherited>false</inherited>
+							</execution>
+						</executions>
+						<configuration>
+							<timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
+							<timestampPropertyName>timestamp</timestampPropertyName>
+						</configuration>
+					</plugin>												
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-readme-md</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>.</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/site/markdown</directory>
+											<includes>
+												<include>README.md</include>
+											</includes>
+											<targetPath>.</targetPath>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+								<inherited>false</inherited>
+							</execution>
+						</executions>
+					</plugin>			
+					<plugin>
+				        <groupId>org.apache.maven.plugins</groupId>
+				        <artifactId>maven-scm-plugin</artifactId>
+				        <executions>
+				        	<execution>
+				        		<id>commit-readme-md</id>
+				        		<phase>process-resources</phase>
+				        		<goals>
+				        			<goal>checkin</goal>
+				        		</goals>
+				        		<configuration>
+				        			<basedir>${basedir}</basedir>
+				        			<includes>README.md</includes>
+				        			<message>Auto-generated README.md</message>
+				        		</configuration>
+				        		<inherited>false</inherited>
+				        	</execution>
+				        </executions>
+				    </plugin>			
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-pdf-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>pdf-generation</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>pdf</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
+									<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
+									<aggregate>false</aggregate>
+									<includeReports>false</includeReports>
+									<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
+								</configuration>
+								<inherited>false</inherited>
+							</execution>														
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-readme</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<artifacts>
+										<artifact>
+											<file>${basedir}/target/site/pdf/README.pdf</file>
+											<type>pdf</type>
+											<classifier>readme</classifier>
+										</artifact>
+									</artifacts>
+								</configuration>
+								<inherited>false</inherited>
+							</execution>
+						</executions>
+					</plugin>				
+				</plugins>			
+			</build>
+		</profile>
+	</profiles>
 </project>
