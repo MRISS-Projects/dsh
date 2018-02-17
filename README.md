@@ -2,7 +2,7 @@
 
 ## Version
 
-${project.build.version}
+0.0.1-SNAPSHOT - 20180217-015209
 
 ## Introduction
 
