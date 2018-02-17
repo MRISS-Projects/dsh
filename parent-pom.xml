@@ -53,7 +53,8 @@
 		<site.deployment>${site.deployment.personal.main}</site.deployment>
 
 		<release.type>snapshots</release.type>
-
+		
+		<buildnumber.plugin.version>1.4</buildnumber.plugin.version>
 		<site.plugin.version>3.7</site.plugin.version>
 		<clean.plugin.version>2.6.1</clean.plugin.version>
 		<install.plugin.version>2.5.2</install.plugin.version>
@@ -85,7 +86,7 @@
 		<antrun.plugin.version>1.8</antrun.plugin.version>
 		<build.helper.plugin.version>1.9.1</build.helper.plugin.version>
 		<versions.plugin.version>2.1</versions.plugin.version>
-		<scm.plugin.version>1.9.4</scm.plugin.version>
+		<scm.plugin.version>1.9.5</scm.plugin.version>
 		<wagon.plugin.version>1.0</wagon.plugin.version>
 		<castor.plugin.version>2.1</castor.plugin.version>
 		<maven.failsafe.plugin.version>2.18.1</maven.failsafe.plugin.version>
@@ -148,6 +149,11 @@
 		</extensions>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+        			<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>${buildnumber.plugin.version}</version>
+				</plugin>			
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
@@ -254,6 +260,11 @@
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<version>${maven.failsafe.plugin.version}</version>
 				</plugin>
+				<plugin>
+			        <groupId>org.apache.maven.plugins</groupId>
+			        <artifactId>maven-scm-plugin</artifactId>
+					<version>${scm.plugin.version}</version>
+				</plugin>				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
@@ -651,6 +662,7 @@
 			<properties>
 				<release.type>releases</release.type>
 				<all.downloads.link>${nexus.download.url}</all.downloads.link>
+				<project.build.version>${project.version}</project.build.version>
 			</properties>
 			<build>
 				<plugins>
@@ -672,8 +684,8 @@
 						<artifactId>maven-pdf-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>pdf-filtered</id>
-								<phase>process-resources</phase>
+								<id>pdf-generation</id>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>pdf</goal>
 								</goals>
@@ -700,7 +712,7 @@
 								<configuration>
 									<artifacts>
 										<artifact>
-											<file>${basedir}/target/site/pdf/readme.pdf</file>
+											<file>${basedir}/target/site/pdf/README.pdf</file>
 											<type>pdf</type>
 											<classifier>readme</classifier>
 										</artifact>
@@ -737,28 +749,90 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
+			<properties>
+				<project.scm.id>github</project.scm.id>
+				<project.build.version>${project.version} - ${timestamp}</project.build.version>
+			</properties>
 			<build>
+				<resources>
+					<resource>
+						<directory>src/site/markdown</directory>
+						<includes>
+							<include>README.md</include>
+						</includes>
+						<filtering>true</filtering>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
 				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>buildnumber-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>create-time-stamp</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>create-timestamp</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
+							<timestampPropertyName>timestamp</timestampPropertyName>
+						</configuration>
+					</plugin>												
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-readme-md</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>.</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/site/markdown</directory>
+											<includes>
+												<include>README.md</include>
+											</includes>
+											<targetPath>.</targetPath>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>			
+					<plugin>
+				        <groupId>org.apache.maven.plugins</groupId>
+				        <artifactId>maven-scm-plugin</artifactId>
+				        <executions>
+				        	<execution>
+				        		<id>commit-readme-md</id>
+				        		<phase>process-resources</phase>
+				        		<goals>
+				        			<goal>checkin</goal>
+				        		</goals>
+				        		<configuration>
+				        			<basedir>${basedir}</basedir>
+				        			<includes>README.md</includes>
+				        			<message>Auto-generated README.md</message>
+				        		</configuration>
+				        	</execution>
+				        </executions>
+				    </plugin>			
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-pdf-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>pdf-readme-original</id>
-								<phase>process-resources</phase>
-								<goals>
-									<goal>pdf</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-									<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-									<aggregate>false</aggregate>
-									<includeReports>false</includeReports>
-								</configuration>
-							</execution>
-							<execution>
-								<id>pdf-readme-filtered</id>
-								<phase>process-resources</phase>
+								<id>pdf-generation</id>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>pdf</goal>
 								</goals>
@@ -785,7 +859,7 @@
 								<configuration>
 									<artifacts>
 										<artifact>
-											<file>${basedir}/target/site/pdf/readme.pdf</file>
+											<file>${basedir}/target/site/pdf/README.pdf</file>
 											<type>pdf</type>
 											<classifier>readme</classifier>
 										</artifact>
@@ -806,7 +880,7 @@
 									<goal>publish-scm</goal>
 								</goals>
 								<configuration>
-									<serverId>github</serverId>
+									<serverId>github.com</serverId>
 									<scmBranch>master</scmBranch>
 									<checkinComment>Publishing  DSH site ${project.version}</checkinComment>
 									<pubScmUrl>scm:git:https://github.com/MRISS-Projects/dsh-docs</pubScmUrl>
@@ -817,6 +891,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>		
+		</profile>
 	</profiles>
 </project>

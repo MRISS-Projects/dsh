@@ -99,6 +99,7 @@
 				<directory>src/site</directory>
 				<includes>
 					<include>**/*.apt</include>
+					<include>**/*.md</include>
 				</includes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 				<filtering>true</filtering>
@@ -110,39 +111,13 @@
 				</includes>
 				<excludes>
 					<exclude>**/*.apt</exclude>
+					<exclude>**/*.md</exclude>
 				</excludes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 				<filtering>false</filtering>
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pdf-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-					<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-					<aggregate>false</aggregate>
-					<includeReports>false</includeReports>
-					<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>pdf</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>pdf</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-							<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-							<aggregate>false</aggregate>
-							<includeReports>false</includeReports>
-							<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -160,6 +135,7 @@
 									<directory>src/site</directory>
 									<includes>
 										<include>**/*.apt</include>
+										<include>**/*.md</include>
 									</includes>
 									<targetPath>${project.build.directory}/generated-site</targetPath>
 									<filtering>true</filtering>
@@ -171,6 +147,7 @@
 									</includes>
 									<excludes>
 										<exclude>**/*.apt</exclude>
+										<exclude>**/*.md</exclude>
 									</excludes>
 									<targetPath>${project.build.directory}/generated-site</targetPath>
 									<filtering>false</filtering>
