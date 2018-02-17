@@ -2,7 +2,7 @@
 
 ## Version
 
-0.0.1-SNAPSHOT
+${project.build.version}
 
 ## Introduction
 
