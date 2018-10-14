@@ -508,8 +508,4 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 ## Release Notes
 
-${current.release.issues}
-
-## Release History
-
-${older.releases.issues}
+${issues.text.list}
