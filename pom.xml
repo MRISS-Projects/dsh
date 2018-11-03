@@ -298,6 +298,11 @@
                                 <goals>
                                     <goal>github-text-list</goal>
                                 </goals>
+                                <configuration>
+                                    <includeOpenIssues>false</includeOpenIssues>
+                                    <onlyMilestoneIssues>true</onlyMilestoneIssues>
+                                    <columnNames>Id,Type,Summary,Assignee,Reporter,Updated</columnNames>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
