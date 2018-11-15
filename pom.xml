@@ -252,6 +252,11 @@
             <name>Spring Snapshot Repository</name>
             <url>http://repo.spring.io/snapshot</url>
         </repository>
+        <repository>
+            <id>mriss-repository</id>
+            <name>mriss-repository</name>
+            <url>https://raw.github.com/MRISS-Projects/maven-repo/master</url>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -268,6 +273,11 @@
             <id>repository.spring.snapshot</id>
             <name>Spring Snapshot Repository</name>
             <url>http://repo.spring.io/snapshot</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mriss-plugin-repository</id>
+            <name>mriss-plugin-repository</name>
+            <url>https://raw.github.com/MRISS-Projects/maven-repo/master</url>
         </pluginRepository>
     </pluginRepositories>
     <!-- <distributionManagement>...</distributionManagement> -->
