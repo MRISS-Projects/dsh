@@ -40,8 +40,8 @@ marcelo.riss@gmail.com.
 
 Wiki: https://github.com/MRISS-Projects/dsh/wiki
 
-Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
- 
+Project Development Documentation (SNAPSHOTS): https://mriss-projects.github.io/dsh-docs/snapshots/dsh/
+
 ## Package/Folders Description
 
 * **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
