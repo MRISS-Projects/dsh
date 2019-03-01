@@ -2,7 +2,7 @@
 
 ## Version
 
-0.0.1-SNAPSHOT - 20190301-153539
+0.0.1-SNAPSHOT - 20190301-155108
 
 ## Introduction
 
@@ -40,8 +40,8 @@ marcelo.riss@gmail.com.
 
 Wiki: https://github.com/MRISS-Projects/dsh/wiki
 
-Project Development Documentation (SNAPSHOTS): https://mriss-projects.github.io/dsh-docs/snapshots/dsh/
-
+Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
+ 
 ## Package/Folders Description
 
 * **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
@@ -512,6 +512,7 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | - | ---- | ------- | -------- | -------- | ------- |
+| [38](https://github.com/MRISS-Projects/dsh/issues/38) | task | Configure distribution management to local nexus and test snapshot deploy with deployment profile. | mriss | mriss | 3/1/19 |
 | [37](https://github.com/MRISS-Projects/dsh/issues/37) | task | Replace release notes and release history properties using deployment profile. | mriss | mriss | 10/13/18 |
 | [36](https://github.com/MRISS-Projects/dsh/issues/36) | task | Replace version property ad readme and commit using deployment profile | mriss | mriss | 2/19/18 |
 | [35](https://github.com/MRISS-Projects/dsh/issues/35) | task | Test maven site publication using github using deployment profile. | mriss | mriss | 2/14/18 |
