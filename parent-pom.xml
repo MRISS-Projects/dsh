@@ -43,11 +43,6 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <main.server></main.server>
-
-        <nexus.server></nexus.server>
-        <nexus.download.url>${nexus.server}/content/groups/public/${group.id.path.prefix}/${group.id.path}</nexus.download.url>
-        <group.id.path></group.id.path>
 
         <sites.server>${main.server}</sites.server>
         <sites.url>${sites.server}/sites</sites.url>
@@ -57,7 +52,7 @@
 
         <buildnumber.plugin.version>1.4</buildnumber.plugin.version>
         <site.plugin.version>3.7</site.plugin.version>
-        <clean.plugin.version>2.6.1</clean.plugin.version>
+        <clean.plugin.version>3.1.0</clean.plugin.version>
         <install.plugin.version>2.5.2</install.plugin.version>
         <resources.plugin.version>2.7</resources.plugin.version>
         <remote.resources.plugin.version>1.5</remote.resources.plugin.version>
@@ -111,19 +106,6 @@
         <mockito.version>2.0.8-beta</mockito.version>
         <gwt.version>2.7.0</gwt.version>
 
-        <jenkins.view>${project.artifactId}</jenkins.view>
-        <jenkins.server></jenkins.server>
-        <jenkins.build.number>dev</jenkins.build.number> <!-- This should be provided by jenkins builds, when building maven SNAPSHOTS 
-            (not releases). If not, the default will be "dev" -->
-
-        <source.code.server></source.code.server>
-        <svn.path></svn.path>
-        <source.code.path></source.code.path>
-        <source.browser.path></source.browser.path>
-
-        <!-- Server id at settings.xml -->
-        <tomcat.seven.server>tomcat7-server</tomcat.seven.server>
-
         <!-- Announcement properties for changes plugnis -->
         <smtp.host></smtp.host>
         <announcement.file.name>Newsletter_HTML.html</announcement.file.name>
@@ -132,9 +114,6 @@
         <announcement.images.server></announcement.images.server>
         <announcement.list></announcement.list>
         <announcement.introduction></announcement.introduction>
-
-        <group.id.path.prefix></group.id.path.prefix>
-        <is.parent.pom>true</is.parent.pom>
 
         <github.project>https://github.com/MRISS-Projects/dsh/issues</github.project>
 
@@ -278,7 +257,7 @@
                     <configuration>
                         <arguments>-Dsite.deployment.personal.main=${site.deployment.personal.main}</arguments>
                         <releaseProfiles>product-release-deployment</releaseProfiles>
-                        <tagNameFormat>@{project.groupId}-@{project.artifactId}-@{project.version}</tagNameFormat>
+                        <tagNameFormat>v${project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -303,26 +282,24 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-changes-plugin</artifactId>
                     <version>${changes.plugin.version}</version>
-                    <!--<dependencies> <dependency> <groupId></groupId> <artifactId></artifactId> 
-                        <version></version> </dependency> </dependencies> -->
-                    <executions>
-                        <execution>
-                            <id>send-email</id>
-                            <goals>
-                                <goal>announcement-mail</goal>
-                            </goals>
-                            <phase>deploy</phase>
-                            <configuration>
-                                <smtpHost>${smtp.host}</smtpHost>
-                                <toAddresses>
-                                    <address>${announcement.list}</address>
-                                </toAddresses>
-                                <fromDeveloperId>marcelo_riss</fromDeveloperId>
-                                <mailContentType>text/html</mailContentType>
-                                <announcementFile>${announcement.file.name}</announcementFile>
-                            </configuration>
-                        </execution>
-                    </executions>
+<!--                     <executions> -->
+<!--                         <execution> -->
+<!--                             <id>send-email</id> -->
+<!--                             <goals> -->
+<!--                                 <goal>announcement-mail</goal> -->
+<!--                             </goals> -->
+<!--                             <phase>deploy</phase> -->
+<!--                             <configuration> -->
+<!--                                 <smtpHost>${smtp.host}</smtpHost> -->
+<!--                                 <toAddresses> -->
+<!--                                     <address>${announcement.list}</address> -->
+<!--                                 </toAddresses> -->
+<!--                                 <fromDeveloperId>marcelo_riss</fromDeveloperId> -->
+<!--                                 <mailContentType>text/html</mailContentType> -->
+<!--                                 <announcementFile>${announcement.file.name}</announcementFile> -->
+<!--                             </configuration> -->
+<!--                         </execution> -->
+<!--                     </executions> -->
                     <configuration>
                         <!-- <issueManagementSystems> -->
                         <!-- <issueManagementSystem>Trac</issueManagementSystem> -->
@@ -334,17 +311,17 @@
                         <!-- <add>enhancement</add> -->
                         <!-- <update>task</update> -->
                         <!-- </issueTypes> -->
-                        <template>${announcement.file.name}</template>
-                        <templateDirectory>${announcement.template.directory}</templateDirectory>
-                        <announceParameters>
-                            <images.server>${announcement.images.server}</images.server>
-                            <all.downloads.link>${all.downloads.link}</all.downloads.link>
-                            <is.parent.pom>${is.parent.pom}</is.parent.pom>
-                            <releases.history.link>${trac.project}/report/${trac.release.history.number}</releases.history.link>
-                            <tickets.main.url>${trac.project}</tickets.main.url>
-                        </announceParameters>
-                        <templateEncoding>utf-8</templateEncoding>
-                        <introduction>${announcement.introduction}</introduction>
+<!--                         <template>${announcement.file.name}</template> -->
+<!--                         <templateDirectory>${announcement.template.directory}</templateDirectory> -->
+<!--                         <announceParameters> -->
+<!--                             <images.server>${announcement.images.server}</images.server> -->
+<!--                             <all.downloads.link>${all.downloads.link}</all.downloads.link> -->
+<!--                             <is.parent.pom>${is.parent.pom}</is.parent.pom> -->
+<!--                             <releases.history.link>${trac.project}/report/${trac.release.history.number}</releases.history.link> -->
+<!--                             <tickets.main.url>${trac.project}</tickets.main.url> -->
+<!--                         </announceParameters> -->
+<!--                         <templateEncoding>utf-8</templateEncoding> -->
+<!--                         <introduction>${announcement.introduction}</introduction> -->
                     </configuration>
                 </plugin>
                 <plugin>
@@ -492,6 +469,7 @@
                 <version>${project-info-reports.plugin.version}</version>
                 <configuration>
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                 </configuration>
             </plugin>
             <plugin>
@@ -521,7 +499,7 @@
 		Parent project.
 	</description>
     <url>${sites.url}/${release.type}</url>
-    <inceptionYear>2012</inceptionYear>
+    <inceptionYear>2018</inceptionYear>
     <!-- <licenses>...</licenses> -->
     <organization>
         <name>Marcelo Riss</name>
@@ -544,71 +522,38 @@
     <!-- <contributors>...</contributors> -->
 
     <!-- Environment Settings -->
-    <issueManagement>
-        <system>github</system>
-        <url>${github.project}</url>
-    </issueManagement>
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://${jenkins.server}/jenkins/view/${jenkins.view}</url>
-    </ciManagement>
     <!-- <mailingLists>...</mailingLists> -->
-    <!-- <scm></scm> -->
     <prerequisites>
         <maven>3.1.1</maven>
     </prerequisites>
     <repositories>
         <repository>
-            <id>public-repositories</id>
-            <layout>default</layout>
-            <name>public-repositories</name>
-            <url>${nexus.server}/content/groups/public</url>
-            <snapshots>
-                <checksumPolicy>warn</checksumPolicy>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
+            <id>MRISS-Projects-maven-repo</id>
+            <url>https://raw.githubusercontent.com/MRISS-Projects/maven-repo/master</url>
             <releases>
-                <checksumPolicy>warn</checksumPolicy>
                 <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
             </releases>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>public-plugin-repositories</id>
-            <layout>default</layout>
-            <name>public-repositories</name>
-            <url>${nexus.server}/content/groups/public</url>
-            <snapshots>
-                <checksumPolicy>warn</checksumPolicy>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
+            <id>MRISS-Projects-maven-repo</id>
+            <url>https://raw.githubusercontent.com/MRISS-Projects/maven-repo/master</url>
             <releases>
-                <checksumPolicy>warn</checksumPolicy>
                 <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
             </releases>
         </pluginRepository>
     </pluginRepositories>
     <distributionManagement>
+        <site>
+            <id>github.website</id>
+            <url>${site.deployment}/${release.type}/</url>
+        </site>
         <repository>
             <id>releases</id>
             <name>Main Releases</name>
-            <url>${nexus.server}/content/repositories/releases/</url>
+            <url>${deploymentUrl}</url>
         </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Main Snapshots</name>
-            <url>${nexus.server}/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <site>
-            <id>sites</id>
-            <name>Main Web Site - ${release.type}</name>
-            <url>${site.deployment}/${release.type}</url>
-        </site>
     </distributionManagement>
     <profiles>
         <profile>
@@ -800,9 +745,34 @@
             </activation>
             <properties>
                 <project.scm.id>github</project.scm.id>
+                <deploymentUrl>file://${project.build.directory}/maven-repo</deploymentUrl>
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>clean-site-temporary-folder</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>/tmp/sites</directory>
+                                            <includes>
+                                                <include>snapshots/**</include>
+                                                <include>releases/**</include>
+                                            </includes>
+                                        </fileset>
+                                    </filesets>                             
+                                </configuration>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-scm-publish-plugin</artifactId>
@@ -820,7 +790,23 @@
                                     <checkinComment>Publishing DSH site
                                         ${project.version}</checkinComment>
                                     <pubScmUrl>scm:git:https://github.com/MRISS-Projects/dsh-docs</pubScmUrl>
-                                    <content>/tmp/sites/${release.type}/${project.root.name}</content>
+                                    <content>/tmp/sites</content>
+                                    <skipDeletedFiles>true</skipDeletedFiles>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>publish-artifact-to-github</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>publish-scm</goal>
+                                </goals>
+                                <configuration>
+                                    <serverId>github.com</serverId>
+                                    <checkinComment>Publishing artifact for version ${project.version}</checkinComment>
+                                    <pubScmUrl>scm:git:https://github.com/MRISS-Projects/maven-repo</pubScmUrl>
+                                    <content>${project.build.directory}/maven-repo</content>
+                                    <checkoutDirectory>${project.build.directory}/artifact-deploy-checkout</checkoutDirectory>
+                                    <skipDeletedFiles>true</skipDeletedFiles>
                                 </configuration>
                             </execution>
                         </executions>

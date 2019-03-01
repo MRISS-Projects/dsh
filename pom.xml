@@ -88,7 +88,7 @@
         <!-- TODO: Replace this to a project description and url at github -->
         <trac.release.history.number>22</trac.release.history.number>
 
-        <spring.boot.version>2.0.0.M6</spring.boot.version>
+        <spring.boot.version>2.0.0.M7</spring.boot.version>
 
         <!-- Project root name used as root folder name for site generation. 
             Used to get files to publish site at github -->
@@ -225,8 +225,14 @@
     <!-- <contributors>...</contributors> -->
 
     <!-- ENVIRONMENT SETTINGS -->
-    <!-- <issueManagement>...</issueManagement> -->
-    <!-- <ciManagement>...</ciManagement> -->
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/MRISS-Projects/dsh/issues</url>
+    </issueManagement>
+<!--     <ciManagement> -->
+<!--         <system>jenkins</system> -->
+<!--         <url>http://${jenkins.server}/jenkins/view/${jenkins.view}</url> -->
+<!--     </ciManagement> -->
     <!-- <mailingLists>...</mailingLists> -->
     <scm>
         <connection>scm:git:https://github.com/MRISS-Projects/dsh.git</connection>
@@ -280,9 +286,6 @@
             <url>https://raw.github.com/MRISS-Projects/maven-repo/master</url>
         </pluginRepository>
     </pluginRepositories>
-    <!-- <distributionManagement>...</distributionManagement> -->
-    <!-- <profiles> -->
-    <!-- </profiles> -->
     <modules>
         <module>dsh-test-dataset</module>
         <module>DSH-data</module>

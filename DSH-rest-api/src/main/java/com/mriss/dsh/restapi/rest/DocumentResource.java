@@ -5,7 +5,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public class DocumentResource {
 
 	public static final String TOKEN_NOT_FOUND = "TOKEN_NOT_FOUND";
 
-	private final static Logger log = Logger.getLogger(DocumentResource.class);
+	private final static Logger log = LoggerFactory.getLogger(DocumentResource.class);
 	
 	@Autowired
 	DocumentSubmissionService documentSubmissionService;

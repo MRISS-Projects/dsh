@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mvn -P deployment clean install && mvn -P deployment site-deploy
+mvn -gs ~/apps/maven/conf/empty-settings.xml -P deployment -DskipTests clean deploy && mvn -gs ~/apps/maven/conf/empty-settings.xml -P deployment site-deploy
