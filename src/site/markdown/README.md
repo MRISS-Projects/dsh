@@ -2,7 +2,7 @@
 
 ## Version
 
-0.0.1-SNAPSHOT - 20190301-153539
+${project.build.version}
 
 ## Introduction
 
@@ -40,8 +40,8 @@ marcelo.riss@gmail.com.
 
 Wiki: https://github.com/MRISS-Projects/dsh/wiki
 
-Project Development Documentation (SNAPSHOTS): https://mriss-projects.github.io/dsh-docs/snapshots/dsh/
-
+Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
+ 
 ## Package/Folders Description
 
 * **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
@@ -508,38 +508,4 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 ## Release Notes
 
-### Version 0.0.1-SNAPSHOT
-
-| # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
-| [37](https://github.com/MRISS-Projects/dsh/issues/37) | task | Replace release notes and release history properties using deployment profile. | mriss | mriss | 10/13/18 |
-| [36](https://github.com/MRISS-Projects/dsh/issues/36) | task | Replace version property ad readme and commit using deployment profile | mriss | mriss | 2/19/18 |
-| [35](https://github.com/MRISS-Projects/dsh/issues/35) | task | Test maven site publication using github using deployment profile. | mriss | mriss | 2/14/18 |
-| [34](https://github.com/MRISS-Projects/dsh/issues/34) | task | Configure changes plugin and changes report to use github issues and test maven site generation. | mriss | mriss | 2/12/18 |
-| [33](https://github.com/MRISS-Projects/dsh/issues/33) | task | Configure maven scm to use git | mriss | mriss | 2/12/18 |
-| [10](https://github.com/MRISS-Projects/dsh/issues/10) | task | Test rest API module inside tomcat server inside eclipse as a war distribution. | mriss | mriss | 2/10/18 |
-| [30](https://github.com/MRISS-Projects/dsh/issues/30) | task | Configure Swagger | mriss | mriss | 2/4/18 |
-| [11](https://github.com/MRISS-Projects/dsh/issues/11) | task | Create and test rest service layer: | mriss | mriss | 1/16/18 |
-| [23](https://github.com/MRISS-Projects/dsh/issues/23) | task | Add message and error handling for RabbitMQ queue submission. | mriss | mriss | 1/9/18 |
-| [22](https://github.com/MRISS-Projects/dsh/issues/22) | task | Create document submission workflow  | mriss | mriss | 1/6/18 |
-| [28](https://github.com/MRISS-Projects/dsh/issues/28) | task | Create document status enumeration and define workflow transition and validation class. | mriss | mriss | 1/6/18 |
-| [27](https://github.com/MRISS-Projects/dsh/issues/27) | task | Add extra columns at the Document model class for status description and status message. | mriss | mriss | 1/6/18 |
-| [25](https://github.com/MRISS-Projects/dsh/issues/25) | task | Test message sending exception. | mriss | mriss | 1/3/18 |
-| [17](https://github.com/MRISS-Projects/dsh/issues/17) | task | Create web service logic to generate token and return it while starting the document storage at mongo asynchronously. | mriss | mriss | 1/3/18 |
-| [9](https://github.com/MRISS-Projects/dsh/issues/9) | task | Create services: | mriss | mriss | 12/19/17 |
-| [21](https://github.com/MRISS-Projects/dsh/issues/21) | task | Create mongodb storage service. | mriss | mriss | 12/19/17 |
-| [20](https://github.com/MRISS-Projects/dsh/issues/20) | task | Update documentation with RabbitMQ installation. | mriss | mriss | 12/18/17 |
-| [18](https://github.com/MRISS-Projects/dsh/issues/18) | task | Create logic to enqueue the mongo document id to RabbitMQ using Spring integration example app. | mriss | mriss | 12/18/17 |
-| [19](https://github.com/MRISS-Projects/dsh/issues/19) | task | Feature/mongo dao | mriss | mriss | 12/10/17 |
-| [15](https://github.com/MRISS-Projects/dsh/issues/15) | task | Create and test MongoDAO | null | mriss | 12/9/17 |
-| [16](https://github.com/MRISS-Projects/dsh/issues/16) | task | Test models | mriss | mriss | 12/9/17 |
-| [12](https://github.com/MRISS-Projects/dsh/issues/12) | task | Create dsh-test-dataset module having all PDF and HTML files used for testing. | mriss | mriss | 12/7/17 |
-| [8](https://github.com/MRISS-Projects/dsh/issues/8) | task | * Create model for the documents with following columns: | mriss | mriss | 12/7/17 |
-| [7](https://github.com/MRISS-Projects/dsh/issues/7) | task | * Create package structure | null | mriss | 12/7/17 |
-| [3](https://github.com/MRISS-Projects/dsh/issues/3) | task | Create parent pom | mriss | mriss | 12/6/17 |
-| [5](https://github.com/MRISS-Projects/dsh/issues/5) | task | Create a model module to have the model classes of keywords, sentences and documents. | mriss | mriss | 12/6/17 |
-| [6](https://github.com/MRISS-Projects/dsh/issues/6) | task | Organize dependency management among modules. | mriss | mriss | 12/6/17 |
-| [2](https://github.com/MRISS-Projects/dsh/issues/2) | task | Create project structure using spring boot | mriss | mriss | 12/6/17 |
-| [4](https://github.com/MRISS-Projects/dsh/issues/4) | task | Complete project structure | mriss | mriss | 12/6/17 |
-| [1](https://github.com/MRISS-Projects/dsh/issues/1) | task | Install RabbitMQ | mriss | mriss | 11/29/17 |
-
+${issues.text.list}

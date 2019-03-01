@@ -95,42 +95,12 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pdf-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-					<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-					<aggregate>false</aggregate>
-					<includeReports>false</includeReports>
-					<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>pdf</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>pdf</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-							<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-							<aggregate>false</aggregate>
-							<includeReports>false</includeReports>
-							<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-
 	</build>
 	<!-- <reporting> -->
 	<!-- </reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>DSH-doc-processor-worker</name>
+	<name>DSH - Document Processor Worker</name>
 	<description>Document Smart Highlights Document Processor Worker</description>
 	<!-- <url>...</url> -->
 	<!-- <inceptionYear>...</inceptionYear> -->

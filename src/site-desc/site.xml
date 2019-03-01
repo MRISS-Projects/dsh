@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project name="${project.name}" combine.self="override">
+    <version position="right" />
+    <publishDate position="right" format="yyyy-MM-dd - hh:mm:ss" />
+    <skin>
+        <groupId>${skin.groupId}</groupId>
+        <artifactId>${skin.artifactId}</artifactId>
+        <version>${skin.version}</version>
+    </skin>
+    <body>
+        <links>
+            <item name="Wiki" href="https://github.com/MRISS-Projects/dsh/wiki" />
+            <item name="Project" href="https://github.com/orgs/MRISS-Projects/projects/1" />
+        </links>
+        <breadcrumbs>
+            <item name="DSH at GitHub" href="https://github.com/MRISS-Projects/dsh" />
+        </breadcrumbs>
+        <menu name="Documentation">
+            <item name="Home" href="index.html" />
+            <item name="Releases History" href="releases-history.html" />
+        </menu>
+        <menu ref="parent" />
+        <menu ref="modules" />
+        <menu ref="reports" />
+    </body>
+</project>

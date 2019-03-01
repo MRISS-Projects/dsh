@@ -62,33 +62,6 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pdf-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-					<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-					<aggregate>false</aggregate>
-					<includeReports>false</includeReports>
-					<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>pdf</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>pdf</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-							<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-							<aggregate>false</aggregate>
-							<includeReports>false</includeReports>
-							<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
@@ -131,7 +104,7 @@
 	<!-- </reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>DSH-doc-analyser</name>
+	<name>DSH - Document Analyzer</name>
 	<description>Document Smart Highlights Analyzer</description>
 	<!-- <url>...</url> -->
 	<!-- <inceptionYear>...</inceptionYear> -->

@@ -67,33 +67,6 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pdf-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-					<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-					<aggregate>false</aggregate>
-					<includeReports>false</includeReports>
-					<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>pdf</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>pdf</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-							<workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-							<aggregate>false</aggregate>
-							<includeReports>false</includeReports>
-							<siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-remote-resources-plugin</artifactId>
 				<executions>
 					<execution>
@@ -116,7 +89,7 @@
 	<!-- </reporting> -->
 
 	<!-- MORE PROJECT INFORMATION -->
-	<name>dsh-test-dataset</name>
+	<name>DSH Test Data Set</name>
 	<description>Document Smart Highlight Test Dataset</description>
 	<!-- <url>...</url> -->
 	<!-- <inceptionYear>...</inceptionYear> -->

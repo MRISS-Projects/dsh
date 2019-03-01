@@ -1,0 +1,964 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>/home/riss/git/dsh/.README.md.html</title>
+
+
+<style type="text/css">
+body {
+	color: #333;
+	font: 13px/1.4 "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+	padding: 0;
+	margin: 0;
+}
+
+a {
+	background: transparent;
+	color: #4183c4;
+	text-decoration: none;
+}
+
+a:active,
+a:hover {
+	outline: 0 none;
+	text-decoration: underline;
+}
+
+abbr[title] {
+	border-bottom: 1px dotted;
+}
+
+b,
+strong {
+	font-weight: bold;
+}
+
+dfn {
+	font-style: italic;
+}
+h1 {
+	font-size: 2em;
+	margin: 0.67em 0;
+}
+mark {
+	background: #ff0;
+	color: #000;
+}
+small {
+	font-size: 80%;
+}
+sub, sup {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+sup {
+	top: -0.5em;
+}
+sub {
+	bottom: -0.25em;
+}
+img {
+	border: 0 none;
+}
+svg:not(:root) {
+	overflow: hidden;
+}
+figure {
+	margin: 1em 40px;
+}
+hr {
+	box-sizing: content-box;
+	height: 0;
+}
+
+code,
+kbd,
+pre,
+samp {
+	font-family: monospace,monospace;
+	font-size: 1em;
+}
+
+pre {
+	overflow: auto;
+	font: 12px Consolas,"Liberation Mono",Menlo,Courier,monospace;
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+.markdown-body {
+	padding: 30px;
+	font-size: 16px;
+	line-height: 1.6;
+	word-wrap: break-word;
+}
+
+.markdown-body>*:first-child {
+	margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+	margin-bottom: 0 !important;
+}
+
+.markdown-body .absent {
+	color: #c00;
+}
+
+.markdown-body .anchor {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	display: block;
+	padding-right: 6px;
+	padding-left: 30px;
+	margin-left: -30px;
+}
+
+.markdown-body .anchor:focus {
+	outline: none;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+	position: relative;
+	margin-top: 1em;
+	margin-bottom: 16px;
+	font-weight: bold;
+	line-height: 1.4;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+	display: none;
+	color: #000;
+	vertical-align: middle;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+	padding-left: 8px;
+	margin-left: -30px;
+	line-height: 1;
+	text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+	display: inline-block;
+}
+
+.markdown-body h1 tt,
+.markdown-body h1 code,
+.markdown-body h2 tt,
+.markdown-body h2 code,
+.markdown-body h3 tt,
+.markdown-body h3 code,
+.markdown-body h4 tt,
+.markdown-body h4 code,
+.markdown-body h5 tt,
+.markdown-body h5 code,
+.markdown-body h6 tt,
+.markdown-body h6 code {
+	font-size: inherit;
+}
+
+.markdown-body h1 {
+	padding-bottom: 0.3em;
+	font-size: 2.25em;
+	line-height: 1.2;
+	border-bottom: 1px solid #eee;
+}
+
+.markdown-body h2 {
+	padding-bottom: 0.3em;
+	font-size: 1.75em;
+	line-height: 1.225;
+	border-bottom: 1px solid #eee;
+}
+
+.markdown-body h3 {
+	font-size: 1.5em;
+	line-height: 1.43;
+}
+
+.markdown-body h4 {
+	font-size: 1.25em;
+}
+
+.markdown-body h5 {
+	font-size: 1em;
+}
+
+.markdown-body h6 {
+	font-size: 1em;
+	color: #777;
+}
+
+.markdown-body p,.markdown-body blockquote,
+.markdown-body ul,.markdown-body ol,
+.markdown-body dl,.markdown-body table,
+.markdown-body pre {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.markdown-body hr {
+	height: 4px;
+	padding: 0;
+	margin: 16px 0;
+	background-color: #e7e7e7;
+	border: 0 none;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+	padding-left: 2em;
+}
+
+.markdown-body ul.no-list,
+.markdown-body ol.no-list {
+	padding: 0;
+	list-style-type: none;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.markdown-body li>p {
+	margin-top: 16px;
+}
+
+.markdown-body dl {
+	padding: 0;
+}
+
+.markdown-body dl dt {
+	padding: 0;
+	margin-top: 16px;
+	font-size: 1em;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.markdown-body dl dd {
+	padding: 0 16px;
+	margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+	padding: 0 15px;
+	color: #777;
+	border-left: 4px solid #ddd;
+}
+
+.markdown-body blockquote>:first-child {
+	margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+	margin-bottom: 0;
+}
+
+.markdown-body table {
+	display: block;
+	width: 100%;
+	overflow: auto;
+	word-break: normal;
+	word-break: keep-all;
+}
+
+.markdown-body table th {
+	font-weight: bold;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+	padding: 6px 13px;
+	border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+	background-color: #fff;
+	border-top: 1px solid #ccc;
+}
+
+.markdown-body table tr:nth-child(2n) {
+	background-color: #f8f8f8;
+}
+
+.markdown-body img {
+	max-width: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.markdown-body span.frame {
+	display: block;
+	overflow: hidden;
+}
+
+.markdown-body span.frame>span {
+	display: block;
+	float: left;
+	width: auto;
+	padding: 7px;
+	margin: 13px 0 0;
+	overflow: hidden;
+	border: 1px solid #ddd;
+}
+
+.markdown-body span.frame span img {
+	display: block;
+	float: left;
+}
+
+.markdown-body span.frame span span {
+	display: block;
+	padding: 5px 0 0;
+	clear: both;
+	color: #333;
+}
+
+.markdown-body span.align-center {
+	display: block;
+	overflow: hidden;
+	clear: both;
+}
+
+.markdown-body span.align-center>span {
+	display: block;
+	margin: 13px auto 0;
+	overflow: hidden;
+	text-align: center;
+}
+
+.markdown-body span.align-center span img {
+	margin: 0 auto;
+	text-align: center;
+}
+
+.markdown-body span.align-right {
+	display: block;
+	overflow: hidden;
+	clear: both;
+}
+
+.markdown-body span.align-right>span {
+	display: block;
+	margin: 13px 0 0;
+	overflow: hidden;
+	text-align: right;
+}
+
+.markdown-body span.align-right span img {
+	margin: 0;
+	text-align: right;
+}
+
+.markdown-body span.float-left {
+	display: block;
+	float: left;
+	margin-right: 13px;
+	overflow: hidden;
+}
+
+.markdown-body span.float-left span {
+	margin: 13px 0 0;
+}
+
+.markdown-body span.float-right {
+	display: block;
+	float: right;
+	margin-left: 13px;
+	overflow: hidden;
+}
+
+.markdown-body span.float-right>span {
+	display: block;
+	margin: 13px auto 0;
+	overflow: hidden;
+	text-align: right;
+}
+
+.markdown-body code,.markdown-body tt {
+	padding: 0;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin: 0;
+	font-size: 85%;
+	background-color: rgba(0,0,0,0.04);
+	border-radius: 3px;
+}
+
+.markdown-body code:before,
+.markdown-body code:after,
+.markdown-body tt:before,
+.markdown-body tt:after {
+	letter-spacing: -0.2em;
+	content: "\00a0";
+}
+
+.markdown-body code br,
+.markdown-body tt br {
+	display: none;
+}
+
+.markdown-body del code {
+	text-decoration: inherit;
+}
+
+.markdown-body pre>code {
+	padding: 0;
+	margin: 0;
+	font-size: 100%;
+	word-break: normal;
+	white-space: pre;
+	background: transparent;
+	border: 0;
+}
+
+.markdown-body .highlight {
+	margin-bottom: 16px;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+	padding: 16px;
+	overflow: auto;
+	font-size: 85%;
+	line-height: 1.45;
+	background-color: #f7f7f7;
+	border-radius: 3px;
+}
+
+.markdown-body .highlight pre {
+	margin-bottom: 0;
+	word-break: normal;
+}
+
+.markdown-body pre {
+	word-wrap: normal;
+}
+
+.markdown-body pre code,
+.markdown-body pre tt {
+	display: inline;
+	max-width: initial;
+	padding: 0;
+	margin: 0;
+	overflow: initial;
+	line-height: inherit;
+	word-wrap: normal;
+	background-color: transparent;
+	border: 0;
+}
+
+.markdown-body pre code:before,
+.markdown-body pre code:after,
+.markdown-body pre tt:before,
+.markdown-body pre tt:after {
+	content: normal;
+}
+
+.highlight .pl-coc,
+.highlight .pl-entl,
+.highlight .pl-entm,
+.highlight .pl-eoa,
+.highlight .pl-mai .pl-sf,
+.highlight .pl-mm,
+.highlight .pl-pdv,
+.highlight .pl-sc,
+.highlight .pl-som,
+.highlight .pl-sr,
+.highlight .pl-v,
+.highlight .pl-vpf {
+	color: #0086b3;
+}
+.highlight .pl-eoac,
+.highlight .pl-mdht,
+.highlight .pl-mi1,
+.highlight .pl-mri,
+.highlight .pl-va,
+.highlight .pl-vpu {
+	color: #008080;
+}
+.highlight .pl-c,
+.highlight .pl-pdc {
+	color: #b4b7b4;
+	font-style: italic;
+}
+.highlight .pl-k,
+.highlight .pl-ko,
+.highlight .pl-kolp,
+.highlight .pl-mc,
+.highlight .pl-mr,
+.highlight .pl-ms,
+.highlight .pl-s,
+.highlight .pl-sok,
+.highlight .pl-st {
+	color: #6e5494;
+}
+.highlight .pl-ef,
+.highlight .pl-enf,
+.highlight .pl-enm,
+.highlight .pl-entc,
+.highlight .pl-eoi,
+.highlight .pl-sf,
+.highlight .pl-smc {
+	color: #d12089;
+}
+.highlight .pl-ens,
+.highlight .pl-eoai,
+.highlight .pl-kos,
+.highlight .pl-mh .pl-pdh,
+.highlight .pl-mp,
+.highlight .pl-pde,
+.highlight .pl-stp {
+	color: #458;
+}
+.highlight .pl-enti {
+	color: #d12089;
+	font-weight: bold;
+}
+.highlight .pl-cce,
+.highlight .pl-enc,
+.highlight .pl-kou,
+.highlight .pl-mq {
+	color: #f93;
+}
+.highlight .pl-mp1 .pl-sf {
+	color: #458;
+	font-weight: bold;
+}
+.highlight .pl-cos,
+.highlight .pl-ent,
+.highlight .pl-md,
+.highlight .pl-mdhf,
+.highlight .pl-ml,
+.highlight .pl-pdc1,
+.highlight .pl-pds,
+.highlight .pl-s1,
+.highlight .pl-scp,
+.highlight .pl-sol {
+	color: #df5000;
+}
+.highlight .pl-c1,
+.highlight .pl-cn,
+.highlight .pl-pse,
+.highlight .pl-pse .pl-s2,
+.highlight .pl-vi {
+	color: #a31515;
+}
+.highlight .pl-mb,
+.highlight .pl-pdb {
+	color: #df5000;
+	font-weight: bold;
+}
+.highlight .pl-mi,
+.highlight .pl-pdi {
+	color: #6e5494;
+	font-style: italic;
+}
+.highlight .pl-ms1 {
+	background-color: #f5f5f5;
+}
+.highlight .pl-mdh,
+.highlight .pl-mdi {
+	font-weight: bold;
+}
+.highlight .pl-mdr {
+	color: #0086b3;
+	font-weight: bold;
+}
+.highlight .pl-s2 {
+	color: #333;
+}
+.highlight .pl-ii {
+	background-color: #df5000;
+	color: #fff;
+}
+.highlight .pl-ib {
+	background-color: #f93;
+}
+.highlight .pl-id {
+	background-color: #a31515;
+	color: #fff;
+}
+.highlight .pl-iu {
+	background-color: #b4b7b4;
+}
+.highlight .pl-mo {
+	color: #969896;
+}
+
+</style>
+
+
+<script type="text/javascript">
+
+function getDocumentScrollTop() 
+{
+   var res = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset || 0;
+   // alert(res);
+   return res;
+}
+
+function setDocumentScrollTop(ypos) 
+{
+	window.scrollTo(0, ypos);
+}
+
+</script>
+
+
+</head>
+<body class="markdown-body">
+<h1> <a id="document-smart-highlights" class="anchor" href="#document-smart-highlights" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Document Smart Highlights</h1> 
+<h2> <a id="version" class="anchor" href="#version" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version</h2> 
+<p>0.0.1-SNAPSHOT - 20180218-224925</p> 
+<h2> <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2> 
+<p>Welcome to <strong>DSH - Document Smart Highlights</strong>. Document Smart Hightlights aims to provide a set of web services to allow uploading of PDF and HTML files and return a list of keywords and most relevant sentences. This system applies state of the art algorithms, using NLP techniques to produce both the list of keywords and most relevant sentences. This last one, using automatic document summarization techniques. More details at the <a href="https://github.com/MRISS-Projects/dsh/wiki">wiki</a>.</p> 
+<p>This project is distributed as source code. In order to generate the application to run it is needed to install the pre-requisites and compile. No binaries distribution is provided for now. The final application is a java <code>.WAR</code> file which can be] dropped in a standard java servlet container.</p> 
+<p>The goals for this project are basically two:</p> 
+<ol> 
+ <li> <p>Implement a NLP based system to extract relevant information from PDF files in a potentially scalable fashion by using NoSql databases and Queues. This infrastructure stores requests and chain a worflow of operations (workers) which will do the operations of keyword and relevant sentences extraction. All provided as a web service REST API.</p> </li> 
+ <li> <p>Learn concepts of NLP associated with scaleable cloud based REST API building. The technology used is java based, so as another goal here we can mention the build learning process using <a href="http://spring.io/" rel="nofollow">Spring Framework</a> in order to build the API and infrastructure.</p> </li> 
+</ol> 
+<p>As part of the goals is learning about technologies, comments and contributions are welcome. However, this is not a final product, application or concept. Just a point for experimentation and proofing.</p> 
+<p>If anyone out there is interested in contribute or apply this project on a more product-oriented environment, please get in touch through the email: <a href="mailto:marcelo.riss@gmail.com">marcelo.riss@gmail.com</a>.</p> 
+<p>Wiki: <a href="https://github.com/MRISS-Projects/dsh/wiki">https://github.com/MRISS-Projects/dsh/wiki</a></p> 
+<p>Project Development Documentation: <a href="https://mriss-projects.github.io/dsh-docs/" rel="nofollow">https://mriss-projects.github.io/dsh-docs/</a></p> 
+<h2> <a id="packagefolders-description" class="anchor" href="#packagefolders-description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Package/Folders Description</h2> 
+<ul> 
+ <li> <strong>DSH-data</strong>: data models definition for a <strong>Document</strong>, <strong>Keyword</strong> and <strong>RelevantSentence</strong>. Additionally this module defines a <a href="https://github.com/MRISS-Projects/dsh/wiki/Workflow">workflow</a> to map the status progress of a document processing request.</li> 
+ <li> <strong>DSH-doc-analyzer</strong>: This is a container module to have the keyword and relevant sentences extractor modules. One extra module to dequeue documents to be analyzed and call the extractors. 
+  <ul> 
+   <li> <strong>DSH-doc-processor-worker</strong>: The keyword extraction is executed by setting scores to each term in the document's text.</li> 
+   <li> <strong>DSH-keyword-extractor</strong>: The keyword extraction is executed by setting scores to each term in the document's text.</li> 
+   <li> <strong>DSH-top-sentences-extractor</strong>: The extraction of top sentences is achieved applying typical <a href="https://en.wikipedia.org/wiki/Automatic_summarization" rel="nofollow">automatic summarization</a> techniques like extractive summarization or <a href="https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction" rel="nofollow">key phrase extraction</a>.</li> 
+  </ul> </li> 
+ <li> <strong>DSH-doc-indexer-worker</strong>: dequeues a document id from a queue, gets the document from the database and send it for indexing at <a href="https://lucene.apache.org/solr/" rel="nofollow">SOLR</a>. Besides indexing, this module will extract the text, paragraphs, sentences on each paragraph and terms on each sentence.</li> 
+ <li> <strong>DSH-rest-api</strong>: this module is the real application to be deployed or installed on a servlet container. It is the entry point for document submission, document processing status querying and document processing results (keywords and relevant sentences) querying.</li> 
+ <li> <strong>dsh-test-dataset</strong>: default and common data set of files used for automated testing.</li> 
+</ul> 
+<h2> <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2> 
+<h3> <a id="pre-requisites" class="anchor" href="#pre-requisites" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pre-requisites</h3> 
+<ul> 
+ <li> <p>Java 1.8</p> </li> 
+ <li> <p>Maven 3.3.9</p> </li> 
+ <li> <p>MongoDB 3.4 (windows 10)</p> </li> 
+ <li> <p>MongoDB 3.6.2 (Ubuntu 16.04LTS)</p> </li> 
+ <li> <p>RabbitMQ 3.6.14 (windows 10)</p> </li> 
+ <li> <p>RabbitMQ 3.7.2-1 (Ubuntu 16.04LTS)</p> </li> 
+ <li> <p>Tomcat 8.0.X</p> </li> 
+</ul> 
+<h3> <a id="installingbuilding-the-application" class="anchor" href="#installingbuilding-the-application" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing/Building the Application</h3> 
+<h4> <a id="java" class="anchor" href="#java" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Java</h4> 
+<h5> <a id="download-and-installation" class="anchor" href="#download-and-installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download and Installation</h5> 
+<ol> 
+ <li> <p>Download a J2SE JDK 1.8 platform from <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" rel="nofollow">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a>.</p> 
+  <ol> 
+   <li> <strong>IMPORTANT NOTE</strong>: Download and install <strong>JDK, not a JRE</strong>. Avoid downloading packages with J2EE and/or net beans. Search the download page for Java SE Development Kit (JDK) or JDK 8 Update XX.</li> 
+  </ol> </li> 
+ <li> <p>Windows</p> 
+  <ol> 
+   <li>There should be a .exe windows installer. Just follow the instructions.</li> 
+  </ol> </li> 
+ <li> <p>Linux</p> 
+  <ol> 
+   <li> <p>Download the .tar.gz file. After downloading it, uncompress it at a folder of your preference.</p> </li> 
+   <li> <p>Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:</p> <pre><code>ln -s jdk1.8.0_XX java (where XX is the update number of your download)
+</code></pre> </li> 
+  </ol> </li> 
+</ol> 
+<h5> <a id="setting-environment-variables" class="anchor" href="#setting-environment-variables" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setting environment variables</h5> 
+<h6> <a id="linux" class="anchor" href="#linux" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Linux</h6> 
+<ol> 
+ <li> <p>Open the file <code>/home/[YOUR_USER]/.profile</code>. This file might be hidden. If it does not appear at your home folder, using the file explorer, type <code>Ctrl+h</code>. Go to the end of the file and add:</p> <pre><code>export JAVA_HOME=/your/jdk/parent/folder
+export PATH=$JAVA_HOME/bin:$PATH
+</code></pre> </li> 
+</ol> 
+<h6> <a id="windows" class="anchor" href="#windows" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Windows</h6> 
+<ol> 
+ <li> <p>Open Control Panel go to System, Advanced system settings, <code>Environment Variables</code> button.</p> </li> 
+ <li> <p>At the System Variables section, click New.</p> </li> 
+ <li> <p>Set JAVA_HOME and point to the root of JDK folder.</p> </li> 
+ <li> <p>Search for the variable named &lt;&gt; in the list, click on it and press Edit.</p> </li> 
+ <li> <p>Prepend the value with:</p> <pre><code>%JAVA_HOME%\bin;
+</code></pre> </li> 
+</ol> 
+<h5> <a id="verifying-the-installation" class="anchor" href="#verifying-the-installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Verifying the installation</h5> 
+<ol> 
+ <li> <p>Open a command prompt and type:</p> <pre><code>java -version
+</code></pre> </li> 
+ <li> <p>The result should be something like:</p> <pre><code>java version &quot;1.8.0_45&quot;
+Java(TM) SE Runtime Environment (build 1.8.0_45-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.45-b02, mixed mode)
+</code></pre> </li> 
+</ol> 
+<h4> <a id="maven" class="anchor" href="#maven" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Maven</h4> 
+<ol> 
+ <li>Dowload maven <strong>3.3.9</strong> from <a href="http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip" rel="nofollow">http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip</a> </li> 
+ <li>Unzip it on a folder of your preference</li> 
+ <li>Set environment variables. 
+  <ol> 
+   <li>Linux 
+    <ol> 
+     <li> <p>Put it at your <code>$HOME/.profile</code> file</p> <pre><code>export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+export PATH=$M2_HOME/bin:$PATH
+export MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'
+</code></pre> </li> 
+     <li> <p>If you already have java set up, your <code>.profile</code>, it should look like this:</p> <pre><code>export JAVA_HOME=/your/jdk/parent/folder/java
+export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
+export MAVEN_OPTS='-Xmx1024m'
+</code></pre> </li> 
+     <li> <p>Logout and login again.</p> </li> 
+     <li> <p>Test by opening a terminal and typing:</p> <pre><code>mvn -version
+</code></pre> </li> 
+     <li> <p>The result should be similar to:</p> <pre><code>Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
+Apache Maven 3.3.1 (cab6659f9874fa96462afef40fcf6bc033d58c1c; 2015-03-13T17:10:27-03:00)
+Maven home: /home/riss/apps/maven
+Java version: 1.8.0_45, vendor: Oracle Corporation
+Java home: /home/riss/apps/jdk1.8.0_45/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: &quot;linux&quot;, version: &quot;3.13.0-55-generic&quot;, arch: &quot;amd64&quot;, family: &quot;unix&quot;
+</code></pre> </li> 
+    </ol> </li> 
+   <li>Windows 
+    <ol> 
+     <li> <p>Open Control Panel go to System, Advanced system settings, <strong>Environment Variables</strong> button.</p> </li> 
+     <li> <p>At the System Variables section, click New.</p> </li> 
+     <li> <p>Set <code>M2_HOME</code> and point to the root of maven folder.</p> </li> 
+     <li> <p>Search for the variable <code>Path</code> in the list, click on it and press Edit.</p> </li> 
+     <li> <p>Put the maven bin folder right after java home:</p> <pre><code>%JAVA_HOME%\bin;%M2_HOME%\bin;
+</code></pre> </li> 
+     <li> <p>Set the variable <code>MAVEN_OPTS</code>.</p> <pre><code>MAVEN_OPTS=-Xmx1024m
+</code></pre> </li> 
+     <li> <p>The result should be similar to:</p> <pre><code>Apache Maven 3.3.9 (0728685237757ffbf44136acec0402957f723d9a; 2013-09-17 12:22:22-0300)
+Maven home: C:\data\apache-maven-3.3.9
+Java version: 1.8.0_45, vendor: Oracle Corporation
+Java home: C:\Program Files\Java\jdk1.8.0_45\jre
+Default locale: en_US, platform encoding: Cp1252
+OS name: &quot;windows 8.1&quot;, version: &quot;6.3&quot;, arch: &quot;amd64&quot;, family: &quot;dos&quot;
+</code></pre> </li> 
+    </ol> </li> 
+  </ol> </li> 
+</ol> 
+<h4> <a id="mongodb" class="anchor" href="#mongodb" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MongoDB</h4> 
+<h5> <a id="windows-1" class="anchor" href="#windows-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Windows</h5> 
+<ol> 
+ <li> <p>Install MongoDB using the instructions at <a href="https://docs.mongodb.com/v3.4/tutorial/install-mongodb-on-windows/" rel="nofollow">this link</a></p> </li> 
+ <li> <p>Enable security following general guidelines at <a href="https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332" rel="nofollow">this link</a></p> </li> 
+ <li> <p>Start MongoDB:</p> <pre><code>&quot;C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe&quot;
+</code></pre> </li> 
+ <li> <p>In another prompt connect to MongoDB</p> <pre><code>&quot;C:\Program Files\MongoDB\Server\3.4\bin\mongo.exe&quot;
+</code></pre> </li> 
+ <li> <p>Create super user</p> <pre><code>$ use admin
+$ db.createUser(
+{
+  user: &quot;superAdmin&quot;,
+  pwd: &quot;[your admin password]&quot;,
+  roles: [ { role: &quot;root&quot;, db: &quot;admin&quot; } ]
+ })   
+</code></pre> </li> 
+ <li> <p>Disconnect and re-connect at MongoDB as super user:</p> <pre><code>connect-mongo-super-user.bat [your admin password]
+</code></pre> </li> 
+ <li> <p>Create user access (readWrite) for specific dsh database</p> <pre><code>$ use dsh
+$ db.createUser(
+  {
+   user: &quot;dshuser&quot;,
+   pwd: &quot;[your password]&quot;,
+   roles: [ &quot;readWrite&quot;]
+  })   
+</code></pre> </li> 
+ <li> <p>Disconnect and re-connect at MongoDB as specific user:</p> <pre><code>connect-mongo.bat [your dshuser passoword]
+</code></pre> </li> 
+</ol> 
+<h5> <a id="linux-ubuntu-1604lts" class="anchor" href="#linux-ubuntu-1604lts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Linux Ubuntu 16.04LTS</h5> 
+<ol> 
+ <li> <p>Install MongoDB following the instructions at <a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/" rel="nofollow">https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/</a></p> </li> 
+ <li> <p>Enable security following general guidelines at <a href="https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332" rel="nofollow">this link</a></p> </li> 
+ <li> <p>Start MongoDB service</p> <pre><code>sudo service mongod start
+</code></pre> </li> 
+ <li> <p>In another prompt connect to MongoDB</p> <pre><code>mongo --host 127.0.0.1:27017
+</code></pre> </li> 
+ <li> <p>Create super user</p> <pre><code>$ use admin
+$ db.createUser(
+{
+  user: &quot;superAdmin&quot;,
+  pwd: &quot;[your admin password]&quot;,
+  roles: [ { role: &quot;root&quot;, db: &quot;admin&quot; } ]
+ })   
+</code></pre> </li> 
+ <li> <p>Disconnect and re-connect at MongoDB as super user:</p> <pre><code>./connect-mongo-super-user.sh [your admin password]
+</code></pre> </li> 
+ <li> <p>Create user access (readWrite) for specific dsh database</p> <pre><code>$ use dsh
+$ db.createUser(
+  {
+   user: &quot;dshuser&quot;,
+   pwd: &quot;[your password]&quot;,
+   roles: [ &quot;readWrite&quot;]
+  })   
+</code></pre> </li> 
+ <li> <p>Disconnect and re-connect at MongoDB as specific user:</p> <pre><code>./connect-mongo.sh [your dshuser passoword]
+</code></pre> </li> 
+</ol> 
+<h4> <a id="rabitmq" class="anchor" href="#rabitmq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RabitMQ</h4> 
+<h5> <a id="windows-2" class="anchor" href="#windows-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Windows</h5> 
+<ol> 
+ <li> <p>Follow the instructions at <a href="http://www.rabbitmq.com/install-windows.html" rel="nofollow">http://www.rabbitmq.com/install-windows.html</a></p> </li> 
+ <li> <p>Enable the ports mentioned at the link above at the firewall.</p> </li> 
+ <li> <p>Enable the management plugin:</p> <pre><code>rabbitmq-plugins.bat enable rabbitmq_management
+rabbitmq-service.bat stop  
+rabbitmq-service.bat remove	
+rabbitmq-service.bat install  
+rabbitmq-service.bat start   
+</code></pre> </li> 
+ <li> <p>Test it with <code>http://localhost:15672/mgmt</code>. User: guest. Password: guest.</p> </li> 
+</ol> 
+<h5> <a id="linux-ubuntu-1604lts-1" class="anchor" href="#linux-ubuntu-1604lts-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Linux Ubuntu 16.04LTS</h5> 
+<ol> 
+ <li> <p>Follow the instructions at <a href="https://www.rabbitmq.com/install-debian.html" rel="nofollow">https://www.rabbitmq.com/install-debian.html</a></p> 
+  <ol> 
+   <li>As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above</li> 
+   <li>Or follow the instructions at the link and add RabbitMQ Ubuntu repositories before to run the <code>apt-get install</code>.</li> 
+  </ol> </li> 
+ <li> <p>Enable the management plugin:</p> <pre><code>sudo rabbitmq-plugins enable rabbitmq_management
+service rabbitmq-server stop  
+service rabbitmq-server start
+</code></pre> </li> 
+ <li> <p>Test it with <code>http://localhost:15672/mgmt</code>. User: guest. Password: guest.</p> </li> 
+</ol> 
+<h4> <a id="building-from-sources" class="anchor" href="#building-from-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building From Sources</h4> 
+<ol> 
+ <li>In order to build, both MongoDB and RabbitMQ services should be running.</li> 
+ <li>Maven development user settings should be correctly configured (see configuration section below)</li> 
+ <li>At the root dsh folder type:</li> 
+</ol> 
+<pre><code>./install-parent-pom.sh
+mvn clean install
+</code></pre> 
+<h4> <a id="tomcat" class="anchor" href="#tomcat" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tomcat</h4> 
+<h5> <a id="windows-3" class="anchor" href="#windows-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Windows</h5> 
+<ol> 
+ <li>Download Tomcat 8.0.X 32-bit/64-bit Windows Service Installer at <a href="https://tomcat.apache.org/download-80.cgi" rel="nofollow">https://tomcat.apache.org/download-80.cgi</a>. This will install Tomcat as a windows service.</li> 
+ <li>Start Tomcat windows service using windows services application.</li> 
+ <li>Look at the address: <a href="http://localhost:8080" rel="nofollow">http://localhost:8080</a> </li> 
+</ol> 
+<h5> <a id="linux-ubuntu-1604lsts" class="anchor" href="#linux-ubuntu-1604lsts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Linux Ubuntu 16.04LSTS</h5> 
+<ol> 
+ <li>Download Tomcat 8.0.x .zip or .tar.gz file at <a href="https://tomcat.apache.org/download-80.cgi" rel="nofollow">https://tomcat.apache.org/download-80.cgi</a>.</li> 
+ <li>Unpack the contents on a folder.</li> 
+ <li>Go to the <code>bin</code> folder and type <code>./startup.sh</code>.</li> 
+ <li>Look at the address: <a href="http://localhost:8080" rel="nofollow">http://localhost:8080</a> </li> 
+</ol> 
+<h2> <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h2> 
+<h3> <a id="mongodb-access-properties" class="anchor" href="#mongodb-access-properties" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MongoDB Access Properties</h3> 
+<p>Edit or create the maven user <code>settings.xml</code> file typically at <code>$HOME/.m2</code> (or <code>%HOMEPATH%\.m2</code> at windows) folder and add a default activated profile similar to this:</p> 
+<div class="highlight highlight-text-xml">
+ <pre>&lt;<span class="pl-ent">profile</span>&gt;
+	&lt;<span class="pl-ent">id</span>&gt;development-properties&lt;/<span class="pl-ent">id</span>&gt;
+	&lt;<span class="pl-ent">activation</span>&gt;
+		&lt;<span class="pl-ent">activeByDefault</span>&gt;true&lt;/<span class="pl-ent">activeByDefault</span>&gt;
+	&lt;/<span class="pl-ent">activation</span>&gt;
+	&lt;<span class="pl-ent">properties</span>&gt;
+		&lt;<span class="pl-ent">mongo</span>.host&gt;localhost&lt;/<span class="pl-ent">mongo</span>.host&gt;
+		&lt;<span class="pl-ent">mongo</span>.port&gt;27017&lt;/<span class="pl-ent">mongo</span>.port&gt;
+		&lt;<span class="pl-ent">mongo</span>.user&gt;dshuser&lt;/<span class="pl-ent">mongo</span>.user&gt;
+		&lt;<span class="pl-ent">mongo</span>.password&gt;[password you have configured in the steps above when installing mongo]&lt;/<span class="pl-ent">mongo</span>.password&gt;
+	&lt;/<span class="pl-ent">properties</span>&gt;
+&lt;/<span class="pl-ent">profile</span>&gt;</pre>
+</div> 
+<p>Or add the <code>properties</code> section at any default activated profile already present at <code>settings.xml</code> file.</p> 
+<h3> <a id="tomcat-admin-user-configuration" class="anchor" href="#tomcat-admin-user-configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tomcat Admin User Configuration</h3> 
+<p>Stop Tomcat if it is already started, and edit the file <code>TOMCAT_HOME/conf/tomcat-users.xml</code>. If the <code>tomcat-users</code> tag is empty or with all elements commented, add the following content inside the <code>&lt;tomcat-users&gt;</code> tag.</p> 
+<div class="highlight highlight-text-xml">
+ <pre>	&lt;<span class="pl-ent">role</span> <span class="pl-e">rolename</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>tomcat<span class="pl-pds">&quot;</span></span> /&gt;  
+	&lt;<span class="pl-ent">role</span> <span class="pl-e">rolename</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>manager-gui<span class="pl-pds">&quot;</span></span> /&gt;  
+	&lt;<span class="pl-ent">role</span> <span class="pl-e">rolename</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>manager-script<span class="pl-pds">&quot;</span></span> /&gt;  
+	&lt;<span class="pl-ent">role</span> <span class="pl-e">rolename</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>admin-gui<span class="pl-pds">&quot;</span></span> /&gt;  
+				  
+	&lt;<span class="pl-ent">user</span> <span class="pl-e">username</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>admin<span class="pl-pds">&quot;</span></span> <span class="pl-e">password</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>[your admin password]<span class="pl-pds">&quot;</span></span> <span class="pl-e">roles</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>tomcat,manager-gui,manager-script,admin-gui<span class="pl-pds">&quot;</span></span> /&gt;
+	&lt;<span class="pl-ent">user</span> <span class="pl-e">username</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>tomcat<span class="pl-pds">&quot;</span></span> <span class="pl-e">password</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>[your tomcat user password]<span class="pl-pds">&quot;</span></span> <span class="pl-e">roles</span>=<span class="pl-s"><span class="pl-pds">&quot;</span>tomcat,manager-gui,manager-script,admin-gui<span class="pl-pds">&quot;</span></span> /&gt;</pre>
+</div> 
+<p>Replace the admin and tomcat's password with any desired password.</p> 
+<h2> <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2> 
+<h3> <a id="running-application-from-eclipse-embedded-tomcat" class="anchor" href="#running-application-from-eclipse-embedded-tomcat" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running Application from Eclipse Embedded Tomcat</h3> 
+<p>The module <code>DSH-rest-api</code> is a web application. The type tag in pom.xml file is .war. Thus the first step is to install a Tomcat (8.0.X) at <a href="https://tomcat.apache.org/download-80.cgi" rel="nofollow">https://tomcat.apache.org/download-80.cgi</a>. After that, if you have Eclipse Oxygen JEE version correctly installed and configured, then is just a matter of showing the Servers view and adding a new server. At eclipse menu, follow the path: <code>Window -&gt; Show View -&gt; Other -&gt; Servers -&gt; Server</code>. When the <code>Servers</code> view opens, add a new Tomcat Server. You will need to have a Tomcat already installed at your system, since eclipse will ask for an installed Tomcat root directory. When creating a new server inside eclipse, it will show the DSH-rest-api as a potential project to be installed in that server.</p> 
+<p>After having the DSH-rest-api inside the server, configure the server <code>startup</code> and <code>shutdown</code> timeouts to something like 120s each.</p> 
+<p>Start the server and access the application swagger UI at: <code>http://localhost:8080/DSH-rest-api/swagger-ui.html</code>.</p> 
+<h3> <a id="using-application-war-file-on-a-servlet-container" class="anchor" href="#using-application-war-file-on-a-servlet-container" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using Application .war File on a Servlet Container</h3> 
+<p>After the build, the folder DSH-rest-api/target should have a file named DSH-rest-api-[version].war. That war file can be dropped to a servlet container to be used as a web application. At this moment the server having the servlet container should be the same having MongoDB and RabbitMQ installed, up and running.</p> 
+<h4> <a id="using-tomcat-application-manager" class="anchor" href="#using-tomcat-application-manager" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using Tomcat Application Manager</h4> 
+<p>Access the Tomcat's manager usually at the address <code>http://localhost:8080/manager/html</code>. The browser will ask for user and password. Enter the user and password configured at the <code>TOMCAT_HOME/conf/tomcat-users.xml</code> (see the configuration section above).</p> 
+<p>After login, at the Deploy section, fulfill the fields:</p> 
+<pre><code>Context Path: 	DSH-rest-api
+WAR or Directory URL:	[absolute path to the generated DSH-rest-api-&lt;version&gt;.war file] 
+</code></pre> 
+<p>You can also upload the war file from <code>DSH-rest-api/target</code> folder, using the <code>Choose File</code> button at the Tomcat's manager application. However, in this case, it is recommenDed to rename the file <code>DSH-rest-api-&lt;version&gt;.war</code> to just <code>DSH-rest-api.war</code> just to not have the version name associated with the web application, which will then be used to access the application at the web browser.</p> 
+<p>Start the server and access the application swagger UI at: <code>http://localhost:8080/DSH-rest-api/swagger-ui.html</code>.</p> 
+<h4> <a id="just-dropping-application-war-file" class="anchor" href="#just-dropping-application-war-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Just Dropping Application .war File</h4> 
+<p>Rename the file <code>DSH-rest-api/target/DSH-rest-api-&lt;version&gt;.war</code> to <code>DSH-rest-api.war</code> and drop it at Tomcat's <code>webapps</code> folder. Restart Tomcat if needed.</p> 
+<p>Start the server and access the application swagger UI at: <code>http://localhost:8080/DSH-rest-api/swagger-ui.html</code>.</p> 
+<h3> <a id="running-application-using-spring-boot-maven-plugin" class="anchor" href="#running-application-using-spring-boot-maven-plugin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running Application Using Spring Boot Maven Plugin</h3> 
+<p>Go to <code>DSH-rest-api</code> module root folder project, by using <code>cd DSH-rest-api</code> at the sources root, and run:</p> 
+<pre><code>mvn spring-boot:run
+</code></pre> 
+<p>Wait until the application boots up. Typically when the following output is present:</p> 
+<pre><code>.
+.
+.
+08:37:47.665 [main] INFO  o.s.c.s.DefaultLifecycleProcessor - Starting beans in phase 2147483647
+08:37:47.665 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+08:37:47.702 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+08:37:47.746 [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+08:37:47.962 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler [&quot;http-nio-8080&quot;]
+08:37:47.979 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler [&quot;http-nio-8080&quot;]
+08:37:47.984 [main] INFO  o.a.tomcat.util.net.NioSelectorPool - Using a shared selector for servlet write/read
+08:37:48.016 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http)
+08:37:48.022 [main] INFO  c.m.dsh.restapi.DshRestApplication - Started DshRestApplication in 9.385 seconds (JVM running for 18.084)
+08:37:48.025 [main] INFO  c.m.dsh.restapi.DshRestApplication - Main application run!!!
+</code></pre> 
+<p>Start the server and access the application swagger UI at: <code>http://localhost:8080/swagger-ui.html</code>.</p> 
+<h3> <a id="swagger-user-interface" class="anchor" href="#swagger-user-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Swagger User Interface</h3> 
+<p>Swagger UI has two methods for a document resource:</p> 
+<ul> 
+ <li> <p>submit: uploads a PDF file and returns a token.</p> </li> 
+ <li> <p>status: use the token returned in the first method to ask for the document processing status. At the moment the only status would be <code>QUEUED_FOR_INDEXING_SUCCESS</code>.</p> </li> 
+</ul> 
+<p><a href="/src/site/resources/images/swagger-ui.jpg" target="_blank"><img src="/src/site/resources/images/swagger-ui.jpg" alt="Swagger UI" style="max-width:100%;" /></a></p> 
+<p>In order to use the methods, click on the method and after in the <code>Try it out</code> button (firstly for the submit method).</p> 
+<p>A new form will open with the fields to fulfill. In case of submit you will need to choose a file to upload and inform its title. In case of <code>status</code>, you just needs to enter the the token returned by the previous <code>submit</code> method call.</p> 
+<h2> <a id="release-notes" class="anchor" href="#release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release Notes</h2> 
+<p>${current.release.issues}</p> 
+<h2> <a id="release-history" class="anchor" href="#release-history" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release History</h2> 
+<p>${older.releases.issues}</p>
+</body>
+</html>
