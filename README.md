@@ -2,7 +2,7 @@
 
 ## Version
 
-0.0.1-SNAPSHOT - 20190301-160722
+${project.build.version}
 
 ## Introduction
 
@@ -74,7 +74,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 * MongoDB 3.4 (windows 10)
 
-* MongoDB 4.0.6 (Ubuntu 18.04.2 LTS)
+* MongoDB 3.6.2 (Ubuntu 16.04LTS)
 
 * RabbitMQ 3.6.14 (windows 10)
 
@@ -262,7 +262,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
    connect-mongo.bat [your dshuser passoword]
    ```
    
-##### Linux Ubuntu 18.04.2 LTS
+##### Linux Ubuntu 16.04LTS
 
 1. Install MongoDB following the instructions at [https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 2. Enable security following general guidelines at [this link](https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332)
@@ -327,7 +327,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
    ``` 
 4. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
 
-##### Linux Ubuntu 18.04.2 LTS
+##### Linux Ubuntu 16.04LTS
 
  1. Follow the instructions at [https://www.rabbitmq.com/install-debian.html](https://www.rabbitmq.com/install-debian.html)
      1. As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above
@@ -508,10 +508,11 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 ## Release Notes
 
-### Version 0.0.1-SNAPSHOT
+### Version 0.0.1
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | - | ---- | ------- | -------- | -------- | ------- |
+| [32](https://github.com/MRISS-Projects/dsh/issues/32) | task | Configure DSH to use git as scm tool and proceed to release. | mriss | mriss | 3/14/19 |
 | [38](https://github.com/MRISS-Projects/dsh/issues/38) | task | Configure distribution management to local nexus and test snapshot deploy with deployment profile. | mriss | mriss | 3/1/19 |
 | [37](https://github.com/MRISS-Projects/dsh/issues/37) | task | Replace release notes and release history properties using deployment profile. | mriss | mriss | 10/13/18 |
 | [36](https://github.com/MRISS-Projects/dsh/issues/36) | task | Replace version property ad readme and commit using deployment profile | mriss | mriss | 2/19/18 |
