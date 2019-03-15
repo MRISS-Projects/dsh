@@ -40,7 +40,10 @@ marcelo.riss@gmail.com.
 
 Wiki: https://github.com/MRISS-Projects/dsh/wiki
 
-Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
+Project Development Documentation: 
+
+* Current Snapshot: https://mriss-projects.github.io/dsh-docs/snapshots/dsh
+* Latest Release: https://mriss-projects.github.io/dsh-docs/releases/dsh
  
 ## Package/Folders Description
 
