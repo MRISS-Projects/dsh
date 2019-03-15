@@ -257,7 +257,8 @@
                     <configuration>
                         <arguments>-Dsite.deployment.personal.main=${site.deployment.personal.main}</arguments>
                         <releaseProfiles>product-release-deployment</releaseProfiles>
-                        <tagNameFormat>v${project.version}</tagNameFormat>
+                        <branchName>staging-${project.version}-RC</branchName>
+                        <tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -557,109 +558,41 @@
     </distributionManagement>
     <profiles>
         <profile>
-            <id>release-deployment</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <release.type>releases</release.type>
-                <all.downloads.link>${nexus.download.url}</all.downloads.link>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-site-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-site-descriptor</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>attach-descriptor</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-changes-plugin</artifactId>
-                        <configuration>
-                            <urlDownload>${nexus.download.url}/${project.version}/${project.build.finalName}.${project.packaging}</urlDownload>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>release-prepare</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <!-- TODO: this needs to have the version with -SNAPSHOT 
-                    stripped off. release prepare will generate the final version before tagging -->
-                <project.build.version>${project.version}</project.build.version>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-readme-md</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>.</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/site/markdown</directory>
-                                            <includes>
-                                                <include>README.md</include>
-                                            </includes>
-                                            <targetPath>.</targetPath>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>commit-readme-md</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>checkin</goal>
-                                </goals>
-                                <configuration>
-                                    <basedir>${basedir}</basedir>
-                                    <includes>README.md</includes>
-                                    <message>Auto-generated README.md</message>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>product-release-deployment</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <release.type>releases</release.type>
-                <all.downloads.link>${nexus.download.url}</all.downloads.link>
+                <project.scm.id>github</project.scm.id>
+                <deploymentUrl>file://${project.build.directory}/maven-repo</deploymentUrl>
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>clean-site-temporary-folder</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>/tmp/sites</directory>
+                                            <includes>
+                                                <include>snapshots/**</include>
+                                                <include>releases/**</include>
+                                            </includes>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-site-plugin</artifactId>
@@ -670,48 +603,6 @@
                                 <goals>
                                     <goal>attach-descriptor</goal>
                                 </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-pdf-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>pdf-generation</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>pdf</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/site/pdf</outputDirectory>
-                                    <workingDirectory>${project.build.directory}/site/pdf</workingDirectory>
-                                    <aggregate>false</aggregate>
-                                    <includeReports>false</includeReports>
-                                    <siteDirectory>${project.build.directory}/generated-site</siteDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-readme</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attach-artifact</goal>
-                                </goals>
-                                <configuration>
-                                    <artifacts>
-                                        <artifact>
-                                            <file>${basedir}/target/site/pdf/README.pdf</file>
-                                            <type>pdf</type>
-                                            <classifier>readme</classifier>
-                                        </artifact>
-                                    </artifacts>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -722,6 +613,44 @@
                         <configuration>
                             <onlyCurrentVersion>true</onlyCurrentVersion>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-publish-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>publish-to-github</id>
+                                <phase>site-deploy</phase>
+                                <goals>
+                                    <goal>publish-scm</goal>
+                                </goals>
+                                <configuration>
+                                    <serverId>github.com</serverId>
+                                    <scmBranch>master</scmBranch>
+                                    <checkinComment>Publishing DSH site
+                                        ${project.version}</checkinComment>
+                                    <pubScmUrl>scm:git:https://github.com/MRISS-Projects/dsh-docs</pubScmUrl>
+                                    <content>/tmp/sites</content>
+                                    <skipDeletedFiles>true</skipDeletedFiles>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>publish-artifact-to-github</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>publish-scm</goal>
+                                </goals>
+                                <configuration>
+                                    <serverId>github.com</serverId>
+                                    <checkinComment>Publishing artifact for version ${project.version}</checkinComment>
+                                    <pubScmUrl>scm:git:https://github.com/MRISS-Projects/maven-repo</pubScmUrl>
+                                    <content>${project.build.directory}/maven-repo</content>
+                                    <checkoutDirectory>${project.build.directory}/artifact-deploy-checkout</checkoutDirectory>
+                                    <skipDeletedFiles>true</skipDeletedFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -767,7 +696,7 @@
                                                 <include>releases/**</include>
                                             </includes>
                                         </fileset>
-                                    </filesets>                             
+                                    </filesets>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
