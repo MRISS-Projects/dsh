@@ -485,6 +485,9 @@
         </profile>
         <profile>
             <id>update-readme</id>
+            <properties>
+                <project.build.version>${project.version}</project.build.version>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
