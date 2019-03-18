@@ -627,10 +627,10 @@
                                 </goals>
                                 <configuration>
                                     <serverId>github.com</serverId>
-                                    <scmBranch>master</scmBranch>
+                                    <scmBranch>gh-pages</scmBranch>
                                     <checkinComment>Publishing DSH site
                                         ${project.version}</checkinComment>
-                                    <pubScmUrl>scm:git:https://github.com/MRISS-Projects/dsh-docs</pubScmUrl>
+                                    <pubScmUrl>scm:git:https://github.com/MRISS-Projects/dsh</pubScmUrl>
                                     <content>/tmp/sites</content>
                                     <skipDeletedFiles>true</skipDeletedFiles>
                                 </configuration>
