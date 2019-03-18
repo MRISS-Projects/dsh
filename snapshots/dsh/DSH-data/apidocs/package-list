@@ -1,0 +1,6 @@
+com.mriss.dsh.data
+com.mriss.dsh.data.document.dao
+com.mriss.dsh.data.document.dao.mongo
+com.mriss.dsh.data.index.dao
+com.mriss.dsh.data.index.dao.solr
+com.mriss.dsh.data.models

@@ -1,0 +1,1553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set>
+<fo:simple-page-master master-name="cover-page" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="toc" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="body" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+</fo:layout-master-set>
+<fo:page-sequence initial-page-number="0" master-reference="body">
+<fo:flow flow-name="xsl-region-body">
+
+<fo:block text-align="center" font-size="16pt" space-before.optimum="30pt" space-after.optimum="14pt" font-family="Garamond,serif">dsh Vision</fo:block>
+
+<fo:block text-align="center" font-size="12pt" space-before.optimum="20pt" space-after.optimum="14pt" font-family="Garamond,serif">AUTHOR</fo:block>
+
+<fo:block text-align="center" font-size="12pt" space-before.optimum="20pt" space-after.optimum="30pt" font-family="Garamond,serif">DATE</fo:block>
+
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   dsh VISION - Version 0.0.1-SNAPSHOT</fo:block>
+
+
+<fo:block display-align="center" text-align="center"><fo:external-graphic height="100%" width="100%" content-height="scale-down-to-fit" content-width="scale-down-to-fit" src="images/under-construction.jpg"/>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.1   PDF Version</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:basic-link internal-destination="./pdf/vision-html.pdf">
+<fo:inline color="blue">PDF Version</fo:inline></fo:basic-link></fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.2   Revision History</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+Date</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+Version</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+Description</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+Author</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+17/06/2010</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+1.0.0</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+Initial revision</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="center">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.3   Table of Contents</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#PDF_Version">
+<fo:inline color="blue">PDF Version</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Revision_History">
+<fo:inline color="blue">Revision History</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Table_of_Contents">
+<fo:inline color="blue">Table of Contents</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Introduction">
+<fo:inline color="blue">Introduction</fo:inline></fo:basic-link>
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Purpose">
+<fo:inline color="blue">Purpose</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Scope">
+<fo:inline color="blue">Scope</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Definitions.2C_Acronyms.2C_and_Abbreviations">
+<fo:inline color="blue">Definitions, Acronyms, and Abbreviations</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#References">
+<fo:inline color="blue">References</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Overview">
+<fo:inline color="blue">Overview</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Positioning">
+<fo:inline color="blue">Positioning</fo:inline></fo:basic-link>
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Business_Opportunity">
+<fo:inline color="blue">Business Opportunity</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Problem_Statement">
+<fo:inline color="blue">Problem Statement</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Product_Position_Statement">
+<fo:inline color="blue">Product Position Statement</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Stakeholder_and_User_Descriptions">
+<fo:inline color="blue">Stakeholder and User Descriptions</fo:inline></fo:basic-link>
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Market_Demographics">
+<fo:inline color="blue">Market Demographics</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Stakeholder_Summary">
+<fo:inline color="blue">Stakeholder Summary</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#User_Summary">
+<fo:inline color="blue">User Summary</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#User_Environment">
+<fo:inline color="blue">User Environment</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Stakeholder_Profiles">
+<fo:inline color="blue">Stakeholder Profiles</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#User_Profiles">
+<fo:inline color="blue">User Profiles</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Product_Overview">
+<fo:inline color="blue">Product Overview</fo:inline></fo:basic-link>
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Product_Perspective">
+<fo:inline color="blue">Product Perspective</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Summary_of_Capabilities">
+<fo:inline color="blue">Summary of Capabilities</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Licensing_and_Installation">
+<fo:inline color="blue">Licensing and Installation</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Product_Features">
+<fo:inline color="blue">Product Features</fo:inline></fo:basic-link>
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Feature_1">
+<fo:inline color="blue">Feature 1</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Feature_2">
+<fo:inline color="blue">Feature 2</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Feature_3">
+<fo:inline color="blue">Feature 3</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Feature_4">
+<fo:inline color="blue">Feature 4</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Constraints">
+<fo:inline color="blue">Constraints</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Quality_Ranges">
+<fo:inline color="blue">Quality Ranges</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Precedence_and_Priority">
+<fo:inline color="blue">Precedence and Priority</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Other_Product_Requirements">
+<fo:inline color="blue">Other Product Requirements</fo:inline></fo:basic-link>
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Applicable_Standards">
+<fo:inline color="blue">Applicable Standards</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#System_Requirements">
+<fo:inline color="blue">System Requirements</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Performance_Requirements">
+<fo:inline color="blue">Performance Requirements</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Environmental_Requirements">
+<fo:inline color="blue">Environmental Requirements</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Documentation_Requirements">
+<fo:inline color="blue">Documentation Requirements</fo:inline></fo:basic-link>
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#User_Manual">
+<fo:inline color="blue">User Manual</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Online_Help">
+<fo:inline color="blue">Online Help</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Installation_Guides.2C_Configuration_and_Read_Me_File">
+<fo:inline color="blue">Installation Guides, Configuration and Read Me File</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#Labeling_and_Packaging">
+<fo:inline color="blue">Labeling and Packaging</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:basic-link internal-destination="#A._Feature_Attributes.">
+<fo:inline color="blue">A. Feature Attributes.</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.4   Introduction</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.4.1   Purpose</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.4.2   Scope</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.4.3   Definitions, Acronyms, and Abbreviations</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.4.4   References</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Ref1: 
+<fo:basic-link external-destination="http://maven.apache.org/">
+<fo:inline color="green">http://maven.apache.org/</fo:inline></fo:basic-link>. </fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Ref2: 
+<fo:basic-link external-destination="http://eclipse.org/">
+<fo:inline color="green">http://eclipse.org/</fo:inline></fo:basic-link>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.4.5   Overview</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">This document will present basically the following information:</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Positioning.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Stakeholders.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Product Overview.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Product Features.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>5.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Product Requirements.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.5   Positioning</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.5.1   Business Opportunity</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.5.2   Problem Statement</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+The problem of</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+affects</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+the impact of which is</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+a successful solution would be</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.5.3   Product Position Statement</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+For</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+roles</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Who</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+needs...</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+The dsh</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+is a ...</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+That</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Unlike</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Our product</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+
+<fo:block font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;
+<fo:block/>
+&#160;
+<fo:block/>
+&#160;</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The main goal for PRODUCT is....</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.6   Stakeholder and User Descriptions</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.6.1   Market Demographics</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">What is your organization�s reputation in these markets?</fo:inline></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">What would you like it to be?</fo:inline></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">How does this product or service support your goals?</fo:inline></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.6.2   Stakeholder Summary</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Name</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Description</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Responsibilities</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.6.3   User Summary</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Name</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Description</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Responsibilities</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Statkeholder</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.6.4   User Environment</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">Number of people involved in completing the task?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">Is this changing?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">How long is a task cycle?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">Amount of time spent in each activity?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">Is this changing?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">Which systems platforms are in use today?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">Future platforms?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">What other applications are in use?</fo:inline></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-weight="bold">Does your application need to integrate with them?</fo:inline></fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.6.5   Stakeholder Profiles</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Stakeholder1 Profile</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Representative</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Description</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Type</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Responsibilities</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Success Criteria</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Involvement</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Deliverables</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Comments / Issues</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.6.6   User Profiles</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">User Profile 1</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Representative</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+STAKEHOLDER1</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Description</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Type</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Responsibilities</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Success Criteria</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Involvement</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Deliverables</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Comments / Issues</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">User Profile 2</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Representative</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+STAKEHOLDER1</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Description</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Type</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Responsibilities</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Success Criteria</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Involvement</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Deliverables</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Comments / Issues</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">User Profile 3</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Representative</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+STAKEHOLDER1</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Description</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Type</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Responsibilities</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Success Criteria</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Involvement</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Deliverables</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Comments / Issues</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">User Profile 4</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Need</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Priority</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Concerns</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Current Solution</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Proposed Solutions</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.7   Product Overview</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.7.1   Product Perspective</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.7.2   Summary of Capabilities</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Customer Benefit</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2" border-style="solid" border-width="0.2mm">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Supporting Features</fo:block>
+</fo:table-cell>
+</fo:table-row>
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.7.3   Licensing and Installation</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.8   Product Features</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.8.1   Feature 1</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.8.2   Feature 2</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.8.3   Feature 3</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.8.4   Feature 4</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.9   Constraints</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.10   Quality Ranges</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.11   Precedence and Priority</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.12   Other Product Requirements</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.12.1   Applicable Standards</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.12.2   System Requirements</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.12.3   Performance Requirements</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.12.4   Environmental Requirements</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.13   Documentation Requirements</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.13.1   User Manual</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.13.2   Online Help</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.13.3   Installation Guides, Configuration and Read Me File</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.13.4   Labeling and Packaging</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1.14   A. Feature Attributes.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">TBD.</fo:block>
+</fo:block>
+</fo:block>
+
+</fo:flow>
+</fo:page-sequence>
+</fo:root>
