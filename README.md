@@ -42,9 +42,9 @@ Wiki: https://github.com/MRISS-Projects/dsh/wiki
 
 Project Development Documentation: 
 
-* Current Snapshot: https://mriss-projects.github.io/dsh-docs/snapshots/dsh
-* Latest Release: https://mriss-projects.github.io/dsh-docs/releases/dsh
- 
+* Current Snapshot: https://mriss-projects.github.io/dsh/snapshots/dsh/
+* Latest Release: https://mriss-projects.github.io/dsh/releases/dsh/
+
 ## Package/Folders Description
 
 * **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
