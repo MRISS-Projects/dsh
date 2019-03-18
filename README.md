@@ -2,7 +2,7 @@
 
 ## Version
 
-0.0.1
+0.2.0-SNAPSHOT - 20190317-222419
 
 ## Introduction
 
@@ -40,11 +40,8 @@ marcelo.riss@gmail.com.
 
 Wiki: https://github.com/MRISS-Projects/dsh/wiki
 
-Project Development Documentation: 
-
-* Current Snapshot: https://mriss-projects.github.io/dsh/snapshots/dsh/
-* Latest Release: https://mriss-projects.github.io/dsh/releases/dsh/
-
+Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
+ 
 ## Package/Folders Description
 
 * **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
@@ -510,6 +507,12 @@ A new form will open with the fields to fulfill. In case of submit you will need
 inform its title. In case of `status`, you just needs to enter the the token returned by the previous `submit` method call.
 
 ## Release Notes
+
+### Version 0.2.0-SNAPSHOT
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| - | ---- | ------- | -------- | -------- | ------- |
+| [41](https://github.com/MRISS-Projects/dsh/issues/41) | task | Move project from organization to the git project dsh. Change next milestone to 0.2.0 | mriss | mriss | 3/17/19 |
 
 ### Version 0.0.1
 
