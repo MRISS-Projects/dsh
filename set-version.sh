@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mvn -N install
 mvn -N -DgenerateBackupPoms=false -DnewVersion=$1 versions:set
 mvn -N install
