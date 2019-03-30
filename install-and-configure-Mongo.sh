@@ -11,5 +11,5 @@ service mongod start
 service mongod status
 echo "######### after mongo start ##########"
 
-mongo --eval "use admin; db.createUser( { user: \"superAdmin\", pwd: \"superAdmin01\", roles: [ { role: \"root\", db: \"admin\" } ] } )"
-mongo -u superAdmin -p superAdmin01 --eval "use dsh; db.createUser( { user: \"dshuser\", pwd: \"dsh01!\", roles: [ \"readWrite\"] } )"
+mongo --host localhost --port 27017 --eval "use admin; db.createUser( { user: \"superAdmin\", pwd: \"superAdmin01\", roles: [ { role: \"root\", db: \"admin\" } ] } )"
+mongo --host localhost --port 27017 -u superAdmin -p superAdmin01 --eval "use dsh; db.createUser( { user: \"dshuser\", pwd: \"dsh01!\", roles: [ \"readWrite\"] } )"
