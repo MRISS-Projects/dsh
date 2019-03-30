@@ -24,7 +24,8 @@ jobs:
       - $HOME/.m2
 
     before_script:
-      - sleep 30
+      - sleep 60
+      - cat /etc/mongod.conf
       - mongo --host localhost status
       - mongo --host localhost --eval 'db.createUser({user:"dshuser",pwd:"dsh01!",roles:[ "readWrite"]})' dsh
 
