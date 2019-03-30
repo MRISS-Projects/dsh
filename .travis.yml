@@ -20,18 +20,3 @@ jobs:
     script:
       - ./build-ci.sh
 
-  include:
-
-    if: branch = DEVELOP
-
-    before_install:
-      - openssl aes-256-cbc -K $encrypted_f9fe9faf1618_key -iv $encrypted_f9fe9faf1618_iv -in maven/settings.xml.enc -out settings.xml -d
-
-    install: true
-
-    cache:
-      directories:
-      - $HOME/.m2
-
-    script:
-      - ./build-develop.sh
