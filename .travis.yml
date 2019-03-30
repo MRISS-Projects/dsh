@@ -1,8 +1,12 @@
-dist: xenial
+dist: trusty
 
 language: java
 
 jdk: openjdk8
+
+services: 
+  mongodb
+  rabbitmq
 
 jobs:
 
@@ -12,14 +16,16 @@ jobs:
 
     before_install:
       - openssl aes-256-cbc -K $encrypted_93df4cdfe2d3_key -iv $encrypted_93df4cdfe2d3_iv -in maven/settings.xml.enc -out settings.xml -d
-      - sudo ./install-and-configure-Mongo.sh
-      - sudo ./install-and-configure-RabbitMQ.sh
 
     install: true
 
     cache:
       directories:
       - $HOME/.m2
+
+    before_script:
+      - sleep 15
+      - mongo dsh --eval 'db.createUser({user:"dshuser",pwd:"dsh01!",roles:[ "readWrite"]})'
 
     script:
       - ./build-ci.sh
