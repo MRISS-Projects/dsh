@@ -2,6 +2,8 @@
 
 set -e
 
+chmod 755 *.sh
+
 ./install-and-configure-Mongo.sh
 ./install-and-configure-RabbitMQ.sh
 ./install-parent-pom.sh
