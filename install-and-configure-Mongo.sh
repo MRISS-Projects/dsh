@@ -5,5 +5,5 @@
 
 cat /etc/mongod.conf
 service mongod status
-mongo --host localhost --eval 'use admin; db.createUser( { user: "superAdmin", pwd: "superAdmin01", roles: [ { role: "root", db: "admin" } ] } )'
-mongo --host localhost -u superAdmin -p superAdmin01 --eval 'use dsh; db.createUser({user:"dshuser",pwd:"dsh01!",roles:[ "readWrite"]})'
+mongo --host localhost --eval 'db.createUser( { user: "superAdmin", pwd: "superAdmin01", roles: [ { role: "root", db: "admin" } ] } )' admin
+mongo --host localhost -u superAdmin -p superAdmin01 --eval 'db.createUser({user:"dshuser",pwd:"dsh01!",roles:[ "readWrite"]})' dsh
