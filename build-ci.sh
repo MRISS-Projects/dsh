@@ -2,6 +2,8 @@
 
 set -e
 
+./install-and-configure-Mongo.sh
+./install-and-configure-RabbitMQ.sh
 ./install-parent-pom.sh
 
 cp maven/settings-security.xml $HOME/.m2
