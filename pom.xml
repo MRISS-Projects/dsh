@@ -314,6 +314,7 @@
                                     <includeOpenIssues>false</includeOpenIssues>
                                     <onlyMilestoneIssues>true</onlyMilestoneIssues>
                                     <columnNames>Id,Type,Summary,Assignee,Reporter,Updated</columnNames>
+                                    <failOnError>false</failOnError>
                                 </configuration>
                             </execution>
                         </executions>
@@ -504,6 +505,7 @@
                                     <includeOpenIssues>false</includeOpenIssues>
                                     <onlyMilestoneIssues>true</onlyMilestoneIssues>
                                     <columnNames>Id,Type,Summary,Assignee,Reporter,Updated</columnNames>
+                                    <failOnError>false</failOnError>
                                 </configuration>
                             </execution>
                         </executions>
