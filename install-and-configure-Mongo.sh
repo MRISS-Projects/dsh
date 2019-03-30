@@ -5,11 +5,11 @@
 
 cat /etc/mongod.conf
 
-echo "\nsecurity:\n authorization: enabled" >> /etc/mongod.conf
+printf "\nsecurity:\n authorization: enabled" >> /etc/mongod.conf
 
 cat /etc/mongod.conf
 
-sudo service mongod start
+service mongod start
 
 mongo --eval "use admin; db.createUser( { user: \"superAdmin\", pwd: \"superAdmin01\", roles: [ { role: \"root\", db: \"admin\" } ] } )"
 mongo -u superAdmin -p superAdmin01 --eval "use dsh; db.createUser( { user: \"dshuser\", pwd: \"dsh01!\", roles: [ \"readWrite\"] } )"
