@@ -25,7 +25,7 @@ jobs:
 
     before_script:
       - sleep 30
-      - mongo status
+      - mongo --host localhost status
       - mongo --host localhost --eval 'db.createUser({user:"dshuser",pwd:"dsh01!",roles:[ "readWrite"]})' dsh
 
     script:
