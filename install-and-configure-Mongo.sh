@@ -7,7 +7,8 @@ printf "\nsecurity:\n  authorization: enabled\n" >> /etc/mongod.conf
 cat /etc/mongod.conf
 
 echo "######### before mongo start ##########"
-service mongodb start
+service mongod start
+service mongod status
 echo "######### after mongo start ##########"
 
 mongo --eval "use admin; db.createUser( { user: \"superAdmin\", pwd: \"superAdmin01\", roles: [ { role: \"root\", db: \"admin\" } ] } )"
