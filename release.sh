@@ -19,7 +19,7 @@ cd target/checkout
 git fetch --tags origin 
 git checkout -b master --track origin/master
 git reset --hard
-git merge --strategy=recursive --strategy-option=theirs staging-0.0.1-SNAPSHOT-RC
+git merge --strategy=recursive --strategy-option=theirs dsh-0.0.1
 git push origin master
 mvn -N -P update-readme clean process-resources
 git push origin --delete staging-0.0.1-SNAPSHOT-RC
