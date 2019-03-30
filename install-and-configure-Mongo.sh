@@ -5,7 +5,9 @@
 
 cat /etc/mongod.conf
 
-sudo echo "\nsecurity:\n authorization: enabled" >> /etc/mongod.conf
+echo "\nsecurity:\n authorization: enabled" >> /etc/mongod.conf
+
+cat /etc/mongod.conf
 
 sudo service mongod start
 
