@@ -32,8 +32,8 @@ public class DocumentQueueServiceImplTest {
 		synchronized (service) {
 			service.wait();
 		}
+		Thread.sleep(5000);
 		verify(messageHandler).handleMessage(any());
-		Thread.sleep(3000);
 	}
 
 }
