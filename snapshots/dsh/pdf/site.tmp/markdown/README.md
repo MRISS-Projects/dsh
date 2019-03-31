@@ -2,7 +2,7 @@
 
 ## Version
 
-0.2.0-SNAPSHOT - 20190331-014815
+0.2.0-SNAPSHOT - 20190331-022721
 
 ## Introduction
 
@@ -74,11 +74,11 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 * MongoDB 3.4 (windows 10)
 
-* MongoDB 3.6.2 (Ubuntu 16.04LTS)
+* MongoDB 4.0.6 (Ubuntu 18.04 LTS)
 
 * RabbitMQ 3.6.14 (windows 10)
 
-* RabbitMQ 3.7.2-1 (Ubuntu 16.04LTS)
+* RabbitMQ 3.7.14 (Ubuntu 18.04 LTS)
 
 * Tomcat 8.0.X
 
@@ -262,7 +262,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
    connect-mongo.bat [your dshuser passoword]
    ```
    
-##### Linux Ubuntu 16.04LTS
+##### Linux Ubuntu 18.04 LTS
 
 1. Install MongoDB following the instructions at [https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 2. Enable security following general guidelines at [this link](https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332)
@@ -327,7 +327,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
    ``` 
 4. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
 
-##### Linux Ubuntu 16.04LTS
+##### Linux Ubuntu 18.04 LTS
 
  1. Follow the instructions at [https://www.rabbitmq.com/install-debian.html](https://www.rabbitmq.com/install-debian.html)
      1. As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above
@@ -362,7 +362,7 @@ mvn clean install
 2. Start Tomcat windows service using windows services application.
 3. Look at the address: http://localhost:8080 
 
-##### Linux Ubuntu 16.04LSTS
+##### Linux Ubuntu 19.04 LSTS
 
 1. Download Tomcat 8.0.x .zip or .tar.gz file at 
    [https://tomcat.apache.org/download-80.cgi](https://tomcat.apache.org/download-80.cgi). 
