@@ -314,6 +314,7 @@
                                     <includeOpenIssues>false</includeOpenIssues>
                                     <onlyMilestoneIssues>true</onlyMilestoneIssues>
                                     <columnNames>Id,Type,Summary,Assignee,Reporter,Updated</columnNames>
+                                    <failOnError>false</failOnError>
                                 </configuration>
                             </execution>
                         </executions>
@@ -376,7 +377,7 @@
                                 <configuration>
                                     <basedir>${basedir}</basedir>
                                     <includes>README.md</includes>
-                                    <message>Auto-generated README.md</message>
+                                    <message>Auto-generated README.md [skip travis]</message>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
@@ -504,6 +505,7 @@
                                     <includeOpenIssues>false</includeOpenIssues>
                                     <onlyMilestoneIssues>true</onlyMilestoneIssues>
                                     <columnNames>Id,Type,Summary,Assignee,Reporter,Updated</columnNames>
+                                    <failOnError>false</failOnError>
                                 </configuration>
                             </execution>
                         </executions>
@@ -548,7 +550,7 @@
                                 <configuration>
                                     <basedir>${basedir}</basedir>
                                     <includes>README.md</includes>
-                                    <message>Auto-generated README.md</message>
+                                    <message>Auto-generated README.md [skip travis]</message>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
