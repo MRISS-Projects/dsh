@@ -377,7 +377,7 @@
                                 <configuration>
                                     <basedir>${basedir}</basedir>
                                     <includes>README.md</includes>
-                                    <message>Auto-generated README.md</message>
+                                    <message>Auto-generated README.md [skip travis]</message>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
@@ -550,7 +550,7 @@
                                 <configuration>
                                     <basedir>${basedir}</basedir>
                                     <includes>README.md</includes>
-                                    <message>Auto-generated README.md</message>
+                                    <message>Auto-generated README.md [skip travis]</message>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
