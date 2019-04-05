@@ -36,5 +36,5 @@ jobs:
 
 stages:
   - name: "build"
-    if: env(BUILD_FLOW) = build
+    if: branch = DEVELOP OR branch =~ /\d*-(.*)$/
 
