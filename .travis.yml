@@ -34,7 +34,6 @@ jobs:
 
 stages:
   - name: "build"
-    if: env(BUILD_FLOW) = build AND ( branch = DEVELOP OR branch =~ /\d*-(.*)$/ )
     script:
       - ./build-ci.sh
 
