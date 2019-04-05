@@ -11,7 +11,7 @@ services:
 env:
 
   global:
-    - BUILD_FLOW=d
+    - BUILD_FLOW=build
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_93df4cdfe2d3_key -iv $encrypted_93df4cdfe2d3_iv -in maven/settings.xml.enc -out settings.xml -d
@@ -31,10 +31,6 @@ jobs:
   include:
 
     - stage: "build"
+      if: env(BUILD_FLOW) = build AND (branch = DEVELOP OR branch =~ /\d*-(.*)$/)
       script:
       - ./build-ci.sh
-
-stages:
-  - name: "build"
-    if: env(BUILD_FLOW) = d AND (branch = DEVELOP OR branch =~ /\d*-(.*)$/)
-
