@@ -173,6 +173,7 @@
                     <releaseProfiles>product-release-deployment</releaseProfiles>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <preparationGoals>clean install</preparationGoals>
+                    <scmCommentPrefix>[maven-release-plugin][skip travis]</scmCommentPrefix>
                 </configuration>
             </plugin>
             <plugin>
