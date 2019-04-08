@@ -184,6 +184,16 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <executable>post-release-script.sh</executable>
+                    <arguments>
+                        <argument>${project.artifactId}-${project.version}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <reporting>

@@ -78,7 +78,7 @@
         <archetype.plugin.version>3.0.1</archetype.plugin.version>
         <jxr.plugin.version>2.5</jxr.plugin.version>
         <tomcat7.plugin.version>2.2</tomcat7.plugin.version>
-        <exec.plugin.version>1.4.0</exec.plugin.version>
+        <exec.plugin.version>1.6.0</exec.plugin.version>
         <antrun.plugin.version>1.8</antrun.plugin.version>
         <build.helper.plugin.version>1.9.1</build.helper.plugin.version>
         <versions.plugin.version>2.1</versions.plugin.version>
