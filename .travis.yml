@@ -11,7 +11,7 @@ services:
 env:
 
   global:
-    - BUILD_FLOW=stage
+    - BUILD_FLOW=staging
     - NEXT_DEV_VERSION=0.3.0-SNAPSHOT
 
 before_install:
@@ -42,7 +42,7 @@ jobs:
       - ./build-ci-stage.sh
 
     - stage: "staging"
-      if: env(BUILD_FLOW) = staging
+      if: env(BUILD_FLOW) = staging AND BRANCH =~ /staging(.*)$/ 
       script:
       - ./build-ci-staging.sh
 
