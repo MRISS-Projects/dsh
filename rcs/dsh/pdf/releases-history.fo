@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set>
+<fo:simple-page-master master-name="cover-page" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="toc" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="body" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+</fo:layout-master-set>
+<fo:page-sequence initial-page-number="0" master-reference="body">
+<fo:flow flow-name="xsl-region-body">
+
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Releases History</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Instant releases history based on the original issue tracking system: 
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/milestones">
+<fo:inline color="green">Releases history</fo:inline></fo:basic-link>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+</fo:list-block>
+</fo:block>
+
+</fo:flow>
+</fo:page-sequence>
+</fo:root>

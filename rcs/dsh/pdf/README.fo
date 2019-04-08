@@ -1,0 +1,3001 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set>
+<fo:simple-page-master master-name="cover-page" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="toc" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="body" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+</fo:layout-master-set>
+<fo:page-sequence initial-page-number="0" master-reference="body">
+<fo:flow flow-name="xsl-region-body">
+
+<fo:block text-align="center" font-size="16pt" space-before.optimum="30pt" space-after.optimum="14pt" font-family="Garamond,serif">Document Smart Highlights</fo:block>
+
+Document Smart Highlights
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.2.0-SNAPSHOT - 20190408-011917</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2   Introduction</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Welcome to 
+<fo:inline font-weight="bold">DSH - Document Smart Highlights</fo:inline>. Document Smart Hightlights aims to provide a set of web services to allow uploading of PDF and HTML files and return a list of keywords and most relevant sentences. This system applies state of the art algorithms, using NLP techniques to produce both the list of keywords and most relevant sentences. This last one, using automatic document summarization techniques. More details at the 
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/wiki">
+<fo:inline color="green">wiki</fo:inline></fo:basic-link>.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">This project is distributed as source code. In order to generate the application to run it is needed to install the pre-requisites and compile. No binaries distribution is provided for now. The final application is a java 
+<fo:inline font-family="monospace" font-size="10pt">.WAR</fo:inline> file which can be] dropped in a standard java servlet container.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The goals for this project are basically two:</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Implement a NLP based system to extract relevant information from PDF files in a potentially scalable fashion by using NoSql databases and Queues. This infrastructure stores requests and chain a worflow of operations (workers) which will do the operations of keyword and relevant sentences extraction. All provided as a web service REST API.</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Learn concepts of NLP associated with scaleable cloud based REST API building. The technology used is java based, so as another goal here we can mention the build learning process using 
+<fo:basic-link external-destination="http://spring.io/">
+<fo:inline color="green">Spring Framework</fo:inline></fo:basic-link> in order to build the API and infrastructure.</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">As part of the goals is learning about technologies, comments and contributions are welcome. However, this is not a final product, application or concept. Just a point for experimentation and proofing. </fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">If anyone out there is interested in contribute or apply this project on a more product-oriented environment, please get in touch through the email: 
+<fo:basic-link external-destination="mailto:marcelo.riss@gmail.com">
+<fo:inline color="green">marcelo.riss@gmail.com</fo:inline></fo:basic-link>.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Wiki: 
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/wiki">
+<fo:inline color="green">https://github.com/MRISS-Projects/dsh/wiki</fo:inline></fo:basic-link></fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Project Development Documentation: 
+<fo:basic-link external-destination="https://mriss-projects.github.io/dsh-docs/">
+<fo:inline color="green">https://mriss-projects.github.io/dsh-docs/</fo:inline></fo:basic-link></fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">3   Package/Folders Description</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">DSH-data</fo:inline>: data models definition for a 
+<fo:inline font-weight="bold">Document</fo:inline>, 
+<fo:inline font-weight="bold">Keyword</fo:inline> and 
+<fo:inline font-weight="bold">RelevantSentence</fo:inline>.  Additionally this module defines a 
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/wiki/Workflow">
+<fo:inline color="green">workflow</fo:inline></fo:basic-link> to map the status progress  of a document processing request.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">DSH-doc-analyzer</fo:inline>: This is a container module to have the keyword and relevant sentences  extractor modules. One extra module to dequeue documents to be analyzed and  call the extractors.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">DSH-doc-processor-worker</fo:inline>: The keyword extraction is executed by setting scores to each term in the document’s text.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">DSH-keyword-extractor</fo:inline>: The keyword extraction is executed by setting scores to each term in the document’s text.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">DSH-top-sentences-extractor</fo:inline>: The extraction of top sentences is achieved applying typical 
+<fo:basic-link external-destination="https://en.wikipedia.org/wiki/Automatic_summarization">
+<fo:inline color="green">automatic summarization</fo:inline></fo:basic-link> techniques like extractive summarization or 
+<fo:basic-link external-destination="https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction">
+<fo:inline color="green">key phrase extraction</fo:inline></fo:basic-link>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">DSH-doc-indexer-worker</fo:inline>: dequeues a document id from a queue, gets the document from the  database and send it for indexing at 
+<fo:basic-link external-destination="https://lucene.apache.org/solr/">
+<fo:inline color="green">SOLR</fo:inline></fo:basic-link>.  Besides indexing, this module will extract the text,  paragraphs, sentences on each paragraph and terms on each sentence.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">DSH-rest-api</fo:inline>: this module is the real application to be deployed or installed on a  servlet container. It is the entry point for document submission, document processing  status querying and document processing results (keywords and relevant sentences) querying.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">dsh-test-dataset</fo:inline>: default and common data set of files used for automated testing.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4   Installation</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.1   Pre-requisites</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Java 1.8</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Maven 3.3.9</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">MongoDB 3.4 (windows 10)</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">MongoDB 4.0.6 (Ubuntu 18.04 LTS)</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">RabbitMQ 3.6.14 (windows 10)</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">RabbitMQ 3.7.14 (Ubuntu 18.04 LTS)</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Tomcat 8.0.X</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2   Installing/Building the Application</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.1   Java</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Download and Installation</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Download a J2SE JDK 1.8 platform from 
+<fo:basic-link external-destination="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">
+<fo:inline color="green">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</fo:inline></fo:basic-link>.</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:inline font-weight="bold">IMPORTANT NOTE</fo:inline>: Download and install 
+<fo:inline font-weight="bold">JDK, not a JRE</fo:inline>. Avoid  downloading packages with J2EE and/or net beans.  Search the download page for Java SE Development Kit (JDK) or  JDK 8 Update XX.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Windows</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>There should be a .exe windows installer. Just follow the  instructions.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Linux </fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Download the .tar.gz file. After downloading it, uncompress it at a folder of your preference.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   ln -s jdk1.8.0_XX java (where XX is the update number of your download)
+</fo:inline></fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Setting environment variables</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-style="italic" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Open the file 
+<fo:inline font-family="monospace" font-size="10pt">/home/[YOUR_USER]/.profile</fo:inline>. This file might be hidden.  If it does not appear at your home folder, using the file explorer, type  
+<fo:inline font-family="monospace" font-size="10pt">Ctrl+h</fo:inline>. Go to the end of the file and add:</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+export JAVA_HOME=/your/jdk/parent/folder
+   export PATH=$JAVA_HOME/bin:$PATH
+</fo:inline></fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-style="italic" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Windows</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Open Control Panel go to System, Advanced system settings, 
+<fo:inline font-family="monospace" font-size="10pt">Environment
+   Variables</fo:inline> button.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>At the System Variables section, click New.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Set JAVA_HOME and point to the root of JDK folder.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Search for the variable named «Path» in the list, click on it and press  Edit.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>5.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Prepend the value with:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   %JAVA_HOME%\bin;
+</fo:inline></fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Verifying the installation</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Open a command prompt and type:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   java -version
+</fo:inline> 2. The result should be something like:</fo:block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">```
+<fo:block/>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">java version “1.8.0_45”  Java(TM) SE Runtime Environment (build 1.8.0_45-b14)  Java HotSpot(TM) 64-Bit Server VM (build 25.45-b02, mixed mode)  ```</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.2   Maven</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Dowload maven 
+<fo:inline font-weight="bold">3.3.9</fo:inline> from 
+<fo:basic-link external-destination="http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip">
+<fo:inline color="green">http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Unzip it on a folder of your preference</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Set environment variables.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Linux</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Put it at your 
+<fo:inline font-family="monospace" font-size="10pt">$HOME/.profile</fo:inline> file</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;```
+<fo:block/>
+&#160;export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+<fo:block/>
+&#160;export&#160;PATH=$M2_HOME/bin:$PATH
+<fo:block/>
+&#160;export&#160;MAVEN_OPTS='-Xmx1024m&#160;-XX:MaxPermSize=256m'
+<fo:block/>
+&#160;```&#160;&#160;&#160;&#160;
+<fo:block/>
+</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>If you already have java set up, your 
+<fo:inline font-family="monospace" font-size="10pt">.profile</fo:inline>, it  should look like this:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;```
+<fo:block/>
+&#160;export&#160;JAVA_HOME=/your/jdk/parent/folder/java
+<fo:block/>
+&#160;export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+<fo:block/>
+&#160;export&#160;PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
+<fo:block/>
+&#160;export&#160;MAVEN_OPTS='-Xmx1024m'
+<fo:block/>
+&#160;```
+<fo:block/>
+</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Logout and login again.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Test by opening a terminal and typing:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;```
+<fo:block/>
+&#160;mvn&#160;-version
+<fo:block/>
+&#160;```
+<fo:block/>
+</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>The result should be similar to:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;```
+<fo:block/>
+&#160;Java&#160;HotSpot(TM)&#160;64-Bit&#160;Server&#160;VM&#160;warning:&#160;ignoring&#160;option&#160;MaxPermSize=256m;&#160;support&#160;was&#160;removed&#160;in&#160;8.0
+<fo:block/>
+&#160;Apache&#160;Maven&#160;3.3.1&#160;(cab6659f9874fa96462afef40fcf6bc033d58c1c;&#160;2015-03-13T17:10:27-03:00)
+<fo:block/>
+&#160;Maven&#160;home:&#160;/home/riss/apps/maven
+<fo:block/>
+&#160;Java&#160;version:&#160;1.8.0_45,&#160;vendor:&#160;Oracle&#160;Corporation
+<fo:block/>
+&#160;Java&#160;home:&#160;/home/riss/apps/jdk1.8.0_45/jre
+<fo:block/>
+&#160;Default&#160;locale:&#160;en_US,&#160;platform&#160;encoding:&#160;UTF-8
+<fo:block/>
+&#160;OS&#160;name:&#160;"linux",&#160;version:&#160;"3.13.0-55-generic",&#160;arch:&#160;"amd64",&#160;family:&#160;"unix"
+<fo:block/>
+&#160;```
+<fo:block/>
+</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Windows</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Open Control Panel go to System, Advanced system settings, 
+<fo:inline font-weight="bold">Environment Variables</fo:inline> button.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>At the System Variables section, click New.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Set 
+<fo:inline font-family="monospace" font-size="10pt">M2_HOME</fo:inline> and point to the root of maven folder.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>5.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Search for the variable 
+<fo:inline font-family="monospace" font-size="10pt">Path</fo:inline> in the list, click on it and press Edit.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>6.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Put the maven bin folder right after java home:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;&#160;```
+<fo:block/>
+&#160;&#160;%JAVA_HOME%\bin;%M2_HOME%\bin;
+<fo:block/>
+&#160;&#160;```&#160;&#160;&#160;
+<fo:block/>
+</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Set the variable 
+<fo:inline font-family="monospace" font-size="10pt">MAVEN_OPTS</fo:inline>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;&#160;```
+<fo:block/>
+&#160;&#160;MAVEN_OPTS=-Xmx1024m
+<fo:block/>
+&#160;&#160;```&#160;&#160;&#160;&#160;
+<fo:block/>
+</fo:block>
+
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>The result should be similar to:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&#160;&#160;```
+<fo:block/>
+&#160;&#160;Apache&#160;Maven&#160;3.3.9&#160;(0728685237757ffbf44136acec0402957f723d9a;&#160;2013-09-17&#160;12:22:22-0300)
+<fo:block/>
+&#160;&#160;Maven&#160;home:&#160;C:\data\apache-maven-3.3.9
+<fo:block/>
+&#160;&#160;Java&#160;version:&#160;1.8.0_45,&#160;vendor:&#160;Oracle&#160;Corporation
+<fo:block/>
+&#160;&#160;Java&#160;home:&#160;C:\Program&#160;Files\Java\jdk1.8.0_45\jre
+<fo:block/>
+&#160;&#160;Default&#160;locale:&#160;en_US,&#160;platform&#160;encoding:&#160;Cp1252
+<fo:block/>
+&#160;&#160;OS&#160;name:&#160;"windows&#160;8.1",&#160;version:&#160;"6.3",&#160;arch:&#160;"amd64",&#160;family:&#160;"dos"
+<fo:block/>
+&#160;&#160;```
+<fo:block/>
+</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.3   MongoDB</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Windows</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Install MongoDB using the instructions at 
+<fo:basic-link external-destination="https://docs.mongodb.com/v3.4/tutorial/install-mongodb-on-windows/">
+<fo:inline color="green">this link</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Enable security following general guidelines at 
+<fo:basic-link external-destination="https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332">
+<fo:inline color="green">this link</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Start MongoDB:</fo:block>
+
+  
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">"C:\Program&#160;Files\MongoDB\Server\3.4\bin\mongod.exe"
+<fo:block/>
+</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>In another prompt connect to MongoDB</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   "C:\Program Files\MongoDB\Server\3.4\bin\mongo.exe"
+</fo:inline> 5. Create super user</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   $ use admin
+   $ db.createUser(
+   {
+     user: "superAdmin",
+     pwd: "[your admin password]",
+     roles: [ { role: "root", db: "admin" } ]
+    })   
+</fo:inline> 6. Disconnect and re-connect at MongoDB as super user:</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   connect-mongo-super-user.bat [your admin password]
+</fo:inline> 7. Create user access (readWrite) for specific dsh database</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   $ use dsh
+   $ db.createUser(
+     {
+      user: "dshuser",
+      pwd: "[your password]",
+      roles: [ "readWrite"]
+     })   
+</fo:inline> 8. Disconnect and re-connect at MongoDB as specific user:</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   connect-mongo.bat [your dshuser passoword]
+</fo:inline></fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 18.04 LTS</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Install MongoDB following the instructions at 
+<fo:basic-link external-destination="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/">
+<fo:inline color="green">https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Enable security following general guidelines at 
+<fo:basic-link external-destination="https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332">
+<fo:inline color="green">this link</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Start MongoDB service</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   sudo service mongod start
+</fo:inline> 4. In another prompt connect to MongoDB</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   mongo --host 127.0.0.1:27017
+</fo:inline> 5. Create super user</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   $ use admin
+   $ db.createUser(
+   {
+     user: "superAdmin",
+     pwd: "[your admin password]",
+     roles: [ { role: "root", db: "admin" } ]
+    })   
+</fo:inline> 6. Disconnect and re-connect at MongoDB as super user:</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   ./connect-mongo-super-user.sh [your admin password]
+</fo:inline> 7. Create user access (readWrite) for specific dsh database</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   $ use dsh
+   $ db.createUser(
+     {
+      user: "dshuser",
+      pwd: "[your password]",
+      roles: [ "readWrite"]
+     })   
+</fo:inline></fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Disconnect and re-connect at MongoDB as specific user:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   ./connect-mongo.sh [your dshuser passoword]
+</fo:inline></fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.4   RabitMQ</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Windows</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Follow the instructions at 
+<fo:basic-link external-destination="http://www.rabbitmq.com/install-windows.html">
+<fo:inline color="green">http://www.rabbitmq.com/install-windows.html</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Enable the ports mentioned at the link above at the firewall.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Enable the management plugin:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   rabbitmq-plugins.bat enable rabbitmq_management
+   rabbitmq-service.bat stop  
+   rabbitmq-service.bat remove	
+   rabbitmq-service.bat install  
+   rabbitmq-service.bat start   
+</fo:inline> 4. Test it with 
+<fo:inline font-family="monospace" font-size="10pt">http://localhost:15672/mgmt</fo:inline>. User: guest. Password: guest.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 18.04 LTS</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Follow the instructions at 
+<fo:basic-link external-destination="https://www.rabbitmq.com/install-debian.html">
+<fo:inline color="green">https://www.rabbitmq.com/install-debian.html</fo:inline></fo:basic-link>
+  
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+    
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Or follow the instructions at the link and add RabbitMQ Ubuntu repositories before to run the 
+<fo:inline font-family="monospace" font-size="10pt">apt-get install</fo:inline>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  </fo:list-block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Enable the management plugin:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+<fo:inline font-family="monospace" font-size="10pt">
+   sudo rabbitmq-plugins enable rabbitmq_management
+   service rabbitmq-server stop  
+   service rabbitmq-server start
+</fo:inline> 3. Test it with 
+<fo:inline font-family="monospace" font-size="10pt">http://localhost:15672/mgmt</fo:inline>. User: guest. Password: guest.</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.5   Building From Sources</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>In order to build, both MongoDB and RabbitMQ services should be running.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Maven development user settings should be correctly configured (see configuration  section below)</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>At the root dsh folder type:</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">./install-parent-pom.sh
+<fo:block/>
+mvn&#160;clean&#160;install
+<fo:block/>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.6   Tomcat</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Windows</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Download Tomcat 8.0.X 32-bit/64-bit Windows Service Installer at  
+<fo:basic-link external-destination="https://tomcat.apache.org/download-80.cgi">
+<fo:inline color="green">https://tomcat.apache.org/download-80.cgi</fo:inline></fo:basic-link>.  This will install Tomcat as a windows service.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Start Tomcat windows service using windows services application.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Look at the address: 
+<fo:basic-link external-destination="http://localhost:8080">
+<fo:inline color="green">http://localhost:8080</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 19.04 LSTS</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Download Tomcat 8.0.x .zip or .tar.gz file at  
+<fo:basic-link external-destination="https://tomcat.apache.org/download-80.cgi">
+<fo:inline color="green">https://tomcat.apache.org/download-80.cgi</fo:inline></fo:basic-link>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Unpack the contents on a folder.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Go to the 
+<fo:inline font-family="monospace" font-size="10pt">bin</fo:inline> folder and type 
+<fo:inline font-family="monospace" font-size="10pt">./startup.sh</fo:inline>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Look at the address: 
+<fo:basic-link external-destination="http://localhost:8080">
+<fo:inline color="green">http://localhost:8080</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5   Configuration</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.1   MongoDB Access Properties</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Edit or create the maven user 
+<fo:inline font-family="monospace" font-size="10pt">settings.xml</fo:inline> file typically at 
+<fo:inline font-family="monospace" font-size="10pt">$HOME/.m2</fo:inline> (or 
+<fo:inline font-family="monospace" font-size="10pt">%HOMEPATH%\.m2</fo:inline> at windows) folder and add a default activated profile similar to this:</fo:block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">&lt;profile&gt;
+<fo:block/>
+	&lt;id&gt;development-properties&lt;/id&gt;
+<fo:block/>
+	&lt;activation&gt;
+<fo:block/>
+		&lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+<fo:block/>
+	&lt;/activation&gt;
+<fo:block/>
+	&lt;properties&gt;
+<fo:block/>
+		&lt;mongo.host&gt;localhost&lt;/mongo.host&gt;
+<fo:block/>
+		&lt;mongo.port&gt;27017&lt;/mongo.port&gt;
+<fo:block/>
+		&lt;mongo.user&gt;dshuser&lt;/mongo.user&gt;
+<fo:block/>
+		&lt;mongo.password&gt;[password&#160;you&#160;have&#160;configured&#160;in&#160;the&#160;steps&#160;above&#160;when&#160;installing&#160;mongo]&lt;/mongo.password&gt;
+<fo:block/>
+	&lt;/properties&gt;
+<fo:block/>
+&lt;/profile&gt;
+<fo:block/>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Or add the 
+<fo:inline font-family="monospace" font-size="10pt">properties</fo:inline> section at any default activated profile already present at 
+<fo:inline font-family="monospace" font-size="10pt">settings.xml</fo:inline> file.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.2   Tomcat Admin User Configuration</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Stop Tomcat if it is already started, and edit the file 
+<fo:inline font-family="monospace" font-size="10pt">TOMCAT_HOME/conf/tomcat-users.xml</fo:inline>. If the 
+<fo:inline font-family="monospace" font-size="10pt">tomcat-users</fo:inline> tag is empty or with all elements commented, add the following content inside the 
+<fo:inline font-family="monospace" font-size="10pt">&lt;tomcat-users&gt;</fo:inline> tag.</fo:block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">	&lt;role&#160;rolename="tomcat"&#160;/&gt;&#160;&#160;
+<fo:block/>
+	&lt;role&#160;rolename="manager-gui"&#160;/&gt;&#160;&#160;
+<fo:block/>
+	&lt;role&#160;rolename="manager-script"&#160;/&gt;&#160;&#160;
+<fo:block/>
+	&lt;role&#160;rolename="admin-gui"&#160;/&gt;&#160;&#160;
+<fo:block/>
+				&#160;&#160;
+<fo:block/>
+	&lt;user&#160;username="admin"&#160;password="[your&#160;admin&#160;password]"&#160;roles="tomcat,manager-gui,manager-script,admin-gui"&#160;/&gt;
+<fo:block/>
+	&lt;user&#160;username="tomcat"&#160;password="[your&#160;tomcat&#160;user&#160;password]"&#160;roles="tomcat,manager-gui,manager-script,admin-gui"&#160;/&gt;
+<fo:block/>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Replace the admin and tomcat’s password with any desired password. </fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6   Usage</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.1   Running Application from Eclipse Embedded Tomcat</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The module 
+<fo:inline font-family="monospace" font-size="10pt">DSH-rest-api</fo:inline> is a web application. The type tag in pom.xml file is .war. Thus the first step is to install a Tomcat (8.0.X) at 
+<fo:basic-link external-destination="https://tomcat.apache.org/download-80.cgi">
+<fo:inline color="green">https://tomcat.apache.org/download-80.cgi</fo:inline></fo:basic-link>. After that, if you have Eclipse Oxygen JEE version correctly installed and configured, then is just a matter of showing the Servers view and adding a new server. At eclipse menu, follow the path: 
+<fo:inline font-family="monospace" font-size="10pt">Window -&gt; Show View -&gt; Other -&gt; Servers -&gt; Server</fo:inline>. When the 
+<fo:inline font-family="monospace" font-size="10pt">Servers</fo:inline> view opens, add a new Tomcat Server. You will need to have a Tomcat already installed at your system, since eclipse will ask for an installed Tomcat root directory. When creating a new server inside eclipse, it will show the DSH-rest-api as a potential project to be installed in that server.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">After having the DSH-rest-api inside the server, configure the server 
+<fo:inline font-family="monospace" font-size="10pt">startup</fo:inline> and 
+<fo:inline font-family="monospace" font-size="10pt">shutdown</fo:inline> timeouts to something like 120s each.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Start the server and access the application swagger UI at: 
+<fo:inline font-family="monospace" font-size="10pt">http://localhost:8080/DSH-rest-api/swagger-ui.html</fo:inline>. </fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.2   Using Application .war File on a Servlet Container</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">After the build, the folder DSH-rest-api/target should have a file named DSH-rest-api-[version].war. That war file can be dropped to a servlet container to be used as a web application. At this moment the server having the servlet container should be the same having MongoDB and RabbitMQ installed, up and running.</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.2.1   Using Tomcat Application Manager</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Access the Tomcat’s manager usually at the address 
+<fo:inline font-family="monospace" font-size="10pt">http://localhost:8080/manager/html</fo:inline>. The browser will ask for user and password. Enter the user and password configured at the 
+<fo:inline font-family="monospace" font-size="10pt">TOMCAT_HOME/conf/tomcat-users.xml</fo:inline> (see the configuration section above).</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">After login, at the Deploy section, fulfill the fields:</fo:block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">Context&#160;Path:&#160;	DSH-rest-api
+<fo:block/>
+WAR&#160;or&#160;Directory&#160;URL:	[absolute&#160;path&#160;to&#160;the&#160;generated&#160;DSH-rest-api-&lt;version&gt;.war&#160;file]&#160;
+<fo:block/>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">You can also upload the war file from 
+<fo:inline font-family="monospace" font-size="10pt">DSH-rest-api/target</fo:inline> folder, using the 
+<fo:inline font-family="monospace" font-size="10pt">Choose File</fo:inline> button at the Tomcat’s manager application. However, in this case, it is recommenDed to rename the file 
+<fo:inline font-family="monospace" font-size="10pt">DSH-rest-api-&lt;version&gt;.war</fo:inline> to just 
+<fo:inline font-family="monospace" font-size="10pt">DSH-rest-api.war</fo:inline> just to not have the version name associated with the web application, which will then be used to access the application at the web browser.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Start the server and access the application swagger UI at: 
+<fo:inline font-family="monospace" font-size="10pt">http://localhost:8080/DSH-rest-api/swagger-ui.html</fo:inline>.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.2.2   Just Dropping Application .war File</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Rename the file 
+<fo:inline font-family="monospace" font-size="10pt">DSH-rest-api/target/DSH-rest-api-&lt;version&gt;.war</fo:inline> to 
+<fo:inline font-family="monospace" font-size="10pt">DSH-rest-api.war</fo:inline> and drop it at Tomcat’s 
+<fo:inline font-family="monospace" font-size="10pt">webapps</fo:inline> folder. Restart Tomcat if needed.</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Start the server and access the application swagger UI at: 
+<fo:inline font-family="monospace" font-size="10pt">http://localhost:8080/DSH-rest-api/swagger-ui.html</fo:inline>.</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.3   Running Application Using Spring Boot Maven Plugin</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Go to 
+<fo:inline font-family="monospace" font-size="10pt">DSH-rest-api</fo:inline> module root folder project, by using 
+<fo:inline font-family="monospace" font-size="10pt">cd DSH-rest-api</fo:inline> at the sources root, and run:</fo:block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">mvn&#160;spring-boot:run
+<fo:block/>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Wait until the application boots up. Typically when the following output is present:</fo:block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">.
+<fo:block/>
+.
+<fo:block/>
+.
+<fo:block/>
+08:37:47.665&#160;[main]&#160;INFO&#160;&#160;o.s.c.s.DefaultLifecycleProcessor&#160;-&#160;Starting&#160;beans&#160;in&#160;phase&#160;2147483647
+<fo:block/>
+08:37:47.665&#160;[main]&#160;INFO&#160;&#160;s.d.s.w.p.DocumentationPluginsBootstrapper&#160;-&#160;Context&#160;refreshed
+<fo:block/>
+08:37:47.702&#160;[main]&#160;INFO&#160;&#160;s.d.s.w.p.DocumentationPluginsBootstrapper&#160;-&#160;Found&#160;1&#160;custom&#160;documentation&#160;plugin(s)
+<fo:block/>
+08:37:47.746&#160;[main]&#160;INFO&#160;&#160;s.d.s.w.s.ApiListingReferenceScanner&#160;-&#160;Scanning&#160;for&#160;api&#160;listing&#160;references
+<fo:block/>
+08:37:47.962&#160;[main]&#160;INFO&#160;&#160;o.a.coyote.http11.Http11NioProtocol&#160;-&#160;Initializing&#160;ProtocolHandler&#160;["http-nio-8080"]
+<fo:block/>
+08:37:47.979&#160;[main]&#160;INFO&#160;&#160;o.a.coyote.http11.Http11NioProtocol&#160;-&#160;Starting&#160;ProtocolHandler&#160;["http-nio-8080"]
+<fo:block/>
+08:37:47.984&#160;[main]&#160;INFO&#160;&#160;o.a.tomcat.util.net.NioSelectorPool&#160;-&#160;Using&#160;a&#160;shared&#160;selector&#160;for&#160;servlet&#160;write/read
+<fo:block/>
+08:37:48.016&#160;[main]&#160;INFO&#160;&#160;o.s.b.w.e.tomcat.TomcatWebServer&#160;-&#160;Tomcat&#160;started&#160;on&#160;port(s):&#160;8080&#160;(http)
+<fo:block/>
+08:37:48.022&#160;[main]&#160;INFO&#160;&#160;c.m.dsh.restapi.DshRestApplication&#160;-&#160;Started&#160;DshRestApplication&#160;in&#160;9.385&#160;seconds&#160;(JVM&#160;running&#160;for&#160;18.084)
+<fo:block/>
+08:37:48.025&#160;[main]&#160;INFO&#160;&#160;c.m.dsh.restapi.DshRestApplication&#160;-&#160;Main&#160;application&#160;run!!!
+<fo:block/>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Start the server and access the application swagger UI at: 
+<fo:inline font-family="monospace" font-size="10pt">http://localhost:8080/swagger-ui.html</fo:inline>.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.4   Swagger User Interface</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Swagger UI has two methods for a document resource:</fo:block>
+
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">submit: uploads a PDF file and returns a token.</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+  
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">status: use the token returned in the first method to ask for the document processing status. At the moment  the only status would be 
+<fo:inline font-family="monospace" font-size="10pt">QUEUED_FOR_INDEXING_SUCCESS</fo:inline>.</fo:block>
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif"><fo:external-graphic height="100%" width="100%" content-height="scale-down-to-fit" content-width="scale-down-to-fit" src="/src/site/resources/images/swagger-ui.jpg"/>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">In order to use the methods, click on the method and after in the 
+<fo:inline font-family="monospace" font-size="10pt">Try it out</fo:inline> button (firstly for the submit method).</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">A new form will open with the fields to fulfill. In case of submit you will need to choose a file to upload and inform its title. In case of 
+<fo:inline font-family="monospace" font-size="10pt">status</fo:inline>, you just needs to enter the the token returned by the previous 
+<fo:inline font-family="monospace" font-size="10pt">submit</fo:inline> method call.</fo:block>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7   Release Notes</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.1   Version 0.2.0-SNAPSHOT</fo:block>
+
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+  
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+# </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Type </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Summary </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Assignee </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Reporter </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Updated </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+  
+  
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/39">
+<fo:inline color="green">39</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Publish dsh site on gh-pages branch instead of another repo. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+3/18/19 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/41">
+<fo:inline color="green">41</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Move project from organization to the git project dsh. Change next milestone to 0.2.0 </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+3/18/19 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+  
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.2   Version 0.0.1</fo:block>
+
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+  
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+# </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Type </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Summary </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Assignee </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Reporter </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Updated </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+  
+  
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/32">
+<fo:inline color="green">32</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Configure DSH to use git as scm tool and proceed to release. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+3/15/19 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/38">
+<fo:inline color="green">38</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Configure distribution management to local nexus and test snapshot deploy with deployment profile. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+3/1/19 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/37">
+<fo:inline color="green">37</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Replace release notes and release history properties using deployment profile. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+10/14/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/36">
+<fo:inline color="green">36</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Replace version property ad readme and commit using deployment profile </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+2/19/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/35">
+<fo:inline color="green">35</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Test maven site publication using github using deployment profile. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+2/15/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/34">
+<fo:inline color="green">34</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Configure changes plugin and changes report to use github issues and test maven site generation. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+2/12/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/33">
+<fo:inline color="green">33</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Configure maven scm to use git </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+2/12/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/10">
+<fo:inline color="green">10</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Test rest API module inside tomcat server inside eclipse as a war distribution. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+2/11/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/30">
+<fo:inline color="green">30</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Configure Swagger </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+2/4/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/11">
+<fo:inline color="green">11</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create and test rest service layer: </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+1/16/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/23">
+<fo:inline color="green">23</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Add message and error handling for RabbitMQ queue submission. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+1/9/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/22">
+<fo:inline color="green">22</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create document submission workflow </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+1/6/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/28">
+<fo:inline color="green">28</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create document status enumeration and define workflow transition and validation class. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+1/6/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/27">
+<fo:inline color="green">27</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Add extra columns at the Document model class for status description and status message. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+1/6/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/25">
+<fo:inline color="green">25</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Test message sending exception. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+1/4/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/17">
+<fo:inline color="green">17</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create web service logic to generate token and return it while starting the document storage at mongo asynchronously. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+1/3/18 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/9">
+<fo:inline color="green">9</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create services: </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/19/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/21">
+<fo:inline color="green">21</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create mongodb storage service. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/19/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/20">
+<fo:inline color="green">20</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Update documentation with RabbitMQ installation. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/19/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/18">
+<fo:inline color="green">18</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create logic to enqueue the mongo document id to RabbitMQ using Spring integration example app. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/18/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/19">
+<fo:inline color="green">19</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Feature/mongo dao </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/10/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/15">
+<fo:inline color="green">15</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create and test MongoDAO </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/10/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/16">
+<fo:inline color="green">16</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Test models </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/9/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/12">
+<fo:inline color="green">12</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create dsh-test-dataset module having all PDF and HTML files used for testing. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/8/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/8">
+<fo:inline color="green">8</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+* Create model for the documents with following columns: </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/7/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/7">
+<fo:inline color="green">7</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+* Create package structure </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/7/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/3">
+<fo:inline color="green">3</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create parent pom </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/7/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/5">
+<fo:inline color="green">5</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create a model module to have the model classes of keywords, sentences and documents. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/7/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/6">
+<fo:inline color="green">6</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Organize dependency management among modules. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/7/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/2">
+<fo:inline color="green">2</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Create project structure using spring boot </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/7/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/4">
+<fo:inline color="green">4</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Complete project structure </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+12/7/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/1">
+<fo:inline color="green">1</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Install RabbitMQ </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+11/29/17 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+  
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+</fo:block>
+
+</fo:flow>
+</fo:page-sequence>
+</fo:root>
