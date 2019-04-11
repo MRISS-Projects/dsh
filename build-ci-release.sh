@@ -20,4 +20,4 @@ mvn -B -s settings.xml -P release-prepare -Dorg.slf4j.simpleLogger.log.org.apach
 mvn -B -s settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn release:perform
 
 cd target/checkout
-mvn -N --batch-mode exec:exec
+mvn -B -N --batch-mode -s ../../settings.ml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn exec:exec
