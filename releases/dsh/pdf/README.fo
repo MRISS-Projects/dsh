@@ -24,7 +24,7 @@ Document Smart Highlights
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.0.1</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.2.0</fo:block>
 </fo:block>
 
 
@@ -232,7 +232,7 @@ Document Smart Highlights
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">MongoDB 3.6.2 (Ubuntu 16.04LTS)</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">MongoDB 4.0.6 (Ubuntu 18.04 LTS)</fo:block>
 </fo:block>
 </fo:list-item-body>
 </fo:list-item>
@@ -252,7 +252,7 @@ Document Smart Highlights
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">RabbitMQ 3.7.2-1 (Ubuntu 16.04LTS)</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">RabbitMQ 3.7.14 (Ubuntu 18.04 LTS)</fo:block>
 </fo:block>
 </fo:list-item-body>
 </fo:list-item>
@@ -994,7 +994,7 @@ export JAVA_HOME=/your/jdk/parent/folder
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 16.04LTS</fo:block>
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 18.04 LTS</fo:block>
 
 
 
@@ -1162,7 +1162,7 @@ export JAVA_HOME=/your/jdk/parent/folder
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 16.04LTS</fo:block>
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 18.04 LTS</fo:block>
 
 
 
@@ -1338,7 +1338,7 @@ mvn&#160;clean&#160;install
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 16.04LSTS</fo:block>
+<fo:block font-size="9.5pt" space-before="9pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">Linux Ubuntu 19.04 LSTS</fo:block>
 
 
 
