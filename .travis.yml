@@ -14,7 +14,7 @@ services:
 env:
 
   global:
-    - BUILD_FLOW=staging
+    - BUILD_FLOW=build
     - NEXT_DEV_VERSION=0.2.2-SNAPSHOT
     - BRANCH_TO_RELEASE=origin/staging-0.2.1-SNAPSHOT-RC
 
@@ -36,7 +36,7 @@ jobs:
   include:
 
     - stage: "build"
-      if: env(BUILD_FLOW) = build AND (branch = DEVELOP OR branch =~ /\d*-(.*)$/)
+      if: env(BUILD_FLOW) = build AND (branch = master OR branch = DEVELOP OR branch =~ /\d*-(.*)$/)
       script:
       - ./build-ci.sh
 
