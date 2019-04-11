@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git fetch --all --tags origin
+git fetch --all --tags
 git merge --strategy=recursive --strategy-option=theirs ${BRANCH_TO_RELEASE}
 if [ $? -ne 0 ]
 then
