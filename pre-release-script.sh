@@ -16,6 +16,7 @@ else
     else    
         BRANCH_NAME=`echo ${BRANCH_TO_RELEASE} | cut -c 8-`
         echo Tracking branch: ${BRANCH_NAME}
-        git checkout -b ${BRANCH_NAME} --track ${BRANCH_TO_RELEASE}
+        git branch --all
+        git checkout -b ${BRANCH_NAME}
     fi
 fi
