@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git fetch --tags origin
+git fetch --tags +refs/heads/*:refs/remotes/origin/*
 git branch --all
 git merge --strategy=recursive --strategy-option=theirs ${BRANCH_TO_RELEASE}
 if [ $? -ne 0 ]
