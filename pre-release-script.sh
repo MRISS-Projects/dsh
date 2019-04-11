@@ -7,7 +7,7 @@ if [ $? -ne 0 ]
 then
     exit 1
 else
-    git push origin DEVELOP
+    mvn scm:checkin
     if [ $? -ne 0 ]
     then
         exit 1
