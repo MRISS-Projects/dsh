@@ -2,7 +2,7 @@
 
 ## Version
 
-0.2.0-SNAPSHOT - 20190408-024911
+0.2.1-SNAPSHOT - 20190411-172241
 
 ## Introduction
 
@@ -508,10 +508,11 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 ## Release Notes
 
-### Version 0.2.0-SNAPSHOT
+### Version 0.2.0
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | - | ---- | ------- | -------- | -------- | ------- |
+| [40](https://github.com/MRISS-Projects/dsh/issues/40) | task | Add DSH to travis CI following settings from changes plugin. | mriss | mriss | 4/11/19 |
 | [39](https://github.com/MRISS-Projects/dsh/issues/39) | task | Publish dsh site on gh-pages branch instead of another repo. | null | mriss | 3/18/19 |
 | [41](https://github.com/MRISS-Projects/dsh/issues/41) | task | Move project from organization to the git project dsh. Change next milestone to 0.2.0 | mriss | mriss | 3/18/19 |
 
