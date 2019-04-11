@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>DSH-doc-analyser</artifactId>
 		<groupId>com.mriss.products.dsh</groupId>
-		<version>0.0.1</version>
+		<version>0.2.0</version>
 	</parent>
 
 	<!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
@@ -14,7 +14,7 @@
 	<!-- THE BASICS -->
 	<groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
 	<artifactId>DSH-keyword-extractor</artifactId>
-	<version>0.0.1</version>
+	<version>0.2.0</version>
 	<packaging>jar</packaging>
 	<dependencyManagement>
 		<dependencies>

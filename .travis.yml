@@ -1,0 +1,56 @@
+dist: trusty
+
+git:
+  depth: false
+
+language: java
+
+jdk: openjdk8
+
+services: 
+  - mongodb
+  - rabbitmq
+
+env:
+
+  global:
+    - BUILD_FLOW=stage
+    - NEXT_DEV_VERSION=0.3.0-SNAPSHOT
+    - BRANCH_TO_RELEASE=origin/staging-0.2.0-SNAPSHOT-RC
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_93df4cdfe2d3_key -iv $encrypted_93df4cdfe2d3_iv -in maven/settings.xml.enc -out settings.xml -d
+
+install: true
+
+cache:
+  directories:
+  - $HOME/.m2
+
+before_script:
+  - sleep 15
+  - ./install-and-configure-Mongo.sh
+
+jobs:
+
+  include:
+
+    - stage: "build"
+      if: env(BUILD_FLOW) = build AND (branch = DEVELOP OR branch =~ /\d*-(.*)$/)
+      script:
+      - ./build-ci.sh
+
+    - stage: "stage"
+      if: env(BUILD_FLOW) = stage
+      script:
+      - ./build-ci-stage.sh
+
+    - stage: "staging"
+      if: env(BUILD_FLOW) = staging AND BRANCH =~ /staging(.*)$/ 
+      script:
+      - ./build-ci-staging.sh
+
+    - stage: "release"
+      if: env(BUILD_FLOW) = release AND BRANCH = DEVELOP
+      script:
+      - ./build-ci-release.sh
