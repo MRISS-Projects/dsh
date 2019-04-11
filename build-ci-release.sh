@@ -15,9 +15,9 @@ git checkout ${TRAVIS_BRANCH}
 ./pre-release-script.sh
 
 # release
-mvn -B -s settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn release:clean
-mvn -B -s settings.xml -P release-prepare -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn release:prepare
-mvn -B -s settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn release:perform
+#mvn -B -s settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn release:clean
+#mvn -B -s settings.xml -P release-prepare -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn release:prepare
+#mvn -B -s settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn release:perform
 
-cd target/checkout
-mvn -N --batch-mode exec:exec
+#cd target/checkout
+#mvn -N --batch-mode exec:exec

@@ -7,7 +7,8 @@ if [ $? -ne 0 ]
 then
     exit 1
 else
-    mvn scm:checkin
+    CURRENT_DIR=`pwd`
+    mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dbasedir=$CURRENT_DIR scm:checkin
     if [ $? -ne 0 ]
     then
         exit 1
