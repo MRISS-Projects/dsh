@@ -2,7 +2,7 @@
 
 ## Version
 
-0.2.1-SNAPSHOT - 20190411-172814
+0.2.1
 
 ## Introduction
 
@@ -507,6 +507,12 @@ A new form will open with the fields to fulfill. In case of submit you will need
 inform its title. In case of `status`, you just needs to enter the the token returned by the previous `submit` method call.
 
 ## Release Notes
+
+### Version 0.2.1
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| - | ---- | ------- | -------- | -------- | ------- |
+| [58](https://github.com/MRISS-Projects/dsh/issues/58) | bug | stage is being executed at master during release process | mriss | mriss | 4/11/19 |
 
 ### Version 0.2.0
 
