@@ -41,7 +41,7 @@ jobs:
       - ./build-ci.sh
 
     - stage: "stage"
-      if: env(BUILD_FLOW) = stage
+      if: env(BUILD_FLOW) = stage AND (branch = DEVELOP)
       script:
       - ./build-ci-stage.sh
 
