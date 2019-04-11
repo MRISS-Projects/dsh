@@ -14,9 +14,9 @@ services:
 env:
 
   global:
-    - BUILD_FLOW=stage
-    - NEXT_DEV_VERSION=0.3.0-SNAPSHOT
-    - BRANCH_TO_RELEASE=origin/staging-0.2.0-SNAPSHOT-RC
+    - BUILD_FLOW=staging
+    - NEXT_DEV_VERSION=0.2.2-SNAPSHOT
+    - BRANCH_TO_RELEASE=origin/staging-0.2.1-SNAPSHOT-RC
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_93df4cdfe2d3_key -iv $encrypted_93df4cdfe2d3_iv -in maven/settings.xml.enc -out settings.xml -d
@@ -41,7 +41,7 @@ jobs:
       - ./build-ci.sh
 
     - stage: "stage"
-      if: env(BUILD_FLOW) = stage
+      if: env(BUILD_FLOW) = stage AND (branch = DEVELOP)
       script:
       - ./build-ci-stage.sh
 
