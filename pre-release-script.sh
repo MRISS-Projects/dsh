@@ -9,7 +9,7 @@ then
 else
     CURRENT_DIR=`pwd`
     echo Pushing contents of $CURRENT_DIR
-    mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dbasedir=$CURRENT_DIR -Dmessage="release message [skip travis]" scm:checkin
+    mvn -B -s settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dbasedir=$CURRENT_DIR -Dmessage="release message [skip travis]" scm:checkin
     if [ $? -ne 0 ]
     then
         exit 1
