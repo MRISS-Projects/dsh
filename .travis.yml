@@ -1,5 +1,8 @@
 dist: trusty
 
+git:
+  depth: false
+
 language: java
 
 jdk: openjdk8
