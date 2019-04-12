@@ -24,7 +24,7 @@ Document Smart Highlights
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.2.2-SNAPSHOT - 20190411-203717</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.2.2-SNAPSHOT - 20190412-033814</fo:block>
 </fo:block>
 
 
@@ -1654,7 +1654,103 @@ WAR&#160;or&#160;Directory&#160;URL:	[absolute&#160;path&#160;to&#160;the&#160;g
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.1   Version 0.2.1</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.1   Version 0.2.2-SNAPSHOT</fo:block>
+
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+  
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+# </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Type </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Summary </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Assignee </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Reporter </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Updated </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+  
+  
+    
+<fo:table-row keep-together="auto" keep-with-next="auto">
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/59">
+<fo:inline color="green">59</fo:inline></fo:basic-link> </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+enhancement </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Add jacoco coverage plugin and report. </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss </fo:block>
+</fo:table-cell>
+
+      <fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+4/12/19 </fo:block>
+</fo:table-cell>
+
+    </fo:table-row>
+
+  
+</fo:table-body>
+</fo:table>
+</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.2   Version 0.2.1</fo:block>
 
 
 
@@ -1750,7 +1846,7 @@ mriss </fo:block>
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.2   Version 0.2.0</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.3   Version 0.2.0</fo:block>
 
 
 
@@ -1918,7 +2014,7 @@ mriss </fo:block>
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.3   Version 0.0.1</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">7.4   Version 0.0.1</fo:block>
 
 
 
