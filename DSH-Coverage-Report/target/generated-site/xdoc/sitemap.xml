@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd"><properties>
+<title>Sitemap</title></properties>
+<body><section name="Sitemap">
+<p>This page lists all entries of the navigation menu in expanded form.</p>
+<h4>Parent Project</h4><hr />
+<ul>
+<li><a href="../index.html">DSH - Document Smart Highlights</a></li></ul>
+<h4>Project Documentation</h4><hr />
+<ul>
+<li><a href="./project-info.html">Project Information</a>
+<ul>
+<li><a href="dependencies.html">Dependencies</a></li>
+<li><a href="dependency-info.html">Dependency Information</a></li>
+<li><a href="dependency-management.html">Dependency Management</a></li>
+<li><a href="distribution-management.html">Distribution Management</a></li>
+<li><a href="index.html">About</a></li>
+<li><a href="issue-tracking.html">Issue Tracking</a></li>
+<li><a href="plugin-management.html">Plugin Management</a></li>
+<li><a href="plugins.html">Project Plugins</a></li>
+<li><a href="team-list.html">Project Team</a></li>
+<li><a href="source-repository.html">Source Repository</a></li>
+<li><a href="project-summary.html">Project Summary</a></li></ul></li>
+<li><a href="./project-reports.html">Project Reports</a>
+<ul>
+<li><a href="jacoco-aggregate/index.html">JaCoCo Aggregate</a></li></ul></li></ul></section></body></document>
