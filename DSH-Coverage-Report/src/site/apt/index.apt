@@ -1,0 +1,10 @@
+            ------
+            Welcome to DSH-Coverage-Report
+            ------
+            Marcelo Riss
+            ------
+            2019-04-11
+           
+DSH Coverage Report
+
+ This module has definitions to aggregate jacoco code coverage report from other modules.
