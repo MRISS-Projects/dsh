@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DocumentResource.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">DSH Coverage Report Aggregation Module</a> &gt; <a href="../index.html" class="el_bundle">DSH-rest-api</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.restapi.rest</a> &gt; <span class="el_source">DocumentResource.java</span></div><h1>DocumentResource.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.restapi.rest;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.mriss.dsh.data.models.Document;
+import com.mriss.dsh.restapi.dto.DocumentStatusDto;
+import com.mriss.dsh.restapi.dto.TokenDto;
+import com.mriss.dsh.restapi.service.DocumentHandlingService;
+import com.mriss.dsh.restapi.service.DocumentSubmissionException;
+import com.mriss.dsh.restapi.service.DocumentSubmissionService;
+
+@RestController
+@RequestMapping(&quot;/v1/dsh/document&quot;)
+<span class="fc" id="L29">public class DocumentResource {</span>
+	
+	public static final String TOKEN_NOT_FOUND_MESSAGE = &quot;No token was found with the contents: &quot;;
+
+	public static final String TOKEN_NOT_FOUND = &quot;TOKEN_NOT_FOUND&quot;;
+
+<span class="fc" id="L35">	private final static Logger log = LoggerFactory.getLogger(DocumentResource.class);</span>
+	
+	@Autowired
+	DocumentSubmissionService documentSubmissionService;
+	
+	@Autowired
+	DocumentHandlingService documentHandlingService;
+
+	@RequestMapping(value = &quot;/submit&quot;, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody TokenDto submitDocument(HttpServletRequest request, @RequestParam(&quot;title&quot;) String title, @RequestParam(&quot;contents&quot;) MultipartFile contents)
+            throws IllegalStateException, IOException {
+		try {			
+<span class="fc" id="L47">			validateParameters(title, contents);</span>
+<span class="fc" id="L48">			String token = documentSubmissionService.getTokenFromDocument(contents.getInputStream(), title, false);</span>
+<span class="fc" id="L49">			documentSubmissionService.storeDocumentAndQueueForProcessing();</span>
+<span class="fc" id="L50">			return new TokenDto(token, &quot;&quot;);</span>
+<span class="fc" id="L51">		} catch (Exception e) {</span>
+<span class="fc" id="L52">			log.error(e.getMessage(), e);</span>
+<span class="fc" id="L53">			return new TokenDto(&quot;ERROR&quot;, &quot;Error submitting file: &quot; + e.getMessage()); </span>
+		}
+	}
+	
+	@RequestMapping(value = &quot;/status/{token}&quot;, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody DocumentStatusDto getStatus(HttpServletRequest request, @PathVariable(&quot;token&quot;) String token) {
+<span class="fc" id="L59">		Document d = documentHandlingService.getDocumentByToken(token);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (d == null) {</span>
+<span class="fc" id="L61">			return new DocumentStatusDto(TOKEN_NOT_FOUND, TOKEN_NOT_FOUND_MESSAGE + token);</span>
+		} else {
+<span class="fc" id="L63">			return new DocumentStatusDto(d.getDocumentStatus().getStatusDescription(), d.getDocumentStatusMessage());</span>
+		}
+	}
+
+	private void validateParameters(String title, MultipartFile contents)
+			throws DocumentSubmissionException {
+<span class="fc" id="L69">		log.info(&quot;Document title: &quot; + title);</span>
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">		if (StringUtils.isBlank(title) || contents == null) {</span>
+<span class="fc" id="L71">			throw new DocumentSubmissionException(&quot;Document title and contents can't be null.&quot;);</span>
+		}
+<span class="fc" id="L73">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>
