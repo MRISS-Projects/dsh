@@ -1,6 +1,7 @@
 # Document Smart Highlights
 
 [![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=${env.TRAVIS_BRANCH})](https://travis-ci.org/MRISS-Projects/dsh)
+![Jacoco](DSH-Coverage-Report/badges/jacoco.svg)
 
 ## Version
 

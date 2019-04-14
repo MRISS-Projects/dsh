@@ -153,6 +153,56 @@
     <!-- <repositories>...</repositories> -->
     <!-- <pluginRepositories>...</pluginRepositories> -->
     <!-- <distributionManagement>...</distributionManagement> -->
-    <!-- <profiles> -->
-    <!-- </profiles> -->
+    <profiles>
+        <profile>
+            <id>process-badges</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.sigpwned</groupId>
+                        <artifactId>jacoco-badge-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-jacoco-badge</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>badge</goal> 
+                                </goals>
+                                <configuration>
+                                    <passing>70</passing>
+                                    <metric>instruction</metric>
+                                    <badgeFile>badges/jacoco.svg</badgeFile>
+                                    <reportFile>${project.reporting.outputDirectory}/jacoco-aggregate/jacoco.csv</reportFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <version>1.9.5</version>
+                        <executions>
+                            <execution>
+                                <id>commit-badges</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>checkin</goal>
+                                </goals>
+                                <configuration>
+                                    <basedir>badges</basedir>
+                                    <includes>*.*</includes>
+                                    <message>${badges.commit.message} [skip travis]</message>
+                                    <developerConnectionUrl>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnectionUrl>
+                                </configuration>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>   
+    </profiles>
 </project>

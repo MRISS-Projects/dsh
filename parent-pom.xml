@@ -93,6 +93,7 @@
         <hibernate4.plugin.version>1.0.5</hibernate4.plugin.version>
         <sql.plugin.version>1.5</sql.plugin.version>
         <jacoco.maven.plugin.version>0.8.3</jacoco.maven.plugin.version>
+        <jacoco.badge.maven.plugin>0.1.4</jacoco.badge.maven.plugin>
 
         <skin.version>1.6</skin.version>
         <skin.artifactId>maven-fluido-skin</skin.artifactId>
@@ -447,6 +448,11 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.sigpwned</groupId>
+                    <artifactId>jacoco-badge-maven-plugin</artifactId>
+                    <version>${jacoco.badge.maven.plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
