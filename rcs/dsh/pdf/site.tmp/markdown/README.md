@@ -1,8 +1,11 @@
 # Document Smart Highlights
 
+[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=staging-0.2.2-SNAPSHOT-RC)](https://travis-ci.org/MRISS-Projects/dsh)
+![Jacoco](DSH-Coverage-Report/badges/jacoco.svg)
+
 ## Version
 
-0.2.1-SNAPSHOT - 20190411-172241
+0.2.2-SNAPSHOT - 20190414-031141
 
 ## Introduction
 
@@ -507,6 +510,18 @@ A new form will open with the fields to fulfill. In case of submit you will need
 inform its title. In case of `status`, you just needs to enter the the token returned by the previous `submit` method call.
 
 ## Release Notes
+
+### Version 0.2.2-SNAPSHOT
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| - | ---- | ------- | -------- | -------- | ------- |
+| [59](https://github.com/MRISS-Projects/dsh/issues/59) | enhancement | Add jacoco coverage plugin and report. | mriss | mriss | 4/12/19 |
+
+### Version 0.2.1
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| - | ---- | ------- | -------- | -------- | ------- |
+| [58](https://github.com/MRISS-Projects/dsh/issues/58) | bug | stage is being executed at master during release process | mriss | mriss | 4/11/19 |
 
 ### Version 0.2.0
 

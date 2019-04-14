@@ -1,0 +1,15 @@
+com.mriss.dsh.analyser.docprocessor
+com.mriss.dsh.analyser.keywords
+com.mriss.dsh.analyser.topsentences
+com.mriss.dsh.data
+com.mriss.dsh.data.document.dao
+com.mriss.dsh.data.document.dao.mongo
+com.mriss.dsh.data.index.dao
+com.mriss.dsh.data.index.dao.solr
+com.mriss.dsh.data.models
+com.mriss.dsh.docindexer
+com.mriss.dsh.restapi
+com.mriss.dsh.restapi.config
+com.mriss.dsh.restapi.dto
+com.mriss.dsh.restapi.rest
+com.mriss.dsh.restapi.service
