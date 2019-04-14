@@ -194,7 +194,7 @@
                                 <configuration>
                                     <basedir>badges</basedir>
                                     <includes>*.*</includes>
-                                    <message>${badges.commit.message} [skip travis]</message>
+                                    <message>badges commit [skip travis]</message>
                                     <developerConnectionUrl>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnectionUrl>
                                 </configuration>
                                 <inherited>false</inherited>
