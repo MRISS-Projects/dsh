@@ -167,7 +167,7 @@
                         <executions>
                             <execution>
                                 <id>generate-jacoco-badge</id>
-                                <phase>process-resources</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>badge</goal> 
                                 </goals>
