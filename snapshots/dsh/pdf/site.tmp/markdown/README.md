@@ -1,10 +1,10 @@
 # Document Smart Highlights
 
-[![Build Status](https://travis-ci.org/MRISS-Projects/maven-changes-plugin.svg?branch=DEVELOP)](https://travis-ci.org/MRISS-Projects/maven-changes-plugin)
+[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=DEVELOP)](https://travis-ci.org/MRISS-Projects/dsh)
 
 ## Version
 
-0.2.2-SNAPSHOT - 20190414-002226
+0.2.2-SNAPSHOT - 20190414-004258
 
 ## Introduction
 
