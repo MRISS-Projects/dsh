@@ -5,7 +5,7 @@
 
 ## Version
 
-0.2.2-SNAPSHOT - 20190414-020535
+0.2.2-SNAPSHOT - 20190414-020601
 
 ## Introduction
 
