@@ -1,5 +1,7 @@
 # Document Smart Highlights
 
+[![Build Status](https://travis-ci.org/MRISS-Projects/maven-changes-plugin.svg?branch=${env.TRAVIS_BRANCH})](https://travis-ci.org/MRISS-Projects/maven-changes-plugin)
+
 ## Version
 
 ${project.build.version}
