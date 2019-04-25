@@ -5,7 +5,7 @@
 
 ## Version
 
-0.2.2-SNAPSHOT - 20190414-023458
+0.2.3-SNAPSHOT - 20190425-050316
 
 ## Introduction
 
@@ -511,10 +511,12 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 ## Release Notes
 
-### Version 0.2.2-SNAPSHOT
+### Version 0.2.2
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | - | ---- | ------- | -------- | -------- | ------- |
+| [61](https://github.com/MRISS-Projects/dsh/issues/61) | enhancement | Add jacoco badge | mriss | mriss | 4/14/19 |
+| [60](https://github.com/MRISS-Projects/dsh/issues/60) | enhancement | Add travis badge. | mriss | mriss | 4/14/19 |
 | [59](https://github.com/MRISS-Projects/dsh/issues/59) | enhancement | Add jacoco coverage plugin and report. | mriss | mriss | 4/12/19 |
 
 ### Version 0.2.1
