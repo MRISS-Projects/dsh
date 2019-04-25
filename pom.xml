@@ -14,7 +14,7 @@
     <!-- THE BASICS -->
     <groupId>com.mriss.products</groupId>
     <artifactId>dsh</artifactId>
-    <version>0.2.3-SNAPSHOT</version>
+    <version>0.2.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <!-- <dependencies> -->
     <!-- </dependencies> -->
@@ -90,6 +90,8 @@
 
         <!-- Project root name used as root folder name for site generation. Used to get files to publish site at github -->
         <project.root.name>dsh</project.root.name>
+
+        <branch.name>${env.TRAVIS_BRANCH}</branch.name>
 
     </properties>
 
