@@ -14,7 +14,7 @@
     <!-- THE BASICS -->
     <groupId>com.mriss.products</groupId>
     <artifactId>dsh</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.2</version>
     <packaging>pom</packaging>
     <!-- <dependencies> -->
     <!-- </dependencies> -->
@@ -278,7 +278,7 @@
         <connection>scm:git:https://github.com/MRISS-Projects/dsh.git</connection>
         <developerConnection>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnection>
         <url>https://github.com/MRISS-Projects/dsh</url>
-        <tag>staging-0.2.2-SNAPSHOT-RC</tag>
+        <tag>dsh-0.2.2</tag>
     </scm>
     <prerequisites>
         <maven>3.3.9</maven>
