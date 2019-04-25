@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>Document.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">DSH Coverage Report Aggregation Module</a> &gt; <a href="../index.html" class="el_bundle">DSH-data</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.data.models</a> &gt; <span class="el_source">Document.java</span></div><h1>Document.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.data.models;
+
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.UUID;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Id;
+
+public class Document {
+	
+<span class="fc" id="L20">	final static Logger logger = LoggerFactory.getLogger(Document.class);</span>
+	
+	@Id
+    private String id;
+	
+	private String title;
+	
+	private String token;
+	
+	private String fileHash;
+	
+	private SortedSet&lt;Keyword&gt; keyWords;
+	
+	private SortedSet&lt;Sentence&gt; relevantSentences;
+	
+	private byte[] originalFileContents;
+	
+	private DocumentStatus documentStatus;
+	
+	private String documentStatusMessage;
+	
+<span class="fc" id="L41">	public Document() {</span>
+		
+<span class="fc" id="L43">	}</span>
+
+	public Document(String id, String title, String token, String fileHash,
+			SortedSet&lt;Keyword&gt; keyWords, SortedSet&lt;Sentence&gt; relevantSentences,
+			byte[] originalFileContents, DocumentStatus documentStatus, String documentStatusMessage) {
+<span class="nc" id="L48">		super();</span>
+<span class="nc" id="L49">		this.id = id;</span>
+<span class="nc" id="L50">		this.title = title;</span>
+<span class="nc" id="L51">		this.token = token;</span>
+<span class="nc" id="L52">		this.fileHash = fileHash;</span>
+<span class="nc" id="L53">		this.keyWords = keyWords;</span>
+<span class="nc" id="L54">		this.relevantSentences = relevantSentences;</span>
+<span class="nc" id="L55">		this.originalFileContents = originalFileContents;</span>
+<span class="nc" id="L56">		this.documentStatus = documentStatus;</span>
+<span class="nc" id="L57">		this.documentStatusMessage = documentStatusMessage;</span>
+<span class="nc" id="L58">	}</span>
+
+<span class="fc" id="L60">	public Document(String title) throws NoSuchAlgorithmException {</span>
+<span class="fc" id="L61">		this.title = title;</span>
+<span class="fc" id="L62">		token = getNewToken();</span>
+<span class="fc" id="L63">		keyWords = new TreeSet&lt;Keyword&gt;(KeywordSorter.getInstance());</span>
+<span class="fc" id="L64">		relevantSentences = new TreeSet&lt;Sentence&gt;(SentenceSorter.getInstance());</span>
+<span class="fc" id="L65">		documentStatus = DocumentStatus.CREATED;</span>
+<span class="fc" id="L66">		documentStatusMessage = DocumentStatus.CREATED.getStatusMessage();</span>
+<span class="fc" id="L67">	}</span>
+	
+	public Document(byte[] originalFileContents, String title) throws Exception {
+<span class="fc" id="L70">		this(title);</span>
+<span class="fc" id="L71">		this.originalFileContents = originalFileContents;</span>
+<span class="fc" id="L72">		fileHash = getNewFileHash();</span>
+<span class="fc" id="L73">	}</span>
+	
+	public Document(InputStream fileContentsStream, String title) throws Exception {
+<span class="fc" id="L76">		this(title);</span>
+<span class="fc" id="L77">		this.originalFileContents = IOUtils.toByteArray(fileContentsStream);</span>
+<span class="fc" id="L78">		fileHash = getNewFileHash();</span>
+<span class="fc" id="L79">	}</span>
+
+	private String getNewFileHash() throws Exception {
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		if (this.originalFileContents != null) {</span>
+<span class="fc" id="L83">			MessageDigest md = MessageDigest.getInstance(&quot;SHA-256&quot;);</span>
+<span class="fc" id="L84">			return String.format(&quot;%064x&quot;, new BigInteger(1, md.digest(this.originalFileContents)));</span>
+<span class="nc" id="L85">		} else return null;</span>
+	}
+
+	private String getNewToken() {
+<span class="fc" id="L89">		return new StringBuilder(new SimpleDateFormat(&quot;YYYYMMdd&quot;).format(new Date())).append(UUID.randomUUID().toString()).toString();</span>
+	}
+
+	public String getToken() {
+<span class="fc" id="L93">		return token;</span>
+	}
+
+	public String getFileHash() {
+<span class="fc" id="L97">		return fileHash;</span>
+	}
+
+	public SortedSet&lt;Keyword&gt; getKeyWords() {
+<span class="fc" id="L101">		return keyWords;</span>
+	}
+
+	public SortedSet&lt;Sentence&gt; getRelevantSentences() {
+<span class="fc" id="L105">		return relevantSentences;</span>
+	}
+
+	public byte[] getOriginalFileContents() {
+<span class="fc" id="L109">		return originalFileContents;</span>
+	}
+	
+	public void addKeyword(Keyword keyword) {
+<span class="fc" id="L113">		this.keyWords.add(keyword);</span>
+<span class="fc" id="L114">	}</span>
+	
+	public void addSentence(Sentence keyword) {
+<span class="fc" id="L117">		this.relevantSentences.add(keyword);</span>
+<span class="fc" id="L118">	}</span>
+
+	public String getTitle() {
+<span class="fc" id="L121">		return title;</span>
+	}
+
+	public void setOriginalFileContents(byte[] originalFileContents) {
+<span class="fc" id="L125">		this.originalFileContents = originalFileContents;</span>
+		try {
+<span class="fc" id="L127">			this.fileHash = getNewFileHash();</span>
+<span class="nc" id="L128">		} catch (Exception e) {</span>
+<span class="nc" id="L129">			logger.error(e.getMessage(), e);</span>
+<span class="fc" id="L130">		}</span>
+<span class="fc" id="L131">	}</span>
+
+	@Override
+	public int hashCode() {
+<span class="fc" id="L135">		final int prime = 31;</span>
+<span class="fc" id="L136">		int result = 1;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		result = prime * result</span>
+<span class="fc" id="L138">				+ ((fileHash == null) ? 0 : fileHash.hashCode());</span>
+<span class="fc" id="L139">		return result;</span>
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L145">			return true;</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		if (obj == null)</span>
+<span class="fc" id="L147">			return false;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (getClass() != obj.getClass())</span>
+<span class="fc" id="L149">			return false;</span>
+<span class="fc" id="L150">		Document other = (Document) obj;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (fileHash == null) {</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">			if (other.fileHash != null)</span>
+<span class="fc" id="L153">				return false;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		} else if (!fileHash.equals(other.fileHash))</span>
+<span class="fc" id="L155">			return false;</span>
+<span class="fc" id="L156">		return true;</span>
+	}
+
+	public String getId() {
+<span class="fc" id="L160">		return this.id;</span>
+	}
+
+	public void setId(String id) {
+<span class="nc" id="L164">		this.id = id;</span>
+<span class="nc" id="L165">	}</span>
+
+	public DocumentStatus getDocumentStatus() {
+<span class="fc" id="L168">		return documentStatus;</span>
+	}
+
+	public String getDocumentStatusMessage() {
+<span class="fc" id="L172">		return documentStatusMessage;</span>
+	}
+	
+	public void transitionStatus(TransitionType transitionType) {
+<span class="fc" id="L176">		this.documentStatus = this.documentStatus.transition(transitionType);</span>
+<span class="fc" id="L177">		this.documentStatusMessage = this.documentStatus.getStatusMessage();</span>
+<span class="fc" id="L178">	}</span>
+
+	@Override
+	public String toString() {
+<span class="fc" id="L182">		return &quot;Document [id=&quot; + id + &quot;, title=&quot; + title + &quot;, token=&quot; + token</span>
+<span class="fc" id="L183">				+ &quot;, fileHash=&quot; + fileHash + &quot;, keyWords=&quot; + keyWords + documentStatus.getStatusDescription()</span>
+				+ &quot;, relevantSentences=&quot; + relevantSentences + &quot;]&quot;;
+	}
+	
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>
