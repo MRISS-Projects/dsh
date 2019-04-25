@@ -91,6 +91,8 @@
         <!-- Project root name used as root folder name for site generation. Used to get files to publish site at github -->
         <project.root.name>dsh</project.root.name>
 
+        <branch.name>${env.TRAVIS_BRANCH}</branch.name>
+
     </properties>
 
     <!-- BUILD SETTINGS -->
