@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 
 MAVEN_GENERATED_TAG=$1
 
