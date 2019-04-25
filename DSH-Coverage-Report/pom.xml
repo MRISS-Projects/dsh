@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>dsh</artifactId>
+        <groupId>com.mriss.products</groupId>
+        <version>0.2.2</version>
+    </parent>
+
+    <!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
+
+    <!-- THE BASICS -->
+    <groupId>com.mriss.products.dsh</groupId>
+    <artifactId>DSH-Coverage-Report</artifactId>
+    <version>0.2.2</version>
+    <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>com.mriss.products.dsh</groupId>
+            <artifactId>DSH-rest-api</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh</groupId>
+            <artifactId>DSH-doc-indexer-worker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh</groupId>
+            <artifactId>DSH-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh</groupId>
+            <artifactId>dsh-test-dataset</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+            <artifactId>DSH-keyword-extractor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+            <artifactId>DSH-top-sentences-extractor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
+            <artifactId>DSH-doc-processor-worker</artifactId>
+        </dependency>
+    </dependencies>
+    <!-- <dependencyManagement>...</dependencyManagement> -->
+    <!-- <modules>...</modules> -->
+    <properties>
+        <skin.version>1.6</skin.version>
+        <skin.artifactId>maven-fluido-skin</skin.artifactId>
+        <skin.groupId>org.apache.maven.skins</skin.groupId>
+        <logo.image>images/logo.jpg</logo.image>
+
+        <!-- <webapp.deployment.url>http://vis-dali-001.americas.hpqcorp.net:8080/manager/html</webapp.deployment.url> -->
+
+        <!-- this property should be set at the parent. If this is not the case, set it here -->
+        <!-- <tomcat.deploy.phase>pre-integration-test</tomcat.deploy.phase> -->
+
+        <!-- this should match a server id at global settings.xml having the tomcat admin user and password -->
+        <!-- <tomcat.seven.server>tomcat7-server</tomcat.seven.server> -->
+
+    </properties>
+
+    <!-- BUILD SETTINGS -->
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/site</directory>
+                <includes>
+                    <include>**/*.apt</include>
+                </includes>
+                <targetPath>${project.build.directory}/generated-site</targetPath>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/site</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.apt</exclude>
+                </excludes>
+                <filtering>false</filtering>
+                <targetPath>${project.build.directory}/generated-site</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>report-code-coverage</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <!-- <pluginManagement> -->
+        <!-- </pluginManagement> -->
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.maven.plugin.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report-aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <!-- MORE PROJECT INFORMATION -->
+    <name>DSH Coverage Report Aggregation Module</name>
+    <description>DSH Coverage Report Aggregation Module</description>
+    <!-- <url>...</url> -->
+    <!-- <inceptionYear>...</inceptionYear> -->
+    <!-- <licenses>...</licenses> -->
+    <!-- <organization>...</organization> -->
+    <!-- <developers> -->
+    <!-- </developers> -->
+    <!-- <contributors>...</contributors> -->
+
+    <!-- ENVIRONMENT SETTINGS -->
+    <!-- <issueManagement>...</issueManagement> -->
+    <!-- <ciManagement>...</ciManagement> -->
+    <!-- <mailingLists>...</mailingLists> -->
+    <!-- <scm>...</scm> -->
+    <prerequisites>
+        <maven>3.3.9</maven>
+    </prerequisites>
+    <!-- <repositories>...</repositories> -->
+    <!-- <pluginRepositories>...</pluginRepositories> -->
+    <!-- <distributionManagement>...</distributionManagement> -->
+    <profiles>
+        <profile>
+            <id>process-badges</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.sigpwned</groupId>
+                        <artifactId>jacoco-badge-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-jacoco-badge</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>badge</goal> 
+                                </goals>
+                                <configuration>
+                                    <passing>70</passing>
+                                    <metric>instruction</metric>
+                                    <badgeFile>badges/jacoco.svg</badgeFile>
+                                    <reportFile>${project.reporting.outputDirectory}/jacoco-aggregate/jacoco.csv</reportFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <version>1.9.5</version>
+                        <executions>
+                            <execution>
+                                <id>commit-badges</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>checkin</goal>
+                                </goals>
+                                <configuration>
+                                    <basedir>badges</basedir>
+                                    <includes>*.*</includes>
+                                    <message>badges commit [skip travis]</message>
+                                    <developerConnectionUrl>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnectionUrl>
+                                </configuration>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>   
+    </profiles>
+</project>

@@ -1,0 +1,12 @@
+# Maven
+target/**/*
+
+#Eclipse 
+*.project
+*.classpath
+*.settings
+/target/
+/.settings/
+/.classpath/
+/.project/
+**/target/**/*
