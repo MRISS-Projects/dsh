@@ -11,8 +11,8 @@ then
     exit 1
 else
     mvn -B -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dbasedir=$CURRENT_DIR -Dmessage="release message [skip travis]" scm:checkin
-    mvn -B -N -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -P update-readme clean process-resources
-    mvn -B -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -f DSH-Coverage-Report/pom.xml -P process-badges clean verify
+    mvn -B -N -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -P update-readme process-resources
+    mvn -B -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -f DSH-Coverage-Report/pom.xml -P process-badges verify
     #mvn -f DSH-Coverage-Report/pom.xml -P process-badges process-resources
     #git push origin --delete `echo ${BRANCH_TO_RELEASE} | cut -c 8-`
 fi
