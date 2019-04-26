@@ -11,7 +11,7 @@ then
     exit 1
 else
     mvn -B -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dbasedir=$CURRENT_DIR -Dmessage="release message [skip travis]" scm:checkin
-    mvn -B -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -P deployment site-deploy
+    mvn -B -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -P product-release-deployment site-deploy
     mvn -B -N -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dbranch.name=master -P update-readme process-resources
     mvn -B -s ../../settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -f DSH-Coverage-Report/pom.xml -P process-badges process-resources
     #mvn -f DSH-Coverage-Report/pom.xml -P process-badges process-resources
