@@ -14,7 +14,7 @@ services:
 env:
 
   global:
-    - BUILD_FLOW=staging
+    - BUILD_FLOW=build
     - NEXT_DEV_VERSION=0.3.0-SNAPSHOT
     - BRANCH_TO_RELEASE=origin/staging-0.2.3-SNAPSHOT-RC
 
