@@ -5,7 +5,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - 20190426-005754
+0.3.0-SNAPSHOT - 20190426-014706
 
 ## Introduction
 
@@ -510,6 +510,12 @@ A new form will open with the fields to fulfill. In case of submit you will need
 inform its title. In case of `status`, you just needs to enter the the token returned by the previous `submit` method call.
 
 ## Release Notes
+
+### Version 0.2.3
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| - | ---- | ------- | -------- | -------- | ------- |
+| [63](https://github.com/MRISS-Projects/dsh/issues/63) | bug | Attach jacoco badge generation at verify phase is generating badge with 0% | mriss | mriss | 4/26/19 |
 
 ### Version 0.2.2
 
