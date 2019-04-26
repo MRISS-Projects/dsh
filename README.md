@@ -1,11 +1,11 @@
 # Document Smart Highlights
 
-[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=DEVELOP)](https://travis-ci.org/MRISS-Projects/dsh)
+[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=staging-0.2.4-SNAPSHOT-RC)](https://travis-ci.org/MRISS-Projects/dsh)
 ![Jacoco](DSH-Coverage-Report/badges/jacoco.svg)
 
 ## Version
 
-0.3.0-SNAPSHOT - 20190426-015611
+0.2.4-SNAPSHOT - 20190426-034737
 
 ## Introduction
 
