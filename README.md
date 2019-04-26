@@ -1,11 +1,11 @@
 # Document Smart Highlights
 
-[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=DEVELOP)](https://travis-ci.org/MRISS-Projects/dsh)
+[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=master)](https://travis-ci.org/MRISS-Projects/dsh)
 ![Jacoco](DSH-Coverage-Report/badges/jacoco.svg)
 
 ## Version
 
-0.2.4 - 20190426-045037
+0.2.4
 
 ## Introduction
 
