@@ -71,13 +71,13 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 ### Pre-requisites
 
-* Java 1.8
+* Java 1.8 (or 11)
 
-* Maven 3.3.9
+* Maven 3.3.9 (or 3.6.X)
 
 * MongoDB 3.4 (windows 10)
 
-* MongoDB 4.0.6 (Ubuntu 18.04 LTS)
+* MongoDB 4.X (Ubuntu 18.04 LTS)
 
 * RabbitMQ 3.6.14 (windows 10)
 
@@ -91,7 +91,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 ##### Download and Installation
 
- 1. Download a J2SE JDK 1.8 platform from [http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+ 1. Download a J2SE JDK 1.8 platform from [http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), 
+    equivalent version for Java 11.
     1. **IMPORTANT NOTE**: Download and install **JDK, not a JRE**. Avoid 
        downloading packages with J2EE and/or net beans. 
        Search the download page for Java SE Development Kit (JDK) or 
@@ -128,7 +129,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
    Variables` button.     
 2. At the System Variables section, click New.
 3. Set JAVA_HOME and point to the root of JDK folder.
-4. Search for the variable named <<Path>> in the list, click on it and press 
+4. Search for the variable named `Path` in the list, click on it and press 
    Edit.
 5. Prepend the value with:
  
@@ -153,7 +154,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 #### Maven
 
-1. Dowload maven **3.3.9** from [http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip](http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip)    
+1. Dowload maven **3.3.9 or 3.6.X** from [http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip](http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip) or
+   [http://archive.apache.org/dist/maven/maven-3](http://archive.apache.org/dist/maven/maven-3) to choose a version 3.6.X.   
 2. Unzip it on a folder of your preference
 3. Set environment variables.
    1. Linux   
@@ -365,7 +367,7 @@ mvn clean install
 2. Start Tomcat windows service using windows services application.
 3. Look at the address: http://localhost:8080 
 
-##### Linux Ubuntu 19.04 LSTS
+##### Linux Ubuntu 18.04 LSTS
 
 1. Download Tomcat 8.0.x .zip or .tar.gz file at 
    [https://tomcat.apache.org/download-80.cgi](https://tomcat.apache.org/download-80.cgi). 

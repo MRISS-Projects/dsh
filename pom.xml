@@ -283,9 +283,6 @@
         <url>https://github.com/MRISS-Projects/dsh</url>
         <tag>HEAD</tag>
     </scm>
-    <prerequisites>
-        <maven>3.3.9</maven>
-    </prerequisites>
     <repositories>
         <repository>
             <id>repository.spring.release</id>
