@@ -1,0 +1,17 @@
+<project name="${project.name}">
+	<version position="right" />
+	<publishDate position="right" format="yyyy-MM-dd - hh:mm:ss" />
+	<skin>
+		<groupId>${skin.groupId}</groupId>
+		<artifactId>${skin.artifactId}</artifactId>
+		<version>${skin.version}</version>
+	</skin>
+	<body>
+<!--		<links>
+			<item name="Maven" href="http://maven.apache.org" />
+		</links> -->
+		<menu ref="parent" />
+		<menu ref="modules" />
+		<menu ref="reports" />
+	</body>
+</project>

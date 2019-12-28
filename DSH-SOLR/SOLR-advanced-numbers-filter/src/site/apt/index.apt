@@ -1,0 +1,11 @@
+            ------
+            Welcome to DSH-doc-analyser
+            ------
+            Marcelo Riss
+            ------
+            2017-12-06
+           
+Document Smart Highlights SOLR Advanced Numbers Filter
+
+ Filter number-based tokens. For instance numbers with term count = 1
+ and belonging to a hyperlink.

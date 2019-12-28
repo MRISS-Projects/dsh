@@ -331,6 +331,7 @@
         <module>dsh-test-dataset</module>
         <module>DSH-data</module>
         <module>DSH-rest-api</module>
+        <module>DSH-SOLR</module>
         <module>DSH-doc-indexer-worker</module>
         <module>DSH-doc-analyser</module>
         <module>DSH-Coverage-Report</module>
