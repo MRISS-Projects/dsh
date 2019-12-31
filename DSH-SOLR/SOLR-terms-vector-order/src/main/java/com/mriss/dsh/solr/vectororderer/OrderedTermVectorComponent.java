@@ -11,22 +11,44 @@ import org.slf4j.LoggerFactory;
 
 public class OrderedTermVectorComponent extends TermVectorComponent {
 
+	Logger LOGGER = LoggerFactory.getLogger(OrderedTermVectorComponent.class);
+	
 	private static final String ORDER_PARAM = "order";
 	
-	Logger LOGGER = LoggerFactory.getLogger(OrderedTermVectorComponent.class);
+	private TermVectorComponent responseBuilderProcessor = new TermVectorComponent();
 
 	@Override
-	public void process(ResponseBuilder rb) throws IOException {		
-		super.process(rb);
+	public void process(ResponseBuilder rb) throws IOException {
 		
+		responseBuilderProcessor.process(rb);
+
 		SolrParams params = rb.req.getParams();
-		
+
 		OrderOptions orderOptions = getOrderOptions(params.get(ORDER_PARAM));
-		
+
 		if (orderOptions != null) {
 			LOGGER.info("Order options: " + orderOptions);
+			NamedList<Object> responseValues = rb.rsp.getValues();
+			NamedList<Object> tvNamedList = (NamedList<Object>) responseValues.get(TermVectorComponent.TERM_VECTORS);
+			tvNamedList.forEach(tvValue -> {
+				if (tvValue instanceof NamedList) {
+					NamedList<Object> docNamedList = (NamedList<Object>) tvValue.getValue();
+					if (docNamedList.get("uniqueKey") != null) {
+						docNamedList.forEach(fieldValue -> {
+							NamedList<Object> fieldNamedList = (NamedList<Object>) fieldValue.getValue();
+							SortedNamedList snl = new SortedNamedList();
+							snl.addAll(fieldNamedList);
+							snl.sort(orderOptions);
+							String uniqueKey = (String) docNamedList.get("uniqueKey");
+							docNamedList.clear();
+							docNamedList.add("uniqueKey", uniqueKey);
+							docNamedList.add(fieldValue.getKey(), snl);
+						});
+					}
+				}
+			});
 		}
-		
+
 		LOGGER.info("Leaving Custom Ordered Terms Vector Component...");
 	}
 
@@ -38,11 +60,6 @@ public class OrderedTermVectorComponent extends TermVectorComponent {
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public void init(NamedList args) {
-		super.init(args);
 	}
 
 }

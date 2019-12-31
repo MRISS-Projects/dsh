@@ -34,4 +34,26 @@ public enum Order {
 		return OrderNamesHolder.get(orderName);
 	}
 
+	public int compare(int paramValueO1, int paramValueO2) {
+		if (this == ASC) {
+			if (paramValueO1 < paramValueO2) {
+				return -1;
+			} else if (paramValueO1 > paramValueO2) {
+				return 1;
+			} else {
+				return 0;
+			}
+		} else if(this == DESC) {
+			if (paramValueO1 > paramValueO2) {
+				return -1;
+			} else if (paramValueO1 < paramValueO2) {
+				return 1;
+			} else {
+				return 0;
+			}			
+		} else {
+			return 0;
+		}		
+	}
+
 }

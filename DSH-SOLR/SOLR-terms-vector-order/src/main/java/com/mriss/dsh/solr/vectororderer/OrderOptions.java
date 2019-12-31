@@ -4,25 +4,25 @@ public class OrderOptions {
 
 	private Order order;
 	
-	private String orderField;
+	private String termVectorParam;
 
 	public OrderOptions(Order order, String orderField) {
 		super();
 		this.order = order;
-		this.orderField = orderField;
+		this.termVectorParam = orderField;
 	}
 
 	public Order getOrder() {
 		return order;
 	}
 
-	public String getOrderField() {
-		return orderField;
+	public String getTermVectorParam() {
+		return termVectorParam;
 	}
 
 	@Override
 	public String toString() {
-		return "OrderOptions [order=" + order + ", orderField=" + orderField + "]";
+		return "OrderOptions [order=" + order + ", orderField=" + termVectorParam + "]";
 	}
 	
 }
