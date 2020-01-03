@@ -46,7 +46,6 @@ public class OrderedTermVectorComponent extends TermVectorComponent {
 								newDocNamedList.add(fieldKey, snl);								
 							}
 						});
-						LOGGER.info("newDocNamedList: " + newDocNamedList);
 						docNamedList.clear();
 						docNamedList.addAll(newDocNamedList);
 					}

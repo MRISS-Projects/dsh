@@ -19,10 +19,8 @@ public class SortedNamedList extends NamedList<Object> {
 
 	public void sort(OrderOptions orderOptions) {
 		Map<String, Object> sortedMap = copyToSortedMap(orderOptions);
-		LOGGER.info("sortedMap: " + sortedMap);
 		this.clear();
-		this.addAll(sortedMap);
-		//Collections.sort(this.nvPairs, new TermsVectorComparator(orderOptions));		
+		this.addAll(sortedMap);	
 	}
 
 	private Map<String, Object> copyToSortedMap(OrderOptions orderOptions) {

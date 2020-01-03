@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 public class TermsVectorComparator implements Comparator<Object> {
 
-	Logger LOGGER = LoggerFactory.getLogger(TermsVectorComparator.class);
-	
 	private OrderOptions orderOptions;
 	private String strippedTermVectorParam;
 	private NamedList<Object> originalNamedList;
