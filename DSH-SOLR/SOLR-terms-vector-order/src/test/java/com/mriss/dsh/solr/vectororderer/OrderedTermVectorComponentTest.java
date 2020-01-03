@@ -108,7 +108,7 @@ public class OrderedTermVectorComponentTest {
 	public void testProcessResponseBuilderDesc() throws IOException {
 		Mockito.doAnswer(new Answer() {
 		      public Object answer(InvocationOnMock invocation) {
-		    	  System.out.println("Mocking process method.");
+		    	  LOGGER.debug("Mocking process method.");
 		          return null;
 		      }})
 		  .when(responseBuilderProcessor).process(rb);
@@ -138,14 +138,14 @@ public class OrderedTermVectorComponentTest {
 		Mockito.when(req.getParams()).thenReturn(params);
 		Mockito.when(rsp.getValues()).thenReturn(namedList);
 		termVectorComponent.process(rb);
-		System.out.println(namedList);
+		LOGGER.debug(""+namedList);
 	}
 
 	@Test
 	public void testProcessResponseBuilderAsc() throws IOException {
 		Mockito.doAnswer(new Answer() {
 		      public Object answer(InvocationOnMock invocation) {
-		    	  System.out.println("Mocking process method.");
+		    	  LOGGER.debug("Mocking process method.");
 		          return null;
 		      }})
 		  .when(responseBuilderProcessor).process(rb);
@@ -175,7 +175,7 @@ public class OrderedTermVectorComponentTest {
 		Mockito.when(req.getParams()).thenReturn(params);
 		Mockito.when(rsp.getValues()).thenReturn(namedList);
 		termVectorComponent.process(rb);
-		System.out.println(namedList);
+		LOGGER.debug(""+namedList);
 	}
 
 }
