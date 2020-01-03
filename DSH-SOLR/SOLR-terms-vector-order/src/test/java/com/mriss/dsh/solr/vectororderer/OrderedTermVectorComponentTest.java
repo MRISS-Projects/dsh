@@ -1,26 +1,56 @@
 package com.mriss.dsh.solr.vectororderer;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.common.util.Utils;
+import org.apache.solr.handler.component.ResponseBuilder;
+import org.apache.solr.handler.component.TermVectorComponent;
+import org.apache.solr.request.SolrQueryRequest;
+import org.apache.solr.response.SolrQueryResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OrderedTermVectorComponentTest {
+	
+	Logger LOGGER = LoggerFactory.getLogger(OrderedTermVectorComponentTest.class);
 
 	private Map<Object, Object> originalJson;
 	
 	private NamedList<Object> namedList;
+	
+	@Mock
+	TermVectorComponent responseBuilderProcessor;
+	
+	@InjectMocks
+	private OrderedTermVectorComponent termVectorComponent = new OrderedTermVectorComponent();
+	
+	@Mock
+	private SolrQueryRequest req;
+	
+	@Mock
+	private SolrQueryResponse rsp;
+	
+	@InjectMocks
+	private ResponseBuilder rb = new ResponseBuilder(null, null, null);
 	
 	@Before
 	public void setUp() throws Exception {
@@ -28,6 +58,7 @@ public class OrderedTermVectorComponentTest {
 		assertNotNull(originalJson);
 		namedList = convertToNamedList(originalJson);
 		assertNotNull(namedList);
+		MockitoAnnotations.initMocks(this);
 	}
 	 
 	private NamedList<Object> convertToNamedList(Map<Object, Object> jsonMap) {
@@ -74,8 +105,77 @@ public class OrderedTermVectorComponentTest {
 	}
 
 	@Test
-	public void testProcessResponseBuilder() {
-		fail("Not yet implemented");
+	public void testProcessResponseBuilderDesc() throws IOException {
+		Mockito.doAnswer(new Answer() {
+		      public Object answer(InvocationOnMock invocation) {
+		    	  System.out.println("Mocking process method.");
+		          return null;
+		      }})
+		  .when(responseBuilderProcessor).process(rb);
+		SolrParams params = new SolrParams() {
+
+			@Override
+			public String get(String param) {
+				if (param.equals(OrderedTermVectorComponent.ORDER_PARAM)) {
+					return "tv.tf;desc";
+				}
+				return null;
+			}
+
+			@Override
+			public String[] getParams(String param) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Iterator<String> getParameterNamesIterator() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
+		Mockito.when(req.getParams()).thenReturn(params);
+		Mockito.when(rsp.getValues()).thenReturn(namedList);
+		termVectorComponent.process(rb);
+		System.out.println(namedList);
+	}
+
+	@Test
+	public void testProcessResponseBuilderAsc() throws IOException {
+		Mockito.doAnswer(new Answer() {
+		      public Object answer(InvocationOnMock invocation) {
+		    	  System.out.println("Mocking process method.");
+		          return null;
+		      }})
+		  .when(responseBuilderProcessor).process(rb);
+		SolrParams params = new SolrParams() {
+
+			@Override
+			public String get(String param) {
+				if (param.equals(OrderedTermVectorComponent.ORDER_PARAM)) {
+					return "tv.tf;asc";
+				}
+				return null;
+			}
+
+			@Override
+			public String[] getParams(String param) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Iterator<String> getParameterNamesIterator() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
+		Mockito.when(req.getParams()).thenReturn(params);
+		Mockito.when(rsp.getValues()).thenReturn(namedList);
+		termVectorComponent.process(rb);
+		System.out.println(namedList);
 	}
 
 }

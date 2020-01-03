@@ -38,10 +38,10 @@ public enum Order {
 		if (this == ASC) {
 			if (paramValueO1 < paramValueO2) {
 				return -1;
-			} else if (paramValueO1 > paramValueO2) {
+			} else if (paramValueO1 >= paramValueO2) {
 				return 1;
 			} else {
-				return 0;
+				return 1;
 			}
 		} else if(this == DESC) {
 			if (paramValueO1 > paramValueO2) {
@@ -49,7 +49,7 @@ public enum Order {
 			} else if (paramValueO1 < paramValueO2) {
 				return 1;
 			} else {
-				return 0;
+				return 1;
 			}			
 		} else {
 			return 0;

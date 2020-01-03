@@ -13,7 +13,7 @@ public class OrderedTermVectorComponent extends TermVectorComponent {
 
 	Logger LOGGER = LoggerFactory.getLogger(OrderedTermVectorComponent.class);
 	
-	private static final String ORDER_PARAM = "order";
+	static final String ORDER_PARAM = "order";
 	
 	private TermVectorComponent responseBuilderProcessor = new TermVectorComponent();
 
@@ -30,20 +30,25 @@ public class OrderedTermVectorComponent extends TermVectorComponent {
 			LOGGER.info("Order options: " + orderOptions);
 			NamedList<Object> responseValues = rb.rsp.getValues();
 			NamedList<Object> tvNamedList = (NamedList<Object>) responseValues.get(TermVectorComponent.TERM_VECTORS);
-			tvNamedList.forEach(tvValue -> {
+			tvNamedList.forEach( (tvKey, tvValue) -> {
 				if (tvValue instanceof NamedList) {
-					NamedList<Object> docNamedList = (NamedList<Object>) tvValue.getValue();
+					NamedList<Object> docNamedList = (NamedList<Object>) tvValue;
 					if (docNamedList.get("uniqueKey") != null) {
-						docNamedList.forEach(fieldValue -> {
-							NamedList<Object> fieldNamedList = (NamedList<Object>) fieldValue.getValue();
-							SortedNamedList snl = new SortedNamedList();
-							snl.addAll(fieldNamedList);
-							snl.sort(orderOptions);
-							String uniqueKey = (String) docNamedList.get("uniqueKey");
-							docNamedList.clear();
-							docNamedList.add("uniqueKey", uniqueKey);
-							docNamedList.add(fieldValue.getKey(), snl);
+						NamedList<Object> newDocNamedList = new NamedList<Object>();
+						String uniqueKey = (String) docNamedList.get("uniqueKey");
+						newDocNamedList.add("uniqueKey", uniqueKey);						
+						docNamedList.forEach( (fieldKey, fieldValue) -> {
+							if (fieldValue instanceof NamedList) {
+								NamedList<Object> fieldNamedList = (NamedList<Object>) fieldValue;
+								SortedNamedList snl = new SortedNamedList();
+								snl.addAll(fieldNamedList);
+								snl.sort(orderOptions);
+								newDocNamedList.add(fieldKey, snl);								
+							}
 						});
+						LOGGER.info("newDocNamedList: " + newDocNamedList);
+						docNamedList.clear();
+						docNamedList.addAll(newDocNamedList);
 					}
 				}
 			});
