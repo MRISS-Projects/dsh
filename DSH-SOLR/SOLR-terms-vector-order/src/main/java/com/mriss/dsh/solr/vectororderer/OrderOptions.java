@@ -2,27 +2,27 @@ package com.mriss.dsh.solr.vectororderer;
 
 public class OrderOptions {
 
-	private Order order;
-	
-	private String termVectorParam;
+    private Order order;
 
-	public OrderOptions(Order order, String orderField) {
-		super();
-		this.order = order;
-		this.termVectorParam = orderField;
-	}
+    private String termVectorParam;
 
-	public Order getOrder() {
-		return order;
-	}
+    public OrderOptions(Order order, String orderField) {
+        super();
+        this.order = order;
+        this.termVectorParam = orderField;
+    }
 
-	public String getTermVectorParam() {
-		return termVectorParam;
-	}
+    public Order getOrder() {
+        return order;
+    }
 
-	@Override
-	public String toString() {
-		return "OrderOptions [order=" + order + ", orderField=" + termVectorParam + "]";
-	}
-	
+    public String getTermVectorParam() {
+        return termVectorParam;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderOptions [order=" + order + ", orderField=" + termVectorParam + "]";
+    }
+
 }

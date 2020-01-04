@@ -10,28 +10,27 @@ import org.slf4j.LoggerFactory;
 
 public class SortedNamedList extends NamedList<Object> {
 
-	Logger LOGGER = LoggerFactory.getLogger(SortedNamedList.class);
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6977027481117549645L;
+    Logger LOGGER = LoggerFactory.getLogger(SortedNamedList.class);
 
-	public void sort(OrderOptions orderOptions) {
-		Map<String, Object> sortedMap = copyToSortedMap(orderOptions);
-		this.clear();
-		this.addAll(sortedMap);	
-	}
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6977027481117549645L;
 
-	private Map<String, Object> copyToSortedMap(OrderOptions orderOptions) {
-		Map<String, Object> fastTreeMap = new FastTreeMap(new TermsVectorComparator(orderOptions, this));
-		for (Iterator iterator = nvPairs.iterator(); iterator.hasNext();) {
-			String key = (String) iterator.next();
-			Object value = iterator.next();
-			fastTreeMap.put(key, value);		
-		}
-		return fastTreeMap;
-	}
+    public void sort(OrderOptions orderOptions) {
+        Map<String, Object> sortedMap = copyToSortedMap(orderOptions);
+        this.clear();
+        this.addAll(sortedMap);
+    }
 
-	
+    private Map<String, Object> copyToSortedMap(OrderOptions orderOptions) {
+        Map<String, Object> fastTreeMap = new FastTreeMap(new TermsVectorComparator(orderOptions, this));
+        for (Iterator iterator = nvPairs.iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            Object value = iterator.next();
+            fastTreeMap.put(key, value);
+        }
+        return fastTreeMap;
+    }
+
 }

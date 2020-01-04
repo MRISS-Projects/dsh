@@ -4,8 +4,6 @@ import java.util.Comparator;
 
 import org.apache.solr.common.params.TermVectorParams;
 import org.apache.solr.common.util.NamedList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TermsVectorComparator implements Comparator<Object> {
 
