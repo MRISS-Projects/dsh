@@ -234,9 +234,9 @@
                         <additionalparam>-Xdoclint:none</additionalparam>
                         <quite>true</quite>
                         <source>8</source>
-<!--                         <links> -->
-<!--                             <link>https://docs.oracle.com/javase/8/docs/api/</link> -->
-<!--                         </links> -->
+                        <links>
+                            <link>https://docs.oracle.com/javase/8/docs/api/</link>
+                        </links>
                     </configuration>
                 </plugin>
                 <plugin>
