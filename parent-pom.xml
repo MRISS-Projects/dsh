@@ -233,9 +233,10 @@
                         <encoding>UTF-8</encoding>
                         <additionalparam>-Xdoclint:none</additionalparam>
                         <quite>true</quite>
-                        <links>
-                            <link>https://docs.oracle.com/javase/8/docs/api/</link>
-                        </links>
+                        <source>8</source>
+<!--                         <links> -->
+<!--                             <link>https://docs.oracle.com/javase/8/docs/api/</link> -->
+<!--                         </links> -->
                     </configuration>
                 </plugin>
                 <plugin>

@@ -9,12 +9,22 @@ import org.apache.solr.handler.component.TermVectorComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Search component for an ordered terms vector. The order can be ascending or
+ * descending per <code>tv</code> field (tv.tf, tv.df, tv.idf, etc...).
+ * 
+ * @author riss
+ *
+ */
 public class OrderedTermVectorComponent extends TermVectorComponent {
 
     Logger LOGGER = LoggerFactory.getLogger(OrderedTermVectorComponent.class);
 
     static final String ORDER_PARAM = "order";
 
+    /**
+     * The term vector component processor.
+     */
     private TermVectorComponent responseBuilderProcessor = new TermVectorComponent();
 
     @Override
@@ -56,6 +66,14 @@ public class OrderedTermVectorComponent extends TermVectorComponent {
         LOGGER.info("Leaving Custom Ordered Terms Vector Component...");
     }
 
+    /**
+     * Gets order options based on a query parameter string. The query parameters
+     * for order should be in the format: <code>order=[tv_field];asc|desc</code>.
+     * Example: <code>order=tv.tf;desc</code>.
+     * 
+     * @param orderParam
+     * @return
+     */
     private OrderOptions getOrderOptions(String orderParam) {
         LOGGER.info("orderParam: " + orderParam);
         if (orderParam != null && !orderParam.isEmpty()) {
