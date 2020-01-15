@@ -24,7 +24,7 @@
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-core</artifactId>
         </dependency>
-    </dependencies>s
+    </dependencies>
     <!-- <dependencyManagement>...</dependencyManagement> -->
     <!-- <modules>...</modules> -->
     <properties>
