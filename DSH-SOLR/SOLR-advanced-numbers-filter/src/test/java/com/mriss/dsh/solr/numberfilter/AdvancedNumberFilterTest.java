@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
@@ -28,21 +29,9 @@ public class AdvancedNumberFilterTest {
     @InjectMocks
     TokenStream tokenStream = new TokenStream() {
 
-        int calls = 0;
-
         @Override
         public boolean incrementToken() throws IOException {
-            if (calls < 4) {
-                calls++;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public void reset() throws IOException {
-            calls = 0;
+            return true;
         }
 
     };
@@ -80,17 +69,43 @@ public class AdvancedNumberFilterTest {
     }
 
     @Test
-    public void testIncrementToken() throws IOException {
-//        Mockito.when(termAtt.buffer()).thenReturn(new char[] { 'a', 'b', 'c' }, new char[] { 'a', 'b', 'c' },
-//                new char[] { 'a', 'b', 'c' }, new char[] { 'a', 'b', 'c' }, new char[] { 'a', 'b', 'c' },
-//                new char[] { 'a', 'b', 'c' }, new char[] { 'a', 'b', 'c' }, new char[] { 'a', 'b', 'c' });
-//        Mockito.when(termAtt.length()).thenReturn(3);
-//        filter.setTermAtt(termAtt);
-//        boolean a = filter.incrementToken();
-//        while (a) {
-//            a = filter.incrementToken();
-//        }
-//        assertEquals("abc abc abc abc ", filter.getContent().toString());
+    public void testAcceptUrl() throws IOException {
+        String testString = "https://bla.com.br";
+        Mockito.when(termAtt.buffer()).thenReturn(testString.toCharArray());
+        Mockito.when(termAtt.length()).thenReturn(testString.length());
+        assertFalse(filter.accept());
+    }
+
+    @Test
+    public void testMixedNumbers1() throws IOException {
+        String testString = "canada-39902108";
+        Mockito.when(termAtt.buffer()).thenReturn(testString.toCharArray());
+        Mockito.when(termAtt.length()).thenReturn(testString.length());
+        assertFalse(filter.accept());
+    }
+
+    @Test
+    public void testMixedNumbers2() throws IOException {
+        String testString = "39902108-canada";
+        Mockito.when(termAtt.buffer()).thenReturn(testString.toCharArray());
+        Mockito.when(termAtt.length()).thenReturn(testString.length());
+        assertFalse(filter.accept());
+    }
+
+    @Test
+    public void testHostName() throws IOException {
+        String testString = "www.myhost.com.br";
+        Mockito.when(termAtt.buffer()).thenReturn(testString.toCharArray());
+        Mockito.when(termAtt.length()).thenReturn(testString.length());
+        assertFalse(filter.accept());
+    }
+
+    @Test
+    public void testRegularTerm() throws IOException {
+        String testString = "myRegularTerm";
+        Mockito.when(termAtt.buffer()).thenReturn(testString.toCharArray());
+        Mockito.when(termAtt.length()).thenReturn(testString.length());
+        assertTrue(filter.accept());
     }
 
 }
