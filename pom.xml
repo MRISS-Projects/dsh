@@ -287,17 +287,17 @@
         <repository>
             <id>repository.spring.release</id>
             <name>Spring GA Repository</name>
-            <url>http://repo.spring.io/release</url>
+            <url>https://repo.spring.io/release</url>
         </repository>
         <repository>
             <id>repository.spring.milestone</id>
             <name>Spring Milestone Repository</name>
-            <url>http://repo.spring.io/milestone</url>
+            <url>https://repo.spring.io/milestone</url>
         </repository>
         <repository>
             <id>repository.spring.snapshot</id>
             <name>Spring Snapshot Repository</name>
-            <url>http://repo.spring.io/snapshot</url>
+            <url>https://repo.spring.io/snapshot</url>
         </repository>
         <repository>
             <id>mriss-repository</id>
