@@ -5,7 +5,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - 20200222-213800
+0.3.0-SNAPSHOT - 20200222-213828
 
 ## Introduction
 
