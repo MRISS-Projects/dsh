@@ -17,6 +17,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.ant</groupId>
@@ -232,6 +233,7 @@
                         <encoding>UTF-8</encoding>
                         <additionalparam>-Xdoclint:none</additionalparam>
                         <quite>true</quite>
+                        <source>8</source>
                         <links>
                             <link>https://docs.oracle.com/javase/8/docs/api/</link>
                         </links>
@@ -537,9 +539,6 @@
 
     <!-- Environment Settings -->
     <!-- <mailingLists>...</mailingLists> -->
-    <prerequisites>
-        <maven>3.1.1</maven>
-    </prerequisites>
     <repositories>
         <repository>
             <id>MRISS-Projects-maven-repo</id>
