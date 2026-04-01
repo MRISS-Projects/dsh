@@ -1,0 +1,78 @@
+name: API Testing
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'DSH-rest-api/**'
+      - 'specs/api/**'
+  pull_request:
+    paths:
+      - 'DSH-rest-api/**'
+      - 'specs/api/**'
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    name: Run API Tests (Postman)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Build DSH REST API
+        run: |
+          mvn -B install -DskipTests \
+            --file pom.xml \
+            -pl DSH-rest-api \
+            -am
+
+      - name: Start DSH REST API
+        run: |
+          java -jar DSH-rest-api/target/*.jar \
+            --server.port=8080 \
+            --spring.profiles.active=test &
+          echo "Waiting for application to start..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/actuator/health; do sleep 2; done'
+
+      - name: Set up Node.js for Newman
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Newman (Postman CLI runner)
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run Postman collections
+        run: |
+          if ls specs/api/postman/*.json 1>/dev/null 2>&1; then
+            newman run specs/api/postman/*.json \
+              --reporters cli,htmlextra \
+              --reporter-htmlextra-export target/newman-report.html
+          else
+            echo "No Postman collections found in specs/api/postman/ – skipping."
+          fi
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-report
+          path: target/newman-report.html
+          if-no-files-found: ignore
