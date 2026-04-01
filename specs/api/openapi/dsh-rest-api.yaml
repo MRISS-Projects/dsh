@@ -1,0 +1,379 @@
+openapi: 3.0.3
+info:
+  title: DSH REST API
+  description: |
+    Document Smart Highlights (DSH) REST API for document analysis and smart highlighting.
+
+    This API allows clients to upload documents, trigger analysis, and retrieve
+    the resulting highlights and metadata.
+
+    For detailed feature specifications see:
+    - `/specs/features/document-analysis.md`
+    - `/specs/features/smart-highlighting.md`
+    - `/specs/features/rest-api-endpoints.md`
+  version: 1.0.0
+  contact:
+    name: MRISS Projects
+    url: https://github.com/MRISS-Projects/dsh
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: documents
+    description: Document upload, analysis, and management
+  - name: highlights
+    description: Highlight retrieval and management
+  - name: health
+    description: Service health and status
+
+paths:
+  /documents:
+    post:
+      tags:
+        - documents
+      summary: Upload and analyse a document
+      operationId: analyzeDocument
+      description: |
+        Accepts a document file and optional analysis configuration.
+        Returns a document ID and initial processing status.
+        Analysis is performed asynchronously by the indexer worker.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Document file (PDF, DOC, DOCX). Maximum size 50 MB.
+                options:
+                  $ref: '#/components/schemas/AnalysisOptions'
+      responses:
+        '202':
+          description: Document accepted for analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResult'
+              example:
+                documentId: "doc-abc123"
+                status: "processing"
+                highlights: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '413':
+          description: File too large (maximum 50 MB)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /documents/{documentId}:
+    get:
+      tags:
+        - documents
+      summary: Get document analysis status
+      operationId: getDocumentStatus
+      parameters:
+        - $ref: '#/components/parameters/documentId'
+      responses:
+        '200':
+          description: Document status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /documents/{documentId}/highlights:
+    get:
+      tags:
+        - highlights
+      summary: Get highlights for a document
+      operationId: getDocumentHighlights
+      description: Returns all highlights generated for the specified document.
+      parameters:
+        - $ref: '#/components/parameters/documentId'
+        - name: type
+          in: query
+          description: Filter highlights by type
+          schema:
+            type: string
+        - name: minConfidence
+          in: query
+          description: Minimum confidence threshold for returned highlights
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 0.7
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Highlights retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HighlightCollection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /health:
+    get:
+      tags:
+        - health
+      summary: Service health check
+      operationId: healthCheck
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+components:
+  parameters:
+    documentId:
+      name: documentId
+      in: path
+      required: true
+      description: Unique identifier of the document
+      schema:
+        type: string
+        example: "doc-abc123"
+
+  schemas:
+    AnalysisOptions:
+      type: object
+      description: Configuration options for document analysis
+      properties:
+        highlightTypes:
+          type: array
+          description: Types of highlights to generate
+          items:
+            type: string
+            enum: [keyword, semantic, pattern, entity]
+          example: ["keyword", "semantic"]
+        confidenceThreshold:
+          type: number
+          description: Minimum confidence score for generated highlights (0.0–1.0)
+          minimum: 0
+          maximum: 1
+          default: 0.7
+          example: 0.7
+        maxHighlights:
+          type: integer
+          description: Maximum number of highlights to return
+          minimum: 1
+          maximum: 1000
+          default: 100
+
+    AnalysisResult:
+      type: object
+      required:
+        - documentId
+        - status
+      description: Result and status of a document analysis operation
+      properties:
+        documentId:
+          type: string
+          description: Unique identifier assigned to the document
+          example: "doc-abc123"
+        status:
+          type: string
+          description: Current processing status
+          enum: [processing, completed, failed]
+          example: "completed"
+        highlights:
+          type: array
+          description: Generated highlights (populated when status is completed)
+          items:
+            $ref: '#/components/schemas/Highlight'
+        errorMessage:
+          type: string
+          description: Error message when status is failed
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the document was submitted
+          example: "2024-01-15T10:30:00Z"
+        completedAt:
+          type: string
+          format: date-time
+          description: Timestamp when analysis completed
+          nullable: true
+
+    Highlight:
+      type: object
+      required:
+        - id
+        - text
+        - position
+      description: A single highlight extracted from a document
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the highlight
+          example: "hl-001"
+        text:
+          type: string
+          description: The highlighted text content
+          example: "machine learning"
+        position:
+          $ref: '#/components/schemas/Position'
+        confidence:
+          type: number
+          description: Confidence score (0.0–1.0)
+          minimum: 0
+          maximum: 1
+          example: 0.92
+        type:
+          type: string
+          description: Category of the highlight
+          enum: [keyword, semantic, pattern, entity]
+          example: "keyword"
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional metadata specific to the highlight type
+
+    HighlightCollection:
+      type: object
+      description: Paginated collection of highlights for a document
+      properties:
+        documentId:
+          type: string
+          example: "doc-abc123"
+        highlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/Highlight'
+        page:
+          type: integer
+          description: Current page number (0-based)
+          example: 0
+        size:
+          type: integer
+          description: Page size
+          example: 20
+        totalElements:
+          type: integer
+          description: Total number of highlights
+          example: 42
+        totalPages:
+          type: integer
+          description: Total number of pages
+          example: 3
+
+    Position:
+      type: object
+      required:
+        - start
+        - end
+      description: Character-based position of a highlight within the document
+      properties:
+        start:
+          type: integer
+          description: Start character offset (0-based)
+          minimum: 0
+          example: 150
+        end:
+          type: integer
+          description: End character offset (exclusive)
+          minimum: 0
+          example: 166
+        page:
+          type: integer
+          description: Page number (1-based, for multi-page documents)
+          minimum: 1
+          nullable: true
+          example: 2
+
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN, OUT_OF_SERVICE]
+          example: "UP"
+        timestamp:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      description: Standard error response body
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed for field 'confidence'"
+        path:
+          type: string
+          example: "/api/v1/documents"
+
+  responses:
+    BadRequest:
+      description: Validation failure or malformed request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Unexpected server-side error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
