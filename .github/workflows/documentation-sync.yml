@@ -8,6 +8,7 @@ on:
       - 'specs/api/openapi/**'
       - 'specs/architecture/**'
       - 'specs/features/**'
+      - 'docs/wiki/**'
   workflow_dispatch:
 
 jobs:
