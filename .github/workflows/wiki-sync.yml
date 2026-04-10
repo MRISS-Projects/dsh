@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,9 +47,17 @@ jobs:
           echo "Wiki pages copied:"
           ls -1 docs/wiki/*.md 2>/dev/null || echo "(none found)"
 
-      - name: Commit synced wiki pages
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create pull request with synced wiki pages
+        uses: peter-evans/create-pull-request@v7
         with:
-          commit_message: "docs: sync wiki pages to docs/wiki [skip ci]"
-          file_pattern: 'docs/wiki/**'
-          branch: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: sync wiki pages to docs/wiki [skip ci]"
+          branch: wiki-sync/docs-wiki
+          delete-branch: true
+          title: "docs: sync wiki pages to docs/wiki"
+          body: |
+            Automated wiki sync — copies the latest wiki Markdown pages into `docs/wiki/`.
+
+            This PR was opened automatically by the **Wiki Sync** workflow.
+          base: ${{ github.ref_name }}
+          add-paths: 'docs/wiki/**'
