@@ -146,9 +146,6 @@
     <!-- <ciManagement>...</ciManagement> -->
     <!-- <mailingLists>...</mailingLists> -->
     <!-- <scm>...</scm> -->
-    <prerequisites>
-        <maven>3.3.9</maven>
-    </prerequisites>
     <!-- <repositories>...</repositories> -->
     <!-- <pluginRepositories>...</pluginRepositories> -->
     <!-- <distributionManagement>...</distributionManagement> -->

@@ -1,0 +1,79 @@
+name: Documentation Sync
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'specs/api/openapi/**'
+      - 'specs/architecture/**'
+      - 'specs/features/**'
+      - 'docs/wiki/**'
+  workflow_dispatch:
+
+jobs:
+  generate-api-docs:
+    name: Generate API Documentation from OpenAPI Spec
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli@latest
+
+      - name: Generate HTML documentation
+        run: |
+          mkdir -p docs/api
+          redocly build-docs specs/api/openapi/dsh-rest-api.yaml \
+            --output docs/api/index.html
+
+      - name: Commit generated documentation
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: auto-generate API documentation from OpenAPI spec [skip ci]"
+          file_pattern: 'docs/api/**'
+          branch: ${{ github.ref_name }}
+
+  generate-toc:
+    name: Update Specs Table of Contents
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdown-toc
+        run: npm install -g markdown-toc
+
+      - name: Update TOC in spec files
+        run: |
+          for file in specs/features/*.md specs/architecture/*.md; do
+            if [ -f "$file" ]; then
+              markdown-toc -i "$file" || true
+            fi
+          done
+
+      - name: Commit TOC updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: auto-update table of contents in spec files [skip ci]"
+          file_pattern: 'specs/**/*.md'
+          branch: ${{ github.ref_name }}

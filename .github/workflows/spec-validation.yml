@@ -1,0 +1,81 @@
+name: Spec Validation
+on:
+  push:
+    paths:
+      - 'specs/**'
+      - 'docs/wiki/**'
+      - '.github/copilot-instructions.md'
+      - '.github/copilot/**'
+      - '.github/roles.md'
+  pull_request:
+    paths:
+      - 'specs/**'
+      - 'docs/wiki/**'
+      - '.github/copilot-instructions.md'
+      - '.github/copilot/**'
+      - '.github/roles.md'
+
+jobs:
+  validate-openapi:
+    name: Validate OpenAPI Specification
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli@latest
+
+      - name: Validate OpenAPI spec
+        run: redocly lint specs/api/openapi/dsh-rest-api.yaml
+
+  validate-markdown:
+    name: Validate Markdown Files
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint
+        run: npm install -g markdownlint-cli
+
+      - name: Lint markdown files
+        run: |
+          markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
+            --ignore 'docs/wiki/**' \
+            --config .markdownlint.json || true
+
+  check-spec-references:
+    name: Check Spec File References
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify referenced spec files exist
+        run: |
+          echo "Checking that files referenced in copilot-instructions.md exist..."
+          missing=0
+          while IFS= read -r line; do
+            file=$(echo "$line" | grep -oP '(?<=`)/[^`]+' | head -1)
+            if [ -n "$file" ] && [ ! -e ".${file}" ]; then
+              echo "WARNING: Referenced file not found: $file"
+            fi
+          done < .github/copilot-instructions.md
+          echo "Reference check complete."
