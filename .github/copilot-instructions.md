@@ -51,6 +51,17 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 | Development guide | `/docs/copilot/development-guide.md` |
 | Team roles | `/.github/roles.md` |
 
+## Wiki References
+
+The `/docs/wiki/` directory contains Markdown copies of the [DSH GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki) pages, automatically synced daily by `.github/workflows/wiki-sync.yml`. Use these files as `@workspace` context in Copilot prompts exactly like any spec file.
+
+| Wiki Page | Location in repo |
+|-----------|-----------------|
+| Wiki index / Home | `/docs/wiki/Home.md` |
+| *(additional pages appear here after first sync)* | `/docs/wiki/<Page-Name>.md` |
+
+> **Note:** Wiki files are auto-generated. Edit them only via the [GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki). Run **Actions → Wiki Sync → Run workflow** to pull the latest content immediately.
+
 ## Component Guidelines
 
 ### Document Analyzer (DSH-doc-analyser)

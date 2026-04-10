@@ -1,0 +1,54 @@
+name: Wiki Sync
+
+on:
+  schedule:
+    # Run daily at 02:00 UTC so docs/wiki stays fresh
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-wiki:
+    name: Sync Wiki Pages to docs/wiki
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clone wiki repository
+        run: |
+          git clone --depth=1 \
+            "https://github.com/${{ github.repository }}.wiki.git" \
+            /tmp/wiki
+
+      - name: Copy wiki pages to docs/wiki
+        run: |
+          mkdir -p docs/wiki
+          if [ ! -d /tmp/wiki ] || [ -z "$(find /tmp/wiki -maxdepth 1 -name '*.md' 2>/dev/null)" ]; then
+            echo "No wiki pages found – skipping copy."
+            exit 0
+          fi
+          # Copy all Markdown files from the wiki
+          find /tmp/wiki -maxdepth 1 -name '*.md' | while read -r src; do
+            filename=$(basename "$src")
+            dest="docs/wiki/${filename}"
+            # Prepend a warning header so editors know not to edit the copy directly
+            {
+              printf '<!-- AUTO-GENERATED: do not edit directly. '
+              printf 'Source: https://github.com/%s/wiki/%s -->\n' \
+                "${{ github.repository }}" "${filename%.md}"
+              cat "$src"
+            } > "$dest"
+          done
+          echo "Wiki pages copied:"
+          ls -1 docs/wiki/*.md 2>/dev/null || echo "(none found)"
+
+      - name: Commit synced wiki pages
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: sync wiki pages to docs/wiki [skip ci]"
+          file_pattern: 'docs/wiki/**'
+          branch: ${{ github.ref_name }}

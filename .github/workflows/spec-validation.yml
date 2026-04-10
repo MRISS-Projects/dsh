@@ -3,12 +3,14 @@ on:
   push:
     paths:
       - 'specs/**'
+      - 'docs/wiki/**'
       - '.github/copilot-instructions.md'
       - '.github/copilot/**'
       - '.github/roles.md'
   pull_request:
     paths:
       - 'specs/**'
+      - 'docs/wiki/**'
       - '.github/copilot-instructions.md'
       - '.github/copilot/**'
       - '.github/roles.md'
@@ -54,6 +56,7 @@ jobs:
       - name: Lint markdown files
         run: |
           markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
+            --ignore 'docs/wiki/**' \
             --config .markdownlint.json || true
 
   check-spec-references:
