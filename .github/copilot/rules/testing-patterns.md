@@ -13,6 +13,7 @@ Follow the classic testing pyramid:
 - **Spring Boot Test** for slice and integration tests
 - **Testcontainers** for MongoDB/Solr integration tests
 - **MockMvc** for controller slice tests (`@WebMvcTest`)
+- **NEVER USE** PowerMock or similar tools that require bytecode manipulation
 
 ## Naming Conventions
 - Test class: `<ClassUnderTest>Test` (unit) or `<ClassUnderTest>IT` (integration)
