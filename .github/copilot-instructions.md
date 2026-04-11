@@ -48,6 +48,7 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 | Component generation | `/.github/copilot/prompts/component-generation.md` |
 | Test generation | `/.github/copilot/prompts/test-generation.md` |
 | Documentation generation | `/.github/copilot/prompts/documentation-generation.md` |
+| Feature implementation | `/.github/copilot/prompts/feature-implementation.md` |
 | Development guide | `/docs/copilot/development-guide.md` |
 | Team roles | `/.github/roles.md` |
 

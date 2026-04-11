@@ -7,7 +7,8 @@ Use these prompt templates with GitHub Copilot Chat to generate consistent docum
 ## Feature Specification
 
 ```
-Generate a feature specification document for [FeatureName] in the DSH project.
+As a Product Manager (see /.github/roles.md), generate a feature specification
+document for [FeatureName] in the DSH project.
 
 Save to: specs/features/[feature-name].md
 
@@ -25,7 +26,8 @@ Include:
 ## API Endpoint Documentation
 
 ```
-Document the [HTTP method] [path] endpoint for the DSH REST API.
+As a Backend Developer (see /.github/roles.md), document the [HTTP method] [path]
+endpoint for the DSH REST API.
 
 Add to: specs/features/rest-api-endpoints.md
 
@@ -44,7 +46,8 @@ Include:
 ## Architecture Decision Record (ADR)
 
 ```
-Generate an Architecture Decision Record for the decision to [describe decision].
+As a Backend Developer (see /.github/roles.md), generate an Architecture Decision
+Record for the decision to [describe decision].
 
 Save to: specs/architecture/[adr-number]-[short-title].md
 
@@ -62,7 +65,8 @@ Include:
 ## OpenAPI Schema
 
 ```
-Generate an OpenAPI 3.0.3 schema component for [SchemaName] in the DSH API.
+As a Backend Developer (see /.github/roles.md), generate an OpenAPI 3.0.3 schema
+component for [SchemaName] in the DSH API.
 
 Add to: specs/api/openapi/dsh-rest-api.yaml under components/schemas
 
@@ -80,7 +84,8 @@ Requirements:
 ## JavaDoc for Class
 
 ```
-Generate comprehensive JavaDoc for [ClassName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate comprehensive JavaDoc
+for [ClassName] in the DSH project.
 
 Requirements:
 - Class-level JavaDoc: describe purpose, responsibilities, and usage
@@ -95,7 +100,8 @@ Requirements:
 ## README for Module
 
 ```
-Generate a README.md for the [ModuleName] Maven module in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate a README.md for the
+[ModuleName] Maven module in the DSH project.
 
 Include:
 - Module purpose and responsibilities

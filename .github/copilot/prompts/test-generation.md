@@ -7,7 +7,8 @@ Use these prompt templates with GitHub Copilot Chat to generate consistent tests
 ## Unit Test for Service
 
 ```
-Generate JUnit 5 unit tests for [ServiceName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate JUnit 5 unit tests for
+[ServiceName] in the DSH project.
 
 Requirements:
 - Test class name: [ServiceName]Test
@@ -27,7 +28,8 @@ Requirements:
 ## Controller Slice Test
 
 ```
-Generate @WebMvcTest tests for [ControllerName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate @WebMvcTest tests for
+[ControllerName] in the DSH project.
 
 Requirements:
 - Test class name: [ControllerName]Test
@@ -46,7 +48,8 @@ Requirements:
 ## Integration Test
 
 ```
-Generate a @SpringBootTest integration test for [FeatureName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate a @SpringBootTest
+integration test for [FeatureName] in the DSH project.
 
 Requirements:
 - Test class name: [FeatureName]IT (integration test naming convention)
@@ -63,7 +66,8 @@ Requirements:
 ## Repository Test
 
 ```
-Generate a Spring Data repository test for [RepositoryName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate a Spring Data repository
+test for [RepositoryName] in the DSH project.
 
 Requirements:
 - Use @DataMongoTest or @DataJpaTest slice context
@@ -81,7 +85,8 @@ Requirements:
 ## Performance Test
 
 ```
-Generate a performance test for [OperationName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate a performance test for
+[OperationName] in the DSH project.
 
 Requirements:
 - Tag with @Tag("performance")
