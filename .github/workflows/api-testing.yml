@@ -24,6 +24,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
     env:
       # DEPLOY_TOKEN must be stored as a repository secret.
       # Create a GitHub Personal Access Token (classic) with the
