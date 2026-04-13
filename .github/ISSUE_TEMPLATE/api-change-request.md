@@ -45,7 +45,7 @@ assignees: ''
 
 ## Acceptance Criteria
 - [ ] OpenAPI spec updated in `specs/api/openapi/dsh-rest-api.yaml`
-- [ ] Implementation updated in `DSH-rest-api` module
+- [ ] Implementation updated in `dsh-rest-api` module
 - [ ] Postman collection updated in `specs/api/postman/`
 - [ ] API endpoint spec updated in `specs/features/rest-api-endpoints.md`
 - [ ] Tests added/updated

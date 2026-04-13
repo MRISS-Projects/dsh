@@ -26,9 +26,9 @@ This directory contains sequence diagrams illustrating the process flows in the 
 ```mermaid
 sequenceDiagram
     participant Client
-    participant API as DSH-rest-api
-    participant Worker as DSH-doc-indexer-worker
-    participant Analyser as DSH-doc-analyser
+    participant API as dsh-rest-api
+    participant Worker as dsh-doc-indexer-worker
+    participant Analyser as dsh-doc-analyser
 
     Client->>API: POST /api/v1/documents (file)
     API-->>Client: 202 Accepted {documentId}

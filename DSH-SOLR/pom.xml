@@ -15,8 +15,7 @@
 
 	<!-- THE BASICS -->
 	<groupId>com.mriss.products.dsh</groupId>
-	<artifactId>DSH-SOLR</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<artifactId>dsh-solr</artifactId>
 	<packaging>pom</packaging>
 	<dependencies>
 		<dependency>
@@ -34,6 +33,16 @@
 				<groupId>org.apache.solr</groupId>
 				<artifactId>solr-core</artifactId>
 				<version>${solr.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.restlet.jee</groupId>
+						<artifactId>org.restlet</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.restlet.jee</groupId>
+						<artifactId>org.restlet.ext.servlet</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
@@ -151,7 +160,7 @@
 	<!-- <profiles> -->
 	<!-- </profiles> -->
 	<modules>
-		<module>SOLR-terms-vector-order</module>
-		<module>SOLR-advanced-numbers-filter</module>
+		<module>solr-terms-vector-order</module>
+		<module>solr-advanced-numbers-filter</module>
 	</modules>
 </project>

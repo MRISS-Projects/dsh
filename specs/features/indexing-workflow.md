@@ -1,7 +1,7 @@
 # Indexing Workflow Specification
 
 ## Overview
-The indexing workflow describes how documents submitted via the REST API are processed asynchronously by the `DSH-doc-indexer-worker` module, from task enqueuing through analysis and Solr indexing to final status persistence.
+The indexing workflow describes how documents submitted via the REST API are processed asynchronously by the `dsh-doc-indexer-worker` module, from task enqueuing through analysis and Solr indexing to final status persistence.
 
 ## Workflow Steps
 
@@ -19,16 +19,16 @@ The indexing workflow describes how documents submitted via the REST API are pro
    └── Text is normalised (encoding, whitespace)
 
 4. Analysis
-   └── Worker calls DSH-doc-analyser with document content and options
+   └── Worker calls dsh-doc-analyser with document content and options
    └── Analyser applies configured algorithms
    └── Analyser returns list of Highlight objects
 
 5. Persistence
-   └── Worker persists highlights to MongoDB (DSH-data)
+   └── Worker persists highlights to MongoDB (dsh-data)
    └── Worker updates document status to: completed
 
 6. Solr Indexing
-   └── Worker indexes document content in Apache Solr (DSH-SOLR)
+   └── Worker indexes document content in Apache Solr (dsh-solr)
    └── Enables full-text search over document content
 
 7. Error Handling

@@ -1,7 +1,7 @@
 # Document Analysis Feature Specification
 
 ## Overview
-The document analysis feature processes uploaded documents to identify and extract smart highlights based on configurable analysis rules. Analysis is performed asynchronously by the `DSH-doc-analyser` module, orchestrated through the `DSH-doc-indexer-worker`.
+The document analysis feature processes uploaded documents to identify and extract smart highlights based on configurable analysis rules. Analysis is performed asynchronously by the `dsh-doc-analyser` module, orchestrated through the `dsh-doc-indexer-worker`.
 
 ## Functional Requirements
 
@@ -48,24 +48,24 @@ The document analysis feature processes uploaded documents to identify and extra
 ## Technical Implementation
 
 ### Component Integration
-- **DSH-rest-api**: Accepts upload, validates input, returns document ID
-- **DSH-doc-indexer-worker**: Picks up queued documents, orchestrates analysis
-- **DSH-doc-analyser**: Executes analysis algorithms, produces highlights
-- **DSH-data**: Persists documents, analysis results, and highlights
-- **DSH-SOLR**: Indexes document content for full-text search
+- **dsh-rest-api**: Accepts upload, validates input, returns document ID
+- **dsh-doc-indexer-worker**: Picks up queued documents, orchestrates analysis
+- **dsh-doc-analyser**: Executes analysis algorithms, produces highlights
+- **dsh-data**: Persists documents, analysis results, and highlights
+- **dsh-solr**: Indexes document content for full-text search
 
 ### Data Flow
 ```
-Client → [POST /documents] → DSH-rest-api
-  → persist document (DSH-data / MongoDB)
+Client → [POST /documents] → dsh-rest-api
+  → persist document (dsh-data / MongoDB)
   → enqueue analysis task
   → return {documentId, status: "processing"}
 
-DSH-doc-indexer-worker (async):
+dsh-doc-indexer-worker (async):
   → dequeue task
-  → call DSH-doc-analyser.analyze(document)
-  → persist highlights (DSH-data)
-  → index content (DSH-SOLR)
+  → call dsh-doc-analyser.analyze(document)
+  → persist highlights (dsh-data)
+  → index content (dsh-solr)
   → update status to "completed"
 ```
 

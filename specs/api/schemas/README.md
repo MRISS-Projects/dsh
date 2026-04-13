@@ -14,7 +14,7 @@ Schemas in this directory serve as the canonical data model definitions for the 
 
 - `../openapi/dsh-rest-api.yaml` – OpenAPI specification
 - `../../architecture/data-models/` – Data model documentation
-- Backend Java DTOs in `DSH-rest-api` and `DSH-data` modules
+- Backend Java DTOs in `dsh-rest-api` and `dsh-data` modules
 
 ## Adding a New Schema
 

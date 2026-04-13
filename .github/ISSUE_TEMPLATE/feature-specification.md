@@ -32,11 +32,11 @@ assignees: ''
 
 ## Affected Modules
 <!-- Check all that apply -->
-- [ ] DSH-rest-api
-- [ ] DSH-doc-analyser
-- [ ] DSH-doc-indexer-worker
-- [ ] DSH-data
-- [ ] DSH-SOLR
+- [ ] dsh-rest-api
+- [ ] dsh-doc-analyser
+- [ ] dsh-doc-indexer-worker
+- [ ] dsh-data
+- [ ] dsh-solr
 - [ ] Frontend (TBD)
 - [ ] Infrastructure / CI/CD
 

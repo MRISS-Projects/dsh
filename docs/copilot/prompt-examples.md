@@ -98,7 +98,7 @@ Include:
   - FR001: Delete document and all associated highlights
   - FR002: Return 404 if document does not exist
 - Acceptance criteria for each requirement
-- Technical implementation notes referencing DSH-rest-api and DSH-data
+- Technical implementation notes referencing dsh-rest-api and dsh-data
 - Testing requirements (unit and integration)
 - References to related specs and architecture documents
 ```
@@ -119,9 +119,9 @@ specs/features/document-analysis.md for the DSH project.
 Requirements:
 - Read and follow all functional requirements (FRxxx) in the feature specification
 - Implement changes in the appropriate DSH modules:
-  - DSH-rest-api – for REST endpoint changes
-  - DSH-doc-analyser – for document analysis logic
-  - DSH-data – for data model changes
+  - dsh-rest-api – for REST endpoint changes
+  - dsh-doc-analyser – for document analysis logic
+  - dsh-data – for data model changes
 - Follow Java conventions in /.github/copilot/rules/java-conventions.md
 - Follow API standards in /.github/copilot/rules/api-standards.md
 - Conform to OpenAPI spec in /specs/api/openapi/dsh-rest-api.yaml

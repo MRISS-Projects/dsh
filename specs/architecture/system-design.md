@@ -13,14 +13,14 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
                       │ HTTP/REST
                       ▼
 ┌─────────────────────────────────────────────────────────┐
-│                   DSH-rest-api                          │
+│                   dsh-rest-api                           │
 │         Spring Boot REST API Service Layer              │
 │   (routes requests, validation, authentication)        │
 └────────────┬────────────────────────┬───────────────────┘
              │                        │
              ▼                        ▼
 ┌────────────────────┐   ┌────────────────────────────────┐
-│  DSH-doc-analyser  │   │    DSH-doc-indexer-worker      │
+│  dsh-doc-analyser  │   │    dsh-doc-indexer-worker      │
 │  Analysis Engine   │   │  Background Indexing Worker    │
 │  (sync analysis)   │   │  (async document processing)   │
 └────────────┬───────┘   └────────────┬───────────────────┘
@@ -28,7 +28,7 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
              └────────────┬───────────┘
                           ▼
           ┌───────────────────────────────┐
-          │          DSH-data             │
+          │          dsh-data             │
           │  Shared Data Models &         │
           │  Persistence Layer            │
           └───────────┬───────────────────┘
@@ -36,7 +36,7 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
              ┌────────┴────────┐
              ▼                 ▼
      ┌──────────────┐  ┌──────────────┐
-     │   MongoDB    │  │  DSH-SOLR    │
+     │   MongoDB    │  │  dsh-solr    │
      │  (documents) │  │ (full-text   │
      │              │  │  indexing)   │
      └──────────────┘  └──────────────┘
@@ -44,33 +44,33 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 
 ## Module Responsibilities
 
-### DSH-rest-api
+### dsh-rest-api
 - Exposes the public REST API (see `../api/openapi/dsh-rest-api.yaml`)
 - Handles authentication, request validation, and routing
-- Delegates business logic to `DSH-doc-analyser` and `DSH-doc-indexer-worker`
+- Delegates business logic to `dsh-doc-analyser` and `dsh-doc-indexer-worker`
 
-### DSH-doc-analyser
+### dsh-doc-analyser
 - Core document analysis engine
 - Implements keyword, semantic, pattern, and entity analysis algorithms
 - Produces `Highlight` objects with confidence scores
 
-### DSH-doc-indexer-worker
+### dsh-doc-indexer-worker
 - Processes document indexing tasks asynchronously
-- Integrates with Apache Solr via `DSH-SOLR` module for full-text search
+- Integrates with Apache Solr via `dsh-solr` module for full-text search
 - Updates document status in the persistence layer
 
-### DSH-data
+### dsh-data
 - Contains shared JPA/MongoDB entity classes and repositories
 - Provides data access layer for other modules
 - Manages database schema migrations
 - Manages document status transitions using as reference the flow 
   defined in `docs/wiki/Workflow.md`.
 
-### DSH-SOLR
+### dsh-solr
 - Apache Solr configuration and integration utilities
 - Manages Solr core configuration and indexing schemas
 
-### DSH-Coverage-Report
+### dsh-coverage-report
 - Aggregates JaCoCo code coverage reports across all modules
 - Used in CI to enforce coverage thresholds
 
@@ -89,8 +89,7 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 
 - **Logging**: SLF4J with structured logging; correlation IDs per request
 - **Validation**: Jakarta Bean Validation at API boundaries
-- **Error Handling**: Global exception handler in `DSH-rest-api`
-- **Configuration**: Spring profiles (`dev`, `test`, `prod`)
+- **Error Handling**: Global exception handler in `dsh-rest-api`
 
 ## Further Reading
 

@@ -19,11 +19,11 @@ This directory contains data model specifications for the DSH system.
 
 - Document all persistence entities (MongoDB documents, Solr schemas)
 - Use Mermaid `erDiagram` syntax for ER diagrams
-- Map each entity to its corresponding Java class in `DSH-data`
+- Map each entity to its corresponding Java class in `dsh-data`
 - Keep in sync with `../../api/schemas/` for API-facing models
 
 ## Relationship to Other Specs
 
 - API schemas: `../../api/schemas/` – API-facing representation of these models
 - OpenAPI spec: `../../api/openapi/dsh-rest-api.yaml` – Serialised form in responses
-- Java entities: `DSH-data/src/main/java/` – Implementation
+- Java entities: `dsh-data/src/main/java/` – Implementation

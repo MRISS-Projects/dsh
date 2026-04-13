@@ -5,11 +5,11 @@ on:
       - develop
       - main
     paths:
-      - 'DSH-rest-api/**'
+      - 'dsh-rest-api/**'
       - 'specs/api/**'
   pull_request:
     paths:
-      - 'DSH-rest-api/**'
+      - 'dsh-rest-api/**'
       - 'specs/api/**'
   workflow_dispatch:
 
@@ -40,12 +40,12 @@ jobs:
         run: |
           mvn -B install -DskipTests \
             --file pom.xml \
-            -pl DSH-rest-api \
+            -pl dsh-rest-api \
             -am
 
       - name: Start DSH REST API
         run: |
-          java -jar DSH-rest-api/target/*.jar \
+          java -jar dsh-rest-api/target/*.jar \
             --server.port=8080 \
             --spring.profiles.active=test &
           echo "Waiting for application to start..."

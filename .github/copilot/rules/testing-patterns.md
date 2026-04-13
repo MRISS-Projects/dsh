@@ -76,7 +76,7 @@ class DocumentControllerTest {
 
 ## Coverage Requirements
 - Minimum 80% line coverage for service classes
-- Minimum 70% line coverage overall (enforced by DSH-Coverage-Report module)
+- Minimum 70% line coverage overall (enforced by dsh-coverage-report module)
 - All critical paths (error handling, edge cases) must be explicitly tested
 
 ## Performance Tests

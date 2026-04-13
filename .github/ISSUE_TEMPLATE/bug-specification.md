@@ -32,11 +32,11 @@ Paste stack trace or error output here
 ```
 
 ## Affected Module(s)
-- [ ] DSH-rest-api
-- [ ] DSH-doc-analyser
-- [ ] DSH-doc-indexer-worker
-- [ ] DSH-data
-- [ ] DSH-SOLR
+- [ ] dsh-rest-api
+- [ ] dsh-doc-analyser
+- [ ] dsh-doc-indexer-worker
+- [ ] dsh-data
+- [ ] dsh-solr
 - [ ] Frontend
 
 ## Severity

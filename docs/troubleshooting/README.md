@@ -19,7 +19,7 @@ This directory contains troubleshooting documentation for the DSH system.
 ## Diagnostic Tools
 
 - **Health check**: `GET /api/v1/health` – verify the service is running
-- **Application logs**: check `DSH-rest-api` and `DSH-doc-indexer-worker` logs
+- **Application logs**: check `dsh-rest-api` and `dsh-doc-indexer-worker` logs
 - **MongoDB**: use `connect-mongo.sh` script at the repository root
 - **Solr**: check the Solr admin UI at `http://localhost:8983/solr`
 

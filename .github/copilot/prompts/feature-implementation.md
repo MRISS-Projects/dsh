@@ -13,10 +13,10 @@ specs/features/[feature-file].md for the DSH project.
 Requirements:
 - Read and follow all functional requirements (FRxxx) in the feature specification
 - Implement changes in the appropriate DSH modules:
-  - DSH-rest-api – for REST endpoint changes
-  - DSH-doc-analyser – for document analysis logic
-  - DSH-doc-indexer-worker – for indexing workflow changes
-  - DSH-data – for data model changes
+  - dsh-rest-api – for REST endpoint changes
+  - dsh-doc-analyser – for document analysis logic
+  - dsh-doc-indexer-worker – for indexing workflow changes
+  - dsh-data – for data model changes
 - Follow Java conventions in /.github/copilot/rules/java-conventions.md
 - Follow API standards in /.github/copilot/rules/api-standards.md
 - Conform to OpenAPI spec in /specs/api/openapi/dsh-rest-api.yaml

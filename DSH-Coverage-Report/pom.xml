@@ -6,45 +6,44 @@
     <parent>
         <artifactId>dsh</artifactId>
         <groupId>com.mriss.products</groupId>
-        <version>0.2.4</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
     <!-- THE BASICS -->
     <groupId>com.mriss.products.dsh</groupId>
-    <artifactId>DSH-Coverage-Report</artifactId>
-    <version>0.2.4</version>
+    <artifactId>dsh-coverage-report</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>com.mriss.products.dsh</groupId>
-            <artifactId>DSH-rest-api</artifactId>
+            <artifactId>dsh-rest-api</artifactId>
             <type>war</type>
         </dependency>
         <dependency>
             <groupId>com.mriss.products.dsh</groupId>
-            <artifactId>DSH-doc-indexer-worker</artifactId>
+            <artifactId>dsh-doc-indexer-worker</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mriss.products.dsh</groupId>
-            <artifactId>DSH-data</artifactId>
+            <artifactId>dsh-data</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mriss.products.dsh</groupId>
             <artifactId>dsh-test-dataset</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
-            <artifactId>DSH-keyword-extractor</artifactId>
+            <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
+            <artifactId>dsh-keyword-extractor</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
-            <artifactId>DSH-top-sentences-extractor</artifactId>
+            <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
+            <artifactId>dsh-top-sentences-extractor</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
-            <artifactId>DSH-doc-processor-worker</artifactId>
+            <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
+            <artifactId>dsh-doc-processor-worker</artifactId>
         </dependency>
     </dependencies>
     <!-- <dependencyManagement>...</dependencyManagement> -->

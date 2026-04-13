@@ -8,13 +8,13 @@
     <parent>
         <groupId>com.mriss</groupId>
         <artifactId>mriss-parent</artifactId>
-        <version>1.2.4</version>
+        <version>3.7.1</version>
     </parent>
 
     <!-- THE BASICS -->
     <groupId>com.mriss.products</groupId>
     <artifactId>dsh</artifactId>
-    <version>0.2.4</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <!-- <dependencies> -->
     <!-- </dependencies> -->
@@ -23,18 +23,18 @@
         <dependencies>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
-                <artifactId>DSH-rest-api</artifactId>
+                <artifactId>dsh-rest-api</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
-                <artifactId>DSH-doc-indexer-worker</artifactId>
+                <artifactId>dsh-doc-indexer-worker</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
-                <artifactId>DSH-data</artifactId>
+                <artifactId>dsh-data</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -43,18 +43,18 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
-                <artifactId>DSH-keyword-extractor</artifactId>
+                <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
+                <artifactId>dsh-keyword-extractor</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
-                <artifactId>DSH-top-sentences-extractor</artifactId>
+                <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
+                <artifactId>dsh-top-sentences-extractor</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mriss.products.dsh.DSH-doc-analyser</groupId>
-                <artifactId>DSH-doc-processor-worker</artifactId>
+                <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
+                <artifactId>dsh-doc-processor-worker</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -86,7 +86,7 @@
         <!-- TODO: Replace this to a project description and url at github -->
         <trac.release.history.number>22</trac.release.history.number>
 
-        <spring.boot.version>2.0.0.M7</spring.boot.version>
+        <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
 
         <!-- Project root name used as root folder name for site generation. Used to get files to publish site at github -->
         <project.root.name>dsh</project.root.name>
@@ -209,6 +209,28 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-lowercase-artifact-id</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireProperty>
+                                    <property>project.artifactId</property>
+                                    <regex>^[a-z][a-z0-9\-]*$</regex>
+                                    <regexMessage>Maven artifactId must follow naming convention: only lowercase letters, digits, and hyphens are allowed. Found: '${project.artifactId}'</regexMessage>
+                                </requireProperty>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -281,7 +303,7 @@
         <connection>scm:git:https://github.com/MRISS-Projects/dsh.git</connection>
         <developerConnection>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnection>
         <url>https://github.com/MRISS-Projects/dsh</url>
-        <tag>dsh-0.2.4</tag>
+        <tag>HEAD</tag>
     </scm>
     <repositories>
         <repository>
@@ -329,12 +351,12 @@
     </pluginRepositories>
     <modules>
         <module>dsh-test-dataset</module>
-        <module>DSH-data</module>
-        <module>DSH-rest-api</module>
-        <module>DSH-SOLR</module>
-        <module>DSH-doc-indexer-worker</module>
-        <module>DSH-doc-analyser</module>
-        <module>DSH-Coverage-Report</module>
+        <module>dsh-data</module>
+        <module>dsh-rest-api</module>
+        <module>dsh-solr</module>
+        <module>dsh-doc-indexer-worker</module>
+        <module>dsh-doc-analyser</module>
+        <module>dsh-coverage-report</module>
     </modules>
     <profiles>
         <profile>

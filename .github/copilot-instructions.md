@@ -4,20 +4,21 @@
 Document Smart Highlights (DSH) is a Java-based system for intelligent document analysis and highlighting. The system consists of multiple Maven modules including document analyzers, indexers, and REST APIs, built on Spring Boot and Spring Framework.
 
 ## Architecture Summary
-- **DSH-doc-analyser** – Core document analysis engine
-- **DSH-doc-indexer-worker** – Background indexing worker
-- **DSH-rest-api** – REST API service layer
-- **DSH-data** – Shared data models and persistence
-- **DSH-SOLR** – Apache Solr integration
-- **DSH-Coverage-Report** – Aggregated test coverage reporting
+- **dsh-doc-analyser** – Core document analysis engine
+- **dsh-doc-indexer-worker** – Background indexing worker
+- **dsh-rest-api** – REST API service layer
+- **dsh-data** – Shared data models and persistence
+- **dsh-solr** – Apache Solr integration
+- **dsh-coverage-report** – Aggregated test coverage reporting
 
 ## Development Standards
 
 ### Code Structure
 - Follow Maven multi-module project structure (see `pom.xml` and `parent-pom.xml`)
-- Use Spring Boot for microservices (existing pattern in DSH-rest-api)
+- Use Spring Boot for microservices (existing pattern in dsh-rest-api)
 - Implement clean architecture patterns
 - Reference specifications in `/specs/` directory before implementing features
+- **All Maven module artifactIds must be lowercase** (only lowercase letters, digits, and hyphens). This is enforced by `maven-enforcer-plugin` in the root `pom.xml`.
 
 ### API Development
 - All APIs must conform to OpenAPI specifications in `/specs/api/openapi/`
@@ -65,17 +66,17 @@ The `/docs/wiki/` directory contains Markdown copies of the [DSH GitHub Wiki](ht
 
 ## Component Guidelines
 
-### Document Analyzer (DSH-doc-analyser)
+### Document Analyzer (dsh-doc-analyser)
 - Implement analysis algorithms per `/specs/features/document-analysis.md`
 - Use component patterns from `/specs/architecture/component-diagrams/`
 - Follow Java conventions in `/.github/copilot/rules/java-conventions.md`
 
-### REST API (DSH-rest-api)
+### REST API (dsh-rest-api)
 - Follow OpenAPI spec: `/specs/api/openapi/dsh-rest-api.yaml`
 - Implement endpoints per `/specs/features/rest-api-endpoints.md`
 - Use Spring Boot patterns and annotations as described in `/.github/copilot/rules/java-conventions.md`
 
-### Indexer Worker (DSH-doc-indexer-worker)
+### Indexer Worker (dsh-doc-indexer-worker)
 - Follow workflow specification: `/specs/features/indexing-workflow.md`
 - Reference performance benchmarks: `/specs/testing/performance-benchmarks/`
 

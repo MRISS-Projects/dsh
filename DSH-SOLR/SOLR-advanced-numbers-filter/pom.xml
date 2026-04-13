@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>DSH-SOLR</artifactId>
+        <artifactId>dsh-solr</artifactId>
         <groupId>com.mriss.products.dsh</groupId>
         <version>0.3.0-SNAPSHOT</version>
     </parent>
@@ -15,9 +15,8 @@
         http://maven.apache.org/pom.html#Quick_Overview -->
 
     <!-- THE BASICS -->
-    <groupId>com.mriss.products.dsh.DSH-SOLR</groupId>
-    <artifactId>SOLR-advanced-numbers-filter</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <groupId>com.mriss.products.dsh.dsh-solr</groupId>
+    <artifactId>solr-advanced-numbers-filter</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
