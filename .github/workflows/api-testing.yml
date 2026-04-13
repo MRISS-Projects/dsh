@@ -88,6 +88,12 @@ jobs:
                       <id>github-packages</id>
                       <properties>
                           <github.personal.token>${env.DEPLOY_TOKEN}</github.personal.token>
+                          <!-- MongoDB connection properties used by Maven resource filtering
+                               in dsh-data/src/main/resources/mongo.properties -->
+                          <mongo.host>localhost</mongo.host>
+                          <mongo.port>27017</mongo.port>
+                          <mongo.user>dshuser</mongo.user>
+                          <mongo.password>dshpass</mongo.password>
                       </properties>
                       <repositories>
                           <repository>
@@ -113,6 +119,16 @@ jobs:
           </settings>
           EOF
 
+      - name: Create MongoDB user and database
+        run: |
+          docker run --rm --network host mongo:6 mongosh --host localhost --eval '
+            db.getSiblingDB("dsh").createUser({
+              user: "dshuser",
+              pwd: "dshpass",
+              roles: [{ role: "readWrite", db: "dsh" }]
+            });
+          '
+
       - name: Build entire project (all modules must be installed first)
         run: |
           mvn -B -U install -DskipTests \
@@ -120,7 +136,12 @@ jobs:
 
       - name: Start DSH REST API
         run: |
-          java -jar dsh-rest-api/target/*.jar \
+          java \
+            -Dmongo.host=localhost \
+            -Dmongo.port=27017 \
+            -Dmongo.user=dshuser \
+            -Dmongo.password=dshpass \
+            -jar dsh-rest-api/target/*.jar \
             --server.port=8080 \
             --spring.profiles.active=test &
           echo "Waiting for application to start..."
