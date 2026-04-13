@@ -101,12 +101,10 @@ jobs:
           </settings>
           EOF
 
-      - name: Build DSH REST API
+      - name: Build entire project (all modules must be installed first)
         run: |
           mvn -B -U install -DskipTests \
-            --file pom.xml \
-            -pl dsh-rest-api \
-            -am
+            --file pom.xml
 
       - name: Start DSH REST API
         run: |
