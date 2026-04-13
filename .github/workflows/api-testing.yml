@@ -1,0 +1,143 @@
+name: API Testing
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'dsh-rest-api/**'
+      - 'specs/api/**'
+  pull_request:
+    paths:
+      - 'dsh-rest-api/**'
+      - 'specs/api/**'
+  workflow_dispatch:
+
+# Cancel any in-progress run on the same branch before starting a new one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-tests:
+    name: Run API Tests (Postman)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # DEPLOY_TOKEN must be stored as a repository secret.
+      # Create a GitHub Personal Access Token (classic) with the
+      # "read:packages" scope from an account that has read access to the
+      # MRISS-Projects organization, then add it to this repo's secrets as
+      # DEPLOY_TOKEN (Settings → Secrets and variables → Actions).
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Configure Maven settings so it can read from the GitHub Packages registry
+      # (https://maven.pkg.github.com/MRISS-Projects/maven-repo) where
+      # com.mriss:mriss-parent is hosted.
+      - name: Configure Maven settings for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                        https://maven.apache.org/xsd/settings-1.0.0.xsd">
+              <servers>
+                  <server>
+                      <id>MRISS-Projects-maven-repo</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.DEPLOY_TOKEN}</password>
+                  </server>
+                  <server>
+                      <id>MRISS-Projects-maven-repo-plugins</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.DEPLOY_TOKEN}</password>
+                  </server>
+                  <server>
+                      <id>github.com</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.DEPLOY_TOKEN}</password>
+                  </server>
+              </servers>
+              <profiles>
+                  <profile>
+                      <id>github-packages</id>
+                      <properties>
+                          <github.personal.token>${env.DEPLOY_TOKEN}</github.personal.token>
+                      </properties>
+                      <repositories>
+                          <repository>
+                              <id>MRISS-Projects-maven-repo</id>
+                              <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+                              <releases><enabled>true</enabled></releases>
+                              <snapshots><enabled>true</enabled></snapshots>
+                          </repository>
+                      </repositories>
+                      <pluginRepositories>
+                          <pluginRepository>
+                              <id>MRISS-Projects-maven-repo-plugins</id>
+                              <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+                              <releases><enabled>true</enabled></releases>
+                              <snapshots><enabled>true</enabled></snapshots>
+                          </pluginRepository>
+                      </pluginRepositories>
+                  </profile>
+              </profiles>
+              <activeProfiles>
+                  <activeProfile>github-packages</activeProfile>
+              </activeProfiles>
+          </settings>
+          EOF
+
+      - name: Build DSH REST API
+        run: |
+          mvn -B -U install -DskipTests \
+            --file pom.xml \
+            -pl dsh-rest-api \
+            -am
+
+      - name: Start DSH REST API
+        run: |
+          java -jar dsh-rest-api/target/*.jar \
+            --server.port=8080 \
+            --spring.profiles.active=test &
+          echo "Waiting for application to start..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/actuator/health; do sleep 2; done'
+
+      - name: Set up Node.js for Newman
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Newman (Postman CLI runner)
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run Postman collections
+        run: |
+          if ls specs/api/postman/*.json 1>/dev/null 2>&1; then
+            newman run specs/api/postman/*.json \
+              --reporters cli,htmlextra \
+              --reporter-htmlextra-export target/newman-report.html
+          else
+            echo "No Postman collections found in specs/api/postman/ – skipping."
+          fi
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-report
+          path: target/newman-report.html
+          if-no-files-found: ignore
