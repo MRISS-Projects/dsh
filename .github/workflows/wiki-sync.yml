@@ -7,8 +7,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  # When the cron fires from the default branch (master), re-trigger this
+  # workflow on DEVELOP so the DEVELOP version of the yml is always used.
+  redispatch:
+    name: Re-dispatch on DEVELOP
+    if: github.ref != 'refs/heads/DEVELOP'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger wiki-sync on DEVELOP branch
+        run: |
+          gh workflow run wiki-sync.yml \
+            --repo "${{ github.repository }}" \
+            --ref DEVELOP
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   sync-wiki:
     name: Sync Wiki Pages to docs/wiki
+    if: github.ref == 'refs/heads/DEVELOP'
     runs-on: ubuntu-latest
     permissions:
       contents: write
