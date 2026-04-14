@@ -16,6 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: DEVELOP
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clone wiki repository
@@ -51,4 +52,4 @@ jobs:
         with:
           commit_message: "docs: sync wiki pages to docs/wiki [skip ci]"
           file_pattern: 'docs/wiki/**'
-          branch: ${{ github.ref_name }}
+          branch: DEVELOP
