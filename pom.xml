@@ -64,16 +64,10 @@
 
     <properties>
 
-        <skin.version>1.6</skin.version>
-        <skin.artifactId>maven-fluido-skin</skin.artifactId>
-        <skin.groupId>org.apache.maven.skins</skin.groupId>
         <logo.image>images/logo.jpg</logo.image>
 
         <webapp.deployment.url />
         <group.id.path>${project.parent.artifactId}/${project.artifactId}</group.id.path>
-
-        <jenkins.view>${project.artifactId}</jenkins.view>
-        <snapshots.jenkins.job.name>${project.artifactId}-Snapshot</snapshots.jenkins.job.name>
 
         <tomcat.deploy.phase>pre-integration-test</tomcat.deploy.phase>
 
@@ -82,15 +76,12 @@
 
         <is.parent.pom>false</is.parent.pom>
 
-        <!-- TODO: Replace this to a project description and url at github -->
-        <trac.release.history.number>22</trac.release.history.number>
-
         <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
 
         <!-- Project root name used as root folder name for site generation. Used to get files to publish site at github -->
         <project.root.name>dsh</project.root.name>
 
-        <branch.name>${env.TRAVIS_BRANCH}</branch.name>
+        <source.project>${project.root.name}</source.project>
 
     </properties>
 
@@ -174,25 +165,7 @@
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <preparationGoals>clean install</preparationGoals>
                     <goals>deploy</goals>
-                    <scmCommentPrefix>[maven-release-plugin][skip travis]</scmCommentPrefix>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-                    <executable>post-release-script.sh</executable>
-                    <arguments>
-                        <argument>${project.artifactId}-${project.version}</argument>
-                    </arguments>
+                    <scmCommentPrefix>[maven-release-plugin][skip]</scmCommentPrefix>
                 </configuration>
             </plugin>
             <plugin>
@@ -237,7 +210,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${javadoc.plugin.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -252,7 +224,6 @@
                 </reportSets>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
             </plugin>
             <plugin>
@@ -262,7 +233,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>${sure-fire-report.plugin.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -294,8 +264,8 @@
         <url>https://github.com/MRISS-Projects/dsh/issues</url>
     </issueManagement>
     <!-- <ciManagement> -->
-    <!-- <system>jenkins</system> -->
-    <!-- <url>http://${jenkins.server}/jenkins/view/${jenkins.view}</url> -->
+    <!-- <system></system> -->
+    <!-- <url></url> -->
     <!-- </ciManagement> -->
     <!-- <mailingLists>...</mailingLists> -->
     <scm>
@@ -320,11 +290,6 @@
             <name>Spring Snapshot Repository</name>
             <url>https://repo.spring.io/snapshot</url>
         </repository>
-        <repository>
-            <id>mriss-repository</id>
-            <name>mriss-repository</name>
-            <url>https://raw.github.com/MRISS-Projects/maven-repo/master</url>
-        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -341,11 +306,6 @@
             <id>repository.spring.snapshot</id>
             <name>Spring Snapshot Repository</name>
             <url>http://repo.spring.io/snapshot</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>mriss-plugin-repository</id>
-            <name>mriss-plugin-repository</name>
-            <url>https://raw.github.com/MRISS-Projects/maven-repo/master</url>
         </pluginRepository>
     </pluginRepositories>
     <modules>
@@ -442,7 +402,7 @@
                                 <configuration>
                                     <basedir>${basedir}</basedir>
                                     <includes>README.md</includes>
-                                    <message>Auto-generated README.md [skip travis]</message>
+                                    <message>Auto-generated README.md [skip]</message>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
@@ -615,7 +575,7 @@
                                 <configuration>
                                     <basedir>${basedir}</basedir>
                                     <includes>README.md</includes>
-                                    <message>Auto-generated README.md [skip travis]</message>
+                                    <message>Auto-generated README.md [skip]</message>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>

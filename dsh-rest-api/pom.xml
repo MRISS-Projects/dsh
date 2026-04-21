@@ -198,7 +198,6 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
-							<attached>false</attached>
 						</configuration>
 					</execution>
 				</executions>
