@@ -1,0 +1,10 @@
+            ------
+            Welcome to DSH-data
+            ------
+            Marcelo Riss
+            ------
+            2017-12-06
+           
+DSH Data Module
+
+ This module has models and DAO classes to access MongoDB and SOLR.

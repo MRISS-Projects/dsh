@@ -1,0 +1,11 @@
+            ------
+            Welcome to DSH-doc-analyser
+            ------
+            Marcelo Riss
+            ------
+            2017-12-06
+           
+Document Smart Highlights SOLR Terms Vector Orderer
+
+ Provides an ordered reponse for terms vector. The order can
+ be by TF, DF, TF-IDF, etc. Ascending or descending.

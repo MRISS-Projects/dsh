@@ -1,0 +1,20 @@
+            ------
+            Welcome to DSH-doc-processor-worker
+            ------
+            Marcelo Riss
+            ------
+            2017-12-06
+           
+Document Smart Highliths Document Processor Worker
+
+ This module:
+ 
+ [[1]] Dequeues a request for processing a document (typically a document id at
+       SOLR + document id at MongoDB).
+ 
+ [[2]] Invoke keyworkd extractor
+ 
+ [[3]] Invoke top sentences extractor.
+ 
+ [[4]] Stores the result of extractions at the respective
+       line of MongoDB collection for that document id.

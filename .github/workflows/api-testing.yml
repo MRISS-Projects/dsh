@@ -24,6 +24,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
     env:
       # DEPLOY_TOKEN must be stored as a repository secret.
       # Create a GitHub Personal Access Token (classic) with the
@@ -76,6 +88,12 @@ jobs:
                       <id>github-packages</id>
                       <properties>
                           <github.personal.token>${env.DEPLOY_TOKEN}</github.personal.token>
+                          <!-- MongoDB connection properties used by Maven resource filtering
+                               in dsh-data/src/main/resources/mongo.properties -->
+                          <mongo.host>localhost</mongo.host>
+                          <mongo.port>27017</mongo.port>
+                          <mongo.user>dshuser</mongo.user>
+                          <mongo.password>dshpass</mongo.password>
                       </properties>
                       <repositories>
                           <repository>
@@ -101,16 +119,29 @@ jobs:
           </settings>
           EOF
 
-      - name: Build DSH REST API
+      - name: Create MongoDB user and database
+        run: |
+          docker run --rm --network host mongo:6 mongosh --host localhost --eval '
+            db.getSiblingDB("dsh").createUser({
+              user: "dshuser",
+              pwd: "dshpass",
+              roles: [{ role: "readWrite", db: "dsh" }]
+            });
+          '
+
+      - name: Build entire project (all modules must be installed first)
         run: |
           mvn -B -U install -DskipTests \
-            --file pom.xml \
-            -pl dsh-rest-api \
-            -am
+            --file pom.xml
 
       - name: Start DSH REST API
         run: |
-          java -jar dsh-rest-api/target/*.jar \
+          java \
+            -Dmongo.host=localhost \
+            -Dmongo.port=27017 \
+            -Dmongo.user=dshuser \
+            -Dmongo.password=dshpass \
+            -jar dsh-rest-api/target/*.jar \
             --server.port=8080 \
             --spring.profiles.active=test &
           echo "Waiting for application to start..."

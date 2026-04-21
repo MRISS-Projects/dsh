@@ -7,16 +7,37 @@ on:
   workflow_dispatch:
 
 jobs:
+  # When the cron fires from the default branch (master), re-trigger this
+  # workflow on DEVELOP so the DEVELOP version of the yml is always used.
+  redispatch:
+    name: Re-dispatch on DEVELOP
+    if: github.ref != 'refs/heads/DEVELOP'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Trigger wiki-sync on DEVELOP branch
+        run: |
+          gh workflow run wiki-sync.yml \
+            --repo "${{ github.repository }}" \
+            --ref DEVELOP
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   sync-wiki:
     name: Sync Wiki Pages to docs/wiki
+    if: github.ref == 'refs/heads/DEVELOP'
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: DEVELOP
 
       - name: Clone wiki repository
         run: |
@@ -46,9 +67,17 @@ jobs:
           echo "Wiki pages copied:"
           ls -1 docs/wiki/*.md 2>/dev/null || echo "(none found)"
 
-      - name: Commit synced wiki pages
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create pull request with synced wiki pages
+        uses: peter-evans/create-pull-request@v7
         with:
-          commit_message: "docs: sync wiki pages to docs/wiki [skip ci]"
-          file_pattern: 'docs/wiki/**'
-          branch: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: sync wiki pages to docs/wiki [skip ci]"
+          branch: wiki-sync/docs-wiki
+          delete-branch: true
+          title: "docs: sync wiki pages to docs/wiki"
+          body: |
+            Automated wiki sync — copies the latest wiki Markdown pages into `docs/wiki/`.
+
+            This PR was opened automatically by the **Wiki Sync** workflow.
+          base: DEVELOP
+          add-paths: 'docs/wiki/**'

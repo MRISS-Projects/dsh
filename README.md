@@ -1,11 +1,11 @@
 # Document Smart Highlights
 
 [![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=master)](https://travis-ci.org/MRISS-Projects/dsh)
-![Jacoco](DSH-Coverage-Report/badges/jacoco.svg)
+![Jacoco](dsh-coverage-report/badges/jacoco.svg)
 
 ## Version
 
-0.2.4
+0.3.0-SNAPSHOT - 20200222-214018
 
 ## Introduction
 
@@ -47,22 +47,22 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
  
 ## Package/Folders Description
 
-* **DSH-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
+* **dsh-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
   Additionally this module defines a [workflow](https://github.com/MRISS-Projects/dsh/wiki/Workflow) to map the status progress 
   of a document processing request.
-* **DSH-doc-analyzer**:  This is a container module to have the keyword and relevant sentences
+* **dsh-doc-analyzer**:  This is a container module to have the keyword and relevant sentences
   extractor modules. One extra module to dequeue documents to be analyzed and
   call the extractors.
-  * **DSH-doc-processor-worker**: The keyword extraction is executed by setting scores to 
+  * **dsh-doc-processor-worker**: The keyword extraction is executed by setting scores to 
     each term in the document's text.
-  * **DSH-keyword-extractor**: The keyword extraction is executed by setting scores to each term in
+  * **dsh-keyword-extractor**: The keyword extraction is executed by setting scores to each term in
     the document's text.
-  * **DSH-top-sentences-extractor**: The extraction of top sentences is achieved applying typical [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization) techniques like extractive summarization or [key phrase extraction](https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction).
-* **DSH-doc-indexer-worker**: dequeues a document id from a queue, gets the document from the
+  * **dsh-top-sentences-extractor**: The extraction of top sentences is achieved applying typical [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization) techniques like extractive summarization or [key phrase extraction](https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction).
+* **dsh-doc-indexer-worker**: dequeues a document id from a queue, gets the document from the
   database and send it for indexing at [SOLR](https://lucene.apache.org/solr/). 
   Besides indexing, this module will extract the text,
   paragraphs, sentences on each paragraph and terms on each sentence.
-* **DSH-rest-api**: this module is the real application to be deployed or installed on a
+* **dsh-rest-api**: this module is the real application to be deployed or installed on a
   servlet container. It is the entry point for document submission, document processing
   status querying and document processing results (keywords and relevant sentences) querying.
 * **dsh-test-dataset**: default and common data set of files used for automated testing.
@@ -418,7 +418,7 @@ Replace the admin and tomcat's password with any desired password.
 
 ### Running Application from Eclipse Embedded Tomcat
 
-The module `DSH-rest-api` is a web application. The type tag in pom.xml file is .war. Thus the
+The module `dsh-rest-api` is a web application. The type tag in pom.xml file is .war. Thus the
 first step is to install a Tomcat (8.0.X) at 
 [https://tomcat.apache.org/download-80.cgi](https://tomcat.apache.org/download-80.cgi). 
 After that, if you have Eclipse Oxygen JEE version correctly installed and configured, 
@@ -426,16 +426,16 @@ then is just a matter of showing the Servers view and adding a new server. At ec
 follow the path: `Window -> Show View -> Other -> Servers -> Server`. When the `Servers` 
 view opens, add a new Tomcat Server. You will need to have a Tomcat already installed at your 
 system, since eclipse will ask for an installed Tomcat root directory. When creating a new server
-inside eclipse, it will show the DSH-rest-api as a potential project to be installed in that server.
+inside eclipse, it will show the dsh-rest-api as a potential project to be installed in that server.
 
-After having the DSH-rest-api inside the server, configure the server `startup` and `shutdown` 
+After having the dsh-rest-api inside the server, configure the server `startup` and `shutdown` 
 timeouts to something like 120s each.
 
-Start the server and access the application swagger UI at: `http://localhost:8080/DSH-rest-api/swagger-ui.html`. 
+Start the server and access the application swagger UI at: `http://localhost:8080/dsh-rest-api/swagger-ui.html`. 
 
 ### Using Application .war File on a Servlet Container
 
-After the build, the folder DSH-rest-api/target should have a file named DSH-rest-api-[version].war. 
+After the build, the folder dsh-rest-api/target should have a file named dsh-rest-api-[version].war. 
 That war file can be dropped to a servlet container to be used as a web application. At this moment 
 the server having the servlet container should be the same having MongoDB and RabbitMQ installed, up 
 and running.
@@ -449,27 +449,27 @@ The browser will ask for user and password. Enter the user and password configur
 After login, at the Deploy section, fulfill the fields:
 
 ```
-Context Path: 	DSH-rest-api
-WAR or Directory URL:	[absolute path to the generated DSH-rest-api-<version>.war file] 
+Context Path: 	dsh-rest-api
+WAR or Directory URL:	[absolute path to the generated dsh-rest-api-<version>.war file] 
 ```
-You can also upload the war file from `DSH-rest-api/target` folder, using the `Choose File` button
+You can also upload the war file from `dsh-rest-api/target` folder, using the `Choose File` button
 at the Tomcat's manager application. However, in this case, it is recommenDed
-to rename the file `DSH-rest-api-<version>.war` to just `DSH-rest-api.war` just to not have the
+to rename the file `dsh-rest-api-<version>.war` to just `dsh-rest-api.war` just to not have the
 version name associated with the web application, which will then be used to access the application
 at the web browser.
 
-Start the server and access the application swagger UI at: `http://localhost:8080/DSH-rest-api/swagger-ui.html`.
+Start the server and access the application swagger UI at: `http://localhost:8080/dsh-rest-api/swagger-ui.html`.
 
 #### Just Dropping Application .war File
 
-Rename the file `DSH-rest-api/target/DSH-rest-api-<version>.war` to `DSH-rest-api.war` and
+Rename the file `dsh-rest-api/target/dsh-rest-api-<version>.war` to `dsh-rest-api.war` and
 drop it at Tomcat's `webapps` folder. Restart Tomcat if needed.
 
-Start the server and access the application swagger UI at: `http://localhost:8080/DSH-rest-api/swagger-ui.html`.
+Start the server and access the application swagger UI at: `http://localhost:8080/dsh-rest-api/swagger-ui.html`.
 
 ### Running Application Using Spring Boot Maven Plugin
 
-Go to `DSH-rest-api` module root folder project, by using `cd DSH-rest-api`  at the sources root, and run:
+Go to `dsh-rest-api` module root folder project, by using `cd dsh-rest-api`  at the sources root, and run:
 
 ```
 mvn spring-boot:run
@@ -510,6 +510,12 @@ A new form will open with the fields to fulfill. In case of submit you will need
 inform its title. In case of `status`, you just needs to enter the the token returned by the previous `submit` method call.
 
 ## Release Notes
+
+### Version 0.3.0-SNAPSHOT
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| - | ---- | ------- | -------- | -------- | ------- |
+| [14](https://github.com/MRISS-Projects/dsh/issues/14) | task | Install and get trained on SOLR tutorial | mriss | mriss | 2/22/20 |
 
 ### Version 0.2.4
 
