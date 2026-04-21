@@ -60,6 +60,7 @@ Authorization: Bearer <token>
 **Retrieve highlights for a document**
 
 **Query Parameters**:
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `type` | string | — | Filter by highlight type |
