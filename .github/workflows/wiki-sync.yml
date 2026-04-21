@@ -13,6 +13,9 @@ jobs:
     name: Re-dispatch on DEVELOP
     if: github.ref != 'refs/heads/DEVELOP'
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
     steps:
       - name: Trigger wiki-sync on DEVELOP branch
         run: |
