@@ -8,26 +8,26 @@ on:
 
 jobs:
   # When the cron fires from the default branch (master), re-trigger this
-  # workflow on develop so the develop version of the yml is always used.
+  # workflow on DEVELOP so the DEVELOP version of the yml is always used.
   redispatch:
-    name: Re-dispatch on develop
-    if: github.ref != 'refs/heads/develop'
+    name: Re-dispatch on DEVELOP
+    if: github.ref != 'refs/heads/DEVELOP'
     runs-on: ubuntu-latest
     permissions:
       actions: write
       contents: read
     steps:
-      - name: Trigger wiki-sync on develop branch
+      - name: Trigger wiki-sync on DEVELOP branch
         run: |
           gh workflow run wiki-sync.yml \
             --repo "${{ github.repository }}" \
-            --ref develop
+            --ref DEVELOP
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   sync-wiki:
     name: Sync Wiki Pages to docs/wiki
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/DEVELOP'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: develop
+          ref: DEVELOP
 
       - name: Clone wiki repository
         run: |
@@ -79,5 +79,5 @@ jobs:
             Automated wiki sync — copies the latest wiki Markdown pages into `docs/wiki/`.
 
             This PR was opened automatically by the **Wiki Sync** workflow.
-          base: develop
+          base: DEVELOP
           add-paths: 'docs/wiki/**'
