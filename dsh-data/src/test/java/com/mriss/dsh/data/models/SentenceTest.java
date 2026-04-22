@@ -59,7 +59,34 @@ public class SentenceTest {
 		
 		assertTrue(s5.equals(s6));
 		assertFalse(s7.equals(s1));
-		assertFalse(s1.equals(s7));
-	}
+        assertFalse(s1.equals(s7));
+    }
+
+    @Test
+    public void testToString() {
+        Sentence s = new Sentence("hello", 1.5, 3);
+        assertTrue(s.toString().contains("hello"));
+        assertTrue(s.toString().contains("1.5"));
+        assertTrue(s.toString().contains("3"));
+    }
+
+    @Test
+    public void testCompareTo() {
+        Sentence higher = new Sentence("a", 2.0, 1);
+        Sentence lower  = new Sentence("b", 1.0, 2);
+        Sentence equal  = new Sentence("c", 2.0, 3);
+        assertTrue(higher.compareTo(lower) < 0);
+        assertTrue(lower.compareTo(higher) > 0);
+        assertEquals(0, higher.compareTo(equal));
+    }
+
+    @Test
+    public void testHashCodeNullValue() {
+        Sentence s = new Sentence(null, 1.0, 3);
+        // Should not throw; covers the value == null branch in hashCode
+        int h = s.hashCode();
+        Sentence s2 = new Sentence(null, 2.0, 3);
+        assertEquals(s.hashCode(), s2.hashCode());
+    }
 
 }

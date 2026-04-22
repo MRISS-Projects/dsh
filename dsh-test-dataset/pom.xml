@@ -20,12 +20,8 @@
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->
 	<properties>
-		<skin.version>1.6</skin.version>
-		<skin.artifactId>maven-fluido-skin</skin.artifactId>
-		<skin.groupId>org.apache.maven.skins</skin.groupId>
 		<logo.image>images/logo.jpg</logo.image>
 
-		<jenkins.view>${project.parent.artifactId}</jenkins.view>
 	</properties>
 
 	<!-- BUILD SETTINGS -->
@@ -34,7 +30,7 @@
 			<resource>
 				<directory>src/site</directory>
 				<includes>
-					<include>**/*.apt</include>
+					<include>**/*.md</include>
 				</includes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 				<filtering>true</filtering>
@@ -45,7 +41,7 @@
 					<include>**</include>
 				</includes>
 				<excludes>
-					<exclude>**/*.apt</exclude>
+					<exclude>**/*.md</exclude>
 				</excludes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 			</resource>

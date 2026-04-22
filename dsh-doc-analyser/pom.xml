@@ -20,21 +20,19 @@
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->
 	<properties>
-		<skin.version>1.6</skin.version>
-		<skin.artifactId>maven-fluido-skin</skin.artifactId>
-		<skin.groupId>org.apache.maven.skins</skin.groupId>
+		<!-- FR010: skin properties removed – inherited from parent-poms/pom.xml -->
+		<!-- FR008: jenkins.view removed – CI/CD now uses GitHub Actions -->
 		<logo.image>images/logo.jpg</logo.image>
-
-		<jenkins.view>${project.parent.artifactId}</jenkins.view>
 	</properties>
 
 	<!-- BUILD SETTINGS -->
 	<build>
 		<resources>
+			<!-- FR009: .apt filter replaced with .md -->
 			<resource>
 				<directory>src/site</directory>
 				<includes>
-					<include>**/*.apt</include>
+					<include>**/*.md</include>
 				</includes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 				<filtering>true</filtering>
@@ -45,7 +43,7 @@
 					<include>**</include>
 				</includes>
 				<excludes>
-					<exclude>**/*.apt</exclude>
+					<exclude>**/*.md</exclude>
 				</excludes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 			</resource>
@@ -63,6 +61,7 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
+						<!-- FR009: copy-resources updated to use .md only -->
 						<id>copy-resources</id>
 						<phase>process-resources</phase>
 						<goals>
@@ -74,7 +73,7 @@
 								<resource>
 									<directory>src/site</directory>
 									<includes>
-										<include>**/*.apt</include>
+										<include>**/*.md</include>
 									</includes>
 									<targetPath>${project.build.directory}/generated-site</targetPath>
 									<filtering>true</filtering>
@@ -85,7 +84,7 @@
 										<include>**</include>
 									</includes>
 									<excludes>
-										<exclude>**/*.apt</exclude>
+										<exclude>**/*.md</exclude>
 									</excludes>
 									<targetPath>${project.build.directory}/generated-site</targetPath>
 									<filtering>false</filtering>

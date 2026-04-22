@@ -54,12 +54,8 @@
 	</dependencyManagement>
 	<!-- <modules>...</modules> -->
 	<properties>
-		<skin.version>1.6</skin.version>
-		<skin.artifactId>maven-fluido-skin</skin.artifactId>
-		<skin.groupId>org.apache.maven.skins</skin.groupId>
 		<logo.image>images/logo.jpg</logo.image>
 
-		<jenkins.view>${project.parent.artifactId}</jenkins.view>
 
 		<solr.version>8.3.1</solr.version>
 		<mockito.version>3.2.4</mockito.version>
@@ -71,7 +67,7 @@
 			<resource>
 				<directory>src/site</directory>
 				<includes>
-					<include>**/*.apt</include>
+					<include>**/*.md</include>
 				</includes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 				<filtering>true</filtering>
@@ -82,7 +78,7 @@
 					<include>**</include>
 				</includes>
 				<excludes>
-					<exclude>**/*.apt</exclude>
+					<exclude>**/*.md</exclude>
 				</excludes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 			</resource>
@@ -111,7 +107,7 @@
 								<resource>
 									<directory>src/site</directory>
 									<includes>
-										<include>**/*.apt</include>
+										<include>**/*.md</include>
 									</includes>
 									<targetPath>${project.build.directory}/generated-site</targetPath>
 									<filtering>true</filtering>
@@ -122,7 +118,7 @@
 										<include>**</include>
 									</includes>
 									<excludes>
-										<exclude>**/*.apt</exclude>
+										<exclude>**/*.md</exclude>
 									</excludes>
 									<targetPath>${project.build.directory}/generated-site</targetPath>
 									<filtering>false</filtering>

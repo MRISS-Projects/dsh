@@ -5,10 +5,11 @@
 
     <!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
+    <!-- FR001: parent updated to products SNAPSHOT so all parent-poms changes are immediately testable -->
     <parent>
-        <groupId>com.mriss</groupId>
-        <artifactId>mriss-parent</artifactId>
-        <version>3.7.1</version>
+        <groupId>com.mriss.mriss-parent</groupId>
+        <artifactId>products</artifactId>
+        <version>3.8.0-SNAPSHOT</version>
     </parent>
 
     <!-- THE BASICS -->
@@ -16,9 +17,8 @@
     <artifactId>dsh</artifactId>
     <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <!-- <dependencies> -->
-    <!-- </dependencies> -->
 
+    <!-- FR006: DSH-internal cross-module versions remain here; third-party versions are in products/pom.xml -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -56,42 +56,44 @@
                 <artifactId>dsh-doc-processor-worker</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
-    <!-- <modules>...</modules> -->
+    <!-- JUnit 4: removed from spring-boot-starter-test in Spring Boot 2.4+; declared here so all DSH modules inherit it -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- junit-vintage-engine: required for Surefire to discover and run JUnit 4 tests on JUnit Platform -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <properties>
-
-        <logo.image>images/logo.jpg</logo.image>
-
         <webapp.deployment.url />
         <group.id.path>${project.parent.artifactId}/${project.artifactId}</group.id.path>
-
         <tomcat.deploy.phase>pre-integration-test</tomcat.deploy.phase>
-
         <announcement.list>marcelo.riss@gmail.com</announcement.list>
         <announcement.introduction>My announcement introduction</announcement.introduction>
-
         <is.parent.pom>false</is.parent.pom>
-
-        <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
-
-        <!-- Project root name used as root folder name for site generation. Used to get files to publish site at github -->
+        <!-- FR005: spring.boot.version removed – inherit spring-boot.version from products/pom.xml -->
+        <!-- Project root name used as root folder name for site generation -->
         <project.root.name>dsh</project.root.name>
-
         <source.project>${project.root.name}</source.project>
-
     </properties>
 
     <!-- BUILD SETTINGS -->
     <build>
+        <!-- FR009: resource filters updated from .apt to .md -->
         <resources>
             <resource>
                 <directory>src/site</directory>
                 <includes>
-                    <include>**/*.apt</include>
                     <include>**/*.md</include>
                 </includes>
                 <targetPath>${project.build.directory}/generated-site</targetPath>
@@ -103,7 +105,6 @@
                     <include>**</include>
                 </includes>
                 <excludes>
-                    <exclude>**/*.apt</exclude>
                     <exclude>**/*.md</exclude>
                 </excludes>
                 <targetPath>${project.build.directory}/generated-site</targetPath>
@@ -111,6 +112,7 @@
             </resource>
         </resources>
         <plugins>
+            <!-- FR004: copy-site-resources-for-pdf updated to use .md only -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -127,7 +129,6 @@
                                 <resource>
                                     <directory>src/site</directory>
                                     <includes>
-                                        <include>**/*.apt</include>
                                         <include>**/*.md</include>
                                     </includes>
                                     <targetPath>${project.build.directory}/generated-site</targetPath>
@@ -139,7 +140,6 @@
                                         <include>**</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>**/*.apt</exclude>
                                         <exclude>**/*.md</exclude>
                                     </excludes>
                                     <targetPath>${project.build.directory}/generated-site</targetPath>
@@ -154,9 +154,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <configuration>
+                    <!-- DSH-specific: site descriptor lives in src/site-desc -->
                     <siteDirectory>src/site-desc</siteDirectory>
                 </configuration>
             </plugin>
+            <!-- FR003/FR004: release plugin config – scmCommentPrefix is DSH-specific; other defaults come from parent -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -168,19 +170,12 @@
                     <scmCommentPrefix>[maven-release-plugin][skip]</scmCommentPrefix>
                 </configuration>
             </plugin>
+            <!-- FR014: prepare-agent inherited from parent-poms/pom.xml; only DSH-specific jacoco config kept -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                    <!-- Ask JaCoCo to generate a test report from surefire tests -->
-                    <execution>
-                        <id>prepare-code-coverage</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
+            <!-- DSH-specific enforcer: artifactId lowercase naming convention -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -205,6 +200,7 @@
             </plugin>
         </plugins>
     </build>
+    <!-- FR012: reporting moved to parent-poms; keep only DSH-specific javadoc aggregate here -->
     <reporting>
         <plugins>
             <plugin>
@@ -226,48 +222,18 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>report-only</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-                <configuration>
-                    <aggregate>true</aggregate>
-                </configuration>
-            </plugin>
         </plugins>
     </reporting>
 
     <!-- MORE PROJECT INFORMATION -->
     <name>DSH - Document Smart Highlights</name>
     <description>Document Smart Highlights</description>
-    <!-- <url>...</url> -->
-    <!-- <inceptionYear>...</inceptionYear> -->
-    <!-- <licenses>...</licenses> -->
-    <!-- <organization>...</organization> -->
-    <!-- <developers> -->
-    <!-- </developers> -->
-    <!-- <contributors>...</contributors> -->
 
     <!-- ENVIRONMENT SETTINGS -->
     <issueManagement>
         <system>github</system>
         <url>https://github.com/MRISS-Projects/dsh/issues</url>
     </issueManagement>
-    <!-- <ciManagement> -->
-    <!-- <system></system> -->
-    <!-- <url></url> -->
-    <!-- </ciManagement> -->
-    <!-- <mailingLists>...</mailingLists> -->
     <scm>
         <connection>scm:git:https://github.com/MRISS-Projects/dsh.git</connection>
         <developerConnection>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnection>
@@ -318,96 +284,18 @@
         <module>dsh-coverage-report</module>
     </modules>
     <profiles>
+        <!-- FR002: 'deployment' and 'product-release-deployment' removed – fully covered by parent hierarchy.
+             'release-deployment' removed – inherited from parent-poms/pom.xml.
+             'update-readme' kept – DSH-specific README SCM customisation. -->
         <profile>
+            <!-- DSH-specific: kept because it overrides project.build.version with timestamp
+                 and runs the DSH pdf-plugin with generated-site as siteDirectory. -->
             <id>deployment</id>
             <properties>
                 <project.build.version>${project.version} - ${timestamp}</project.build.version>
             </properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-changes-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>generate-list-of-issues</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>github-text-list</goal>
-                                </goals>
-                                <configuration>
-                                    <includeOpenIssues>false</includeOpenIssues>
-                                    <onlyMilestoneIssues>true</onlyMilestoneIssues>
-                                    <columnNames>Id,Type,Summary,Assignee,Reporter,Updated</columnNames>
-                                    <failOnError>false</failOnError>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>buildnumber-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>create-time-stamp</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>create-timestamp</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
-                            <timestampPropertyName>timestamp</timestampPropertyName>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-readme-md</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>.</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/site/markdown</directory>
-                                            <includes>
-                                                <include>README.md</include>
-                                            </includes>
-                                            <targetPath>.</targetPath>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                                <inherited>false</inherited>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>commit-readme-md</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>checkin</goal>
-                                </goals>
-                                <configuration>
-                                    <basedir>${basedir}</basedir>
-                                    <includes>README.md</includes>
-                                    <message>Auto-generated README.md [skip]</message>
-                                </configuration>
-                                <inherited>false</inherited>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-pdf-plugin</artifactId>
@@ -456,6 +344,7 @@
             </build>
         </profile>
         <profile>
+            <!-- DSH-specific: pdf-plugin uses generated-site siteDirectory (different from products markdowndoc approach) -->
             <id>product-release-deployment</id>
             <properties>
                 <project.build.version>${project.version}</project.build.version>
@@ -483,32 +372,10 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-readme</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attach-artifact</goal>
-                                </goals>
-                                <configuration>
-                                    <artifacts>
-                                        <artifact>
-                                            <file>${basedir}/target/site/pdf/README.pdf</file>
-                                            <type>pdf</type>
-                                            <classifier>readme</classifier>
-                                        </artifact>
-                                    </artifacts>
-                                </configuration>
-                                <inherited>false</inherited>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
+        <!-- FR002: update-readme kept – DSH-specific README SCM checkin customisation -->
         <profile>
             <id>update-readme</id>
             <properties>
@@ -585,4 +452,6 @@
             </build>
         </profile>
     </profiles>
+
 </project>
+

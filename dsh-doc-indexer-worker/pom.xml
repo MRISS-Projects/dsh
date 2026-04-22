@@ -15,17 +15,7 @@
 	<groupId>com.mriss.products.dsh</groupId>
 	<artifactId>dsh-doc-indexer-worker</artifactId>
 	<packaging>jar</packaging>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${spring.boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+	<!-- FR005: spring-boot-dependencies BOM now imported via products/pom.xml; removed local dependencyManagement -->
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -40,9 +30,10 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- spring-boot-starter-data-solr removed in Spring Boot 2.6; use spring-data-solr directly -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-solr</artifactId>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-solr</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.mriss.products.dsh</groupId>
@@ -52,21 +43,19 @@
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->
 	<properties>
-		<skin.version>1.6</skin.version>
-		<skin.artifactId>maven-fluido-skin</skin.artifactId>
-		<skin.groupId>org.apache.maven.skins</skin.groupId>
+		<!-- FR010: skin properties removed – inherited from parent-poms/pom.xml -->
+		<!-- FR008: jenkins.view removed – CI/CD now uses GitHub Actions -->
 		<logo.image>images/logo.jpg</logo.image>
-
-		<jenkins.view>${project.parent.artifactId}</jenkins.view>
 	</properties>
 
 	<!-- BUILD SETTINGS -->
 	<build>
 		<resources>
+			<!-- FR009: .apt filter replaced with .md -->
 			<resource>
 				<directory>src/site</directory>
 				<includes>
-					<include>**/*.apt</include>
+					<include>**/*.md</include>
 				</includes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 				<filtering>true</filtering>
@@ -77,7 +66,7 @@
 					<include>**</include>
 				</includes>
 				<excludes>
-					<exclude>**/*.apt</exclude>
+					<exclude>**/*.md</exclude>
 				</excludes>
 				<targetPath>${project.build.directory}/generated-site</targetPath>
 			</resource>
