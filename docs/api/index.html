@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf8" />
+  <title>DSH REST API</title>
+  <!-- needed for adaptive design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <script src="https://cdn.redocly.com/redoc/v2.5.1/bundles/redoc.standalone.js"></script><style data-styled="true" data-styled-version="6.3.9">.hoYmkG{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.hoYmkG{width:100%;padding:40px 40px;}}/*!sc*/
+.eiTXyS{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.eiTXyS{width:100%;padding:0px 40px;}}/*!sc*/
+data-styled.g4[id="sc-hLseeT"]{content:"hoYmkG,eiTXyS,"}/*!sc*/
+.eTiIZG{padding:40px 0;}/*!sc*/
+.eTiIZG:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.eTiIZG>.eTiIZG:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.eTiIZG{padding:0;}}/*!sc*/
+.iUTsUN{padding:40px 0;position:relative;}/*!sc*/
+.iUTsUN:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.iUTsUN>.iUTsUN:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.iUTsUN{padding:0;}}/*!sc*/
+.iUTsUN:not(:last-of-type):after{position:absolute;bottom:0;width:100%;display:block;content:'';border-bottom:1px solid rgba(0, 0, 0, 0.2);}/*!sc*/
+data-styled.g5[id="sc-eDDNvO"]{content:"eTiIZG,iUTsUN,"}/*!sc*/
+.dVngAA{width:40%;color:#ffffff;background-color:#263238;padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.dVngAA{width:100%;padding:40px 40px;}}/*!sc*/
+data-styled.g6[id="sc-jTrPJt"]{content:"dVngAA,"}/*!sc*/
+.fYLqku{background-color:#263238;}/*!sc*/
+data-styled.g7[id="sc-gLDzao"]{content:"fYLqku,"}/*!sc*/
+.cmAaWK{display:flex;width:100%;padding:0;}/*!sc*/
+@media print,screen and (max-width: 75rem){.cmAaWK{flex-direction:column;}}/*!sc*/
+data-styled.g8[id="sc-iAEyYj"]{content:"cmAaWK,"}/*!sc*/
+.ePkAIL{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#333333;}/*!sc*/
+data-styled.g9[id="sc-fsQipe"]{content:"ePkAIL,"}/*!sc*/
+.bcNKdh{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;margin:0 0 20px;}/*!sc*/
+data-styled.g10[id="sc-qRumy"]{content:"bcNKdh,"}/*!sc*/
+.dEbuTz{color:#ffffff;}/*!sc*/
+data-styled.g12[id="sc-kFuwaQ"]{content:"dEbuTz,"}/*!sc*/
+.fA-dGxt{border-bottom:1px solid rgba(38, 50, 56, 0.3);margin:1em 0 1em 0;color:rgba(38, 50, 56, 0.5);font-weight:normal;text-transform:uppercase;font-size:0.929em;line-height:20px;}/*!sc*/
+data-styled.g13[id="sc-irTswZ"]{content:"fA-dGxt,"}/*!sc*/
+.jSIqAu{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.jSIqAu:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+h1:hover>.jSIqAu::before,h2:hover>.jSIqAu::before,.jSIqAu:hover::before{visibility:visible;}/*!sc*/
+data-styled.g14[id="sc-csCMJq"]{content:"jSIqAu,"}/*!sc*/
+.cNCXIL{height:18px;width:18px;min-width:18px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.eiOVYa{height:1.3em;width:1.3em;min-width:1.3em;vertical-align:middle;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.dTZWxX{height:18px;width:18px;min-width:18px;vertical-align:middle;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.iZiZiV{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.iZiZiV polygon{fill:#1d8127;}/*!sc*/
+.kiMFkB{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.kiMFkB polygon{fill:#d41f1c;}/*!sc*/
+.ivEQut{height:20px;width:20px;min-width:20px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(0);}/*!sc*/
+.ivEQut polygon{fill:white;}/*!sc*/
+data-styled.g15[id="sc-fbJfz"]{content:"cNCXIL,eiOVYa,dTZWxX,iZiZiV,kiMFkB,ivEQut,"}/*!sc*/
+.kddqHa{border-left:1px solid #7c7cbb;box-sizing:border-box;position:relative;padding:10px 10px 10px 0;}/*!sc*/
+@media screen and (max-width: 50rem){.kddqHa{display:block;overflow:hidden;}}/*!sc*/
+tr:first-of-type>.kddqHa,tr.last>.kddqHa{border-left-width:0;background-position:top left;background-repeat:no-repeat;background-size:1px 100%;}/*!sc*/
+tr:first-of-type>.kddqHa{background-image:linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 22px,
+      #7c7cbb 22px,
+      #7c7cbb 100%
+    );}/*!sc*/
+tr.last>.kddqHa{background-image:linear-gradient(
+      to bottom,
+      #7c7cbb 0%,
+      #7c7cbb 22px,
+      transparent 22px,
+      transparent 100%
+    );}/*!sc*/
+tr.last+tr>.kddqHa{border-left-color:transparent;}/*!sc*/
+tr.last:first-child>.kddqHa{background:none;border-left-color:transparent;}/*!sc*/
+data-styled.g18[id="sc-hAtEya"]{content:"kddqHa,"}/*!sc*/
+.eIujjv{vertical-align:top;line-height:20px;white-space:nowrap;font-size:13px;font-family:Courier,monospace;}/*!sc*/
+.eIujjv.deprecated{text-decoration:line-through;color:#707070;}/*!sc*/
+data-styled.g20[id="sc-fGFwA-d"]{content:"eIujjv,"}/*!sc*/
+.bmauLr{border-bottom:1px solid #9fb4be;padding:10px 0;width:75%;box-sizing:border-box;}/*!sc*/
+tr.expanded .bmauLr{border-bottom:none;}/*!sc*/
+@media screen and (max-width: 50rem){.bmauLr{padding:0 20px;border-bottom:none;border-left:1px solid #7c7cbb;}tr.last>.bmauLr{border-left:none;}}/*!sc*/
+data-styled.g21[id="sc-blLsxE"]{content:"bmauLr,"}/*!sc*/
+.bEKmDE{color:#7c7cbb;font-family:Courier,monospace;margin-right:10px;}/*!sc*/
+.bEKmDE::before{content:'';display:inline-block;vertical-align:middle;width:10px;height:1px;background:#7c7cbb;}/*!sc*/
+.bEKmDE::after{content:'';display:inline-block;vertical-align:middle;width:1px;background:#7c7cbb;height:7px;}/*!sc*/
+data-styled.g22[id="sc-ieZDjf"]{content:"bEKmDE,"}/*!sc*/
+.dybric{border-collapse:separate;border-radius:3px;font-size:14px;border-spacing:0;width:100%;}/*!sc*/
+.dybric >tr{vertical-align:middle;}/*!sc*/
+@media screen and (max-width: 50rem){.dybric{display:block;}.dybric >tr,.dybric >tbody>tr{display:block;}}/*!sc*/
+@media screen and (max-width: 50rem) and (-ms-high-contrast:none){.dybric td{float:left;width:100%;}}/*!sc*/
+.dybric .sc-dKfzgG,.dybric .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG,.dybric .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG{margin:1em;margin-right:0;background:#fafafa;}/*!sc*/
+.dybric .sc-dKfzgG .sc-dKfzgG,.dybric .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG,.dybric .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG .sc-dKfzgG{background:#ffffff;}/*!sc*/
+data-styled.g24[id="sc-hIqOWV"]{content:"dybric,"}/*!sc*/
+.lbIFgo >ul{list-style:none;padding:0;margin:0;margin:0 -5px;}/*!sc*/
+.lbIFgo >ul >li{padding:5px 10px;display:inline-block;background-color:#11171a;border-bottom:1px solid rgba(0, 0, 0, 0.5);cursor:pointer;text-align:center;outline:none;color:#ccc;margin:0 5px 5px 5px;border:1px solid #07090b;border-radius:5px;min-width:60px;font-size:0.9em;font-weight:bold;}/*!sc*/
+.lbIFgo >ul >li.react-tabs__tab--selected{color:#333333;background:#ffffff;}/*!sc*/
+.lbIFgo >ul >li.react-tabs__tab--selected:focus{outline:auto;}/*!sc*/
+.lbIFgo >ul >li:only-child{flex:none;min-width:100px;}/*!sc*/
+.lbIFgo >ul >li.tab-success{color:#1d8127;}/*!sc*/
+.lbIFgo >ul >li.tab-redirect{color:#ffa500;}/*!sc*/
+.lbIFgo >ul >li.tab-info{color:#87ceeb;}/*!sc*/
+.lbIFgo >ul >li.tab-error{color:#d41f1c;}/*!sc*/
+.lbIFgo >.react-tabs__tab-panel{background:#11171a;}/*!sc*/
+.lbIFgo >.react-tabs__tab-panel>div,.lbIFgo >.react-tabs__tab-panel>pre{padding:20px;margin:0;}/*!sc*/
+.lbIFgo >.react-tabs__tab-panel>div>pre{padding:0;}/*!sc*/
+data-styled.g30[id="sc-cyRfQY"]{content:"lbIFgo,"}/*!sc*/
+.dXXcln code[class*='language-'],.dXXcln pre[class*='language-']{text-shadow:0 -0.1em 0.2em black;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}/*!sc*/
+@media print{.dXXcln code[class*='language-'],.dXXcln pre[class*='language-']{text-shadow:none;}}/*!sc*/
+.dXXcln pre[class*='language-']{padding:1em;margin:0.5em 0;overflow:auto;}/*!sc*/
+.dXXcln .token.comment,.dXXcln .token.prolog,.dXXcln .token.doctype,.dXXcln .token.cdata{color:hsl(30, 20%, 50%);}/*!sc*/
+.dXXcln .token.punctuation{opacity:0.7;}/*!sc*/
+.dXXcln .namespace{opacity:0.7;}/*!sc*/
+.dXXcln .token.property,.dXXcln .token.tag,.dXXcln .token.number,.dXXcln .token.constant,.dXXcln .token.symbol{color:#4a8bb3;}/*!sc*/
+.dXXcln .token.boolean{color:#e64441;}/*!sc*/
+.dXXcln .token.selector,.dXXcln .token.attr-name,.dXXcln .token.string,.dXXcln .token.char,.dXXcln .token.builtin,.dXXcln .token.inserted{color:#a0fbaa;}/*!sc*/
+.dXXcln .token.selector+a,.dXXcln .token.attr-name+a,.dXXcln .token.string+a,.dXXcln .token.char+a,.dXXcln .token.builtin+a,.dXXcln .token.inserted+a,.dXXcln .token.selector+a:visited,.dXXcln .token.attr-name+a:visited,.dXXcln .token.string+a:visited,.dXXcln .token.char+a:visited,.dXXcln .token.builtin+a:visited,.dXXcln .token.inserted+a:visited{color:#4ed2ba;text-decoration:underline;}/*!sc*/
+.dXXcln .token.property.string{color:white;}/*!sc*/
+.dXXcln .token.operator,.dXXcln .token.entity,.dXXcln .token.url,.dXXcln .token.variable{color:hsl(40, 90%, 60%);}/*!sc*/
+.dXXcln .token.atrule,.dXXcln .token.attr-value,.dXXcln .token.keyword{color:hsl(350, 40%, 70%);}/*!sc*/
+.dXXcln .token.regex,.dXXcln .token.important{color:#e90;}/*!sc*/
+.dXXcln .token.important,.dXXcln .token.bold{font-weight:bold;}/*!sc*/
+.dXXcln .token.italic{font-style:italic;}/*!sc*/
+.dXXcln .token.entity{cursor:help;}/*!sc*/
+.dXXcln .token.deleted{color:red;}/*!sc*/
+data-styled.g32[id="sc-iKGpAq"]{content:"dXXcln,"}/*!sc*/
+.btblAa{opacity:0.7;transition:opacity 0.3s ease;text-align:right;}/*!sc*/
+.btblAa:focus-within{opacity:1;}/*!sc*/
+.btblAa >button{background-color:transparent;border:0;color:inherit;padding:2px 10px;font-family:Roboto,sans-serif;font-size:14px;line-height:1.5em;cursor:pointer;outline:0;}/*!sc*/
+.btblAa >button :hover,.btblAa >button :focus{background:rgba(255, 255, 255, 0.1);}/*!sc*/
+data-styled.g33[id="sc-gjTGSz"]{content:"btblAa,"}/*!sc*/
+.bNwKoT{position:relative;}/*!sc*/
+data-styled.g37[id="sc-kMrHXi"]{content:"bNwKoT,"}/*!sc*/
+.bzXJk{margin-left:10px;text-transform:none;font-size:0.929em;color:black;}/*!sc*/
+data-styled.g41[id="sc-gXSCqT"]{content:"bzXJk,"}/*!sc*/
+.dHaogz{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.dHaogz p:last-child{margin-bottom:0;}/*!sc*/
+.dHaogz h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.dHaogz h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.dHaogz code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.dHaogz pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.dHaogz pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.dHaogz pre code:before,.dHaogz pre code:after{content:none;}/*!sc*/
+.dHaogz blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.dHaogz img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.dHaogz ul,.dHaogz ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.dHaogz ul ul,.dHaogz ol ul,.dHaogz ul ol,.dHaogz ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.dHaogz table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.dHaogz table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.dHaogz table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.dHaogz table th,.dHaogz table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.dHaogz table th{text-align:left;font-weight:bold;}/*!sc*/
+.dHaogz .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.dHaogz .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.dHaogz h1:hover>.share-link::before,.dHaogz h2:hover>.share-link::before,.dHaogz .share-link:hover::before{visibility:visible;}/*!sc*/
+.dHaogz a{text-decoration:auto;color:#32329f;}/*!sc*/
+.dHaogz a:visited{color:#32329f;}/*!sc*/
+.dHaogz a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+.cFvDiF{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.cFvDiF p:last-child{margin-bottom:0;}/*!sc*/
+.cFvDiF p:first-child{margin-top:0;}/*!sc*/
+.cFvDiF p:last-child{margin-bottom:0;}/*!sc*/
+.cFvDiF h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.cFvDiF h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.cFvDiF code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.cFvDiF pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.cFvDiF pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.cFvDiF pre code:before,.cFvDiF pre code:after{content:none;}/*!sc*/
+.cFvDiF blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.cFvDiF img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.cFvDiF ul,.cFvDiF ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.cFvDiF ul ul,.cFvDiF ol ul,.cFvDiF ul ol,.cFvDiF ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.cFvDiF table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.cFvDiF table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.cFvDiF table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.cFvDiF table th,.cFvDiF table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.cFvDiF table th{text-align:left;font-weight:bold;}/*!sc*/
+.cFvDiF .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.cFvDiF .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.cFvDiF h1:hover>.share-link::before,.cFvDiF h2:hover>.share-link::before,.cFvDiF .share-link:hover::before{visibility:visible;}/*!sc*/
+.cFvDiF a{text-decoration:auto;color:#32329f;}/*!sc*/
+.cFvDiF a:visited{color:#32329f;}/*!sc*/
+.cFvDiF a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+.fTBBlJ{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.fTBBlJ p:last-child{margin-bottom:0;}/*!sc*/
+.fTBBlJ p:first-child{margin-top:0;}/*!sc*/
+.fTBBlJ p:last-child{margin-bottom:0;}/*!sc*/
+.fTBBlJ p{display:inline-block;}/*!sc*/
+.fTBBlJ h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.fTBBlJ h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.fTBBlJ code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.fTBBlJ pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.fTBBlJ pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.fTBBlJ pre code:before,.fTBBlJ pre code:after{content:none;}/*!sc*/
+.fTBBlJ blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.fTBBlJ img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.fTBBlJ ul,.fTBBlJ ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.fTBBlJ ul ul,.fTBBlJ ol ul,.fTBBlJ ul ol,.fTBBlJ ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.fTBBlJ table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.fTBBlJ table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.fTBBlJ table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.fTBBlJ table th,.fTBBlJ table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.fTBBlJ table th{text-align:left;font-weight:bold;}/*!sc*/
+.fTBBlJ .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.fTBBlJ .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.fTBBlJ h1:hover>.share-link::before,.fTBBlJ h2:hover>.share-link::before,.fTBBlJ .share-link:hover::before{visibility:visible;}/*!sc*/
+.fTBBlJ a{text-decoration:auto;color:#32329f;}/*!sc*/
+.fTBBlJ a:visited{color:#32329f;}/*!sc*/
+.fTBBlJ a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g42[id="sc-cCYyou"]{content:"dHaogz,cFvDiF,fTBBlJ,"}/*!sc*/
+.dkmSdy{display:inline;}/*!sc*/
+data-styled.g43[id="sc-cjERFZ"]{content:"dkmSdy,"}/*!sc*/
+.fJsoyS{position:relative;}/*!sc*/
+data-styled.g44[id="sc-jegxcw"]{content:"fJsoyS,"}/*!sc*/
+.iLjyyA:hover>.sc-gjTGSz{opacity:1;}/*!sc*/
+data-styled.g49[id="sc-cRZddz"]{content:"iLjyyA,"}/*!sc*/
+.jKIGwd{font-family:Courier,monospace;font-size:13px;white-space:pre;contain:content;overflow-x:auto;}/*!sc*/
+.jKIGwd .redoc-json code>.collapser{display:none;pointer-events:none;}/*!sc*/
+.jKIGwd .callback-function{color:gray;}/*!sc*/
+.jKIGwd .collapser:after{content:'-';cursor:pointer;}/*!sc*/
+.jKIGwd .collapsed>.collapser:after{content:'+';cursor:pointer;}/*!sc*/
+.jKIGwd .ellipsis:after{content:' … ';}/*!sc*/
+.jKIGwd .collapsible{margin-left:2em;}/*!sc*/
+.jKIGwd .hoverable{padding-top:1px;padding-bottom:1px;padding-left:2px;padding-right:2px;border-radius:2px;}/*!sc*/
+.jKIGwd .hovered{background-color:rgba(235, 238, 249, 1);}/*!sc*/
+.jKIGwd .collapser{background-color:transparent;border:0;color:#fff;font-family:Courier,monospace;font-size:13px;padding-right:6px;padding-left:6px;padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:center;width:15px;height:15px;position:absolute;top:4px;left:-1.5em;cursor:default;user-select:none;-webkit-user-select:none;padding:2px;}/*!sc*/
+.jKIGwd .collapser:focus{outline-color:#fff;outline-style:dotted;outline-width:1px;}/*!sc*/
+.jKIGwd ul{list-style-type:none;padding:0px;margin:0px 0px 0px 26px;}/*!sc*/
+.jKIGwd li{position:relative;display:block;}/*!sc*/
+.jKIGwd .hoverable{display:inline-block;}/*!sc*/
+.jKIGwd .selected{outline-style:solid;outline-width:1px;outline-style:dotted;}/*!sc*/
+.jKIGwd .collapsed>.collapsible{display:none;}/*!sc*/
+.jKIGwd .ellipsis{display:none;}/*!sc*/
+.jKIGwd .collapsed>.ellipsis{display:inherit;}/*!sc*/
+data-styled.g50[id="sc-jMAIzW"]{content:"jKIGwd,"}/*!sc*/
+.eMpCUl{padding:0.9em;background-color:rgba(38,50,56,0.4);margin:0 0 10px 0;display:block;font-family:Montserrat,sans-serif;font-size:0.929em;line-height:1.5em;}/*!sc*/
+data-styled.g51[id="sc-dQelHO"]{content:"eMpCUl,"}/*!sc*/
+.ccmcKc{font-family:Montserrat,sans-serif;font-size:12px;position:absolute;z-index:1;top:-11px;left:12px;font-weight:600;color:rgba(255,255,255,0.7);}/*!sc*/
+data-styled.g52[id="sc-bCDidX"]{content:"ccmcKc,"}/*!sc*/
+.gpxHhK{position:relative;}/*!sc*/
+data-styled.g53[id="sc-cPlDXk"]{content:"gpxHhK,"}/*!sc*/
+.ksuOBo{margin-top:15px;}/*!sc*/
+data-styled.g56[id="sc-hVkBjf"]{content:"ksuOBo,"}/*!sc*/
+.bXwTFl.deprecated span.property-name{text-decoration:line-through;color:#707070;}/*!sc*/
+.bXwTFl button{background-color:transparent;border:0;outline:0;font-size:13px;font-family:Courier,monospace;cursor:pointer;padding:0;color:#333333;}/*!sc*/
+.bXwTFl button:focus{font-weight:600;}/*!sc*/
+.bXwTFl .sc-fbJfz{height:1.1em;width:1.1em;}/*!sc*/
+.bXwTFl .sc-fbJfz polygon{fill:#666;}/*!sc*/
+data-styled.g57[id="sc-jhSXcs"]{content:"bXwTFl,"}/*!sc*/
+.bPAaet{vertical-align:middle;font-size:13px;line-height:20px;}/*!sc*/
+data-styled.g58[id="sc-gUrTyB"]{content:"bPAaet,"}/*!sc*/
+.UMvzF{color:rgba(102,102,102,0.9);}/*!sc*/
+data-styled.g59[id="sc-kZGvTq"]{content:"UMvzF,"}/*!sc*/
+.fEQrHJ{color:#666;}/*!sc*/
+data-styled.g60[id="sc-iMfspz"]{content:"fEQrHJ,"}/*!sc*/
+.kEFcTG{color:#666;word-break:break-word;}/*!sc*/
+data-styled.g61[id="sc-jfSnVt"]{content:"kEFcTG,"}/*!sc*/
+.boAHLn{color:#d41f1c;font-size:0.9em;font-weight:normal;margin-left:20px;line-height:1;}/*!sc*/
+data-styled.g62[id="sc-eKYjSU"]{content:"boAHLn,"}/*!sc*/
+.eShQxX{border-radius:2px;word-break:break-word;background-color:rgba(51,51,51,0.05);color:rgba(51,51,51,0.9);padding:0 5px;border:1px solid rgba(51,51,51,0.1);font-family:Courier,monospace;}/*!sc*/
+.sc-ldFCYc+.sc-ldFCYc{margin-left:0;}/*!sc*/
+data-styled.g66[id="sc-ldFCYc"]{content:"eShQxX,"}/*!sc*/
+.iWTprB{border-radius:2px;background-color:rgba(104,104,207,0.05);color:rgba(50,50,159,0.9);margin:0 5px;padding:0 5px;border:1px solid rgba(50,50,159,0.1);}/*!sc*/
+.sc-cmEaii+.sc-cmEaii{margin-left:0;}/*!sc*/
+data-styled.g68[id="sc-cmEaii"]{content:"iWTprB,"}/*!sc*/
+.cLOXvd:after{content:' and ';font-weight:normal;}/*!sc*/
+.cLOXvd:last-child:after{content:none;}/*!sc*/
+.cLOXvd a{text-decoration:auto;color:#32329f;}/*!sc*/
+.cLOXvd a:visited{color:#32329f;}/*!sc*/
+.cLOXvd a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g81[id="sc-hNeXkj"]{content:"cLOXvd,"}/*!sc*/
+.ddMcul{white-space:nowrap;}/*!sc*/
+.ddMcul:after{content:' or ';white-space:pre;}/*!sc*/
+.ddMcul:last-child:after,.ddMcul:only-child:after{content:none;}/*!sc*/
+.ddMcul a{text-decoration:auto;color:#32329f;}/*!sc*/
+.ddMcul a:visited{color:#32329f;}/*!sc*/
+.ddMcul a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g82[id="sc-dskThK"]{content:"ddMcul,"}/*!sc*/
+.kuPPCO{flex:1 1 auto;cursor:pointer;}/*!sc*/
+data-styled.g83[id="sc-cYRmzp"]{content:"kuPPCO,"}/*!sc*/
+.gZngKQ{width:75%;text-overflow:ellipsis;border-radius:4px;overflow:hidden;}/*!sc*/
+@media screen and (max-width: 50rem){.gZngKQ{margin-top:10px;}}/*!sc*/
+data-styled.g84[id="sc-jTsRVM"]{content:"gZngKQ,"}/*!sc*/
+.qtYpT{display:inline-block;margin:0;}/*!sc*/
+data-styled.g85[id="sc-jOQpHb"]{content:"qtYpT,"}/*!sc*/
+.pzAgN{width:100%;display:flex;margin:1em 0;flex-direction:row;}/*!sc*/
+@media screen and (max-width: 50rem){.pzAgN{flex-direction:column;}}/*!sc*/
+data-styled.g86[id="sc-ftWlEC"]{content:"pzAgN,"}/*!sc*/
+.bSStQp{margin-top:0;margin-bottom:0.5em;}/*!sc*/
+data-styled.g92[id="sc-crPCXn"]{content:"bSStQp,"}/*!sc*/
+.dfuuzt::before{content:'|';display:inline-block;opacity:0.5;width:15px;text-align:center;}/*!sc*/
+.dfuuzt:last-child::after{display:none;}/*!sc*/
+data-styled.g94[id="sc-bqWVmJ"]{content:"dfuuzt,"}/*!sc*/
+.gUaytm{overflow:hidden;}/*!sc*/
+data-styled.g95[id="sc-gHbYXW"]{content:"gUaytm,"}/*!sc*/
+.cNLDQk{display:flex;flex-wrap:wrap;margin-left:-15px;}/*!sc*/
+data-styled.g96[id="sc-etAVuf"]{content:"cNLDQk,"}/*!sc*/
+.FLoTo{width:9ex;display:inline-block;height:13px;line-height:13px;background-color:#333;border-radius:3px;background-repeat:no-repeat;background-position:6px 4px;font-size:7px;font-family:Verdana,sans-serif;color:white;text-transform:uppercase;text-align:center;font-weight:bold;vertical-align:middle;margin-right:6px;margin-top:2px;}/*!sc*/
+.FLoTo.get{background-color:#2F8132;}/*!sc*/
+.FLoTo.post{background-color:#186FAF;}/*!sc*/
+.FLoTo.put{background-color:#95507c;}/*!sc*/
+.FLoTo.options{background-color:#947014;}/*!sc*/
+.FLoTo.patch{background-color:#bf581d;}/*!sc*/
+.FLoTo.delete{background-color:#cc3333;}/*!sc*/
+.FLoTo.basic{background-color:#707070;}/*!sc*/
+.FLoTo.link{background-color:#07818F;}/*!sc*/
+.FLoTo.head{background-color:#A23DAD;}/*!sc*/
+.FLoTo.hook{background-color:#32329f;}/*!sc*/
+.FLoTo.schema{background-color:#707070;}/*!sc*/
+data-styled.g100[id="sc-YtoFD"]{content:"FLoTo,"}/*!sc*/
+.fpIsZT{margin:0;padding:0;}/*!sc*/
+.fpIsZT:first-child{padding-bottom:32px;}/*!sc*/
+.sc-imaUOy .sc-imaUOy{font-size:0.929em;}/*!sc*/
+.cjNZVC{margin:0;padding:0;display:none;}/*!sc*/
+.cjNZVC:first-child{padding-bottom:32px;}/*!sc*/
+.sc-imaUOy .sc-imaUOy{font-size:0.929em;}/*!sc*/
+data-styled.g101[id="sc-imaUOy"]{content:"fpIsZT,cjNZVC,"}/*!sc*/
+.cVgssJ{list-style:none inside none;overflow:hidden;text-overflow:ellipsis;padding:0;}/*!sc*/
+data-styled.g102[id="sc-vjKnv"]{content:"cVgssJ,"}/*!sc*/
+.YJdNS{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;font-size:0.929em;text-transform:none;background-color:#fafafa;}/*!sc*/
+.YJdNS:hover{color:#32329f;background-color:#e1e1e1;}/*!sc*/
+.YJdNS .sc-fbJfz{height:1.5em;width:1.5em;}/*!sc*/
+.YJdNS .sc-fbJfz polygon{fill:#333333;}/*!sc*/
+.fUjfPA{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;background-color:#fafafa;}/*!sc*/
+.fUjfPA:hover{color:#32329f;background-color:#ededed;}/*!sc*/
+.fUjfPA .sc-fbJfz{height:1.5em;width:1.5em;}/*!sc*/
+.fUjfPA .sc-fbJfz polygon{fill:#333333;}/*!sc*/
+data-styled.g103[id="sc-bjMMwc"]{content:"YJdNS,fUjfPA,"}/*!sc*/
+.jZTjzp{display:inline-block;vertical-align:middle;width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g104[id="sc-eIrltV"]{content:"jZTjzp,"}/*!sc*/
+.jKUIUi{font-size:0.8em;margin-top:10px;text-align:center;position:fixed;width:260px;bottom:0;background:#fafafa;}/*!sc*/
+.jKUIUi a,.jKUIUi a:visited,.jKUIUi a:hover{color:#333333!important;padding:5px 0;border-top:1px solid #e1e1e1;text-decoration:none;display:flex;align-items:center;justify-content:center;}/*!sc*/
+.jKUIUi img{width:15px;margin-right:5px;}/*!sc*/
+@media screen and (max-width: 50rem){.jKUIUi{width:100%;}}/*!sc*/
+data-styled.g105[id="sc-hAYhfO"]{content:"jKUIUi,"}/*!sc*/
+.dHdMVa{cursor:pointer;position:relative;margin-bottom:5px;}/*!sc*/
+data-styled.g111[id="sc-fYzRkH"]{content:"dHdMVa,"}/*!sc*/
+.dkiPkt{font-family:Courier,monospace;margin-left:10px;flex:1;overflow-x:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g112[id="sc-GJyyy"]{content:"dkiPkt,"}/*!sc*/
+.iWrBta{outline:0;color:inherit;width:100%;text-align:left;cursor:pointer;padding:10px 30px 10px 20px;border-radius:4px 4px 0 0;background-color:#11171a;display:flex;white-space:nowrap;align-items:center;border:1px solid transparent;border-bottom:0;transition:border-color 0.25s ease;}/*!sc*/
+.iWrBta ..sc-GJyyy{color:#ffffff;}/*!sc*/
+.iWrBta:focus{box-shadow:inset 0 2px 2px rgba(0, 0, 0, 0.45),0 2px 0 rgba(128, 128, 128, 0.25);}/*!sc*/
+data-styled.g113[id="sc-jYvNnh"]{content:"iWrBta,"}/*!sc*/
+.ejslkd{font-size:0.929em;line-height:20px;background-color:#186FAF;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+.kCsPwr{font-size:0.929em;line-height:20px;background-color:#2F8132;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+data-styled.g114[id="sc-eGFuAY"]{content:"ejslkd,kCsPwr,"}/*!sc*/
+.dplsyJ{position:absolute;width:100%;z-index:100;background:#fafafa;color:#263238;box-sizing:border-box;box-shadow:0 0 6px rgba(0, 0, 0, 0.33);overflow:hidden;border-bottom-left-radius:4px;border-bottom-right-radius:4px;transition:all 0.25s ease;visibility:hidden;transform:translateY(-50%) scaleY(0);}/*!sc*/
+data-styled.g115[id="sc-fnxdBX"]{content:"dplsyJ,"}/*!sc*/
+.cNCbuV{padding:10px;}/*!sc*/
+data-styled.g116[id="sc-llcuoK"]{content:"cNCbuV,"}/*!sc*/
+.eobUac{padding:5px;border:1px solid #ccc;background:#fff;word-break:break-all;color:#32329f;}/*!sc*/
+.eobUac >span{color:#333333;}/*!sc*/
+data-styled.g117[id="sc-jnsZEx"]{content:"eobUac,"}/*!sc*/
+.iuCmqI{text-transform:lowercase;margin-left:0;line-height:1.5em;}/*!sc*/
+data-styled.g118[id="sc-dVCGSo"]{content:"iuCmqI,"}/*!sc*/
+.brztng{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#1d8127;background-color:rgba(29,129,39,0.07);}/*!sc*/
+.brztng:focus{outline:auto #1d8127;}/*!sc*/
+.fvWYOy{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#d41f1c;background-color:rgba(212,31,28,0.07);}/*!sc*/
+.fvWYOy:focus{outline:auto #d41f1c;}/*!sc*/
+data-styled.g120[id="sc-caslwi"]{content:"brztng,fvWYOy,"}/*!sc*/
+.jJkGwY{vertical-align:top;}/*!sc*/
+data-styled.g123[id="sc-fYaxgW"]{content:"jJkGwY,"}/*!sc*/
+.hsJdXF{font-size:1.3em;padding:0.2em 0;margin:3em 0 1.1em;color:#333333;font-weight:normal;}/*!sc*/
+data-styled.g124[id="sc-fJjTez"]{content:"hsJdXF,"}/*!sc*/
+.dUdgLx{margin-bottom:30px;}/*!sc*/
+data-styled.g129[id="sc-iERabE"]{content:"dUdgLx,"}/*!sc*/
+.dKxKge{user-select:none;width:20px;height:20px;align-self:center;display:flex;flex-direction:column;color:#32329f;}/*!sc*/
+data-styled.g130[id="sc-iqavZh"]{content:"dKxKge,"}/*!sc*/
+.kBSkUl{width:260px;background-color:#fafafa;overflow:hidden;display:flex;flex-direction:column;backface-visibility:hidden;height:100vh;position:sticky;position:-webkit-sticky;top:0;}/*!sc*/
+@media screen and (max-width: 50rem){.kBSkUl{position:fixed;z-index:20;width:100%;background:#fafafa;display:none;}}/*!sc*/
+@media print{.kBSkUl{display:none;}}/*!sc*/
+data-styled.g131[id="sc-eXHjA-d"]{content:"kBSkUl,"}/*!sc*/
+.laYfRb{outline:none;user-select:none;background-color:#f2f2f2;color:#32329f;display:none;cursor:pointer;position:fixed;right:20px;z-index:100;border-radius:50%;box-shadow:0 0 20px rgba(0, 0, 0, 0.3);bottom:44px;width:60px;height:60px;padding:0 20px;}/*!sc*/
+@media screen and (max-width: 50rem){.laYfRb{display:flex;}}/*!sc*/
+.laYfRb svg{color:#0065FB;}/*!sc*/
+@media print{.laYfRb{display:none;}}/*!sc*/
+data-styled.g132[id="sc-kVmAmQ"]{content:"laYfRb,"}/*!sc*/
+.gRgPoG{font-family:Roboto,sans-serif;font-size:14px;font-weight:400;line-height:1.5em;color:#333333;display:flex;position:relative;text-align:left;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;text-rendering:optimizeSpeed!important;tap-highlight-color:rgba(0, 0, 0, 0);text-size-adjust:100%;}/*!sc*/
+.gRgPoG *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(255, 255, 255, 0);}/*!sc*/
+data-styled.g133[id="sc-dxnOzf"]{content:"gRgPoG,"}/*!sc*/
+.gfWNtA{z-index:1;position:relative;overflow:hidden;width:calc(100% - 260px);contain:layout;}/*!sc*/
+@media print,screen and (max-width: 50rem){.gfWNtA{width:100%;}}/*!sc*/
+data-styled.g134[id="sc-juTflS"]{content:"gfWNtA,"}/*!sc*/
+.jYOHCb{background:#263238;position:absolute;top:0;bottom:0;right:0;width:calc((100% - 260px) * 0.4);}/*!sc*/
+@media print,screen and (max-width: 75rem){.jYOHCb{display:none;}}/*!sc*/
+data-styled.g135[id="sc-emEvRt"]{content:"jYOHCb,"}/*!sc*/
+.ijJYzO{padding:5px 0;}/*!sc*/
+data-styled.g136[id="sc-kkjMEg"]{content:"ijJYzO,"}/*!sc*/
+.kOlXdP{width:calc(100% - 40px);box-sizing:border-box;margin:0 20px;padding:5px 10px 5px 20px;border:0;border-bottom:1px solid #e1e1e1;font-family:Roboto,sans-serif;font-weight:bold;font-size:13px;color:#333333;background-color:transparent;outline:none;}/*!sc*/
+data-styled.g137[id="sc-cMlaQv"]{content:"kOlXdP,"}/*!sc*/
+.gtHWGb{position:absolute;left:20px;height:1.8em;width:0.9em;}/*!sc*/
+.gtHWGb path{fill:#333333;}/*!sc*/
+data-styled.g138[id="sc-iJQrDi"]{content:"gtHWGb,"}/*!sc*/
+</style>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+</head>
+
+<body>
+  
+      <div id="redoc"><div class="sc-dxnOzf gRgPoG redoc-wrap"><div class="sc-eXHjA-d kBSkUl menu-content" style="top:0px;height:calc(100vh - 0px)"><div role="search" class="sc-kkjMEg ijJYzO"><svg class="sc-iJQrDi gtHWGb search-icon" version="1.1" viewBox="0 0 1000 1000" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px"><path d="M968.2,849.4L667.3,549c83.9-136.5,66.7-317.4-51.7-435.6C477.1-25,252.5-25,113.9,113.4c-138.5,138.3-138.5,362.6,0,501C219.2,730.1,413.2,743,547.6,666.5l301.9,301.4c43.6,43.6,76.9,14.9,104.2-12.4C981,928.3,1011.8,893,968.2,849.4z M524.5,522c-88.9,88.7-233,88.7-321.8,0c-88.9-88.7-88.9-232.6,0-321.3c88.9-88.7,233-88.7,321.8,0C613.4,289.4,613.4,433.3,524.5,522z"></path></svg><input placeholder="Search..." aria-label="Search" type="text" class="sc-cMlaQv kOlXdP search-input" value=""/></div><div class="sc-kMrHXi bNwKoT scrollbar-container undefined"><ul role="menu" class="sc-imaUOy fpIsZT"><li tabindex="0" depth="1" data-item-id="tag/documents" role="menuitem" aria-label="documents" aria-expanded="false" class="sc-vjKnv cVgssJ"><label class="sc-bjMMwc YJdNS -depth1"><span width="calc(100% - 38px)" title="documents" class="sc-eIrltV jZTjzp">documents</span><svg class="sc-fbJfz cNCXIL" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-imaUOy cjNZVC"><li tabindex="0" depth="2" data-item-id="tag/documents/operation/analyzeDocument" role="menuitem" aria-label="Upload and analyse a document" aria-expanded="false" class="sc-vjKnv cVgssJ"><label class="sc-bjMMwc fUjfPA -depth2"><span type="post" class="sc-YtoFD FLoTo operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eIrltV jZTjzp">Upload and analyse a document</span></label></li><li tabindex="0" depth="2" data-item-id="tag/documents/operation/getDocumentStatus" role="menuitem" aria-label="Get document analysis status" aria-expanded="false" class="sc-vjKnv cVgssJ"><label class="sc-bjMMwc fUjfPA -depth2"><span type="get" class="sc-YtoFD FLoTo operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eIrltV jZTjzp">Get document analysis status</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/highlights" role="menuitem" aria-label="highlights" aria-expanded="false" class="sc-vjKnv cVgssJ"><label class="sc-bjMMwc YJdNS -depth1"><span width="calc(100% - 38px)" title="highlights" class="sc-eIrltV jZTjzp">highlights</span><svg class="sc-fbJfz cNCXIL" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-imaUOy cjNZVC"><li tabindex="0" depth="2" data-item-id="tag/highlights/operation/getDocumentHighlights" role="menuitem" aria-label="Get highlights for a document" aria-expanded="false" class="sc-vjKnv cVgssJ"><label class="sc-bjMMwc fUjfPA -depth2"><span type="get" class="sc-YtoFD FLoTo operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eIrltV jZTjzp">Get highlights for a document</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/health" role="menuitem" aria-label="health" aria-expanded="false" class="sc-vjKnv cVgssJ"><label class="sc-bjMMwc YJdNS -depth1"><span width="calc(100% - 38px)" title="health" class="sc-eIrltV jZTjzp">health</span><svg class="sc-fbJfz cNCXIL" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-imaUOy cjNZVC"><li tabindex="0" depth="2" data-item-id="tag/health/operation/healthCheck" role="menuitem" aria-label="Service health check" aria-expanded="false" class="sc-vjKnv cVgssJ"><label class="sc-bjMMwc fUjfPA -depth2"><span type="get" class="sc-YtoFD FLoTo operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eIrltV jZTjzp">Service health check</span></label></li></ul></li></ul><div class="sc-hAYhfO jKUIUi"><a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">API docs by Redocly</a></div></div></div><div class="sc-kVmAmQ laYfRb"><div class="sc-iqavZh dKxKge"><svg class="" style="transform:translate(2px, -4px) rotate(180deg);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg><svg class="" style="transform:translate(2px, 4px);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg></div></div><div class="sc-juTflS gfWNtA api-content"><div class="sc-eDDNvO eTiIZG"><div class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG api-info"><h1 class="sc-fsQipe sc-crPCXn ePkAIL bSStQp">DSH REST API<!-- --> <span>(<!-- -->1.0.0<!-- -->)</span></h1><p>Download OpenAPI specification<!-- -->:</p><div class="sc-iKGpAq sc-cCYyou dXXcln dHaogz"><div class="sc-gHbYXW gUaytm"><div class="sc-etAVuf cNLDQk"> <span class="sc-bqWVmJ dfuuzt">URL: <a href="https://github.com/MRISS-Projects/dsh">https://github.com/MRISS-Projects/dsh</a></span> <!-- --> </div></div></div><div data-role="redoc-summary" html="" class="sc-iKGpAq sc-cCYyou dXXcln dHaogz"></div><div data-role="redoc-description" html="&lt;p&gt;Document Smart Highlights (DSH) REST API for document analysis and smart highlighting.&lt;/p&gt;
+&lt;p&gt;This API allows clients to upload documents, trigger analysis, and retrieve
+the resulting highlights and metadata.&lt;/p&gt;
+&lt;p&gt;For detailed feature specifications see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;/specs/features/document-analysis.md&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;/specs/features/smart-highlighting.md&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;/specs/features/rest-api-endpoints.md&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln dHaogz"><p>Document Smart Highlights (DSH) REST API for document analysis and smart highlighting.</p>
+<p>This API allows clients to upload documents, trigger analysis, and retrieve
+the resulting highlights and metadata.</p>
+<p>For detailed feature specifications see:</p>
+<ul>
+<li><code>/specs/features/document-analysis.md</code></li>
+<li><code>/specs/features/smart-highlighting.md</code></li>
+<li><code>/specs/features/rest-api-endpoints.md</code></li>
+</ul>
+</div></div></div></div><div id="tag/documents" data-section-id="tag/documents" class="sc-eDDNvO eTiIZG"><div class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG"><h2 class="sc-qRumy bcNKdh"><a class="sc-csCMJq jSIqAu" href="#tag/documents" aria-label="tag/documents"></a>documents</h2></div></div><div class="sc-hLseeT eiTXyS"><div class="sc-iKGpAq sc-cCYyou dXXcln dHaogz redoc-markdown " html="&lt;p&gt;Document upload, analysis, and management&lt;/p&gt;
+"><p>Document upload, analysis, and management</p>
+</div></div></div><div id="tag/documents/operation/analyzeDocument" data-section-id="tag/documents/operation/analyzeDocument" class="sc-eDDNvO iUTsUN"><div data-section-id="operation/analyzeDocument" id="operation/analyzeDocument" class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG"><h2 class="sc-qRumy bcNKdh"><a class="sc-csCMJq jSIqAu" href="#tag/documents/operation/analyzeDocument" aria-label="tag/documents/operation/analyzeDocument"></a>Upload and analyse a document<!-- --> </h2><div class="sc-iERabE dUdgLx"><div html="&lt;p&gt;Accepts a document file and optional analysis configuration.
+Returns a document ID and initial processing status.
+Analysis is performed asynchronously by the indexer worker.&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln dHaogz"><p>Accepts a document file and optional analysis configuration.
+Returns a document ID and initial processing status.
+Analysis is performed asynchronously by the indexer worker.</p>
+</div></div><div class="sc-ftWlEC pzAgN"><div class="sc-cYRmzp kuPPCO"><h5 class="sc-irTswZ sc-jOQpHb fA-dGxt qtYpT">Authorizations:</h5><svg class="sc-fbJfz eiOVYa" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jTsRVM gZngKQ"><span class="sc-dskThK ddMcul"><span class="sc-hNeXkj cLOXvd"><i>bearerAuth</i></span></span></div></div><h5 class="sc-irTswZ fA-dGxt">Request Body schema: <span class="sc-gXSCqT bzXJk">multipart/form-data</span><div class="sc-gUrTyB sc-eKYjSU sc-dVCGSo bPAaet boAHLn iuCmqI">required</div></h5><div html="" class="sc-iKGpAq sc-cCYyou dXXcln dHaogz"></div><table class="sc-hIqOWV dybric"><tbody><tr class=""><td kind="field" title="file" class="sc-hAtEya sc-fGFwA-d kddqHa eIujjv"><span class="sc-ieZDjf bEKmDE"></span><span class="property-name">file</span><div class="sc-gUrTyB sc-eKYjSU bPAaet boAHLn">required</div></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">string</span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ"> <!-- -->&lt;<!-- -->binary<!-- -->&gt;<!-- --> </span></div> <div><div html="&lt;p&gt;Document file (PDF, DOC, DOCX). Maximum size 50 MB.&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Document file (PDF, DOC, DOCX). Maximum size 50 MB.</p>
+</div></div></div></td></tr><tr class="last "><td class="sc-hAtEya sc-fGFwA-d sc-jhSXcs kddqHa eIujjv bXwTFl" kind="field" title="options"><span class="sc-ieZDjf bEKmDE"></span><button aria-label="expand options"><span class="property-name">options</span><svg class="sc-fbJfz dTZWxX" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">object</span><span class="sc-gUrTyB sc-jfSnVt bPAaet kEFcTG"> (<!-- -->AnalysisOptions<!-- -->) </span></div> <div><div html="&lt;p&gt;Configuration options for document analysis&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Configuration options for document analysis</p>
+</div></div></div></td></tr></tbody></table><div><h3 class="sc-fJjTez hsJdXF">Responses</h3><div><button class="sc-caslwi brztng"><svg class="sc-fbJfz iZiZiV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">202<!-- --> </strong><div html="&lt;p&gt;Document accepted for analysis&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Document accepted for analysis</p>
+</div></button></div><div><button class="sc-caslwi fvWYOy"><svg class="sc-fbJfz kiMFkB" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">400<!-- --> </strong><div html="&lt;p&gt;Validation failure or malformed request&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Validation failure or malformed request</p>
+</div></button></div><div><button class="sc-caslwi fvWYOy"><svg class="sc-fbJfz kiMFkB" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">413<!-- --> </strong><div html="&lt;p&gt;File too large (maximum 50 MB)&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>File too large (maximum 50 MB)</p>
+</div></button></div><div><button class="sc-caslwi fvWYOy"><svg class="sc-fbJfz kiMFkB" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">500<!-- --> </strong><div html="&lt;p&gt;Unexpected server-side error&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Unexpected server-side error</p>
+</div></button></div></div></div><div class="sc-jTrPJt sc-gLDzao dVngAA fYLqku"><div class="sc-fYzRkH dHdMVa"><button class="sc-jYvNnh iWrBta"><span type="post" class="sc-eGFuAY ejslkd http-verb post">post</span><span class="sc-GJyyy dkiPkt">/documents</span><svg class="sc-fbJfz ivEQut" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-fnxdBX dplsyJ"><div class="sc-llcuoK cNCbuV"><div html="&lt;p&gt;Local development server&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Local development server</p>
+</div><div tabindex="0" role="button"><div class="sc-jnsZEx eobUac"><span>http://localhost:8080/api/v1</span>/documents</div></div></div></div></div><div><h3 class="sc-kFuwaQ dEbuTz"> <!-- -->Response samples<!-- --> </h3><div class="sc-cyRfQY lbIFgo" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab_R_9pcq_0" aria-selected="true" aria-disabled="false" aria-controls="panel_R_9pcq_0" tabindex="0" data-rttab="true">202</li><li class="tab-error" role="tab" id="tab_R_9pcq_1" aria-selected="false" aria-disabled="false" aria-controls="panel_R_9pcq_1" data-rttab="true">400</li><li class="tab-error" role="tab" id="tab_R_9pcq_2" aria-selected="false" aria-disabled="false" aria-controls="panel_R_9pcq_2" data-rttab="true">413</li><li class="tab-error" role="tab" id="tab_R_9pcq_3" aria-selected="false" aria-disabled="false" aria-controls="panel_R_9pcq_3" data-rttab="true">500</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel_R_9pcq_0" aria-labelledby="tab_R_9pcq_0"><div><div class="sc-cPlDXk gpxHhK"><span class="sc-bCDidX ccmcKc">Content type</span><div class="sc-dQelHO eMpCUl">application/json</div></div><div class="sc-hVkBjf ksuOBo"><div class="sc-cRZddz iLjyyA"><div class="sc-gjTGSz btblAa"><button><div class="sc-jegxcw fJsoyS">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div tabindex="0" class="sc-iKGpAq dXXcln sc-jMAIzW jKIGwd"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"documentId"</span>: <span class="token string">&quot;doc-abc123&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"status"</span>: <span class="token string">&quot;processing&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"highlights"</span>: <span class="token punctuation">[ ]</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_9pcq_1" aria-labelledby="tab_R_9pcq_1"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_9pcq_2" aria-labelledby="tab_R_9pcq_2"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_9pcq_3" aria-labelledby="tab_R_9pcq_3"></div></div></div></div></div></div><div id="tag/documents/operation/getDocumentStatus" data-section-id="tag/documents/operation/getDocumentStatus" class="sc-eDDNvO iUTsUN"><div data-section-id="operation/getDocumentStatus" id="operation/getDocumentStatus" class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG"><h2 class="sc-qRumy bcNKdh"><a class="sc-csCMJq jSIqAu" href="#tag/documents/operation/getDocumentStatus" aria-label="tag/documents/operation/getDocumentStatus"></a>Get document analysis status<!-- --> </h2><div class="sc-ftWlEC pzAgN"><div class="sc-cYRmzp kuPPCO"><h5 class="sc-irTswZ sc-jOQpHb fA-dGxt qtYpT">Authorizations:</h5><svg class="sc-fbJfz eiOVYa" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jTsRVM gZngKQ"><span class="sc-dskThK ddMcul"><span class="sc-hNeXkj cLOXvd"><i>bearerAuth</i></span></span></div></div><div><h5 class="sc-irTswZ fA-dGxt">path<!-- --> Parameters</h5><table class="sc-hIqOWV dybric"><tbody><tr class="last "><td kind="field" title="documentId" class="sc-hAtEya sc-fGFwA-d kddqHa eIujjv"><span class="sc-ieZDjf bEKmDE"></span><span class="property-name">documentId</span><div class="sc-gUrTyB sc-eKYjSU bPAaet boAHLn">required</div></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">string</span></div> <div><span class="sc-gUrTyB bPAaet"> <!-- -->Example:<!-- --> </span> <span class="sc-gUrTyB sc-ldFCYc bPAaet eShQxX">doc-abc123</span></div><div><div html="&lt;p&gt;Unique identifier of the document&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Unique identifier of the document</p>
+</div></div></div></td></tr></tbody></table></div><div><h3 class="sc-fJjTez hsJdXF">Responses</h3><div><button class="sc-caslwi brztng"><svg class="sc-fbJfz iZiZiV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">200<!-- --> </strong><div html="&lt;p&gt;Document status retrieved successfully&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Document status retrieved successfully</p>
+</div></button></div><div><button class="sc-caslwi fvWYOy"><svg class="sc-fbJfz kiMFkB" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">404<!-- --> </strong><div html="&lt;p&gt;Resource not found&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Resource not found</p>
+</div></button></div><div><button class="sc-caslwi fvWYOy"><svg class="sc-fbJfz kiMFkB" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">500<!-- --> </strong><div html="&lt;p&gt;Unexpected server-side error&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Unexpected server-side error</p>
+</div></button></div></div></div><div class="sc-jTrPJt sc-gLDzao dVngAA fYLqku"><div class="sc-fYzRkH dHdMVa"><button class="sc-jYvNnh iWrBta"><span type="get" class="sc-eGFuAY kCsPwr http-verb get">get</span><span class="sc-GJyyy dkiPkt">/documents/{documentId}</span><svg class="sc-fbJfz ivEQut" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-fnxdBX dplsyJ"><div class="sc-llcuoK cNCbuV"><div html="&lt;p&gt;Local development server&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Local development server</p>
+</div><div tabindex="0" role="button"><div class="sc-jnsZEx eobUac"><span>http://localhost:8080/api/v1</span>/documents/{documentId}</div></div></div></div></div><div><h3 class="sc-kFuwaQ dEbuTz"> <!-- -->Response samples<!-- --> </h3><div class="sc-cyRfQY lbIFgo" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab_R_9pkq_0" aria-selected="true" aria-disabled="false" aria-controls="panel_R_9pkq_0" tabindex="0" data-rttab="true">200</li><li class="tab-error" role="tab" id="tab_R_9pkq_1" aria-selected="false" aria-disabled="false" aria-controls="panel_R_9pkq_1" data-rttab="true">404</li><li class="tab-error" role="tab" id="tab_R_9pkq_2" aria-selected="false" aria-disabled="false" aria-controls="panel_R_9pkq_2" data-rttab="true">500</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel_R_9pkq_0" aria-labelledby="tab_R_9pkq_0"><div><div class="sc-cPlDXk gpxHhK"><span class="sc-bCDidX ccmcKc">Content type</span><div class="sc-dQelHO eMpCUl">application/json</div></div><div class="sc-hVkBjf ksuOBo"><div class="sc-cRZddz iLjyyA"><div class="sc-gjTGSz btblAa"><button><div class="sc-jegxcw fJsoyS">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div tabindex="0" class="sc-iKGpAq dXXcln sc-jMAIzW jKIGwd"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"documentId"</span>: <span class="token string">&quot;doc-abc123&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"status"</span>: <span class="token string">&quot;completed&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"highlights"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"id"</span>: <span class="token string">&quot;hl-001&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"text"</span>: <span class="token string">&quot;machine learning&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"position"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"start"</span>: <span class="token number">150</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"end"</span>: <span class="token number">166</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"page"</span>: <span class="token number">2</span></div></li></ul><span class="token punctuation">}</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"confidence"</span>: <span class="token number">0.92</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"type"</span>: <span class="token string">&quot;keyword&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"metadata"</span>: <span class="token punctuation">{ }</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"errorMessage"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"createdAt"</span>: <span class="token string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"completedAt"</span>: <span class="token string">&quot;2019-08-24T14:15:22Z&quot;</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_9pkq_1" aria-labelledby="tab_R_9pkq_1"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_9pkq_2" aria-labelledby="tab_R_9pkq_2"></div></div></div></div></div></div><div id="tag/highlights" data-section-id="tag/highlights" class="sc-eDDNvO eTiIZG"><div class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG"><h2 class="sc-qRumy bcNKdh"><a class="sc-csCMJq jSIqAu" href="#tag/highlights" aria-label="tag/highlights"></a>highlights</h2></div></div><div class="sc-hLseeT eiTXyS"><div class="sc-iKGpAq sc-cCYyou dXXcln dHaogz redoc-markdown " html="&lt;p&gt;Highlight retrieval and management&lt;/p&gt;
+"><p>Highlight retrieval and management</p>
+</div></div></div><div id="tag/highlights/operation/getDocumentHighlights" data-section-id="tag/highlights/operation/getDocumentHighlights" class="sc-eDDNvO iUTsUN"><div data-section-id="operation/getDocumentHighlights" id="operation/getDocumentHighlights" class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG"><h2 class="sc-qRumy bcNKdh"><a class="sc-csCMJq jSIqAu" href="#tag/highlights/operation/getDocumentHighlights" aria-label="tag/highlights/operation/getDocumentHighlights"></a>Get highlights for a document<!-- --> </h2><div class="sc-iERabE dUdgLx"><div html="&lt;p&gt;Returns all highlights generated for the specified document.&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln dHaogz"><p>Returns all highlights generated for the specified document.</p>
+</div></div><div class="sc-ftWlEC pzAgN"><div class="sc-cYRmzp kuPPCO"><h5 class="sc-irTswZ sc-jOQpHb fA-dGxt qtYpT">Authorizations:</h5><svg class="sc-fbJfz eiOVYa" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jTsRVM gZngKQ"><span class="sc-dskThK ddMcul"><span class="sc-hNeXkj cLOXvd"><i>bearerAuth</i></span></span></div></div><div><h5 class="sc-irTswZ fA-dGxt">path<!-- --> Parameters</h5><table class="sc-hIqOWV dybric"><tbody><tr class="last "><td kind="field" title="documentId" class="sc-hAtEya sc-fGFwA-d kddqHa eIujjv"><span class="sc-ieZDjf bEKmDE"></span><span class="property-name">documentId</span><div class="sc-gUrTyB sc-eKYjSU bPAaet boAHLn">required</div></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">string</span></div> <div><span class="sc-gUrTyB bPAaet"> <!-- -->Example:<!-- --> </span> <span class="sc-gUrTyB sc-ldFCYc bPAaet eShQxX">doc-abc123</span></div><div><div html="&lt;p&gt;Unique identifier of the document&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Unique identifier of the document</p>
+</div></div></div></td></tr></tbody></table></div><div><h5 class="sc-irTswZ fA-dGxt">query<!-- --> Parameters</h5><table class="sc-hIqOWV dybric"><tbody><tr class=""><td kind="field" title="type" class="sc-hAtEya sc-fGFwA-d kddqHa eIujjv"><span class="sc-ieZDjf bEKmDE"></span><span class="property-name">type</span></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">string</span></div> <div><div html="&lt;p&gt;Filter highlights by type&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Filter highlights by type</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="minConfidence" class="sc-hAtEya sc-fGFwA-d kddqHa eIujjv"><span class="sc-ieZDjf bEKmDE"></span><span class="property-name">minConfidence</span></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">number</span><span> <span class="sc-gUrTyB sc-cmEaii bPAaet iWTprB"> <!-- -->[ 0 .. 1 ]<!-- --> </span></span></div><div><span class="sc-gUrTyB bPAaet"> <!-- -->Default:<!-- --> </span> <span class="sc-gUrTyB sc-ldFCYc bPAaet eShQxX">0.7</span></div> <div><div html="&lt;p&gt;Minimum confidence threshold for returned highlights&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Minimum confidence threshold for returned highlights</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="page" class="sc-hAtEya sc-fGFwA-d kddqHa eIujjv"><span class="sc-ieZDjf bEKmDE"></span><span class="property-name">page</span></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">integer</span><span> <span class="sc-gUrTyB sc-cmEaii bPAaet iWTprB"> <!-- -->&gt;= 0<!-- --> </span></span></div><div><span class="sc-gUrTyB bPAaet"> <!-- -->Default:<!-- --> </span> <span class="sc-gUrTyB sc-ldFCYc bPAaet eShQxX">0</span></div> <div><div html="" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"></div></div></div></td></tr><tr class="last "><td kind="field" title="size" class="sc-hAtEya sc-fGFwA-d kddqHa eIujjv"><span class="sc-ieZDjf bEKmDE"></span><span class="property-name">size</span></td><td class="sc-blLsxE bmauLr"><div><div><span class="sc-gUrTyB sc-kZGvTq bPAaet UMvzF"></span><span class="sc-gUrTyB sc-iMfspz bPAaet fEQrHJ">integer</span><span> <span class="sc-gUrTyB sc-cmEaii bPAaet iWTprB"> <!-- -->[ 1 .. 100 ]<!-- --> </span></span></div><div><span class="sc-gUrTyB bPAaet"> <!-- -->Default:<!-- --> </span> <span class="sc-gUrTyB sc-ldFCYc bPAaet eShQxX">20</span></div> <div><div html="" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"></div></div></div></td></tr></tbody></table></div><div><h3 class="sc-fJjTez hsJdXF">Responses</h3><div><button class="sc-caslwi brztng"><svg class="sc-fbJfz iZiZiV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">200<!-- --> </strong><div html="&lt;p&gt;Highlights retrieved successfully&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Highlights retrieved successfully</p>
+</div></button></div><div><button class="sc-caslwi fvWYOy"><svg class="sc-fbJfz kiMFkB" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">404<!-- --> </strong><div html="&lt;p&gt;Resource not found&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Resource not found</p>
+</div></button></div><div><button class="sc-caslwi fvWYOy"><svg class="sc-fbJfz kiMFkB" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">500<!-- --> </strong><div html="&lt;p&gt;Unexpected server-side error&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Unexpected server-side error</p>
+</div></button></div></div></div><div class="sc-jTrPJt sc-gLDzao dVngAA fYLqku"><div class="sc-fYzRkH dHdMVa"><button class="sc-jYvNnh iWrBta"><span type="get" class="sc-eGFuAY kCsPwr http-verb get">get</span><span class="sc-GJyyy dkiPkt">/documents/{documentId}/highlights</span><svg class="sc-fbJfz ivEQut" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-fnxdBX dplsyJ"><div class="sc-llcuoK cNCbuV"><div html="&lt;p&gt;Local development server&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Local development server</p>
+</div><div tabindex="0" role="button"><div class="sc-jnsZEx eobUac"><span>http://localhost:8080/api/v1</span>/documents/{documentId}/highlights</div></div></div></div></div><div><h3 class="sc-kFuwaQ dEbuTz"> <!-- -->Response samples<!-- --> </h3><div class="sc-cyRfQY lbIFgo" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab_R_4sta_0" aria-selected="true" aria-disabled="false" aria-controls="panel_R_4sta_0" tabindex="0" data-rttab="true">200</li><li class="tab-error" role="tab" id="tab_R_4sta_1" aria-selected="false" aria-disabled="false" aria-controls="panel_R_4sta_1" data-rttab="true">404</li><li class="tab-error" role="tab" id="tab_R_4sta_2" aria-selected="false" aria-disabled="false" aria-controls="panel_R_4sta_2" data-rttab="true">500</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel_R_4sta_0" aria-labelledby="tab_R_4sta_0"><div><div class="sc-cPlDXk gpxHhK"><span class="sc-bCDidX ccmcKc">Content type</span><div class="sc-dQelHO eMpCUl">application/json</div></div><div class="sc-hVkBjf ksuOBo"><div class="sc-cRZddz iLjyyA"><div class="sc-gjTGSz btblAa"><button><div class="sc-jegxcw fJsoyS">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div tabindex="0" class="sc-iKGpAq dXXcln sc-jMAIzW jKIGwd"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"documentId"</span>: <span class="token string">&quot;doc-abc123&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"highlights"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"id"</span>: <span class="token string">&quot;hl-001&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"text"</span>: <span class="token string">&quot;machine learning&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"position"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"start"</span>: <span class="token number">150</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"end"</span>: <span class="token number">166</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"page"</span>: <span class="token number">2</span></div></li></ul><span class="token punctuation">}</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"confidence"</span>: <span class="token number">0.92</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"type"</span>: <span class="token string">&quot;keyword&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"metadata"</span>: <span class="token punctuation">{ }</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"page"</span>: <span class="token number">0</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"size"</span>: <span class="token number">20</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"totalElements"</span>: <span class="token number">42</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"totalPages"</span>: <span class="token number">3</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_4sta_1" aria-labelledby="tab_R_4sta_1"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_4sta_2" aria-labelledby="tab_R_4sta_2"></div></div></div></div></div></div><div id="tag/health" data-section-id="tag/health" class="sc-eDDNvO eTiIZG"><div class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG"><h2 class="sc-qRumy bcNKdh"><a class="sc-csCMJq jSIqAu" href="#tag/health" aria-label="tag/health"></a>health</h2></div></div><div class="sc-hLseeT eiTXyS"><div class="sc-iKGpAq sc-cCYyou dXXcln dHaogz redoc-markdown " html="&lt;p&gt;Service health and status&lt;/p&gt;
+"><p>Service health and status</p>
+</div></div></div><div id="tag/health/operation/healthCheck" data-section-id="tag/health/operation/healthCheck" class="sc-eDDNvO iUTsUN"><div data-section-id="operation/healthCheck" id="operation/healthCheck" class="sc-iAEyYj cmAaWK"><div class="sc-hLseeT hoYmkG"><h2 class="sc-qRumy bcNKdh"><a class="sc-csCMJq jSIqAu" href="#tag/health/operation/healthCheck" aria-label="tag/health/operation/healthCheck"></a>Service health check<!-- --> </h2><div><h3 class="sc-fJjTez hsJdXF">Responses</h3><div><button class="sc-caslwi brztng"><svg class="sc-fbJfz iZiZiV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fYaxgW jJkGwY">200<!-- --> </strong><div html="&lt;p&gt;Service is healthy&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou sc-cjERFZ dXXcln fTBBlJ dkmSdy"><p>Service is healthy</p>
+</div></button></div></div></div><div class="sc-jTrPJt sc-gLDzao dVngAA fYLqku"><div class="sc-fYzRkH dHdMVa"><button class="sc-jYvNnh iWrBta"><span type="get" class="sc-eGFuAY kCsPwr http-verb get">get</span><span class="sc-GJyyy dkiPkt">/health</span><svg class="sc-fbJfz ivEQut" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-fnxdBX dplsyJ"><div class="sc-llcuoK cNCbuV"><div html="&lt;p&gt;Local development server&lt;/p&gt;
+" class="sc-iKGpAq sc-cCYyou dXXcln cFvDiF"><p>Local development server</p>
+</div><div tabindex="0" role="button"><div class="sc-jnsZEx eobUac"><span>http://localhost:8080/api/v1</span>/health</div></div></div></div></div><div><h3 class="sc-kFuwaQ dEbuTz"> <!-- -->Response samples<!-- --> </h3><div class="sc-cyRfQY lbIFgo" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab_R_4stq_0" aria-selected="true" aria-disabled="false" aria-controls="panel_R_4stq_0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel_R_4stq_0" aria-labelledby="tab_R_4stq_0"><div><div class="sc-cPlDXk gpxHhK"><span class="sc-bCDidX ccmcKc">Content type</span><div class="sc-dQelHO eMpCUl">application/json</div></div><div class="sc-hVkBjf ksuOBo"><div class="sc-cRZddz iLjyyA"><div class="sc-gjTGSz btblAa"><button><div class="sc-jegxcw fJsoyS">Copy</div></button></div><div tabindex="0" class="sc-iKGpAq dXXcln sc-jMAIzW jKIGwd"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"status"</span>: <span class="token string">&quot;UP&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"timestamp"</span>: <span class="token string">&quot;2019-08-24T14:15:22Z&quot;</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div></div><div class="sc-emEvRt jYOHCb"></div></div></div>
+      <script>
+      const __redoc_state = {"menu":{"activeItemIdx":-1},"spec":{"data":{"openapi":"3.0.3","info":{"title":"DSH REST API","description":"Document Smart Highlights (DSH) REST API for document analysis and smart highlighting.\n\nThis API allows clients to upload documents, trigger analysis, and retrieve\nthe resulting highlights and metadata.\n\nFor detailed feature specifications see:\n- `/specs/features/document-analysis.md`\n- `/specs/features/smart-highlighting.md`\n- `/specs/features/rest-api-endpoints.md`\n","version":"1.0.0","contact":{"name":"MRISS Projects","url":"https://github.com/MRISS-Projects/dsh"}},"servers":[{"url":"http://localhost:8080/api/v1","description":"Local development server"}],"tags":[{"name":"documents","description":"Document upload, analysis, and management"},{"name":"highlights","description":"Highlight retrieval and management"},{"name":"health","description":"Service health and status"}],"paths":{"/documents":{"post":{"tags":["documents"],"summary":"Upload and analyse a document","operationId":"analyzeDocument","description":"Accepts a document file and optional analysis configuration.\nReturns a document ID and initial processing status.\nAnalysis is performed asynchronously by the indexer worker.\n","requestBody":{"required":true,"content":{"multipart/form-data":{"schema":{"type":"object","required":["file"],"properties":{"file":{"type":"string","format":"binary","description":"Document file (PDF, DOC, DOCX). Maximum size 50 MB."},"options":{"$ref":"#/components/schemas/AnalysisOptions"}}}}}},"responses":{"202":{"description":"Document accepted for analysis","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AnalysisResult"},"example":{"documentId":"doc-abc123","status":"processing","highlights":[]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"413":{"description":"File too large (maximum 50 MB)","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/documents/{documentId}":{"get":{"tags":["documents"],"summary":"Get document analysis status","operationId":"getDocumentStatus","parameters":[{"$ref":"#/components/parameters/documentId"}],"responses":{"200":{"description":"Document status retrieved successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AnalysisResult"}}}},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/documents/{documentId}/highlights":{"get":{"tags":["highlights"],"summary":"Get highlights for a document","operationId":"getDocumentHighlights","description":"Returns all highlights generated for the specified document.","parameters":[{"$ref":"#/components/parameters/documentId"},{"name":"type","in":"query","description":"Filter highlights by type","schema":{"type":"string"}},{"name":"minConfidence","in":"query","description":"Minimum confidence threshold for returned highlights","schema":{"type":"number","minimum":0,"maximum":1,"default":0.7}},{"name":"page","in":"query","schema":{"type":"integer","minimum":0,"default":0}},{"name":"size","in":"query","schema":{"type":"integer","minimum":1,"maximum":100,"default":20}}],"responses":{"200":{"description":"Highlights retrieved successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HighlightCollection"}}}},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/health":{"get":{"tags":["health"],"summary":"Service health check","operationId":"healthCheck","security":[],"responses":{"200":{"description":"Service is healthy","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HealthStatus"}}}}}}}},"components":{"parameters":{"documentId":{"name":"documentId","in":"path","required":true,"description":"Unique identifier of the document","schema":{"type":"string","example":"doc-abc123"}}},"schemas":{"AnalysisOptions":{"type":"object","description":"Configuration options for document analysis","properties":{"highlightTypes":{"type":"array","description":"Types of highlights to generate","items":{"type":"string","enum":["keyword","semantic","pattern","entity"]},"example":["keyword","semantic"]},"confidenceThreshold":{"type":"number","description":"Minimum confidence score for generated highlights (0.0–1.0)","minimum":0,"maximum":1,"default":0.7,"example":0.7},"maxHighlights":{"type":"integer","description":"Maximum number of highlights to return","minimum":1,"maximum":1000,"default":100}}},"AnalysisResult":{"type":"object","required":["documentId","status"],"description":"Result and status of a document analysis operation","properties":{"documentId":{"type":"string","description":"Unique identifier assigned to the document","example":"doc-abc123"},"status":{"type":"string","description":"Current processing status","enum":["processing","completed","failed"],"example":"completed"},"highlights":{"type":"array","description":"Generated highlights (populated when status is completed)","items":{"$ref":"#/components/schemas/Highlight"}},"errorMessage":{"type":"string","description":"Error message when status is failed","nullable":true},"createdAt":{"type":"string","format":"date-time","description":"Timestamp when the document was submitted","example":"2024-01-15T10:30:00Z"},"completedAt":{"type":"string","format":"date-time","description":"Timestamp when analysis completed","nullable":true}}},"Highlight":{"type":"object","required":["id","text","position"],"description":"A single highlight extracted from a document","properties":{"id":{"type":"string","description":"Unique identifier of the highlight","example":"hl-001"},"text":{"type":"string","description":"The highlighted text content","example":"machine learning"},"position":{"$ref":"#/components/schemas/Position"},"confidence":{"type":"number","description":"Confidence score (0.0–1.0)","minimum":0,"maximum":1,"example":0.92},"type":{"type":"string","description":"Category of the highlight","enum":["keyword","semantic","pattern","entity"],"example":"keyword"},"metadata":{"type":"object","additionalProperties":true,"description":"Additional metadata specific to the highlight type"}}},"HighlightCollection":{"type":"object","description":"Paginated collection of highlights for a document","properties":{"documentId":{"type":"string","example":"doc-abc123"},"highlights":{"type":"array","items":{"$ref":"#/components/schemas/Highlight"}},"page":{"type":"integer","description":"Current page number (0-based)","example":0},"size":{"type":"integer","description":"Page size","example":20},"totalElements":{"type":"integer","description":"Total number of highlights","example":42},"totalPages":{"type":"integer","description":"Total number of pages","example":3}}},"Position":{"type":"object","required":["start","end"],"description":"Character-based position of a highlight within the document","properties":{"start":{"type":"integer","description":"Start character offset (0-based)","minimum":0,"example":150},"end":{"type":"integer","description":"End character offset (exclusive)","minimum":0,"example":166},"page":{"type":"integer","description":"Page number (1-based, for multi-page documents)","minimum":1,"nullable":true,"example":2}}},"HealthStatus":{"type":"object","properties":{"status":{"type":"string","enum":["UP","DOWN","OUT_OF_SERVICE"],"example":"UP"},"timestamp":{"type":"string","format":"date-time"}}},"ErrorResponse":{"type":"object","description":"Standard error response body","properties":{"timestamp":{"type":"string","format":"date-time","example":"2024-01-15T10:30:00Z"},"status":{"type":"integer","example":400},"error":{"type":"string","example":"Bad Request"},"message":{"type":"string","example":"Validation failed for field 'confidence'"},"path":{"type":"string","example":"/api/v1/documents"}}}},"responses":{"BadRequest":{"description":"Validation failure or malformed request","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"NotFound":{"description":"Resource not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"InternalServerError":{"description":"Unexpected server-side error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}}},"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"}}},"security":[{"bearerAuth":[]}]}},"searchIndex":{"store":["tag/documents","tag/documents/operation/analyzeDocument","tag/documents/operation/getDocumentStatus","tag/highlights","tag/highlights/operation/getDocumentHighlights","tag/health","tag/health/operation/healthCheck"],"index":{"version":"2.3.9","fields":["title","description"],"fieldVectors":[["title/0",[0,0.081]],["description/0",[0,0.071,1,1.279,2,0.909,3,1.279]],["title/1",[0,0.054,1,0.966,4,1.39]],["description/1",[0,0.066,2,0.667,5,0.828,6,0.828,7,0.828,8,0.828,9,0.575,10,0.828,11,0.828,12,0.828,13,0.409,14,0.828,15,0.828,16,0.828,17,0.828]],["title/2",[0,0.054,2,0.686,13,0.686]],["description/2",[18,2.497]],["title/3",[19,0.723]],["description/3",[3,1.402,19,0.694,20,2.018]],["title/4",[0,0.065,19,0.575]],["description/4",[0,0.06,9,1.089,19,0.539,21,1.567,22,1.567,23,1.567]],["title/5",[24,0.723]],["description/5",[13,0.997,24,0.694,25,1.402]],["title/6",[24,0.478,25,0.966,26,1.39]],["description/6",[24,0.858]]],"invertedIndex":[["accept",{"_index":5,"title":{},"description":{"1":{}}}],["analys",{"_index":4,"title":{"1":{}},"description":{}}],["analysi",{"_index":2,"title":{"2":{}},"description":{"0":{},"1":{}}}],["asynchron",{"_index":15,"title":{},"description":{"1":{}}}],["check",{"_index":26,"title":{"6":{}},"description":{}}],["configur",{"_index":8,"title":{},"description":{"1":{}}}],["document",{"_index":0,"title":{"0":{},"1":{},"2":{},"4":{}},"description":{"0":{},"1":{},"4":{}}}],["documents/{documentid",{"_index":18,"title":{},"description":{"2":{}}}],["documents/{documentid}/highlight",{"_index":23,"title":{},"description":{"4":{}}}],["file",{"_index":6,"title":{},"description":{"1":{}}}],["gener",{"_index":21,"title":{},"description":{"4":{}}}],["health",{"_index":24,"title":{"5":{},"6":{}},"description":{"5":{},"6":{}}}],["highlight",{"_index":19,"title":{"3":{},"4":{}},"description":{"3":{},"4":{}}}],["id",{"_index":10,"title":{},"description":{"1":{}}}],["index",{"_index":16,"title":{},"description":{"1":{}}}],["initi",{"_index":11,"title":{},"description":{"1":{}}}],["manag",{"_index":3,"title":{},"description":{"0":{},"3":{}}}],["option",{"_index":7,"title":{},"description":{"1":{}}}],["perform",{"_index":14,"title":{},"description":{"1":{}}}],["process",{"_index":12,"title":{},"description":{"1":{}}}],["retriev",{"_index":20,"title":{},"description":{"3":{}}}],["return",{"_index":9,"title":{},"description":{"1":{},"4":{}}}],["servic",{"_index":25,"title":{"6":{}},"description":{"5":{}}}],["specifi",{"_index":22,"title":{},"description":{"4":{}}}],["statu",{"_index":13,"title":{"2":{}},"description":{"1":{},"5":{}}}],["upload",{"_index":1,"title":{"1":{}},"description":{"0":{}}}],["worker",{"_index":17,"title":{},"description":{"1":{}}}]],"pipeline":[]}},"options":{}};
+
+      var container = document.getElementById('redoc');
+      Redoc.hydrate(__redoc_state, container);
+
+      </script>
+</body>
+
+</html>
