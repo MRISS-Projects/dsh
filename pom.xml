@@ -56,6 +56,16 @@
                 <artifactId>dsh-doc-processor-worker</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.mriss.products.dsh.dsh-solr</groupId>
+                <artifactId>solr-terms-vector-order</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mriss.products.dsh.dsh-solr</groupId>
+                <artifactId>solr-advanced-numbers-filter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

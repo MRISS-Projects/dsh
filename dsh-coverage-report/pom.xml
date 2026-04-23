@@ -44,6 +44,14 @@
             <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
             <artifactId>dsh-doc-processor-worker</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh.dsh-solr</groupId>
+            <artifactId>solr-terms-vector-order</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mriss.products.dsh.dsh-solr</groupId>
+            <artifactId>solr-advanced-numbers-filter</artifactId>
+        </dependency>
     </dependencies>
     <!-- <dependencyManagement>...</dependencyManagement> -->
     <!-- <modules>...</modules> -->
