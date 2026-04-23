@@ -104,23 +104,9 @@ public enum Order {
      */
     public int compare(int paramValueO1, int paramValueO2) {
         if (this == ASC) {
-            if (paramValueO1 < paramValueO2) {
-                return -1;
-            } else if (paramValueO1 >= paramValueO2) {
-                return 1;
-            } else {
-                return 1;
-            }
-        } else if (this == DESC) {
-            if (paramValueO1 > paramValueO2) {
-                return -1;
-            } else if (paramValueO1 <= paramValueO2) {
-                return 1;
-            } else {
-                return 1;
-            }
+            return paramValueO1 < paramValueO2 ? -1 : 1;
         } else {
-            return 0;
+            return paramValueO1 > paramValueO2 ? -1 : 1;
         }
     }
 

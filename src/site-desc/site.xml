@@ -22,7 +22,7 @@
         <menu name="Code Reports">
             <item name="GitHub Report" href="github-report.html" />
             <item name="JaCoCo Code Coverage Report" href="dsh-coverage-report/jacoco-aggregate/index.html" />
-            <item name="Code Tests Report" href="surefire-report.html" />
+            <item name="Code Tests Report" href="surefire.html" />
             <item name="Javadoc" href="apidocs/index.html" />
             <item name="Test Javadoc" href="testapidocs/index.html" />
             <item name="OnLine Code Navigation Report" href="xref/index.html" />

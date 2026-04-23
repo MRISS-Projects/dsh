@@ -174,8 +174,124 @@ public class OrderedTermVectorComponentTest {
 		};
 		Mockito.when(req.getParams()).thenReturn(params);
 		Mockito.when(rsp.getValues()).thenReturn(namedList);
-		termVectorComponent.process(rb);
-		LOGGER.debug(""+namedList);
-	}
+        termVectorComponent.process(rb);
+                LOGGER.debug(""+namedList);
+        }
+
+        @Test
+        public void testProcessResponseBuilderNullOrderParam() throws IOException {
+                Mockito.doAnswer(new Answer() {
+                      public Object answer(InvocationOnMock invocation) {
+                          LOGGER.debug("Mocking process method.");
+                          return null;
+                      }})
+                  .when(responseBuilderProcessor).process(rb);
+                SolrParams params = new SolrParams() {
+                        @Override
+                        public String get(String param) {
+                                return null; // no order param
+                        }
+                        @Override
+                        public String[] getParams(String param) { return null; }
+                        @Override
+                        public Iterator<String> getParameterNamesIterator() { return null; }
+                };
+                Mockito.when(req.getParams()).thenReturn(params);
+                Mockito.when(rsp.getValues()).thenReturn(namedList);
+                // Should complete without ordering (orderOptions == null path)
+                termVectorComponent.process(rb);
+                LOGGER.debug("null order param result: " + namedList);
+        }
+
+        @Test
+        public void testProcessResponseBuilderEmptyOrderParam() throws IOException {
+                Mockito.doAnswer(new Answer() {
+                      public Object answer(InvocationOnMock invocation) {
+                          LOGGER.debug("Mocking process method.");
+                          return null;
+                      }})
+                  .when(responseBuilderProcessor).process(rb);
+                SolrParams params = new SolrParams() {
+                        @Override
+                        public String get(String param) {
+                                if (param.equals(OrderedTermVectorComponent.ORDER_PARAM)) {
+                                        return ""; // empty order param
+                                }
+                                return null;
+                        }
+                        @Override
+                        public String[] getParams(String param) { return null; }
+                        @Override
+                        public Iterator<String> getParameterNamesIterator() { return null; }
+                };
+                Mockito.when(req.getParams()).thenReturn(params);
+                Mockito.when(rsp.getValues()).thenReturn(namedList);
+                // Should complete without ordering (orderOptions == null path)
+                termVectorComponent.process(rb);
+                LOGGER.debug("empty order param result: " + namedList);
+        }
+
+        /**
+         * Covers the {@code tvValue instanceof NamedList} → false branch by placing a
+         * plain String as a value in the termVectors named list.
+         */
+        @Test
+        public void testProcessWithNonNamedListTvValue() throws IOException {
+                Mockito.doAnswer(new Answer() {
+                      public Object answer(InvocationOnMock invocation) { return null; }})
+                  .when(responseBuilderProcessor).process(rb);
+
+                NamedList<Object> tv = new NamedList<>();
+                tv.add("plainStringEntry", "just a string"); // not a NamedList → branch false
+
+                NamedList<Object> responseValues = new NamedList<>();
+                responseValues.add(TermVectorComponent.TERM_VECTORS, tv);
+
+                SolrParams params = buildParams("tv.tf;desc");
+                Mockito.when(req.getParams()).thenReturn(params);
+                Mockito.when(rsp.getValues()).thenReturn(responseValues);
+                termVectorComponent.process(rb);
+        }
+
+        /**
+         * Covers the {@code docNamedList.get("uniqueKey") != null} → false branch by
+         * placing a NamedList without a "uniqueKey" entry in the termVectors list.
+         */
+        @Test
+        public void testProcessWithNoUniqueKey() throws IOException {
+                Mockito.doAnswer(new Answer() {
+                      public Object answer(InvocationOnMock invocation) { return null; }})
+                  .when(responseBuilderProcessor).process(rb);
+
+                NamedList<Object> docList = new NamedList<>();
+                // No "uniqueKey" entry → docNamedList.get("uniqueKey") == null
+                NamedList<Object> termInfo = new NamedList<>();
+                termInfo.add("tf", 3L);
+                docList.add("someterm", termInfo);
+
+                NamedList<Object> tv = new NamedList<>();
+                tv.add("doc1", docList);  // NamedList, but no uniqueKey
+
+                NamedList<Object> responseValues = new NamedList<>();
+                responseValues.add(TermVectorComponent.TERM_VECTORS, tv);
+
+                SolrParams params = buildParams("tv.tf;asc");
+                Mockito.when(req.getParams()).thenReturn(params);
+                Mockito.when(rsp.getValues()).thenReturn(responseValues);
+                termVectorComponent.process(rb);
+        }
+
+        private SolrParams buildParams(final String orderValue) {
+                return new SolrParams() {
+                        @Override
+                        public String get(String param) {
+                                return OrderedTermVectorComponent.ORDER_PARAM.equals(param) ? orderValue : null;
+                        }
+                        @Override
+                        public String[] getParams(String param) { return null; }
+                        @Override
+                        public Iterator<String> getParameterNamesIterator() { return null; }
+                };
+        }
 
 }

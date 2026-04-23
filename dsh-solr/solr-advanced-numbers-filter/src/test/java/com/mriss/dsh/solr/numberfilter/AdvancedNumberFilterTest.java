@@ -100,6 +100,21 @@ public class AdvancedNumberFilterTest {
         assertFalse(filter.accept());
     }
 
+    /**
+     * A string that contains a dot but does NOT match the hostname pattern –
+     * covers the {@code contains(".") == true && m1.matches() == false} branch
+     * inside {@code isHostName()}.
+     */
+    @Test
+    public void testDotButNotHostName() throws IOException {
+        // Consecutive dots make this an invalid hostname (regex won't match),
+        // but contains(".") returns true → exercises the second branch of isHostName.
+        String testString = "hello..world";
+        Mockito.when(termAtt.buffer()).thenReturn(testString.toCharArray());
+        Mockito.when(termAtt.length()).thenReturn(testString.length());
+        assertTrue(filter.accept()); // not a URL, not mixed number, not a hostname → accepted
+    }
+
     @Test
     public void testRegularTerm() throws IOException {
         String testString = "myRegularTerm";
