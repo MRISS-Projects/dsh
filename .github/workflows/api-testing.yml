@@ -2,7 +2,7 @@ name: API Testing
 on:
   push:
     branches:
-      - develop
+      - DEVELOP
       - main
     paths:
       - 'dsh-rest-api/**'

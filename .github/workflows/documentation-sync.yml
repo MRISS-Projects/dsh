@@ -2,7 +2,7 @@ name: Documentation Sync
 on:
   push:
     branches:
-      - develop
+      - DEVELOP
       - main
     paths:
       - 'specs/api/openapi/**'
