@@ -4,7 +4,7 @@
 2026-04-21
 
 ## Status
-Proposed
+Implemented
 
 ## Context
 
