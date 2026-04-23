@@ -7,9 +7,9 @@ project's Maven build configuration so that it inherits as much as possible from
 hierarchy (`parent-poms/pom.xml` → `parent-poms/products/pom.xml`).
 
 Currently, DSH module POMs duplicate plugin versions, re-declare skin and compiler properties,
-embed Jenkins-specific artefacts, manage dependency versions locally, and use the deprecated
-`.apt` site format. The goal is to eliminate that duplication, centralise generic configuration
-in the parent hierarchy, and keep only DSH-specific customisations in DSH POMs.
+embed Jenkins-specific artifacts, manage dependency versions locally, and use the deprecated
+`.apt` site format. The goal is to eliminate that duplication, centralize generic configuration
+in the parent hierarchy, and keep only DSH-specific customizations in DSH POMs.
 
 This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarchy-configuration.md`).
 
@@ -27,7 +27,7 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
 - **Acceptance Criteria**:
   - `<groupId>com.mriss.mriss-parent</groupId>` / `<artifactId>products</artifactId>` /
     `<version>3.7.1-SNAPSHOT</version>` in the DSH root `<parent>` block.
-  - `mvn -f dsh/pom.xml validate` succeeds after local install of parent-poms SNAPSHOT.
+  - `mvn -f dsh/pom.xml validate` succeeds after local installation of parent-poms SNAPSHOT.
 
 ---
 
@@ -40,12 +40,12 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   explaining why they are DSH-specific.
 - **Profile Map**:
 
-  | Profile ID | Present in DSH root `pom.xml` | Present in parent | Action |
-  |---|---|---|---|
-  | `deployment` | Yes | `parent-poms/pom.xml` | **Remove from DSH** – generic; fully covered by parent |
-  | `product-release-deployment` | Yes | `parent-poms/products/pom.xml` | **Merge DSH-specific parts up**, then remove from DSH |
-  | `update-readme` | Yes | No | **Keep** – DSH-specific SCM checkin customisation |
-  | `release-deployment` | Yes (implicit via parent) | `parent-poms/pom.xml` | **Remove from DSH** |
+  | Profile ID                   | Present in DSH root `pom.xml` | Present in parent              | Action                                                 |
+  |------------------------------|-------------------------------|--------------------------------|--------------------------------------------------------|
+  | `deployment`                 | Yes                           | `parent-poms/pom.xml`          | **Remove from DSH** – generic; fully covered by parent |
+  | `product-release-deployment` | Yes                           | `parent-poms/products/pom.xml` | **Merge DSH-specific parts up**, then remove from DSH  |
+  | `update-readme`              | Yes                           | No                             | **Keep** – DSH-specific SCM checkin customisation      |
+  | `release-deployment`         | Yes (implicit via parent)     | `parent-poms/pom.xml`          | **Remove from DSH**                                    |
 
 - **Acceptance Criteria**:
   - `mvn -P deployment validate` succeeds, picking up the parent profile.
@@ -53,24 +53,24 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
 
 ---
 
-### FR003 – Remove Plugin Versions from DSH; Centralise in Root Parent `pluginManagement`
+### FR003 – Remove Plugin Versions from DSH; Centralize in Root Parent `pluginManagement`
 
 - **Description**: All `<version>` elements on `<plugin>` declarations in DSH POMs must be removed.
   The corresponding versions must be present in `parent-poms/pom.xml` `<pluginManagement>`.
 - **Input**: All DSH `pom.xml` files; `D:/IdeaProjects/parent-poms/pom.xml`
 - **Output**: No hardcoded plugin versions in DSH; all plugin versions resolved from parent
   `pluginManagement`.
-- **Plugins requiring version centralisation in DSH today**:
+- **Plugins requiring version centralization in DSH today**:
 
-  | Plugin | Current DSH Version | Action |
-  |---|---|---|
-  | `buildnumber-maven-plugin` | `1.0` (dsh-rest-api) | Remove; use `${buildnumber.plugin.version}` from parent |
-  | `spring-boot-maven-plugin` | `${spring.boot.version}` | Remove; managed in `products/pom.xml` pluginManagement |
-  | `lifecycle-mapping` (m2e) | `1.0.0` | Remove version; keep Eclipse m2e block as-is |
-  | `jacoco-maven-plugin` | (DSH root) | Remove; use `${jacoco.maven.plugin.version}` from parent |
-  | `maven-enforcer-plugin` | (DSH root) | Remove; use `${enforcer.plugin.version}` from parent |
-  | `maven-release-plugin` | (DSH root) | Remove; use `${release.plugin.version}` from parent |
-  | `maven-site-plugin` | (DSH root) | Remove; use `${site.plugin.version}` from parent |
+  | Plugin                     | Current DSH Version      | Action                                                   |
+  |----------------------------|--------------------------|----------------------------------------------------------|
+  | `buildnumber-maven-plugin` | `1.0` (dsh-rest-api)     | Remove; use `${buildnumber.plugin.version}` from parent  |
+  | `spring-boot-maven-plugin` | `${spring.boot.version}` | Remove; managed in `products/pom.xml` pluginManagement   |
+  | `lifecycle-mapping` (m2e)  | `1.0.0`                  | Remove version; keep Eclipse m2e block as-is             |
+  | `jacoco-maven-plugin`      | (DSH root)               | Remove; use `${jacoco.maven.plugin.version}` from parent |
+  | `maven-enforcer-plugin`    | (DSH root)               | Remove; use `${enforcer.plugin.version}` from parent     |
+  | `maven-release-plugin`     | (DSH root)               | Remove; use `${release.plugin.version}` from parent      |
+  | `maven-site-plugin`        | (DSH root)               | Remove; use `${site.plugin.version}` from parent         |
 
 - **Acceptance Criteria**:
   - `grep -r "<version>" dsh/ --include="pom.xml"` returns no plugin version lines
@@ -103,16 +103,16 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
 
 ### FR005 – Bump Spring Boot Version; Align Spring Fox and Swagger Annotations
 
-- **Description**: Centralise framework versions in `products/pom.xml` and remove them from DSH.
+- **Description**: Centralize framework versions in `products/pom.xml` and remove them from DSH.
 - **Version Table**:
 
-  | Artefact | Current `products/pom.xml` | Current DSH | Target `products/pom.xml` |
-  |---|---|---|---|
-  | Spring Boot | `2.3.4.RELEASE` (`spring-boot.version`) | `2.3.12.RELEASE` (`spring.boot.version`) | `2.3.12.RELEASE` |
-  | Spring Fox Swagger UI | `2.10.0` | `2.8.0` (dsh-rest-api) | `3.0.0` (latest compatible with SB 2.3.x) |
-  | Spring Fox Swagger 2 | `2.10.0` | `2.8.0` (dsh-rest-api) | `3.0.0` |
-  | Swagger Annotations | `1.5.20` | `1.5.x` | `1.6.x` (latest 1.x, compatible with springfox 3) |
-  | `jaxb-api` | not declared | `2.4.0-b180830.0359` (dsh-rest-api) | Move to `products/pom.xml` dependencyManagement |
+  | Artefact              | Current `products/pom.xml`              | Current DSH                              | Target `products/pom.xml`                         |
+  |-----------------------|-----------------------------------------|------------------------------------------|---------------------------------------------------|
+  | Spring Boot           | `2.3.4.RELEASE` (`spring-boot.version`) | `2.3.12.RELEASE` (`spring.boot.version`) | `2.3.12.RELEASE`                                  |
+  | Spring Fox Swagger UI | `2.10.0`                                | `2.8.0` (dsh-rest-api)                   | `3.0.0` (latest compatible with SB 2.3.x)         |
+  | Spring Fox Swagger 2  | `2.10.0`                                | `2.8.0` (dsh-rest-api)                   | `3.0.0`                                           |
+  | Swagger Annotations   | `1.5.20`                                | `1.5.x`                                  | `1.6.x` (latest 1.x, compatible with springfox 3) |
+  | `jaxb-api`            | not declared                            | `2.4.0-b180830.0359` (dsh-rest-api)      | Move to `products/pom.xml` dependencyManagement   |
 
 - **Property unification**:
   - DSH property `spring.boot.version` → **remove**; inherit `spring-boot.version` from products.
@@ -129,28 +129,28 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
 - **Description**: Only **third-party** dependency version declarations that are not specific to
   DSH must be moved from DSH POMs to `products/pom.xml` `<dependencyManagement>`. DSH-internal
   module cross-references (e.g. `dsh-data`, `dsh-rest-api`) must remain in the DSH root
-  `pom.xml` `<dependencyManagement>` because they are DSH-project artefacts and have no meaning
+  `pom.xml` `<dependencyManagement>` because they are DSH-project artifacts and have no meaning
   in the generic `products` parent.
 - **Third-party dependencies to migrate to `products/pom.xml`**:
 
-  | GroupId | ArtifactId | Current location | Notes |
-  |---|---|---|---|
-  | `io.springfox` | `springfox-swagger2` | `products/pom.xml` (already, version bump needed) | Bump to `3.0.0` per FR005 |
-  | `io.springfox` | `springfox-swagger-ui` | `products/pom.xml` (already, version bump needed) | Bump to `3.0.0` per FR005 |
-  | `io.swagger` | `swagger-annotations` | `products/pom.xml` (already, version bump needed) | Bump to latest `1.6.x` per FR005 |
-  | `javax.xml.bind` | `jaxb-api` | `dsh-rest-api/pom.xml` inline | Move to `products/pom.xml`; version `2.4.0-b180830.0359` |
+  | GroupId          | ArtifactId             | Current location                                  | Notes                                                    |
+  |------------------|------------------------|---------------------------------------------------|----------------------------------------------------------|
+  | `io.springfox`   | `springfox-swagger2`   | `products/pom.xml` (already, version bump needed) | Bump to `3.0.0` per FR005                                |
+  | `io.springfox`   | `springfox-swagger-ui` | `products/pom.xml` (already, version bump needed) | Bump to `3.0.0` per FR005                                |
+  | `io.swagger`     | `swagger-annotations`  | `products/pom.xml` (already, version bump needed) | Bump to latest `1.6.x` per FR005                         |
+  | `javax.xml.bind` | `jaxb-api`             | `dsh-rest-api/pom.xml` inline                     | Move to `products/pom.xml`; version `2.4.0-b180830.0359` |
 
 - **DSH-internal dependencies that MUST stay in DSH root `dependencyManagement`**:
 
-  | GroupId | ArtifactId | Reason |
-  |---|---|---|
-  | `com.mriss.products.dsh` | `dsh-rest-api` | DSH-specific artefact; not relevant to other products |
-  | `com.mriss.products.dsh` | `dsh-doc-indexer-worker` | DSH-specific artefact |
-  | `com.mriss.products.dsh` | `dsh-data` | DSH-specific artefact |
-  | `com.mriss.products.dsh` | `dsh-test-dataset` | DSH-specific artefact |
-  | `com.mriss.products.dsh.dsh-doc-analyser` | `dsh-keyword-extractor` | DSH-specific artefact |
-  | `com.mriss.products.dsh.dsh-doc-analyser` | `dsh-top-sentences-extractor` | DSH-specific artefact |
-  | `com.mriss.products.dsh.dsh-doc-analyser` | `dsh-doc-processor-worker` | DSH-specific artefact |
+  | GroupId                                   | ArtifactId                    | Reason                                                |
+  |-------------------------------------------|-------------------------------|-------------------------------------------------------|
+  | `com.mriss.products.dsh`                  | `dsh-rest-api`                | DSH-specific artefact; not relevant to other products |
+  | `com.mriss.products.dsh`                  | `dsh-doc-indexer-worker`      | DSH-specific artefact                                 |
+  | `com.mriss.products.dsh`                  | `dsh-data`                    | DSH-specific artefact                                 |
+  | `com.mriss.products.dsh`                  | `dsh-test-dataset`            | DSH-specific artefact                                 |
+  | `com.mriss.products.dsh.dsh-doc-analyser` | `dsh-keyword-extractor`       | DSH-specific artefact                                 |
+  | `com.mriss.products.dsh.dsh-doc-analyser` | `dsh-top-sentences-extractor` | DSH-specific artefact                                 |
+  | `com.mriss.products.dsh.dsh-doc-analyser` | `dsh-doc-processor-worker`    | DSH-specific artefact                                 |
 
 - **Acceptance Criteria**:
   - `grep -r "dependencyManagement" dsh/ --include="pom.xml"` shows the DSH root still declaring
@@ -182,14 +182,14 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   removed from all DSH `pom.xml` files. CI/CD is now handled by GitHub Actions.
 - **Occurrences to remove**:
 
-  | File | Line(s) | Content |
-  |---|---|---|
-  | `dsh-rest-api/pom.xml` | 135 | `<jenkins.view>${project.parent.artifactId}</jenkins.view>` |
-  | `dsh-data/pom.xml` | 62 | `<jenkins.view>${project.parent.artifactId}</jenkins.view>` |
-  | `dsh-doc-analyser/pom.xml` | 28 | `<jenkins.view>${project.parent.artifactId}</jenkins.view>` |
-  | `dsh-doc-indexer-worker/pom.xml` | (equivalent) | `<jenkins.view>` property |
-  | `parent-poms/pom.xml` | 152–153 | `<jenkins.view>` and `<jenkins.server>` properties |
-  | `parent-poms/pom.xml` | 688–689 | `<ciManagement><system>jenkins</system>` block |
+  | File                             | Line(s)      | Content                                                     |
+  |----------------------------------|--------------|-------------------------------------------------------------|
+  | `dsh-rest-api/pom.xml`           | 135          | `<jenkins.view>${project.parent.artifactId}</jenkins.view>` |
+  | `dsh-data/pom.xml`               | 62           | `<jenkins.view>${project.parent.artifactId}</jenkins.view>` |
+  | `dsh-doc-analyser/pom.xml`       | 28           | `<jenkins.view>${project.parent.artifactId}</jenkins.view>` |
+  | `dsh-doc-indexer-worker/pom.xml` | (equivalent) | `<jenkins.view>` property                                   |
+  | `parent-poms/pom.xml`            | 152–153      | `<jenkins.view>` and `<jenkins.server>` properties          |
+  | `parent-poms/pom.xml`            | 688–689      | `<ciManagement><system>jenkins</system>` block              |
 
 - **Note**: The `parent-poms/pom.xml` Jenkins references are also in scope for this migration.
   `<ciManagement>` should be updated to `<system>github-actions</system>` with the appropriate URL.
@@ -206,26 +206,26 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   `.apt` must be updated to `.md`.
 - **Files to convert** (source only, `target/` excluded):
 
-  | Module | `.apt` file | Target `.md` file |
-  |---|---|---|
-  | `dsh-coverage-report` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-data` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-doc-analyser` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-doc-analyser` | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
-  | `dsh-doc-analyser/dsh-doc-processor-worker` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-doc-analyser/dsh-doc-processor-worker` | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
-  | `dsh-doc-analyser/dsh-keyword-extractor` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-doc-analyser/dsh-top-sentences-extractor` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-doc-indexer-worker` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-rest-api` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-solr` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-solr` | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
-  | `dsh-solr/solr-advanced-numbers-filter` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-solr/solr-advanced-numbers-filter` | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
-  | `dsh-solr/solr-terms-vector-order` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | `dsh-solr/solr-terms-vector-order` | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
-  | `dsh-test-dataset` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
-  | Root `dsh` | `src/site/apt/index.apt` | `src/site/markdown/index.md` |
+  | Module                                         | `.apt` file               | Target `.md` file             |
+  |------------------------------------------------|---------------------------|-------------------------------|
+  | `dsh-coverage-report`                          | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-data`                                     | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-doc-analyser`                             | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-doc-analyser`                             | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
+  | `dsh-doc-analyser/dsh-doc-processor-worker`    | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-doc-analyser/dsh-doc-processor-worker`    | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
+  | `dsh-doc-analyser/dsh-keyword-extractor`       | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-doc-analyser/dsh-top-sentences-extractor` | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-doc-indexer-worker`                       | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-rest-api`                                 | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-solr`                                     | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-solr`                                     | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
+  | `dsh-solr/solr-advanced-numbers-filter`        | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-solr/solr-advanced-numbers-filter`        | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
+  | `dsh-solr/solr-terms-vector-order`             | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | `dsh-solr/solr-terms-vector-order`             | `src/site/apt/readme.apt` | `src/site/markdown/readme.md` |
+  | `dsh-test-dataset`                             | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
+  | Root `dsh`                                     | `src/site/apt/index.apt`  | `src/site/markdown/index.md`  |
 
 - **POM changes per module**: Remove `**/*.apt` include/exclude filters from `<resources>` blocks;
   replace with `**/*.md` where `src/site` filtering is configured.
@@ -242,17 +242,17 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   POMs must be removed.
 - **Occurrences to remove**:
 
-  | File | Lines | Properties |
-  |---|---|---|
-  | `dsh-rest-api/pom.xml` | 120–122 | `skin.version=1.6`, `skin.artifactId`, `skin.groupId` |
-  | `dsh-data/pom.xml` | 47–49 | `skin.version=1.6`, `skin.artifactId`, `skin.groupId` |
-  | `dsh-doc-analyser/pom.xml` | 23–25 | `skin.version=1.6`, `skin.artifactId`, `skin.groupId` |
-  | `dsh-doc-indexer-worker/pom.xml` | (equivalent) | same three properties |
-  | `parent-poms/products/pom.xml` | (if present) | any skin property re-declaration |
+  | File                             | Lines        | Properties                                            |
+  |----------------------------------|--------------|-------------------------------------------------------|
+  | `dsh-rest-api/pom.xml`           | 120–122      | `skin.version=1.6`, `skin.artifactId`, `skin.groupId` |
+  | `dsh-data/pom.xml`               | 47–49        | `skin.version=1.6`, `skin.artifactId`, `skin.groupId` |
+  | `dsh-doc-analyser/pom.xml`       | 23–25        | `skin.version=1.6`, `skin.artifactId`, `skin.groupId` |
+  | `dsh-doc-indexer-worker/pom.xml` | (equivalent) | same three properties                                 |
+  | `parent-poms/products/pom.xml`   | (if present) | any skin property re-declaration                      |
 
 - **Acceptance Criteria**:
   - `grep -r "skin.version\|skin.artifactId\|skin.groupId" dsh/ --include="pom.xml"` returns no results.
-  - `mvn -f dsh/pom.xml site -DskipTests` renders the fluido skin correctly (version `2.0.0` from parent).
+  - `mvn -f dsh/pom.xml site -DskipTests` renders the `fluido` skin correctly (version `2.0.0` from parent).
 
 ---
 
@@ -270,7 +270,7 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
 
 ---
 
-### FR012 – Standardise Maven Site Reports via Inherited Configuration
+### FR012 – Standardize Maven Site Reports via Inherited Configuration
 
 - **Description**: The `<reporting>` section in `parent-poms/pom.xml` currently includes
   `maven-changes-plugin`, `maven-project-info-reports-plugin`, and `maven-jxr-plugin` (lines
@@ -279,19 +279,19 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   DSH module POMs must remove any duplicate `<reporting>` configuration.
 - **Reports to add to `parent-poms/pom.xml` `<reporting>`**:
 
-  | Plugin | Report Goal | Notes |
-  |---|---|---|
-  | `maven-surefire-report-plugin` | `report` (aggregate) | Unit test results |
-  | `maven-surefire-report-plugin` | `failsafe-report-only` | Integration test results |
-  | `jacoco-maven-plugin` | `report` / `report-aggregate` | Coverage per module + aggregate |
+  | Plugin                         | Report Goal                   | Notes                           |
+  |--------------------------------|-------------------------------|---------------------------------|
+  | `maven-surefire-report-plugin` | `report` (aggregate)          | Unit test results               |
+  | `maven-surefire-report-plugin` | `failsafe-report-only`        | Integration test results        |
+  | `jacoco-maven-plugin`          | `report` / `report-aggregate` | Coverage per module + aggregate |
 
 - **Acceptance Criteria**:
-  - `mvn -f dsh/pom.xml site -DskipTests` generates surefire, failsafe, and jacoco HTML reports.
+  - `mvn -f dsh/pom.xml site -DskipTests` generates surefire, failsafe, and `jacoco` HTML reports.
   - No `<reporting>` block in any DSH module POM duplicates a report already declared in a parent.
 
 ---
 
-### FR013 – Standardise Integration Test Naming via Failsafe
+### FR013 – Standardize Integration Test Naming via Failsafe
 
 - **Description**: `parent-poms/pom.xml` `<pluginManagement>` already declares
   `maven-failsafe-plugin` (line 312–314) but provides no `<includes>` configuration. A standard
@@ -383,7 +383,7 @@ parent-poms/pom.xml  (root – plugin versions, Failsafe/Surefire/JaCoCo config,
 - Property inheritance verified with `mvn help:effective-pom`.
 
 ### Integration Tests
-- `mvn -f dsh/pom.xml verify` must pass with no Surefire/Failsafe miscategorisation.
+- `mvn -f dsh/pom.xml verify` must pass with no Surefire/Failsafe mis-categorization.
 - `mvn -f dsh/pom.xml site` must generate HTML reports for Surefire, Failsafe, and JaCoCo.
 - Coverage gate: build must fail if any module drops below 95% (FR014).
 
