@@ -52,6 +52,7 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 | Feature implementation | `/.github/copilot/prompts/feature-implementation.md` |
 | Development guide | `/docs/copilot/development-guide.md` |
 | Team roles | `/.github/roles.md` |
+| DevOps — deploy/release profiles reorganization | `/specs/devops/deploy-release-profiles-reorganization.md` |
 
 ## Wiki References
 

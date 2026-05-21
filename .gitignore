@@ -3,3 +3,4 @@
 /.settings/
 /.idea/
 /**/*.md.html
+.mcp.json
