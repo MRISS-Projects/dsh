@@ -1,6 +1,29 @@
-/target/
-/.project
-/.settings/
-/.idea/
-/**/*.md.html
-.mcp.json
+# ==============================================================
+# DSH – single root .gitignore
+# All patterns use **/ prefix so they apply recursively to the
+# root and every sub-module without needing per-module files.
+# ==============================================================
+
+# ----- Maven generated output -----
+**/target/
+
+# ----- IntelliJ IDEA -----
+**/.idea/
+**/*.iml
+**/*.iws
+**/*.ipr
+
+# ----- Eclipse -----
+**/.project
+**/.classpath
+**/.settings/
+
+# ----- MCP / AI tooling -----
+**/.mcp.json
+**/.ai/
+
+# ----- Runtime logs -----
+**/error-logs.txt
+
+# ----- Misc -----
+**/*.md.html

@@ -85,6 +85,12 @@
     </dependencies>
 
     <properties>
+        <!-- Encoding: must be declared here (not inherited from parent) to prevent
+             maven-resources-plugin from defaulting to the platform encoding (Cp1252
+             on Windows), which corrupts UTF-8 Portuguese characters in filtered .md
+             files. project.reporting.outputEncoding also controls PDF/site tool output. -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <webapp.deployment.url />
         <group.id.path>${project.parent.artifactId}/${project.artifactId}</group.id.path>
         <tomcat.deploy.phase>pre-integration-test</tomcat.deploy.phase>
@@ -134,6 +140,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
+                            <!-- Explicit UTF-8 encoding prevents the Cp1252 platform default
+                                 from mangling Portuguese accented characters in filtered .md
+                                 files (e.g. README.md table content / issue descriptions). -->
+                            <encoding>UTF-8</encoding>
                             <outputDirectory>.</outputDirectory>
                             <resources>
                                 <resource>
@@ -155,6 +165,19 @@
                                     <targetPath>${project.build.directory}/generated-site</targetPath>
                                     <filtering>false</filtering>
                                 </resource>
+                                <!-- Copy site descriptor so maven-pdf-plugin (and the inherited
+                                     fix-pdf-skin-version antrun task) can find site.xml in
+                                     generated-site. Filtered so ${skin.version} is resolved,
+                                     allowing the antrun patch to downgrade it to 1.12.0 (compatible
+                                     with Doxia 1.11.1 used by maven-pdf-plugin:1.6.1). -->
+                                <resource>
+                                    <directory>src/site-desc</directory>
+                                    <includes>
+                                        <include>site.xml</include>
+                                    </includes>
+                                    <targetPath>${project.build.directory}/generated-site</targetPath>
+                                    <filtering>true</filtering>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
@@ -173,7 +196,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
-                    <releaseProfiles>product-release-deployment</releaseProfiles>
+                    <!-- FR013: removed <releaseProfiles>product-release-deployment</releaseProfiles>.
+                         Profile activation now uses -D property flags via <arguments>.
+                         DSH inherits deployment + release-deployment + product-release-deployment
+                         from products/pom.xml; only DSH-specific scmCommentPrefix overridden here. -->
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <preparationGoals>clean install</preparationGoals>
                     <goals>deploy</goals>
@@ -301,6 +327,12 @@
             <!-- DSH-specific: kept because it overrides project.build.version with timestamp
                  and runs the DSH pdf-plugin with generated-site as siteDirectory. -->
             <id>deployment</id>
+            <!-- FR013: activated by -Ddeployment property instead of -P to avoid Maven merge bugs -->
+            <activation>
+                <property>
+                    <name>deployment</name>
+                </property>
+            </activation>
             <properties>
                 <project.build.version>${project.version} - ${timestamp}</project.build.version>
             </properties>
@@ -322,6 +354,11 @@
                                     <aggregate>false</aggregate>
                                     <includeReports>false</includeReports>
                                     <siteDirectory>${project.build.directory}/generated-site</siteDirectory>
+                                    <!-- docEncoding: encoding used by doxia when reading source files.
+                                         Must match the UTF-8 written by copy-site-resources-for-pdf,
+                                         otherwise the markdown parser sees garbled bytes and may fail
+                                         to recognise GFM table syntax (pipe chars appear as raw text). -->
+                                    <docEncoding>UTF-8</docEncoding>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
@@ -356,6 +393,12 @@
         <profile>
             <!-- DSH-specific: pdf-plugin uses generated-site siteDirectory (different from products markdowndoc approach) -->
             <id>product-release-deployment</id>
+            <!-- FR013: activated by -Dproduct-release-deployment property instead of -P -->
+            <activation>
+                <property>
+                    <name>product-release-deployment</name>
+                </property>
+            </activation>
             <properties>
                 <project.build.version>${project.version}</project.build.version>
             </properties>
@@ -377,6 +420,7 @@
                                     <aggregate>false</aggregate>
                                     <includeReports>false</includeReports>
                                     <siteDirectory>${project.build.directory}/generated-site</siteDirectory>
+                                    <docEncoding>UTF-8</docEncoding>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>
@@ -388,6 +432,12 @@
         <!-- FR002: update-readme kept – DSH-specific README SCM checkin customisation -->
         <profile>
             <id>update-readme</id>
+            <!-- FR013: activated by -Dupdate-readme property instead of -P -->
+            <activation>
+                <property>
+                    <name>update-readme</name>
+                </property>
+            </activation>
             <properties>
                 <project.build.version>${project.version}</project.build.version>
             </properties>
