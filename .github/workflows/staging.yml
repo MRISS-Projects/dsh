@@ -1,0 +1,17 @@
+name: Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'RC branch name (e.g. staging-0.3.0-SNAPSHOT-RC)'
+        required: true
+
+jobs:
+  staging:
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@master
+    with:
+      git_project: dsh
+      branch_name: ${{ inputs.branch_name }}
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

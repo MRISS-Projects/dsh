@@ -1,0 +1,19 @@
+name: Stage
+
+on:
+  workflow_dispatch:
+    inputs:
+      next_development_version:
+        description: 'Next SNAPSHOT version for RC branch (e.g. 0.4.0-SNAPSHOT)'
+        required: true
+
+jobs:
+  stage:
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-stage.yml@master
+    with:
+      git_project: dsh
+      next_development_version: ${{ inputs.next_development_version }}
+      maven_artifact_id: dsh
+      maven_group_id: com.mriss.products
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
