@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'RC branch (e.g. staging-0.3.0-SNAPSHOT-RC)'
+        required: true
+      current_version:
+        description: 'Release version (e.g. 0.3.0)'
+        required: true
+      next_development_version:
+        description: 'Next dev SNAPSHOT (e.g. 0.4.0-SNAPSHOT)'
+        required: true
+      hotfix_branch:
+        description: 'Hotfix branch name (e.g. 0.3.x)'
+        required: true
+      initial_hotfix_version:
+        description: 'Initial hotfix SNAPSHOT (e.g. 0.3.1-SNAPSHOT)'
+        required: true
+
+jobs:
+  release:
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-release.yml@master
+    with:
+      git_project: dsh
+      branch_name: ${{ inputs.branch_name }}
+      current_version: ${{ inputs.current_version }}
+      next_development_version: ${{ inputs.next_development_version }}
+      hotfix_branch: ${{ inputs.hotfix_branch }}
+      initial_hotfix_version: ${{ inputs.initial_hotfix_version }}
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
