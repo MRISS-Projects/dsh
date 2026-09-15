@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.mriss.dsh.solr.vectororderer","l":"OrderedTermVectorComponentTest"},{"p":"com.mriss.dsh.solr.vectororderer","l":"OrderOptionsTest"},{"p":"com.mriss.dsh.solr.vectororderer","l":"OrderTest"},{"p":"com.mriss.dsh.solr.vectororderer","l":"TermsVectorComparatorTest"}];updateSearchResults();

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SortedNamedList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SOLR - Terms Vector Orderer</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.solr.vectororderer</a> &gt; <span class="el_source">SortedNamedList.java</span></div><h1>SortedNamedList.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.solr.vectororderer;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.SortedMap;
+
+import org.apache.commons.collections.FastTreeMap;
+import org.apache.solr.common.util.NamedList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * A version of {@link NamedList} handling a sort of elements. This class copy
+ * the contents on &lt;code&gt;nvPairs&lt;/code&gt; field to an instance of a
+ * {@link SortedMap} initialized with an instance of
+ * {@link TermsVectorComparator}. Then, all contents of the resulting
+ * {@link SortedMap} are added to the instance of this class.
+ * 
+ * @author riss
+ * @see TermsVectorComparator
+ *
+ */
+<span class="fc" id="L23">public class SortedNamedList extends NamedList&lt;Object&gt; {</span>
+
+<span class="fc" id="L25">    Logger LOGGER = LoggerFactory.getLogger(SortedNamedList.class);</span>
+
+    /**
+     * Serial id.
+     */
+    private static final long serialVersionUID = 6977027481117549645L;
+
+    /**
+     * Sort method. It will use a {@link SortedMap} to sort the contents of this
+     * named list.
+     * 
+     * @param orderOptions the order options to get order information.
+     */
+    public void sort(OrderOptions orderOptions) {
+<span class="fc" id="L39">        Map&lt;String, Object&gt; sortedMap = copyToSortedMap(orderOptions);</span>
+<span class="fc" id="L40">        this.clear();</span>
+<span class="fc" id="L41">        this.addAll(sortedMap);</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Copy this list content to a sorted map, in order to order it.
+     * 
+     * @param orderOptions the order options to get order information.
+     * @return a sorted map with all contents sorted.
+     */
+    private Map&lt;String, Object&gt; copyToSortedMap(OrderOptions orderOptions) {
+<span class="fc" id="L51">        Map&lt;String, Object&gt; fastTreeMap = new FastTreeMap(new TermsVectorComparator(orderOptions, this));</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (Iterator iterator = nvPairs.iterator(); iterator.hasNext();) {</span>
+<span class="fc" id="L53">            String key = (String) iterator.next();</span>
+<span class="fc" id="L54">            Object value = iterator.next();</span>
+<span class="fc" id="L55">            fastTreeMap.put(key, value);</span>
+<span class="fc" id="L56">        }</span>
+<span class="fc" id="L57">        return fastTreeMap;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
