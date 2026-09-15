@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>OrderOptions.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">DSH Coverage Report Aggregation Module</a> &gt; <a href="../index.html" class="el_bundle">solr-terms-vector-order</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.solr.vectororderer</a> &gt; <span class="el_source">OrderOptions.java</span></div><h1>OrderOptions.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.solr.vectororderer;
+
+/**
+ * Class holding the order options. Mainly the {@link Order} instance and the
+ * field used to order.
+ * 
+ * @author riss
+ *
+ */
+public class OrderOptions {
+
+    /**
+     * The order type (asc or desc)
+     */
+    private Order order;
+
+    /**
+     * The field/terms vector param to be used to order.
+     */
+    private String termVectorParam;
+
+    /**
+     * Default constructor.
+     * 
+     * @param order      the order (asc or desc)
+     * @param orderField the field to be used when ordering.
+     */
+    public OrderOptions(Order order, String orderField) {
+<span class="fc" id="L29">        super();</span>
+<span class="fc" id="L30">        this.order = order;</span>
+<span class="fc" id="L31">        this.termVectorParam = orderField;</span>
+<span class="fc" id="L32">    }</span>
+
+    /**
+     * Gets the order.
+     * 
+     * @return the order.
+     */
+    public Order getOrder() {
+<span class="fc" id="L40">        return order;</span>
+    }
+
+    /**
+     * Gets the param/field.
+     * 
+     * @return the param/field.
+     */
+    public String getTermVectorParam() {
+<span class="fc" id="L49">        return termVectorParam;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L54">        return &quot;OrderOptions [order=&quot; + order + &quot;, orderField=&quot; + termVectorParam + &quot;]&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

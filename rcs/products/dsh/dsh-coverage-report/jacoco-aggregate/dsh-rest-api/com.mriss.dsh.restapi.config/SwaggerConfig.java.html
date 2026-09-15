@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SwaggerConfig.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">DSH Coverage Report Aggregation Module</a> &gt; <a href="../index.html" class="el_bundle">dsh-rest-api</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.restapi.config</a> &gt; <span class="el_source">SwaggerConfig.java</span></div><h1>SwaggerConfig.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.restapi.config;
+
+import static springfox.documentation.builders.PathSelectors.regex;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.servlet.ServletContext;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
+
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider;
+import springfox.documentation.spring.web.readers.operation.HandlerMethodResolver;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+/**
+ * Springfox / Swagger2 configuration.
+ *
+ * &lt;p&gt;The {@code webMvcRequestHandlerProvider} override filters out handler
+ * mappings that use PathPatternParser (introduced in Spring Boot 2.6), which
+ * causes a {@link NullPointerException} inside Springfox 3.0.0 because those
+ * mappings have a null {@code PatternsRequestCondition}.  The workaround
+ * restricts Springfox to mappings backed by the legacy AntPathMatcher.&lt;/p&gt;
+ */
+@EnableSwagger2
+@Configuration
+<span class="fc" id="L36">public class SwaggerConfig {</span>
+
+    @Bean
+    public Docket newsApi() {
+<span class="fc" id="L40">        return new Docket(DocumentationType.SWAGGER_2)</span>
+<span class="fc" id="L41">                .groupName(&quot;dsh-app&quot;)</span>
+<span class="fc" id="L42">                .apiInfo(apiInfo())</span>
+<span class="fc" id="L43">                .select()</span>
+<span class="fc" id="L44">                .paths(regex(&quot;/v1/dsh.*&quot;))</span>
+<span class="fc" id="L45">                .build();</span>
+    }
+
+    /**
+     * Override Springfox's default {@link WebMvcRequestHandlerProvider} to
+     * exclude handler mappings that rely on PathPatternParser.  Without this
+     * override, Spring Boot 2.6+ (which defaults to PathPatternParser) causes
+     * a {@link NullPointerException} inside Springfox 3.0.0 at context
+     * refresh time.
+     */
+    @Bean
+    @Primary
+    @Order(Integer.MIN_VALUE)
+    public WebMvcRequestHandlerProvider webMvcRequestHandlerProvider(
+            Optional&lt;ServletContext&gt; servletContext,
+            HandlerMethodResolver methodResolver,
+            List&lt;RequestMappingInfoHandlerMapping&gt; handlerMappings) {
+        // Filter out mappings that use PathPatternParser (patternParser != null).
+        // Springfox only supports AntPathMatcher-based mappings.
+<span class="fc" id="L64">        List&lt;RequestMappingInfoHandlerMapping&gt; filtered = handlerMappings.stream()</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                .filter(m -&gt; m.getPatternParser() == null)</span>
+<span class="fc" id="L66">                .collect(Collectors.toList());</span>
+<span class="fc" id="L67">        return new WebMvcRequestHandlerProvider(servletContext, methodResolver, filtered);</span>
+    }
+
+    private ApiInfo apiInfo() {
+<span class="fc" id="L71">        return new ApiInfoBuilder()</span>
+<span class="fc" id="L72">                .title(&quot;DSH - Document Smart Hightlights API&quot;)</span>
+<span class="fc" id="L73">                .description(&quot;DSH - Document Smart Hightlights Application&quot;)</span>
+<span class="fc" id="L74">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

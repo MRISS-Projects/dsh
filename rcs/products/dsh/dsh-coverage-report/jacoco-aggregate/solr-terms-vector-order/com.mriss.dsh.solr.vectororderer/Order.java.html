@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>Order.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">DSH Coverage Report Aggregation Module</a> &gt; <a href="../index.html" class="el_bundle">solr-terms-vector-order</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.solr.vectororderer</a> &gt; <span class="el_source">Order.java</span></div><h1>Order.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.solr.vectororderer;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Enumeration defining ascending or descending order. Constructor should
+ * receive the enumeration description which will the the string to be used
+ * during query requests. Query request format:
+ * &lt;code&gt;order=[tv_field];asc|desc&lt;/code&gt;. Example:
+ * &lt;code&gt;order=tv.tf;desc&lt;/code&gt;.
+ * 
+ * @author riss
+ *
+ */
+<span class="fc" id="L16">public enum Order {</span>
+
+    /**
+     * Ascending order.
+     */
+<span class="fc" id="L21">    ASC(&quot;asc&quot;),</span>
+
+    /**
+     * Descending order.
+     */
+<span class="fc" id="L26">    DESC(&quot;desc&quot;);</span>
+
+    /**
+     * Order name (asc or desc).
+     */
+    private String orderName;
+
+    /**
+     * Holder inner class to store the enumerations. It also allows to get by order
+     * name.
+     *
+     * @author riss
+     *
+     */
+    private static class OrderNamesHolder {
+
+        /**
+         * Stores orders per order name.
+         */
+<span class="fc" id="L45">        private static Map&lt;String, Order&gt; orderNames = new HashMap&lt;String, Order&gt;();</span>
+
+        /**
+         * Puts an order using its order name as a key.
+         * 
+         * @param orderName the order name (asc or desc).
+         * @param order     the order instance.
+         */
+        public static void put(String orderName, Order order) {
+<span class="fc" id="L54">            orderNames.put(orderName, order);</span>
+<span class="fc" id="L55">        }</span>
+
+        /**
+         * Gets an order by its order name.
+         * 
+         * @param orderName the order name to search for.
+         * @return the order.
+         */
+        public static Order get(String orderName) {
+<span class="fc" id="L64">            return orderNames.get(orderName);</span>
+        }
+
+    }
+
+    /**
+     * Constructor with the order name. It also stores the order at
+     * {@link OrderNamesHolder}.
+     * 
+     * @param orderName the order name (asc or desc)
+     */
+<span class="fc" id="L75">    private Order(String orderName) {</span>
+<span class="fc" id="L76">        this.orderName = orderName;</span>
+<span class="fc" id="L77">        OrderNamesHolder.put(this.orderName, this);</span>
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * Gets an order by its order name.
+     * 
+     * @param orderName the order name
+     * @return the order
+     */
+    public static Order getOrderByName(String orderName) {
+<span class="fc" id="L87">        return OrderNamesHolder.get(orderName);</span>
+    }
+
+    /**
+     * Compare two integer values according with order ascending or descending. This
+     * method is exclusive to operate with sorted maps or sets. It will never return
+     * zero, since zero means two objects are equal and then, in a map, the objects
+     * will be stored just once per key. Two overcome this, this compare method will
+     * return 1 in case values are equal, allowing it to keep being stored in a map
+     * or set.
+     * 
+     * @param paramValueO1 the first value.
+     * @param paramValueO2 the second value.
+     * @return in case of ASC: -1 if &lt;code&gt;paramValueO1 &amp;lt; paramValueO2&lt;/code&gt;, 1
+     *         otherwise (&lt;code&gt;&amp;gt;=&lt;/code&gt;). In case of DESC: -1 if
+     *         &lt;code&gt;paramValueO1 &amp;gt; paramValueO2&lt;/code&gt;, 1 otherwise
+     *         (&lt;code&gt;&amp;lt;=&lt;/code&gt;).
+     */
+    public int compare(int paramValueO1, int paramValueO2) {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (this == ASC) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            return paramValueO1 &lt; paramValueO2 ? -1 : 1;</span>
+        } else {
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            return paramValueO1 &gt; paramValueO2 ? -1 : 1;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

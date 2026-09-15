@@ -1,0 +1,87 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.config,SwaggerConfig,0,49,0,2,0,15,0,6,0,5
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.rest,DocumentResourceTest,3,542,1,1,0,127,1,14,0,14
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.rest,DocumentResourceTestTestConfiguration,0,13,0,0,0,3,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.rest,DocumentResource,0,80,0,6,0,17,0,8,0,5
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi,DshRestApplicationTest,0,122,0,0,0,37,0,10,0,10
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi,DshRestApplication,8,16,0,0,3,3,1,3,1,3
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.dto,TokenDto,0,26,0,0,0,12,0,6,0,6
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.dto,DocumentStatusDto,0,26,0,0,0,12,0,6,0,6
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionServiceImpl,11,125,1,9,3,31,1,9,0,5
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentHandlingServiceImplTest,0,219,0,0,0,38,0,6,0,6
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentHandlingServiceImpl,0,50,0,10,0,11,0,9,0,4
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentQueueServiceImpl,0,31,0,0,0,8,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentEnqueueResponseMessageHandler,0,75,0,8,0,16,0,10,0,6
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionException,0,34,0,0,0,14,0,7,0,7
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionExceptionTest,0,122,0,0,0,33,0,7,0,7
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionServiceImplTest,8,304,0,0,2,55,1,11,1,11
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentQueueServiceImplTest,0,43,0,0,0,11,0,4,0,4
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentEnqueueResponseMessageHandlerTest,0,151,0,0,0,28,0,7,0,7
+DSH Coverage Report Aggregation Module/dsh-doc-indexer-worker,com.mriss.dsh.docindexer,DshDocIndexerApplication,0,15,0,0,0,5,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.index.dao.solr,SOLRIndexedDocument,3,0,0,0,1,0,1,0,1,0
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.document.dao.mongo,MongoDocumentDao,2,45,1,3,1,12,1,7,0,6
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.document.dao.mongo,MongoDocumentDaoTest,0,276,0,6,0,56,0,11,0,8
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,KeywordSorter,0,29,0,6,0,7,0,6,0,3
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,SentenceSorterTest,2,79,2,2,0,17,2,5,0,5
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,SentenceSorter,0,29,0,6,0,7,0,6,0,3
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentTestConfiguration,0,57,0,0,0,7,0,5,0,5
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,Keyword,0,82,0,14,0,25,0,14,0,7
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,TransitionType,0,21,0,0,0,4,0,1,0,1
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,Sentence,0,104,0,16,0,30,0,16,0,8
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,SentenceTest,2,267,2,2,0,52,2,9,0,9
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,Document,6,268,0,16,2,77,0,33,0,25
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentTest,0,563,0,4,0,131,0,22,0,20
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus,0,164,0,0,0,25,0,4,0,4
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,KeywordTest,2,189,2,2,0,43,2,9,0,9
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,KeywordSorterTest,2,73,2,2,0,17,2,5,0,5
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatusTest,6,243,6,6,0,71,6,4,0,4
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data,DshDataApplicationTest,0,22,0,0,0,9,0,5,0,5
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data,DshDataApplication,8,7,0,0,3,2,1,2,1,2
+DSH Coverage Report Aggregation Module/dsh-keyword-extractor,com.mriss.dsh.analyser.keywords,DshKeywordExtractorApplication,0,15,0,0,0,5,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-top-sentences-extractor,com.mriss.dsh.analyser.topsentences,DshTopSentencesExtractorApplication,0,15,0,0,0,5,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-doc-processor-worker,com.mriss.dsh.analyser.docprocessor,DshDocProcessorWorkerApplication,0,15,0,0,0,5,0,3,0,3
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new Answer() {...},0,13,0,0,0,3,0,2,0,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new SolrParams() {...},4,8,0,0,2,2,2,2,2,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new Answer() {...},0,13,0,0,0,3,0,2,0,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new SolrParams() {...},6,12,1,1,3,3,3,2,2,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new Answer() {...},0,8,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new SolrParams() {...},6,12,1,1,3,3,3,2,2,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderOptionsTest,8,41,2,2,0,11,2,4,0,4
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new Answer() {...},0,13,0,0,0,3,0,2,0,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new SolrParams() {...},6,12,1,1,3,3,3,2,2,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,Order.OrderNamesHolder,0,16,0,0,0,4,0,3,0,3
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new Answer() {...},0,13,0,0,0,3,0,2,0,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponent,0,136,0,12,0,35,0,11,0,5
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new SolrParams() {...},5,17,1,1,2,2,3,2,2,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,TermsVectorComparator,0,71,0,10,0,18,0,8,0,3
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,SortedNamedList,0,49,0,2,0,13,0,4,0,3
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest.new Answer() {...},0,8,0,0,0,2,0,2,0,2
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderTest,0,65,0,0,0,19,0,10,0,10
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderOptions,0,22,0,0,0,7,0,4,0,4
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,TermsVectorComparatorTest,0,225,0,0,0,50,0,6,0,6
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,Order,0,49,0,6,0,11,0,7,0,4
+DSH Coverage Report Aggregation Module/solr-terms-vector-order,com.mriss.dsh.solr.vectororderer,OrderedTermVectorComponentTest,15,468,7,17,2,97,7,17,0,12
+DSH Coverage Report Aggregation Module/solr-advanced-numbers-filter,com.mriss.dsh.solr.numberfilter,AdvancedNumberFilterTest.new TokenStream() {...},2,6,0,0,1,1,1,1,1,1
+DSH Coverage Report Aggregation Module/solr-advanced-numbers-filter,com.mriss.dsh.solr.numberfilter,AdvancedNumberFilterTest,0,216,0,0,0,50,0,10,0,10
+DSH Coverage Report Aggregation Module/solr-advanced-numbers-filter,com.mriss.dsh.solr.numberfilter,AdvancedNumberFilterFactory,0,13,0,0,0,4,0,3,0,3
+DSH Coverage Report Aggregation Module/solr-advanced-numbers-filter,com.mriss.dsh.solr.numberfilter,AdvancedNumberFilterFactoryTest,0,72,0,0,0,21,0,6,0,6
+DSH Coverage Report Aggregation Module/solr-advanced-numbers-filter,com.mriss.dsh.solr.numberfilter,AdvancedNumberFilterFactoryTest.new TokenStream() {...},2,6,0,0,1,1,1,1,1,1
+DSH Coverage Report Aggregation Module/solr-advanced-numbers-filter,com.mriss.dsh.solr.numberfilter,AdvancedNumberFilter,0,101,0,14,0,20,0,13,0,6

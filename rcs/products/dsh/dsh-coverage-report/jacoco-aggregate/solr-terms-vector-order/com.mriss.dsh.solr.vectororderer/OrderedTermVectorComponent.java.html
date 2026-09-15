@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>OrderedTermVectorComponent.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">DSH Coverage Report Aggregation Module</a> &gt; <a href="../index.html" class="el_bundle">solr-terms-vector-order</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.solr.vectororderer</a> &gt; <span class="el_source">OrderedTermVectorComponent.java</span></div><h1>OrderedTermVectorComponent.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.solr.vectororderer;
+
+import java.io.IOException;
+
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.util.NamedList;
+import org.apache.solr.handler.component.ResponseBuilder;
+import org.apache.solr.handler.component.TermVectorComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Search component for an ordered terms vector. The order can be ascending or
+ * descending per &lt;code&gt;tv&lt;/code&gt; field (tv.tf, tv.df, tv.idf, etc...).
+ * 
+ * @author riss
+ *
+ */
+<span class="fc" id="L19">public class OrderedTermVectorComponent extends TermVectorComponent {</span>
+
+<span class="fc" id="L21">    Logger LOGGER = LoggerFactory.getLogger(OrderedTermVectorComponent.class);</span>
+
+    static final String ORDER_PARAM = &quot;order&quot;;
+
+    /**
+     * The term vector component processor.
+     */
+<span class="fc" id="L28">    private TermVectorComponent responseBuilderProcessor = new TermVectorComponent();</span>
+
+    @Override
+    public void process(ResponseBuilder rb) throws IOException {
+
+<span class="fc" id="L33">        responseBuilderProcessor.process(rb);</span>
+
+<span class="fc" id="L35">        SolrParams params = rb.req.getParams();</span>
+
+<span class="fc" id="L37">        OrderOptions orderOptions = getOrderOptions(params.get(ORDER_PARAM));</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (orderOptions != null) {</span>
+<span class="fc" id="L40">            LOGGER.info(&quot;Order options: &quot; + orderOptions);</span>
+<span class="fc" id="L41">            NamedList&lt;Object&gt; responseValues = rb.rsp.getValues();</span>
+<span class="fc" id="L42">            NamedList&lt;Object&gt; tvNamedList = (NamedList&lt;Object&gt;) responseValues.get(TermVectorComponent.TERM_VECTORS);</span>
+<span class="fc" id="L43">            tvNamedList.forEach((tvKey, tvValue) -&gt; {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                if (tvValue instanceof NamedList) {</span>
+<span class="fc" id="L45">                    NamedList&lt;Object&gt; docNamedList = (NamedList&lt;Object&gt;) tvValue;</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">                    if (docNamedList.get(&quot;uniqueKey&quot;) != null) {</span>
+<span class="fc" id="L47">                        NamedList&lt;Object&gt; newDocNamedList = new NamedList&lt;Object&gt;();</span>
+<span class="fc" id="L48">                        String uniqueKey = (String) docNamedList.get(&quot;uniqueKey&quot;);</span>
+<span class="fc" id="L49">                        newDocNamedList.add(&quot;uniqueKey&quot;, uniqueKey);</span>
+<span class="fc" id="L50">                        docNamedList.forEach((fieldKey, fieldValue) -&gt; {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">                            if (fieldValue instanceof NamedList) {</span>
+<span class="fc" id="L52">                                NamedList&lt;Object&gt; fieldNamedList = (NamedList&lt;Object&gt;) fieldValue;</span>
+<span class="fc" id="L53">                                SortedNamedList snl = new SortedNamedList();</span>
+<span class="fc" id="L54">                                snl.addAll(fieldNamedList);</span>
+<span class="fc" id="L55">                                snl.sort(orderOptions);</span>
+<span class="fc" id="L56">                                newDocNamedList.add(fieldKey, snl);</span>
+                            }
+<span class="fc" id="L58">                        });</span>
+<span class="fc" id="L59">                        docNamedList.clear();</span>
+<span class="fc" id="L60">                        docNamedList.addAll(newDocNamedList);</span>
+                    }
+                }
+<span class="fc" id="L63">            });</span>
+        }
+
+<span class="fc" id="L66">        LOGGER.info(&quot;Leaving Custom Ordered Terms Vector Component...&quot;);</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * Gets order options based on a query parameter string. The query parameters
+     * for order should be in the format: &lt;code&gt;order=[tv_field];asc|desc&lt;/code&gt;.
+     * Example: &lt;code&gt;order=tv.tf;desc&lt;/code&gt;.
+     * 
+     * @param orderParam
+     * @return
+     */
+    private OrderOptions getOrderOptions(String orderParam) {
+<span class="fc" id="L78">        LOGGER.info(&quot;orderParam: &quot; + orderParam);</span>
+<span class="fc bfc" id="L79" title="All 4 branches covered.">        if (orderParam != null &amp;&amp; !orderParam.isEmpty()) {</span>
+<span class="fc" id="L80">            String[] orderInfo = orderParam.split(&quot;;&quot;);</span>
+<span class="fc" id="L81">            return new OrderOptions(Order.getOrderByName(orderInfo[1]), orderInfo[0]);</span>
+        } else {
+<span class="fc" id="L83">            return null;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
