@@ -13,5 +13,10 @@ jobs:
     with:
       git_project: dsh
       branch_name: ${{ inputs.branch_name }}
+      mongo_host: localhost
+      mongo_port: '27017'
+      mongo_user: dshuser
+      mongo_password: dshpass
+      mongo_database: dsh
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
