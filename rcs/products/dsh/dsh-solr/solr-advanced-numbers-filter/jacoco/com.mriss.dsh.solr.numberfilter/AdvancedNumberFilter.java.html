@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdvancedNumberFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SOLR - Advanced Numbers Filter</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.solr.numberfilter</a> &gt; <span class="el_source">AdvancedNumberFilter.java</span></div><h1>AdvancedNumberFilter.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.solr.numberfilter;
+
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.lucene.analysis.FilteringTokenFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class AdvancedNumberFilter extends FilteringTokenFilter {
+
+    public static final String MIXED_NUMBER_1 = &quot;(\\D*)\\-(\\d*)&quot;;
+    public static final String MIXED_NUMBER_2 = &quot;(\\d*)\\-(\\D*)&quot;;
+
+<span class="fc" id="L18">    Logger LOGGER = LoggerFactory.getLogger(AdvancedNumberFilter.class);</span>
+
+<span class="fc" id="L20">    private CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);</span>
+
+    protected AdvancedNumberFilter(TokenStream input) {
+<span class="fc" id="L23">        super(input);</span>
+<span class="fc" id="L24">    }</span>
+
+    @Override
+    protected boolean accept() throws IOException {
+<span class="fc" id="L28">        int length = termAtt.length();</span>
+<span class="fc" id="L29">        char[] buffer = termAtt.buffer();</span>
+<span class="fc" id="L30">        String contents = new String(buffer, 0, length);</span>
+<span class="fc" id="L31">        return validate(contents);</span>
+    }
+
+    private boolean validate(String contents) {
+<span class="fc bfc" id="L35" title="All 6 branches covered.">        return !isUrl(contents) &amp;&amp; !isMixedNumber(contents) &amp;&amp; !isHostName(contents);</span>
+    }
+
+    private boolean isHostName(String contents) {
+<span class="fc" id="L39">        Pattern r1 = Pattern.compile(</span>
+                &quot;^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$&quot;);
+<span class="fc" id="L41">        Matcher m1 = r1.matcher(contents);</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">        return contents.contains(&quot;.&quot;) &amp;&amp; m1.matches();</span>
+    }
+
+    private boolean isMixedNumber(String contents) {
+<span class="fc" id="L46">        Pattern r1 = Pattern.compile(MIXED_NUMBER_1);</span>
+<span class="fc" id="L47">        Matcher m1 = r1.matcher(contents);</span>
+<span class="fc" id="L48">        Pattern r2 = Pattern.compile(MIXED_NUMBER_2);</span>
+<span class="fc" id="L49">        Matcher m2 = r2.matcher(contents);</span>
+<span class="fc bfc" id="L50" title="All 4 branches covered.">        return m1.matches() || m2.matches();</span>
+    }
+
+    private boolean isUrl(String contents) {
+<span class="fc" id="L54">        Pattern r1 = Pattern.compile(&quot;^(https?|ftp|file)://[-a-zA-Z0-9+&amp;@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&amp;@#/%=~_|]&quot;);</span>
+<span class="fc" id="L55">        Matcher m1 = r1.matcher(contents);</span>
+<span class="fc" id="L56">        return m1.matches();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
