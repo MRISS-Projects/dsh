@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project name="DSH - Document Smart Highlights" combine.self="override">
+    <version position="right" />
+    <publishDate position="right" format="yyyy-MM-dd - hh:mm:ss" />
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.12.0</version>
+    </skin>
+    <body>
+        <links>
+            <item name="Wiki" href="https://github.com/MRISS-Projects/dsh/wiki" />
+            <item name="Project" href="https://github.com/orgs/MRISS-Projects/projects/1" />
+        </links>
+        <breadcrumbs>
+            <item name="DSH at GitHub" href="https://github.com/MRISS-Projects/dsh" />
+        </breadcrumbs>
+        <menu name="Documentation">
+            <item name="Home" href="index.html" />
+            <item name="Releases History" href="releases-history.html" />
+        </menu>
+        <menu name="Code Reports">
+            <item name="GitHub Report" href="github-report.html" />
+            <item name="JaCoCo Code Coverage Report" href="dsh-coverage-report/jacoco-aggregate/index.html" />
+            <item name="Code Tests Report" href="surefire.html" />
+            <item name="Javadoc" href="apidocs/index.html" />
+            <item name="Test Javadoc" href="testapidocs/index.html" />
+            <item name="OnLine Code Navigation Report" href="xref/index.html" />
+            <item name="OnLine Test Code Navigation Report" href="xref-test/index.html" />
+        </menu>
+        <menu ref="parent" />
+        <menu ref="modules" />
+        <menu ref="reports" />
+    </body>
+</project>

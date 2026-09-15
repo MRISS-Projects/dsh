@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="" lang="">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>DocumentTestConfiguration xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../testapidocs/com/mriss/dsh/data/models/DocumentTestConfiguration.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> com.mriss.dsh.data.models;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> java.io.FileInputStream;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> java.io.FileNotFoundException;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.security.NoSuchAlgorithmException;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.apache.commons.io.IOUtils;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.springframework.context.annotation.Bean;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.springframework.context.annotation.Configuration;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment"> * Spring {@link Configuration} providing {@link Document} beans for {@link DocumentTest}.</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_javadoccomment"> * Loads only the minimal bean definitions needed – no MongoDB or full Boot autoconfiguration required.</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  @Configuration
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="DocumentTestConfiguration" href="../../../../../com/mriss/dsh/data/models/DocumentTestConfiguration.html#DocumentTestConfiguration">DocumentTestConfiguration</a> {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      @Bean(name = <span class="jxr_string">"docTitleConstructor"</span>)
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>      <strong class="jxr_keyword">public</strong> Document getDocumentWithTitle() <strong class="jxr_keyword">throws</strong> NoSuchAlgorithmException, FileNotFoundException, IOException {
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>          Document d = <strong class="jxr_keyword">new</strong> Document(<span class="jxr_string">"Russia-Trump: FBI chief Wray defends agency"</span>);
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>          d.setOriginalFileContents(IOUtils.toByteArray(<strong class="jxr_keyword">new</strong> FileInputStream(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"target/test-classes/pdf/bbc-news-1.pdf"</span>))));
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>          <strong class="jxr_keyword">return</strong> d;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>      }
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>      @Bean(name = <span class="jxr_string">"docTitleContentsConstructor"</span>)
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">public</strong> Document getDocumentWithTitleAndContents() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Document(IOUtils.toByteArray(<strong class="jxr_keyword">new</strong> FileInputStream(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"target/test-classes/pdf/bbc-news-1.pdf"</span>))), <span class="jxr_string">"Russia-Trump: FBI chief Wray defends agency"</span>);
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      }
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      @Bean(name = <span class="jxr_string">"docTitleContentsFromStreamConstructor"</span>)
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">public</strong> Document getDocumentWithTitleAndContentsFromStream() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Document(<strong class="jxr_keyword">new</strong> FileInputStream(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"target/test-classes/pdf/bbc-news-1.pdf"</span>)), <span class="jxr_string">"Russia-Trump: FBI chief Wray defends agency"</span>);
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      @Bean(name = <span class="jxr_string">"anotherDocument"</span>)
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> Document getAnotherDocument() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Document(<strong class="jxr_keyword">new</strong> FileInputStream(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"target/test-classes/pdf/edition.cnn.com-1.pdf"</span>)), <span class="jxr_string">"Emails show Trump Tower meeting follow-up"</span>);
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      }
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  }
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+</pre>
+<hr/>
+<div id="footer">© 2020–2026 <a href="https://mriss-personal.github.io/mriss.github.io">Marcelo Riss</a></div>
+</body>
+</html>

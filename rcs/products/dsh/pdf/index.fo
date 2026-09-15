@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set>
+<fo:simple-page-master master-name="cover-page" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="toc" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+
+<fo:simple-page-master master-name="body" page-width="8.27in" page-height="11.70in" margin-top="0.625in" margin-bottom="0.6in" margin-left="1in" margin-right="1in">
+<fo:region-body margin-top="0.7in" margin-bottom="0.8in" />
+<fo:region-before extent="0.35in" />
+<fo:region-after extent="0.125in" /></fo:simple-page-master>
+</fo:layout-master-set>
+<fo:page-sequence initial-page-number="0" master-reference="body">
+<fo:flow flow-name="xsl-region-body">
+
+<fo:block text-align="center" font-size="16pt" space-before.optimum="30pt" space-after.optimum="14pt" font-family="Garamond,serif">Welcome to DSH</fo:block>
+
+Welcome to DSH
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Document Smart Highlights</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Document Smart Highlights aims to provide a set of web services to allow uploading
+of PDF and HTML files and return a list of keywords and most relevant sentences.
+This system applies state of the art algorithms, using NLP techniques to produce
+both the list of keywords and most relevant sentences. This last one, using
+automatic document summarization techniques.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2   Overall Process Description</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The overall process of file submission and keywords/relevant sentence extraction is
+described as follows:</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.1   File Submission</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">A web service is established in a way that:</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>User uses a web service call to submit/upload a file.
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>System submits the file to process asynchronously and returns a token to the user.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>User uses a web service call to keep probing the status of file processing, using
+the token previously returned.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>When the file processing is done, the previous call returns success and user uses
+another call to retrieve the results having two parts:
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>5.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>A list of keywords</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>6.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>A list of most relevant sentences</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.2   File Indexing</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>The first processing task is to submit files to a database where it will
+be indexed and processed to be able to identify individual terms or tokens
+inside the file context. This is done by submitting the files to be stored at
+a database provided by 
+<fo:basic-link external-destination="http://lucene.apache.org/solr/">
+<fo:inline color="green">Apache SOLR</fo:inline></fo:basic-link>.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.3   File Keyword Extraction</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The keyword extraction is executed by setting scores to each term in
+the document's text. This is using a 
+<fo:basic-link external-destination="https://en.wikipedia.org/wiki/Tf%E2%80%93idf">
+<fo:inline color="green">TF/IDF</fo:inline></fo:basic-link>
+approach through several different implementations of TF and IDF, as shown at
+
+<fo:basic-link external-destination="https://doi.org/10.2352/issn.2168-3204.2017.1.0.105">
+<fo:inline color="green">this paper</fo:inline></fo:basic-link>.</fo:block>
+
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Those terms having the best scores obtained by a
+
+<fo:basic-link external-destination="https://www.amazon.com/Meta-Algorithmics-Patterns-Robust-Quality-Systems/dp/1118343360">
+<fo:inline color="green">meta-algorithmic</fo:inline></fo:basic-link>
+combination of all TF/IDF combinations, will then be returned as the best ranked keywords.</fo:block>
+
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.4   Most Relevant Sentences Extraction</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>1.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">This is achieved applying typical 
+<fo:basic-link external-destination="https://en.wikipedia.org/wiki/Automatic_summarization">
+<fo:inline color="green">automatic summarization</fo:inline></fo:basic-link>
+techniques like extractive summarization or
+
+<fo:basic-link external-destination="https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction">
+<fo:inline color="green">keyphrase extraction</fo:inline></fo:basic-link>.</fo:block>
+
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>2.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The sentence relevance is calculated taking into account two main criteria:</fo:block>
+
+
+<fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>3.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Similarity of the sentence with the title: using the algorithm provided from
+
+<fo:basic-link external-destination="https://doi.org/10.1016/j.csl.2016.01.003">
+<fo:inline color="green">this paper</fo:inline></fo:basic-link></fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>4.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>Multiple combinations of the TF/IDF of each term of the sentence, using the keyword
+extraction mechanism described above.</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:list-item-label>
+<fo:block>5.</fo:block>
+</fo:list-item-label>
+
+<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The sum of two criteria will define the score. The best scored sentences are returned
+along with their respective paragraph numbers.</fo:block>
+
+</fo:block>
+</fo:list-item-body>
+</fo:list-item>
+
+</fo:list-block>
+</fo:block>
+</fo:block>
+
+</fo:flow>
+</fo:page-sequence>
+</fo:root>
