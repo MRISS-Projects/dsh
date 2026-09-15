@@ -15,5 +15,6 @@ jobs:
       next_development_version: ${{ inputs.next_development_version }}
       maven_artifact_id: dsh
       maven_group_id: com.mriss.products
+      development_branch: DEVELOP
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
