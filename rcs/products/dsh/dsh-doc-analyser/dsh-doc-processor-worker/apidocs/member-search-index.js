@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"com.mriss.dsh.analyser.docprocessor","c":"DshDocProcessorWorkerApplication","l":"DshDocProcessorWorkerApplication()","u":"%3Cinit%3E()"},{"p":"com.mriss.dsh.analyser.docprocessor","c":"DshDocProcessorWorkerApplication","l":"main(String[])","u":"main(java.lang.String[])"}];updateSearchResults();
