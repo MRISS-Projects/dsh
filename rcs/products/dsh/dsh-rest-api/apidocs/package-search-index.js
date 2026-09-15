@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.mriss.dsh.restapi"},{"l":"com.mriss.dsh.restapi.config"},{"l":"com.mriss.dsh.restapi.dto"},{"l":"com.mriss.dsh.restapi.rest"},{"l":"com.mriss.dsh.restapi.service"}];updateSearchResults();
