@@ -24,47 +24,47 @@
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
                 <artifactId>dsh-rest-api</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
                 <artifactId>dsh-doc-indexer-worker</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
                 <artifactId>dsh-data</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
                 <artifactId>dsh-test-dataset</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
                 <artifactId>dsh-keyword-extractor</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
                 <artifactId>dsh-top-sentences-extractor</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
                 <artifactId>dsh-doc-processor-worker</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh.dsh-solr</groupId>
                 <artifactId>solr-terms-vector-order</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh.dsh-solr</groupId>
                 <artifactId>solr-advanced-numbers-filter</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -274,7 +274,7 @@
         <connection>scm:git:https://github.com/MRISS-Projects/dsh.git</connection>
         <developerConnection>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnection>
         <url>https://github.com/MRISS-Projects/dsh</url>
-        <tag>staging-0.3.0-SNAPSHOT-RC</tag>
+        <tag>HEAD</tag>
     </scm>
     <repositories>
         <repository>
