@@ -7,8 +7,9 @@ movement, and the parent POM dependency that every build resolves against.
 ## Branching and Release Model
 
 ```mermaid
+%%{init: {'gitGraph': {'mainBranchName': 'master'}}}%%
 gitGraph
-    commit id: "master"
+    commit id: "0.2.0"
     branch DEVELOP
     commit id: "feature work"
     branch issue-91-extract-repo
@@ -20,7 +21,7 @@ gitGraph
     commit id: "stabilise"
     checkout master
     merge staging-0.3.0-SNAPSHOT-RC tag: "v0.3.0"
-    branch 0.3.x
+    branch "0.3.x"
     commit id: "hotfix line"
 ```
 
