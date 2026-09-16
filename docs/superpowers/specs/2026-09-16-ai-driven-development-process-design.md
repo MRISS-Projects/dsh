@@ -198,7 +198,13 @@ reusable workflows. The main `README.md` is not touched; it describes the system
 **Coverage ratchet (D3):** a step parses
 `dsh-coverage-report/target/site/jacoco-aggregate/jacoco.csv`, computes the aggregate covered
 ratio, and compares it against a committed `.github/coverage-baseline.txt`. Below baseline fails
-the job. A push to `DEVELOP` updates the baseline. No pom is modified.
+the job. A malformed or blank baseline fails the job too, rather than silently passing. No pom is
+modified.
+
+The baseline is **only ever changed by a deliberate human-reviewed commit** — no workflow step
+writes or commits it. An earlier draft of this design said a push to `DEVELOP` would update it
+automatically; that was never implemented, and auto-updating would defeat the ratchet, since any
+drop merged to `DEVELOP` would immediately become the new floor.
 
 ### 4.6 Smaller changes
 
