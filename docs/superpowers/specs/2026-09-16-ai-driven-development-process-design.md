@@ -86,19 +86,19 @@ process contract, then delegates.
 
 | Step | Action | Skill | Artifact | Hard stop |
 |---|---|---|---|---|
-| 1 | Brainstorm a path forward | `dsh:plan-wave` → `superpowers:brainstorming` | `specs/product/PRD.md` | Owner approves before write |
-| 2 | Task becomes an INVEST story | `dsh:new-story` | GitHub issue | Owner approves body before `gh issue create` |
-| 3 | Story becomes a detailed spec | `dsh:story-spec` → `superpowers:brainstorming` + `writing-plans` | `specs/stories/<n>-<slug>.md` | Refuses `master` as parent; owner approves spec before commit/push |
-| 4 | Spec becomes code, TDD | `dsh:build-story` → `superpowers:test-driven-development` + `executing-plans` | Code + tests | Red must fail for the right reason before green |
-| 5 | Code review | `dsh:ship-story` → `/code-review`, `superpowers:receiving-code-review` | Review findings | Owner reads findings before fixes land |
-| 6 | Commit, push, CI, merge | `dsh:ship-story` → `verification-before-completion` + `finishing-a-development-branch` | PR, green CI | **Never merges.** Stops at green. |
+| 1 | Brainstorm a path forward | `dsh-plan-wave` → `superpowers:brainstorming` | `specs/product/PRD.md` | Owner approves before write |
+| 2 | Task becomes an INVEST story | `dsh-new-story` | GitHub issue | Owner approves body before `gh issue create` |
+| 3 | Story becomes a detailed spec | `dsh-story-spec` → `superpowers:brainstorming` + `writing-plans` | `specs/stories/<n>-<slug>.md` | Refuses `master` as parent; owner approves spec before commit/push |
+| 4 | Spec becomes code, TDD | `dsh-build-story` → `superpowers:test-driven-development` + `executing-plans` | Code + tests | Red must fail for the right reason before green |
+| 5 | Code review | `dsh-ship-story` → `/code-review`, `superpowers:receiving-code-review` | Review findings | Owner reads findings before fixes land |
+| 6 | Commit, push, CI, merge | `dsh-ship-story` → `verification-before-completion` + `finishing-a-development-branch` | PR, green CI | **Never merges.** Stops at green. |
 
 Steps 5 and 6 share one skill because they are a continuous flow, but the review gate between
 them is an explicit stop, not a formality.
 
 ### 3.3 Story spec front matter
 
-`dsh:story-spec` writes machine-readable front matter so later steps need not guess:
+`dsh-story-spec` writes machine-readable front matter so later steps need not guess:
 
 ```yaml
 ---
@@ -110,7 +110,7 @@ milestone: 0.4.0-SNAPSHOT
 ---
 ```
 
-`dsh:ship-story` reads `parent_branch` to target the PR. This is the single piece of state that
+`dsh-ship-story` reads `parent_branch` to target the PR. This is the single piece of state that
 couples the steps; everything else is derived from the issue or the working tree.
 
 ---
@@ -136,7 +136,7 @@ Five skills under `.claude/skills/`, each a thin wrapper. None reimplements what
 skill already does; each one's job is to supply DSH-specific context (branch rules, spec paths,
 gate commands, issue templates) and then hand off.
 
-`dsh:story-spec` carries the one piece of real logic: it resolves the parent branch, and **refuses
+`dsh-story-spec` carries the one piece of real logic: it resolves the parent branch, and **refuses
 to proceed if the parent is `master`**.
 
 ### 4.3 The PRD
