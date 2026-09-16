@@ -23,6 +23,33 @@
 - **Every new Markdown file must pass `markdownlint` with the repo config** from Task 1 onward.
 - Current branch for all work: `init-claude-ai-driven-process` (cut from `staging-0.3.0-SNAPSHOT-RC`).
 
+### Running local Maven commands
+
+**Every local `mvn` invocation redirects to a log file under `.logs/` and prints a `tail`
+command before blocking.** DSH is a 13-module reactor; a full build with tests is long enough
+that a silent blocking command leaves the human with nothing to watch. Always use this shape:
+
+```bash
+mkdir -p .logs
+mvn -B install > .logs/mvn-install.log 2>&1 &
+MVN_PID=$!
+echo "Monitor with:  tail -f .logs/mvn-install.log"
+wait $MVN_PID; echo "maven exit=$?"
+```
+
+Rules:
+
+- Name the log after the command: `.logs/mvn-install.log`, `.logs/mvn-validate.log`,
+  `.logs/mvn-badges.log`. Do not reuse one name for different commands.
+- Print the `tail -f` line **before** `wait`, so the human can start monitoring immediately.
+- Always report the exit code explicitly. `wait` returns the job's status; a bare `mvn ... &`
+  with no `wait` silently reports success.
+- Never pipe `mvn` straight to `tail`/`head` without a log file — that discards the diagnostic
+  output you need when the build fails, and `$?` becomes the pipe's status, not Maven's.
+- `.logs/` is gitignored. Never commit a build log.
+- **This applies to local runs only.** Inside `ci.yml`, Maven writes to the Actions log; do not
+  redirect there.
+
 ---
 
 ### Task 1: Make the Markdown lint gate real
@@ -458,8 +485,13 @@ tool that already computes this number. `jacoco-badge-maven-plugin` reads the sa
 `<metric>instruction</metric>`, so the two must match.
 
 ```bash
+mkdir -p .logs
 mvn -B -P process-badges -Drelease.type=rcs \
-  -f dsh-coverage-report/pom.xml process-resources
+  -f dsh-coverage-report/pom.xml process-resources > .logs/mvn-badges.log 2>&1 &
+MVN_PID=$!
+echo "Monitor with:  tail -f .logs/mvn-badges.log"
+wait $MVN_PID; echo "maven exit=$?"
+
 grep -o '>[0-9.]*%<' dsh-coverage-report/badges/jacoco.svg | tr -d '><%' | tail -1
 ./scripts/check-coverage.sh
 ```
@@ -489,7 +521,12 @@ Spec §4.1 requires this. `CLAUDE.md` must not document a command that has never
 
 ```bash
 cd /c/Users/marce/github/dsh
-mvn -B -q -DskipTests install 2>&1 | tail -30; echo "exit=${PIPESTATUS[0]}"
+mkdir -p .logs
+mvn -B -DskipTests install > .logs/mvn-install-skiptests.log 2>&1 &
+MVN_PID=$!
+echo "Monitor with:  tail -f .logs/mvn-install-skiptests.log"
+wait $MVN_PID; echo "maven exit=$?"
+tail -30 .logs/mvn-install-skiptests.log
 ```
 
 Expected: exit 0, resolving `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT` from GitHub Packages using the credentials already in `~/.m2/settings.xml`.
@@ -552,6 +589,26 @@ The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages v
 | Single module | `mvn -B -pl dsh-data -am install` |
 | Coverage gate (after a full build) | `./scripts/check-coverage.sh` |
 | Markdown lint | `npx markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
+
+### Always log local Maven runs
+
+This is a 13-module reactor and a full build is slow. **Never run `mvn` locally as a silent
+blocking command.** Redirect to `.logs/` and print a `tail` command first, so progress is
+watchable:
+
+```bash
+mkdir -p .logs
+mvn -B install > .logs/mvn-install.log 2>&1 &
+MVN_PID=$!
+echo "Monitor with:  tail -f .logs/mvn-install.log"
+wait $MVN_PID; echo "maven exit=$?"
+```
+
+Name the log after the command (`.logs/mvn-install.log`, `.logs/mvn-validate.log`). Report the
+exit code explicitly — a backgrounded `mvn` without `wait` reports success no matter what.
+Never pipe `mvn` directly into `tail`; you lose the diagnostics and `$?` becomes the pipe's
+status. `.logs/` is gitignored; never commit a build log. In `ci.yml` do **not** redirect —
+GitHub Actions already captures the output.
 
 Upgrading the parent version is a deliberate, manual edit to the root `pom.xml`. CI never
 rebuilds `parent-poms` and never passes `-U`.
@@ -933,7 +990,15 @@ a fresh agent per task.
 
 ## The gate before you claim done
 
-    mvn -B install
+Log the build and give the human something to watch - see "Always log local Maven runs" in
+`CLAUDE.md`:
+
+    mkdir -p .logs
+    mvn -B install > .logs/mvn-install.log 2>&1 &
+    MVN_PID=$!
+    echo "Monitor with:  tail -f .logs/mvn-install.log"
+    wait $MVN_PID; echo "maven exit=$?"
+
     ./scripts/check-coverage.sh
 
 All unit tests pass, all integration tests pass, and coverage has not dropped below
@@ -968,7 +1033,12 @@ Steps 5 and 6 of the process in `docs/process/ai-driven-development.md`.
 
 Invoke `superpowers:verification-before-completion` first. Evidence before assertions:
 
-    mvn -B install
+    mkdir -p .logs
+    mvn -B install > .logs/mvn-install.log 2>&1 &
+    MVN_PID=$!
+    echo "Monitor with:  tail -f .logs/mvn-install.log"
+    wait $MVN_PID; echo "maven exit=$?"
+
     ./scripts/check-coverage.sh
 
 Read `parent_branch` from the front matter of `specs/stories/<n>-<slug>.md`, then:
@@ -1306,7 +1376,11 @@ xmllint --noout parent-pom.xml && echo "XML OK"
 bash -n install-parent-pom.sh && echo "SH OK"
 npx --yes markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
   --ignore 'docs/wiki/**' --config .markdownlint.json && echo "LINT OK"
-mvn -B -q -DskipTests -N validate && echo "MAVEN OK"
+mkdir -p .logs
+mvn -B -N validate > .logs/mvn-validate.log 2>&1 &
+MVN_PID=$!
+echo "Monitor with:  tail -f .logs/mvn-validate.log"
+wait $MVN_PID && echo "MAVEN OK" || { echo "MAVEN FAILED"; tail -30 .logs/mvn-validate.log; }
 ```
 
 Expected: `XML OK`, `SH OK`, `LINT OK`, `MAVEN OK`. If `xmllint` is unavailable, use
@@ -1344,7 +1418,13 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ```bash
 cd /c/Users/marce/github/dsh
-mvn -B install 2>&1 | tail -20; echo "maven exit=${PIPESTATUS[0]}"
+mkdir -p .logs
+mvn -B install > .logs/mvn-final.log 2>&1 &
+MVN_PID=$!
+echo "Monitor with:  tail -f .logs/mvn-final.log"
+wait $MVN_PID; echo "maven exit=$?"
+tail -20 .logs/mvn-final.log
+
 ./scripts/check-coverage.sh
 npx --yes markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
   --ignore 'docs/wiki/**' --config .markdownlint.json && echo "LINT OK"
