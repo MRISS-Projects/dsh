@@ -12,7 +12,8 @@ the full scaffolding instructions.
 **Template:** `/.github/copilot/prompts/component-generation.md` → New Spring Boot Service
 
 **Prompt:**
-```
+
+```text
 As a Backend Developer (see /.github/roles.md), generate a Spring Boot @Service
 class called DocumentAnalysisService in the DSH project.
 
@@ -36,7 +37,8 @@ Requirements:
 **Template:** `/.github/copilot/prompts/test-generation.md` → Controller Slice Test
 
 **Prompt:**
-```
+
+```text
 As a Backend Developer (see /.github/roles.md), generate @WebMvcTest tests for
 DocumentController in the DSH project.
 
@@ -63,7 +65,8 @@ Requirements:
 **Template:** `/.github/copilot/prompts/documentation-generation.md` → API Endpoint Documentation
 
 **Prompt:**
-```
+
+```text
 As a Backend Developer (see /.github/roles.md), document the DELETE
 /documents/{documentId} endpoint for the DSH REST API.
 
@@ -86,7 +89,8 @@ Include:
 **Template:** `/.github/copilot/prompts/documentation-generation.md` → Feature Specification
 
 **Prompt:**
-```
+
+```text
 As a Product Manager (see /.github/roles.md), generate a feature specification
 document for "Document Deletion" in the DSH project.
 
@@ -112,7 +116,8 @@ Include:
 **Template:** `/.github/copilot/prompts/feature-implementation.md` → Implement Feature from Specification
 
 **Prompt:**
-```
+
+```text
 As a Backend Developer (see /.github/roles.md), implement the feature described in
 specs/features/document-analysis.md for the DSH project.
 
@@ -142,7 +147,8 @@ Requirements:
 **Template:** `/.github/copilot/prompts/feature-implementation.md` → Implement Feature – Product Manager Review
 
 **Prompt:**
-```
+
+```text
 As a Product Manager (see /.github/roles.md), review and refine the feature
 specification at specs/features/smart-highlighting.md before implementation begins.
 
@@ -163,7 +169,8 @@ Requirements:
 **Template:** `/.github/copilot/prompts/feature-implementation.md` → Implement Feature – DevOps Support
 
 **Prompt:**
-```
+
+```text
 As a DevOps Developer (see /.github/roles.md), set up the infrastructure and CI/CD
 support for the feature described in specs/features/indexing-workflow.md.
 
@@ -182,7 +189,8 @@ Requirements:
 ## Example 8: Explain Existing Code
 
 **Prompt (in Copilot Chat, with a file open):**
-```
+
+```text
 Explain what this class does and how it relates to
 /specs/features/indexing-workflow.md
 ```

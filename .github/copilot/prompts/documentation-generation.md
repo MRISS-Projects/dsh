@@ -6,7 +6,7 @@ Use these prompt templates with GitHub Copilot Chat to generate consistent docum
 
 ## Feature Specification
 
-```
+```text
 As a Product Manager (see /.github/roles.md), generate a feature specification
 document for [FeatureName] in the DSH project.
 
@@ -25,7 +25,7 @@ Include:
 
 ## API Endpoint Documentation
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), document the [HTTP method] [path]
 endpoint for the DSH REST API.
 
@@ -45,7 +45,7 @@ Include:
 
 ## Architecture Decision Record (ADR)
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate an Architecture Decision
 Record for the decision to [describe decision].
 
@@ -64,7 +64,7 @@ Include:
 
 ## OpenAPI Schema
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate an OpenAPI 3.0.3 schema
 component for [SchemaName] in the DSH API.
 
@@ -83,7 +83,7 @@ Requirements:
 
 ## JavaDoc for Class
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate comprehensive JavaDoc
 for [ClassName] in the DSH project.
 
@@ -99,7 +99,7 @@ Requirements:
 
 ## README for Module
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a README.md for the
 [ModuleName] Maven module in the DSH project.
 

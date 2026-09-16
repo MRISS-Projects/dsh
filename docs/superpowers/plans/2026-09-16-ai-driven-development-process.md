@@ -78,10 +78,12 @@ Rules:
 Closes spec gap G3. This task comes first because every later task adds Markdown that must pass this gate.
 
 **Files:**
+
 - Create: `.markdownlint.json`
 - Modify: `.github/workflows/spec-validation.yml` (the `Lint markdown files` step, currently ending in `|| true`)
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: a lint configuration that all later Markdown must satisfy. Later tasks rely on the command `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` exiting 0.
 
@@ -170,11 +172,13 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 Closes spec gaps G1 and G2. This is the gate step 6 of the process depends on.
 
 **Files:**
+
 - Create: `scripts/check-coverage.sh`
 - Create: `.github/workflows/ci.yml`
 - Create: `.github/coverage-baseline.txt` (bootstrapped in Step 7, from a real run — never guessed)
 
 **Interfaces:**
+
 - Consumes: `.markdownlint.json` from Task 1 (unrelated, but Task 1's commit must land first so CI starts green).
 - Produces: `scripts/check-coverage.sh <csv-path> <baseline-path>` → exits 0 if current ≥ baseline, exits 1 otherwise, prints `current=NN.NN baseline=NN.NN` on stdout in both cases. Task 3 documents this command in `CLAUDE.md`; Task 6's `dsh-build-story` skill invokes it as the local gate.
 
@@ -534,9 +538,11 @@ head -1 dsh-coverage-report/target/site/jacoco-aggregate/jacoco.csv | tr ',' '\n
 ### Task 3: CLAUDE.md
 
 **Files:**
+
 - Create: `CLAUDE.md`
 
 **Interfaces:**
+
 - Consumes: `scripts/check-coverage.sh` from Task 2 (documented as the local coverage gate).
 - Produces: the canonical statement of branch rules and quality gates that Task 4's process doc and Task 6's skills both reference rather than restate.
 
@@ -666,7 +672,7 @@ A story is not done until all three pass:
 Six steps. Full detail in `docs/process/ai-driven-development.md`.
 
 | Step | Do this | Skill |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Brainstorm, then update the PRD with waves | `dsh-plan-wave` |
 | 2 | Turn a PRD task into an INVEST story on GitHub | `dsh-new-story` |
 | 3 | Turn the story into a reviewed spec on the task branch | `dsh-story-spec` |
@@ -676,6 +682,8 @@ Six steps. Full detail in `docs/process/ai-driven-development.md`.
 
 **Two things Claude never does:** close a GitHub issue, or merge a pull request. Both are
 yours. Claude creates issues and PRs only after you approve the content.
+
+<!-- markdownlint-disable-next-line MD040 -->
 ```
 
 - [ ] **Step 3: Verify it lints and every link resolves**
@@ -706,9 +714,11 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 4: The process document
 
 **Files:**
+
 - Create: `docs/process/ai-driven-development.md`
 
 **Interfaces:**
+
 - Consumes: the branch rules and gates defined in `CLAUDE.md` (Task 3) — reference them, do not restate them.
 - Produces: the per-step detail that Task 6's five skills point at, so the skills stay thin.
 
@@ -740,6 +750,8 @@ flowchart TD
     O -->|no| J
     O -->|yes| P["STOP - human merges"]
 ```
+
+<!-- markdownlint-disable-next-line MD040 -->
 ```
 
 Add a short section, **"Why Claude stops at green"**, explaining spec decision D4: creating an issue or a PR is reversible and reviewable; closing an issue and merging a PR are neither, so they stay with the repo owner.
@@ -766,9 +778,11 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 5: The DevOps README
 
 **Files:**
+
 - Create: `docs/devops/README.md`
 
 **Interfaces:**
+
 - Consumes: `ci.yml` from Task 2 (it appears in the pipeline diagram).
 - Produces: nothing other tasks depend on.
 
@@ -806,6 +820,8 @@ gitGraph
     branch 0.3.x
     commit id: "hotfix line"
 ```
+
+<!-- markdownlint-disable-next-line MD040 -->
 ```
 
 Pipeline map:
@@ -829,6 +845,8 @@ flowchart LR
         HF["hotfix.yml"] --> PP4[["parent-poms<br/>project-hotfix.yml"]]
     end
 ```
+
+<!-- markdownlint-disable-next-line MD040 -->
 ```
 
 Add a table of each workflow, its trigger, and what it gates. Add a short **"Parent POM"** section recording that `com.mriss.mriss-parent:products` comes from GitHub Packages, that upgrades are manual, and that the current `3.8.0-SNAPSHOT` pin is a known reproducibility risk tracked in the PRD (spec §2.1).
@@ -848,6 +866,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 6: The five project skills
 
 **Files:**
+
 - Create: `.claude/skills/dsh-plan-wave/SKILL.md`
 - Create: `.claude/skills/dsh-new-story/SKILL.md`
 - Create: `.claude/skills/dsh-story-spec/SKILL.md`
@@ -855,6 +874,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 - Create: `.claude/skills/dsh-ship-story/SKILL.md`
 
 **Interfaces:**
+
 - Consumes: `scripts/check-coverage.sh` (Task 2), the front-matter contract (Task 4), the issue template (Task 7).
 - Produces: five invocable skills. `dsh-story-spec` writes front matter with keys `issue`, `slug`, `parent_branch`, `wave`, `milestone`; `dsh-ship-story` reads `parent_branch` from it.
 
@@ -1116,9 +1136,11 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 7: INVEST story issue template
 
 **Files:**
+
 - Create: `.github/ISSUE_TEMPLATE/story.md`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: the template `dsh-new-story` (Task 6) fills in.
 
@@ -1193,10 +1215,12 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 8: The PRD
 
 **Files:**
+
 - Create: `specs/product/PRD.md`
 - Create: `scripts/close-wontfix-issues.sh`
 
 **Interfaces:**
+
 - Consumes: the wave/issue triage fixed in spec §4.3.
 - Produces: the wave-to-milestone mapping that `dsh-new-story` (Task 6) reads when setting a milestone.
 
@@ -1223,7 +1247,7 @@ Structure:
 4. **The waves**, exactly as fixed in spec §4.3:
 
 | Wave | Theme | Issues |
-|---|---|---|
+| --- | --- | --- |
 | 0 | Engineering foundation | #85, #86, #87, #43, #46, #70, #90, plus "deprecate install-parent-pom.sh" and "pin a released parent version" |
 | 1 | ADR-001 Phase 1 — interface extraction and deprecation | #48 |
 | 2 | ADR-001 Phase 2 — Firestore + GCS | — |
@@ -1239,17 +1263,17 @@ For #49, state the re-scope explicitly: the original asked for Docker containers
 MongoDB/RabbitMQ/Solr; it is re-scoped to **Firestore and Pub/Sub emulators** for local and
 CI testing, which is why it sits in Wave 3 rather than Wave 0.
 
-5. **Won't-fix**, inside the migration section:
+1. **Won't-fix**, inside the migration section:
 
 | Issue | Reason | Superseded by |
-|---|---|---|
+| --- | --- | --- |
 | #65 — Implement indexer-worker daemon | Body specifies RabbitMQ enqueue and Solr storage | Waves 3 and 4 |
 | #47 — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, deprecated by ADR-001 | Wave 2 |
 
 Add a line recording that **#52 was reviewed and kept** — it mentions Mongo only as one
 option for automatic file-hash generation, and the idea survives the migration.
 
-6. **Known risks** — the `3.8.0-SNAPSHOT` parent pin from spec §2.1, as a Wave 0 task.
+1. **Known risks** — the `3.8.0-SNAPSHOT` parent pin from spec §2.1, as a Wave 0 task.
 
 - [ ] **Step 3: Write the won't-fix closure script — do not run it**
 
@@ -1315,12 +1339,14 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 9: Correct the stale documentation
 
 **Files:**
+
 - Modify: `.github/copilot-instructions.md` (line 17, and the File References table)
 - Modify: `specs/architecture/system-design.md` (component diagram, Technology Stack table)
 - Modify: `install-parent-pom.sh` (header comment)
 - Modify: `parent-pom.xml` (header comment)
 
 **Interfaces:**
+
 - Consumes: `CLAUDE.md` (Task 3), `docs/process/ai-driven-development.md` (Task 4), `docs/devops/README.md` (Task 5) — all three get rows in the File References table.
 - Produces: nothing other tasks depend on.
 
@@ -1436,6 +1462,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 **Files:** none created or modified.
 
 **Interfaces:**
+
 - Consumes: everything from Tasks 1-9.
 - Produces: a green CI run and a PR awaiting the owner's merge.
 

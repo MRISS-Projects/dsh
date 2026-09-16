@@ -1,9 +1,11 @@
 # ADR-002: POM Hierarchy Configuration
 
 ## Date
+
 2026-04-21
 
 ## Status
+
 Implemented
 
 ## Context
@@ -89,6 +91,7 @@ If not already present, a `jacoco:check` execution will be added to `parent-poms
 ## Consequences
 
 ### Positive
+
 - Single source of truth for plugin versions, dependency versions, and build configuration.
 - Easier upgrades: bumping a version in `products/pom.xml` applies to all products automatically.
 - Cleaner, shorter DSH POM files that are easier to read and maintain.
@@ -98,6 +101,7 @@ If not already present, a `jacoco:check` execution will be added to `parent-poms
 - Guaranteed 95 %+ code coverage enforced at build time for all products.
 
 ### Negative
+
 - Initial migration effort is non-trivial: each DSH module POM and the two parent POMs must be updated in a coordinated way.
 - Bumping the Spring Boot version and aligning Spring Fox/Swagger may require minor code changes in DSH if any APIs have changed between `2.3.4.RELEASE` and `2.3.12.RELEASE`.
 - Moving configuration to `parent-poms` may affect other products that also inherit from it; those products must be tested after the parent changes are merged.
@@ -117,4 +121,3 @@ If not already present, a `jacoco:check` execution will be added to `parent-poms
 - [`specs/architecture/system-design.md`](system-design.md)
 - [`specs/features/rest-api-endpoints.md`](../features/rest-api-endpoints.md)
 - [GitHub Actions workflows](../../.github/workflows/)
-

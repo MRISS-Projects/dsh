@@ -18,10 +18,12 @@ This directory contains end-user documentation for the DSH (Document Smart Highl
 ## Audience
 
 These guides are written for:
+
 - End users of the DSH web interface
 - Developers integrating with the DSH REST API
 - Technical writers maintaining documentation
 
 ## References
+
 - API documentation: `../api/`
 - Feature specifications: `/specs/features/`

@@ -57,7 +57,7 @@ jobs:
         run: |
           markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
             --ignore 'docs/wiki/**' \
-            --config .markdownlint.json || true
+            --config .markdownlint.json
 
   check-spec-references:
     name: Check Spec File References

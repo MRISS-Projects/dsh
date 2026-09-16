@@ -10,15 +10,17 @@ assignees: ''
 <!-- Concise description of the bug -->
 
 ## Environment
+
 - **DSH Version / Branch:**
 - **Java Version:**
 - **OS:**
 - **Spring Boot Version:**
 
 ## Steps to Reproduce
-1. 
-2. 
-3. 
+
+1.
+2.
+3.
 
 ## Expected Behaviour
 <!-- What should happen according to the specification? -->
@@ -27,11 +29,12 @@ assignees: ''
 ## Actual Behaviour
 <!-- What actually happens? Include error messages, stack traces, logs -->
 
-```
+```text
 Paste stack trace or error output here
 ```
 
 ## Affected Module(s)
+
 - [ ] dsh-rest-api
 - [ ] dsh-doc-analyser
 - [ ] dsh-doc-indexer-worker
@@ -40,6 +43,7 @@ Paste stack trace or error output here
 - [ ] Frontend
 
 ## Severity
+
 - [ ] Critical – system unusable / data loss
 - [ ] High – major functionality broken
 - [ ] Medium – functionality degraded with workaround
@@ -52,6 +56,7 @@ Paste stack trace or error output here
 <!-- Optional: describe a potential fix or the files that likely need changing -->
 
 ## Acceptance Criteria for Fix
+
 - [ ] The steps to reproduce no longer produce the bug
 - [ ] Existing tests pass
 - [ ] A regression test is added covering this scenario

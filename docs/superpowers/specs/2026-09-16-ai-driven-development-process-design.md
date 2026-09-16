@@ -1,7 +1,7 @@
 # Design: AI-Driven Development Process for DSH
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | **Date** | 2026-09-16 |
 | **Status** | Approved (brainstorm) |
 | **Scope** | Repo initialisation for Claude Code + enforcement of a 6-step AI-driven development process |
@@ -20,10 +20,10 @@ convention.
 Four gaps block that loop today. They were confirmed by inspection, not assumed:
 
 | # | Gap | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | G1 | No build/test workflow runs on a task-branch PR | `.github/workflows/api-testing.yml` is path-filtered to `dsh-rest-api/**` and `specs/api/**`; no other workflow builds on PRs. Step 6's "everything green" has nothing to be green. |
 | G2 | No JaCoCo coverage threshold exists | No `check` goal, `minimum`, `limit` or `COVEREDRATIO` element in any pom. `dsh-coverage-report` aggregates and renders a badge only. |
-| G3 | `.markdownlint.json` is referenced but absent | `spec-validation.yml` passes `--config .markdownlint.json`; the file does not exist. Masked by a trailing `|| true`. |
+| G3 | `.markdownlint.json` is referenced but absent | `spec-validation.yml` passes `--config .markdownlint.json`; the file does not exist. Masked by a trailing `\|\| true`. |
 | G4 | No PRD exists | Step 1 of the process has no artifact to update. |
 
 A fifth item is dead weight rather than a gap:
@@ -39,7 +39,7 @@ A fifth item is dead weight rather than a gap:
 These were settled during the brainstorm and are not reopened by the implementation plan.
 
 | ID | Decision | Rationale |
-|---|---|---|
+| --- | --- | --- |
 | D1 | `CLAUDE.md` is a **thin router**. `.github/copilot-instructions.md` and `.github/copilot/rules/*` stay the source of truth for standards. | Zero duplication; one place to edit standards; Copilot and Claude cannot drift apart. |
 | D2 | The process is enforced by **project skills that delegate to Superpowers**, not by hooks. | Claude gets a named, callable entry point per step; Superpowers remains the engine. Hooks were rejected as too many moving parts for the first iteration. |
 | D3 | Coverage is a **ratchet**, not a fixed target, and is implemented **outside the poms**. | A fixed 80% against an untested legacy codebase produces a permanently red build. Keeping it out of the poms means zero risk to release builds that inherit from `products`. |
@@ -85,7 +85,7 @@ process contract, then delegates.
 ### 3.2 The six steps and their skills
 
 | Step | Action | Skill | Artifact | Hard stop |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 1 | Brainstorm a path forward | `dsh-plan-wave` → `superpowers:brainstorming` | `specs/product/PRD.md` | Owner approves before write |
 | 2 | Task becomes an INVEST story | `dsh-new-story` | GitHub issue | Owner approves body before `gh issue create` |
 | 3 | Story becomes a detailed spec | `dsh-story-spec` → `superpowers:brainstorming` + `writing-plans` | `specs/stories/<n>-<slug>.md` | Refuses `master` as parent; owner approves spec before commit/push |
@@ -144,7 +144,7 @@ to proceed if the parent is `master`**.
 `specs/product/PRD.md`. Wave structure, with the existing open issues triaged into it:
 
 | Wave | Theme | Issues |
-|---|---|---|
+| --- | --- | --- |
 | 0 | Engineering foundation | #85, #86, #87 (Maven/Java alignment), #43 (site reports), #46 (embedded-tomcat integration tests), #70, #90 (gh-pages), plus: deprecate `install-parent-pom.sh`, pin a released parent |
 | 1 | ADR-001 Phase 1 — interface extraction and deprecation | #48 (dev/staging/prod profiles — the migration is profile-selected, `gcp` vs `legacy`) |
 | 2 | ADR-001 Phase 2 — Firestore + GCS | — |
@@ -156,12 +156,12 @@ to proceed if the parent is `master`**.
 **Won't-fix, recorded inside the migration section:**
 
 | Issue | Reason | Superseded by |
-|---|---|---|
+| --- | --- | --- |
 | #65 — Implement indexer-worker daemon | Body specifies RabbitMQ enqueue and Solr storage. | Waves 3 and 4 |
 | #47 — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 deprecates. | Wave 2 |
 
-#52 was reviewed and **kept**: it mentions Mongo only as one option for automatic file-hash
-generation; the file-hash-as-a-service idea survives the migration intact.
+Issue #52 was reviewed and **kept**: it mentions Mongo only as one option for automatic
+file-hash generation; the file-hash-as-a-service idea survives the migration intact.
 
 Closures ship as a reviewable `gh issue close` script under `scripts/`. Per D4, it is not run.
 
@@ -180,7 +180,7 @@ reusable workflows. The main `README.md` is not touched; it describes the system
 `.github/workflows/ci.yml`.
 
 | Aspect | Detail |
-|---|---|
+| --- | --- |
 | Triggers | All pull requests; pushes to `issue-**`, `DEVELOP`, `staging-*-RC`, `*.x` |
 | Runtime | `ubuntu-latest`, JDK 17 Temurin, Maven cache |
 | Services | `mongo:6`, `rabbitmq:3-management`, plus the Mongo user bootstrap lifted from `api-testing.yml` |
@@ -196,7 +196,7 @@ the job. A push to `DEVELOP` updates the baseline. No pom is modified.
 ### 4.6 Smaller changes
 
 | File | Change |
-|---|---|
+| --- | --- |
 | `.markdownlint.json` | Create it (G3). Rules chosen to pass on existing content, so the gate starts green. |
 | `.github/workflows/spec-validation.yml` | Drop the trailing `\|\| true` on the markdownlint step. Today the lint gate cannot fail, so it is decoration. Removing it is only safe *because* the new config is tuned to pass on existing content — so this change lands in the same commit as `.markdownlint.json`, never before it. |
 | `.github/ISSUE_TEMPLATE/story.md` | New INVEST story template for step 2. |
@@ -212,10 +212,10 @@ This change set is documentation, configuration and skills; it has no unit-testa
 verified by execution, not by assertion:
 
 | What | How |
-|---|---|
+| --- | --- |
 | `ci.yml` is correct | Push the branch and observe the run go green. A workflow that has never run is not verified. |
 | Coverage ratchet is correct | Confirm the parsed ratio matches the JaCoCo badge, and that a deliberately lowered baseline passes while a raised one fails. |
-| `.markdownlint.json` is correct | `markdownlint` over `specs/**`, `.github/**`, `docs/**` **without** the `|| true` fallback must exit 0. |
+| `.markdownlint.json` is correct | `markdownlint` over `specs/**`, `.github/**`, `docs/**` **without** the `\|\| true` fallback must exit 0. |
 | Skills load | Each of the five appears in the skill listing and its frontmatter parses. |
 | Links resolve | Every relative link in the new documents points at a file that exists. |
 
