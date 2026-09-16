@@ -122,3 +122,35 @@ not need to re-run steps 5 and 6 to handle it.
 
 **Two things Claude never does:** close a GitHub issue, or merge a pull request. Both are
 yours. Claude creates issues and PRs only after you approve the content.
+
+## Shared build infrastructure lives in another repo
+
+DSH inherits from `com.mriss.mriss-parent:products`, maintained in
+[`MRISS-Projects/parent-poms`](https://github.com/MRISS-Projects/parent-poms). That repo owns the
+build and release machinery: plugin versions and configuration, the coverage gate, the reusable
+release/stage/staging/hotfix workflows, and Maven site generation.
+
+**A lot of what looks like a DSH problem is actually a parent-poms problem.** Before changing build
+configuration here, check whether it belongs there. Symptoms that usually mean *there, not here*:
+Maven site generation, gh-pages publishing, plugin versions, release workflow behaviour, coverage
+thresholds.
+
+Example already in place: the 95% coverage gate is **not** in this repo. `jacoco:check`
+(`element=BUNDLE`, LINE and BRANCH ≥ 0.95, bound to `verify`) is inherited from parent-poms and runs
+on every module here. Grepping only this repo's poms will tell you it does not exist. It does.
+
+### The round trip for a shared change
+
+1. Open an issue in `parent-poms`. Plain issue — INVEST framing is not required there; it is
+   infrastructure, not product.
+2. Make sure parent-poms' next milestone is open as a `-SNAPSHOT`.
+3. Implement and test it there, against that `-SNAPSHOT`.
+4. Point this repo's root `pom.xml` at that `-SNAPSHOT` temporarily to validate end to end.
+5. Close the issue and release parent-poms — its release script already exists.
+6. Re-pin this repo's root `pom.xml` to the newly released version.
+
+**Before releasing parent-poms, clear the milestone being released.** If it still has open issues,
+fix those first. A release that leaves its own milestone half-done makes the version meaningless.
+
+**Keep parent-poms' Claude setup lightweight.** It has a deliberately minimal `CLAUDE.md` and none
+of this repo's seven-step process. It is infrastructure. Do not port this process there.

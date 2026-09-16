@@ -22,9 +22,39 @@ Four gaps block that loop today. They were confirmed by inspection, not assumed:
 | # | Gap | Evidence |
 | --- | --- | --- |
 | G1 | No build/test workflow runs on a task-branch PR | `.github/workflows/api-testing.yml` is path-filtered to `dsh-rest-api/**` and `specs/api/**`; no other workflow builds on PRs. Step 6's "everything green" has nothing to be green. |
-| G2 | No JaCoCo coverage threshold exists | No `check` goal, `minimum`, `limit` or `COVEREDRATIO` element in any pom. `dsh-coverage-report` aggregates and renders a badge only. |
+| G2 | ~~No JaCoCo coverage threshold exists~~ **WRONG — see G2 correction below** | Claimed on the basis that no `check` goal, `minimum` or `COVEREDRATIO` element appears in any pom *in this repository*. |
 | G3 | `.markdownlint.json` is referenced but absent | `spec-validation.yml` passes `--config .markdownlint.json`; the file does not exist. Masked by a trailing `\|\| true`. |
 | G4 | No PRD exists | Step 1 of the process has no artifact to update. |
+
+### 1.1 G2 correction (2026-09-16)
+
+**G2 was wrong, and the error shaped a decision.** The gap analysis grepped only this repository's
+poms. The coverage threshold lives in the **inherited parent**, which was never checked even though
+the parent had already been confirmed to resolve from GitHub Packages.
+
+`MRISS-Projects/parent-poms` `pom.xml` declares `jacoco:check` in `<build><plugins>` — active and
+inherited by every child — with `<element>BUNDLE</element>`, LINE and BRANCH `COVEREDRATIO` ≥ `0.95`,
+bound to `verify`. DSH's own build log confirms it runs:
+
+```text
+[INFO] --- jacoco:0.8.13:check (check-code-coverage) @ dsh-data ---
+[INFO] All coverage checks have been met.
+```
+
+Consequences:
+
+- **D3's rationale was reasoning about a situation that did not exist.** It argued a fixed threshold
+  "against an untested legacy codebase produces a permanently red build". A fixed 95% threshold was
+  already in force and already passing.
+- **`scripts/check-coverage.sh` was built to fill a gap that was not there.** It is not identical to
+  the inherited gate — aggregate INSTRUCTION ratchet versus per-module LINE/BRANCH fixed floor — but
+  the inherited gate is stronger in scope and fails the build earlier. Removing the script is
+  tracked as an issue.
+- **The general lesson is recorded** in `docs/process/ai-driven-development.md`, "Working across the
+  parent-poms boundary": when the build does something the local poms do not explain, read the
+  parent before concluding a thing is absent.
+
+G1, G3 and G4 were re-checked against the parent and stand as written.
 
 A fifth item is dead weight rather than a gap:
 

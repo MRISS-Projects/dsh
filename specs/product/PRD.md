@@ -94,8 +94,34 @@ now the single source of truth for that work.
   of this PRD claimed the scope was narrow and asked for it to be widened — that was wrong, and it
   had gated the baseline work behind a task that could never complete.
 
-The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item —
-see §6 for why it belongs in accepted risks rather than the backlog.
+**Wave 0 also has a goal in another repository.** DSH inherits from
+`com.mriss.mriss-parent:products`, maintained in `MRISS-Projects/parent-poms`. Wave 0 is not
+finished until that repo's open milestones are cleared and released, and DSH is re-pinned:
+
+| parent-poms milestone | Open issues | Outcome |
+|---|---|---|
+| `3.8.0-SNAPSHOT` | `#57`, `#58`, `#13` | Clear, then release **3.8.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67` | Clear, then release **3.9.0** |
+
+`parent-poms#67` was raised from this work: `maven-failsafe-plugin` is configured there in
+`<pluginManagement>` with the right includes, but never activated, so integration tests cannot run
+in any inheriting project. It adds a profile keyed on `-DintegrationTests`, so `mvn clean install`
+keeps running unit tests only — and the inherited 95% `jacoco:check` keeps measuring unit-test
+coverage — while integration tests run on request, in CI. DSH `#46` is blocked on it.
+
+At the end of Wave 0 the root `pom.xml` should inherit from a **released `3.9.0`**, not a SNAPSHOT.
+That also retires the accepted risk in §6 — see there for why the SNAPSHOT pin stands until then.
+The round trip for making a change in parent-poms and re-pinning here is documented in
+`docs/process/ai-driven-development.md`, "Working across the parent-poms boundary".
+
+Note the overlap: parent-poms `#57`/`#58`/`#59` carry the same titles as DSH `#85`/`#86`/`#87`.
+Both repositories have workflows that invoke Maven and docs that cite versions, so the work is
+genuinely parallel rather than duplicated — each issue is scoped to its own repository and
+cross-links its twin. Parent-poms `#13` (image links broken in the generated Maven site) is
+adjacent to DSH `#70` and `#90`; check whether those are symptoms of it before fixing them here.
+
+The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item
+**until the above completes** — see §6.
 
 ### Wave 1 — ADR-001 Phase 1: interface extraction and deprecation
 
@@ -261,8 +287,10 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   the SNAPSHOT is how those changes reach DSH without a release cycle per iteration.
   `.github/workflows/ci.yml` omits `-U` specifically to limit the drift — it does not force a
   re-resolve on every run, only lets Maven's normal refresh interval apply. **Do not file this as
-  a task or assign it a wave/milestone.** Revisit pinning a released version only once the
-  parent-poms work has settled; no story and no owner action are needed today.
+  a separate task.** It is not a standing risk with no end date: Wave 0 now carries the parent-poms
+  goal explicitly — clear both open milestones there, release `3.8.0` and `3.9.0`, then re-pin this
+  repo's root `pom.xml` to the released `3.9.0`. **This risk closes when that completes**, and needs
+  no owner action before then.
 - **Coverage badge and CI figure disagree.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate currently computes
   98.13% against a 2,028-instruction denominator, which is the whole codebase, not a partial one —

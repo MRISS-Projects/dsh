@@ -221,6 +221,51 @@ milestone: 0.4.0-SNAPSHOT
 state that couples step 3 to step 6; everything else a later step needs is derived from the issue
 or from the working tree at the time.
 
+## Working across the parent-poms boundary
+
+DSH is not self-contained. It inherits from `com.mriss.mriss-parent:products`, maintained in
+[`MRISS-Projects/parent-poms`](https://github.com/MRISS-Projects/parent-poms), and that repo owns
+the build and release machinery: plugin versions and configuration, the coverage gate, the reusable
+release workflows, Maven site generation.
+
+**The failure mode this section exists to prevent** is diagnosing a build problem by grepping only
+this repository, concluding something is missing, and building a local replacement for it. That
+happened during this process's own construction: the initial gap analysis reported "no JaCoCo
+coverage threshold exists in any pom" and a script-based coverage ratchet was written to fill the
+gap. The threshold was there all along — `jacoco:check` at 95% is inherited from parent-poms and
+runs on every module — it simply was not in a file this repository contains. When the build does
+something you cannot explain from the local poms, read the parent before concluding it is absent.
+
+### When a change belongs in parent-poms
+
+Any change to pom structure that another project could reuse. Also any bug whose root cause is in
+the inherited structure rather than in DSH code — Maven site generation, gh-pages publishing,
+plugin versions, release/stage/hotfix workflow behaviour, coverage thresholds.
+
+### The round trip
+
+1. **Open an issue in `parent-poms`.** A plain issue is enough — INVEST framing is for product
+   stories, and parent-poms is infrastructure. Its repo keeps a deliberately lightweight Claude
+   configuration, and this seven-step process is not ported there.
+2. **Ensure the next milestone there is open as a `-SNAPSHOT`.**
+3. **Implement and test it in parent-poms** against that `-SNAPSHOT`.
+4. **Validate end to end from DSH** by temporarily pointing this repo's root `pom.xml` at that
+   `-SNAPSHOT` parent.
+5. **Close the issue and release parent-poms.** Its release script already exists.
+6. **Re-pin this repo's root `pom.xml`** to the newly released version.
+
+### Clear the milestone before releasing it
+
+If the milestone being released still has open issues, fix them first — including ones unrelated to
+the change that prompted the release. A release whose own milestone is half-done makes the version
+number meaningless, and the next project to inherit it cannot tell what it is getting.
+
+### Why this is a rule and not a judgement call
+
+The alternative — fixing shared build behaviour locally because it is faster — produces a
+divergence that only shows up when the next project inherits the parent and finds the fix missing.
+The cost of the round trip is paid once; the cost of divergence is paid by every project after.
+
 ## Why Claude stops at green
 
 Step 2 ends with Claude opening a GitHub issue. Step 6 ends with Claude opening a pull request, and
