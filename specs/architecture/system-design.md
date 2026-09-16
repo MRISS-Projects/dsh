@@ -36,13 +36,13 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
                       │
              ┌────────┴────────┐
              ▼                 ▼
-     ┌──────────────────┐  ┌──────────────────┐
+     ┌───────────────────┐  ┌───────────────────┐
      │      MongoDB      │  │     dsh-solr      │
      │  (replacement     │  │  (replacement     │
      │   proposed)       │  │   proposed)       │
      │  (documents)      │  │ (full-text        │
      │                   │  │  indexing)        │
-     └──────────────────┘  └──────────────────┘
+     └───────────────────┘  └───────────────────┘
 ```
 
 > **Migration note:** [ADR-001](./ADR-001-GCP-based-components.md) (Status: Proposed) proposes
