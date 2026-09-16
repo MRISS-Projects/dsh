@@ -23,6 +23,27 @@
 - **Every new Markdown file must pass `markdownlint` with the repo config** from Task 1 onward.
 - Current branch for all work: `init-claude-ai-driven-process` (cut from `staging-0.3.0-SNAPSHOT-RC`).
 
+### This box has no Node.js and no Python
+
+**Never call `npx`, `npm`, `node`, `python`, `pip` expecting them on PATH.** `python` and
+`python3` resolve to Windows Store stubs that print a Portuguese "not found" message and exit
+non-zero — they satisfy `command -v` but cannot run anything.
+
+Tooling lives as standalone zip builds under `~/apps`, and PATH is set **per command**:
+
+```bash
+export PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH"
+markdownlint --version    # 0.49.1
+```
+
+Every `markdownlint` invocation in this plan requires that `export` line first. `markdownlint-cli`
+is already installed globally into that Node prefix; do not re-install it, and do not install
+anything system-wide.
+
+Also on this box: `mvn` is `~/apps/apache-maven-3.9.16` (already on PATH), and the default `java`
+is a system **JDK 24**, not the JDK 17 the project targets. When build behaviour must match CI,
+set `JAVA_HOME="$HOME/apps/jdk-17.0.20.1+1"` explicitly.
+
 ### Running local Maven commands
 
 **Every local `mvn` invocation redirects to a log file under `.logs/` and prints a `tail`
@@ -62,7 +83,7 @@ Closes spec gap G3. This task comes first because every later task adds Markdown
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: a lint configuration that all later Markdown must satisfy. Later tasks rely on the command `npx markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` exiting 0.
+- Produces: a lint configuration that all later Markdown must satisfy. Later tasks rely on the command `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` exiting 0.
 
 - [ ] **Step 1: Observe the current failure**
 
@@ -70,7 +91,7 @@ The gate cannot currently fail, so first find out what it *would* say.
 
 ```bash
 cd /c/Users/marce/github/dsh
-npx --yes markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
+markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
   --ignore 'docs/wiki/**' 2>&1 | tee /tmp/md-before.txt | tail -40
 echo "violation count: $(grep -c ':' /tmp/md-before.txt)"
 ```
@@ -79,7 +100,11 @@ Expected: a non-zero number of violations, dominated by `MD013/line-length`, `MD
 
 - [ ] **Step 2: Write the config**
 
-Disable only rules that fire on existing, intentional content. `MD013` is off because the specs use wide tables; `MD033` is off because `system-design.md` and the issue templates use inline HTML; `MD024` is off because ADRs legitimately repeat headings.
+Disable only rules that fire on existing, intentional content. `MD013` is off because the specs use wide tables; `MD033` is off because `system-design.md` and the issue templates use inline HTML; `MD024` is scoped to siblings because ADRs legitimately repeat headings.
+
+`MD046` (code-block style) is off deliberately: `CLAUDE.md` and the five skill files created by
+Tasks 3 and 6 use 4-space indented blocks, while `CLAUDE.md` also uses fenced blocks — so both
+`"fenced"` and `"consistent"` would reject files this same plan creates.
 
 ```json
 {
@@ -88,14 +113,14 @@ Disable only rules that fire on existing, intentional content. `MD013` is off be
   "MD024": { "siblings_only": true },
   "MD033": false,
   "MD041": false,
-  "MD046": { "style": "fenced" }
+  "MD046": false
 }
 ```
 
 - [ ] **Step 3: Verify the config makes the suite pass**
 
 ```bash
-npx --yes markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
+markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
   --ignore 'docs/wiki/**' --config .markdownlint.json
 echo "exit=$?"
 ```
@@ -588,7 +613,7 @@ The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages v
 | Fast build, no tests | `mvn -B -DskipTests install` |
 | Single module | `mvn -B -pl dsh-data -am install` |
 | Coverage gate (after a full build) | `./scripts/check-coverage.sh` |
-| Markdown lint | `npx markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
+| Markdown lint | `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
 
 ### Always log local Maven runs
 
@@ -656,7 +681,7 @@ yours. Claude creates issues and PRs only after you approve the content.
 - [ ] **Step 3: Verify it lints and every link resolves**
 
 ```bash
-npx --yes markdownlint-cli 'CLAUDE.md' --config .markdownlint.json && echo "LINT OK"
+markdownlint 'CLAUDE.md' --config .markdownlint.json && echo "LINT OK"
 grep -oE '`[^`]+\.(md|sh|xml|yml|json|txt)`' CLAUDE.md | tr -d '`' | sort -u | \
   while read -r f; do [ -e "$f" ] || echo "BROKEN LINK: $f"; done
 ```
@@ -722,7 +747,7 @@ Add a short section, **"Why Claude stops at green"**, explaining spec decision D
 - [ ] **Step 2: Verify the diagram renders and the file lints**
 
 ```bash
-npx --yes markdownlint-cli 'docs/process/*.md' --config .markdownlint.json && echo "LINT OK"
+markdownlint 'docs/process/*.md' --config .markdownlint.json && echo "LINT OK"
 ```
 
 Expected: `LINT OK`. Then open the file on GitHub after pushing, or paste the Mermaid block into <https://mermaid.live>, and confirm it renders — an unrendered diagram is worse than no diagram.
@@ -811,7 +836,7 @@ Add a table of each workflow, its trigger, and what it gates. Add a short **"Par
 - [ ] **Step 3: Lint and commit**
 
 ```bash
-npx --yes markdownlint-cli 'docs/devops/*.md' --config .markdownlint.json && echo "LINT OK"
+markdownlint 'docs/devops/*.md' --config .markdownlint.json && echo "LINT OK"
 git add docs/devops/README.md
 git commit -m "docs: document branching, CI/CD and release pipeline
 
@@ -1068,7 +1093,7 @@ for d in .claude/skills/*/; do
   echo "== $f"
   head -4 "$f" | grep -E '^(---|name:|description:)' || echo "  BAD FRONTMATTER"
 done
-npx --yes markdownlint-cli '.claude/skills/**/*.md' --config .markdownlint.json && echo "LINT OK"
+markdownlint '.claude/skills/**/*.md' --config .markdownlint.json && echo "LINT OK"
 ```
 
 Expected: five skills, each showing `---`, `name:` and `description:`, and `LINT OK`. Then restart Claude Code and confirm all five appear in the skill listing — a skill that does not load is not a skill.
@@ -1156,7 +1181,7 @@ assignees: ''
 - [ ] **Step 2: Lint and commit**
 
 ```bash
-npx --yes markdownlint-cli '.github/ISSUE_TEMPLATE/story.md' --config .markdownlint.json && echo "LINT OK"
+markdownlint '.github/ISSUE_TEMPLATE/story.md' --config .markdownlint.json && echo "LINT OK"
 git add .github/ISSUE_TEMPLATE/story.md
 git commit -m "feat: add INVEST user story issue template
 
@@ -1270,7 +1295,7 @@ Expected: no `BROKEN LINK` lines.
 - [ ] **Step 6: Lint and commit**
 
 ```bash
-npx --yes markdownlint-cli 'specs/product/*.md' --config .markdownlint.json && echo "LINT OK"
+markdownlint 'specs/product/*.md' --config .markdownlint.json && echo "LINT OK"
 git add specs/product/PRD.md scripts/close-wontfix-issues.sh
 git commit -m "docs: add PRD with waves and triaged backlog
 
@@ -1374,7 +1399,7 @@ Insert after the XML declaration in `parent-pom.xml`:
 cd /c/Users/marce/github/dsh
 xmllint --noout parent-pom.xml && echo "XML OK"
 bash -n install-parent-pom.sh && echo "SH OK"
-npx --yes markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
+markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
   --ignore 'docs/wiki/**' --config .markdownlint.json && echo "LINT OK"
 mkdir -p .logs
 mvn -B -N validate > .logs/mvn-validate.log 2>&1 &
@@ -1426,7 +1451,7 @@ wait $MVN_PID; echo "maven exit=$?"
 tail -20 .logs/mvn-final.log
 
 ./scripts/check-coverage.sh
-npx --yes markdownlint-cli 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
+markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
   --ignore 'docs/wiki/**' --config .markdownlint.json && echo "LINT OK"
 ./scripts/test-check-coverage.sh
 ```
