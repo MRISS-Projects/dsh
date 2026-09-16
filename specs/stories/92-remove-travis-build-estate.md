@@ -99,6 +99,7 @@ files are gone.
 |---|---|---|
 | `README.md` | 355 | Replace the `./install-parent-pom.sh` build step with the GitHub Packages `~/.m2/settings.xml` prerequisite. |
 | `src/site/markdown/README.md` | 355 | Same change; this file is a near-copy of `README.md`, not identical, so edit it separately. |
+| `README.md`, `src/site/markdown/README.md` | 3 | Remove the dead Travis build-status badge pointing at `travis-ci.org`. Not in the original §6 table; added during step 4 on the repository owner's decision, since the badge renders a dead image and is part of the estate. |
 | `CLAUDE.md` | 43 | Drop the "**Do not run `install-parent-pom.sh`**" warning; keep the statement that the parent resolves from GitHub Packages. |
 | `.github/copilot-instructions.md` | 21 | Remove the clause calling root `parent-pom.xml` a deprecated legacy artifact. |
 | `.github/workflows/ci.yml` | 48-50 | Remove the comment explaining why `install-parent-pom.sh` is deliberately not used. |
@@ -108,19 +109,32 @@ files are gone.
 | `docs/copilot/prompt-examples.md` | 180 | Same. |
 | `dsh-coverage-report/pom.xml` | 188 | `<message>badges commit [skip travis]</message>` — a live commit message in the `process-badges` profile carrying a Travis directive that no longer means anything. Drop `[skip travis]`. |
 | `specs/product/PRD.md` | 67 | Update the Wave 0 entry to the issue's new title once `#92` is retitled per §8, so the PRD and the issue do not drift. |
+| `specs/architecture/system-design.md` | 99 | The tech-stack table says CI is `GitHub Actions (Travis config retained but inactive)`. This change deletes that config, making the parenthetical false; reduce the cell to `GitHub Actions`. Found in step 5 review — the original §10 sweep was case-sensitive and could not see `Travis`. |
 
-Three files are **left unchanged**, and the AC002 sweep permits hits in them. All three are
-historical records of work already completed; rewriting them would falsify the record:
+The sweep in §10 is a screen, not the criterion: its `travis` term also matches prose naming the
+service rather than a reference to a deleted file. It runs **case-insensitively** — a capitalised
+`Travis` in prose is exactly the kind of stale claim this story exists to remove, so the check has
+to be able to see it. The hits below are **permitted** and those files are left unchanged.
+
+Historical records of work already completed; rewriting them would falsify the record:
 
 - `specs/devops/deploy-release-profiles-reorganization.md:278-282`
 - `docs/superpowers/plans/2026-09-16-ai-driven-development-process.md`
 - `docs/superpowers/specs/2026-09-16-ai-driven-development-process-design.md`
+- `README.md:536,549` — per-version release-issue tables recording `#60` and `#40`, the issues that
+  added Travis in the first place.
+
+This story's own paperwork, which names Travis by design:
+
+- `specs/product/PRD.md:67` — the Wave 0 entry, retitled by this story to the issue's new name.
+- `specs/stories/92-remove-travis-build-estate.md` — this spec, which cannot describe the deletion
+  without naming what it deletes.
 
 ## 7. Acceptance criteria
 
 - [ ] AC001: Every file in §4 is deleted, and the `maven/` directory no longer exists.
 - [ ] AC002: Every file in §6 is updated. No reference to a deleted file remains in any tracked
-  file except the three historical records listed at the end of §6.
+  file except the permitted hits listed at the end of §6.
 - [ ] AC003: `mvn -B install` succeeds, resolving `com.mriss.mriss-parent:products` from GitHub
   Packages with no locally installed parent artifact.
 - [ ] AC004: `./scripts/check-coverage.sh` passes — no production code is touched, so aggregate
@@ -170,10 +184,10 @@ production code. TDD does not apply, and no test is added. Verification is by ga
 
    ```bash
    git ls-files | while read -r f; do
-     grep -lE "install-parent-pom|build-ci|travis|settings-security|parent-pom\.xml|install-and-configure-Mongo|(pre|post)-release-script" "$f"
+     grep -liE "install-parent-pom|build-ci|travis|settings-security|parent-pom\.xml|install-and-configure-Mongo|(pre|post)-release-script" "$f"
    done
    ```
 
-   The only permitted hits are the three historical records listed at the end of §6.
+   The only permitted hits are those listed at the end of §6.
 3. `./scripts/check-coverage.sh` for AC004.
 4. `markdownlint` over the changed files for AC005, using the command in `CLAUDE.md`.

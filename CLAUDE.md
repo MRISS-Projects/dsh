@@ -40,8 +40,7 @@ agent in this repo: commands, branch rules, gates, and the development process.
 ## Commands
 
 The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages via your
-`~/.m2/settings.xml`. **Do not run `install-parent-pom.sh`** — it installs
-`com.mriss:mriss-parent:1.2.4`, a legacy artifact no module inherits from.
+`~/.m2/settings.xml`.
 
 | Task | Command |
 |---|---|

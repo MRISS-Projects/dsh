@@ -64,7 +64,7 @@ migration, plus gaps found while writing this PRD.
 - `#46` — Implement integration tests using embedded tomcat server
 - `#70` — Project link not working at maven generated site
 - `#90` — index.html missing from published site on gh-pages (root + all submodules)
-- `#92` — Remove dead `install-parent-pom.sh` and root `parent-pom.xml`
+- `#92` — Remove the dead Travis build estate
 - `#93` — Revisit the coverage gate shape once the GCP migration is underway
 - `#94` — Make `check-spec-references` enforcing, or remove it
 - `#95` — Use a read-only token for CI package authentication (security)

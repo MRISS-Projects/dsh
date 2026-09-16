@@ -45,9 +45,6 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # The parent com.mriss.mriss-parent:products is resolved from GitHub
-      # Packages. install-parent-pom.sh is deliberately NOT used: it installs
-      # com.mriss:mriss-parent:1.2.4, a legacy artifact no module inherits from.
       - name: Configure Maven settings for GitHub Packages
         run: |
           mkdir -p ~/.m2
