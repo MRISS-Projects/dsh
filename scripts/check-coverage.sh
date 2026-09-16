@@ -29,6 +29,20 @@ if [ ! -f "$BASELINE_FILE" ]; then
 fi
 
 baseline=$(tr -d '[:space:]' < "$BASELINE_FILE")
+
+# Fail closed on a malformed baseline. A blank file is the dangerous case: awk would
+# compare "$current" against an empty string, which is a STRING comparison that always
+# looks like a pass, silently disabling the gate.
+if ! printf '%s' "$baseline" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; then
+  echo "ERROR: baseline in '$BASELINE_FILE' is not a number: '$baseline'" >&2
+  echo "Expected a percentage such as 95.00. Refusing to run an unenforceable gate." >&2
+  exit 2
+fi
+if ! awk -v b="$baseline" 'BEGIN { exit !(b >= 0 && b <= 100) }'; then
+  echo "ERROR: baseline in '$BASELINE_FILE' is out of range 0-100: '$baseline'" >&2
+  exit 2
+fi
+
 echo "current=$current baseline=$baseline"
 
 if awk -v c="$current" -v b="$baseline" 'BEGIN { exit !(c + 0.005 < b) }'; then

@@ -41,4 +41,23 @@ out=$(./scripts/check-coverage.sh "$TMP/nope.csv" "$TMP/baseline.txt" 2>&1); rc=
 if [ "$rc" -eq 2 ]; then echo "PASS: missing csv errors"; else
   echo "FAIL: missing csv errors (exit $rc) :: $out"; fail=1; fi
 
+# A malformed baseline must fail closed (exit 2), never silently pass.
+# The blank case is the one that used to slip through: an empty string made awk do a
+# string comparison that always looked like a pass.
+bad_baseline() { # name file-content
+  printf '%s' "$2" > "$TMP/baseline.txt"
+  out=$(./scripts/check-coverage.sh "$TMP/jacoco.csv" "$TMP/baseline.txt" 2>&1); rc=$?
+  if [ "$rc" -eq 2 ]; then
+    echo "PASS: $1"
+  else
+    echo "FAIL: $1 (exit $rc, wanted 2) :: $out"; fail=1
+  fi
+}
+
+bad_baseline "blank baseline fails closed"        ""
+bad_baseline "whitespace baseline fails closed"   "   "
+bad_baseline "non-numeric baseline fails closed"  "garbage"
+bad_baseline "over-100 baseline fails closed"     "150"
+bad_baseline "negative baseline fails closed"     "-5"
+
 exit $fail
