@@ -40,9 +40,11 @@ Every `markdownlint` invocation in this plan requires that `export` line first. 
 is already installed globally into that Node prefix; do not re-install it, and do not install
 anything system-wide.
 
-Also on this box: `mvn` is `~/apps/apache-maven-3.9.16` (already on PATH), and the default `java`
-is a system **JDK 24**, not the JDK 17 the project targets. When build behaviour must match CI,
-set `JAVA_HOME="$HOME/apps/jdk-17.0.20.1+1"` explicitly.
+Also on this box: `mvn` is `~/apps/apache-maven-3.9.16` (already on PATH). Bare `java -version`
+reports a system **JDK 24**, but `JAVA_HOME` is already set to `~/apps/jdk-17.0.20.1+1` and Maven
+prefers `JAVA_HOME` over PATH — so `mvn -version` reports **17.0.20.1** and builds already match
+CI with no override. Verified 2026-09-16 against a full `mvn install` (13/13 modules, `javac
+[debug target 17]` throughout). Do not "fix" this by setting `JAVA_HOME`; it is already correct.
 
 ### Running local Maven commands
 
@@ -603,7 +605,7 @@ agent in this repo: commands, branch rules, gates, and the development process.
 | `dsh-doc-analyser` | Analysis engine; sub-modules for keyword and top-sentence extraction |
 | `dsh-doc-indexer-worker` | Async indexing worker |
 | `dsh-data` | Shared models and persistence |
-| `dsh-solr` | Solr integration and custom plugins (**deprecated**, see ADR-001) |
+| `dsh-solr` | Solr integration and custom plugins (replacement proposed — see ADR-001) |
 | `dsh-test-dataset` | PDF/HTML fixtures used by tests |
 | `dsh-coverage-report` | Aggregates JaCoCo coverage across modules |
 
@@ -1192,7 +1194,7 @@ assignees: ''
 - [ ] dsh-doc-analyser
 - [ ] dsh-doc-indexer-worker
 - [ ] dsh-data
-- [ ] dsh-solr (deprecated - see ADR-001)
+- [ ] dsh-solr (replacement proposed - see ADR-001)
 - [ ] CI / build
 
 ## Out of Scope
@@ -1384,13 +1386,20 @@ build uses JDK 17 (`.github/workflows/api-testing.yml`) and GitHub Actions. Chan
 rows to `Java 17` and `GitHub Actions (Travis config retained but inactive)`.
 
 In the same file, annotate the ASCII component diagram's `MongoDB` and `dsh-solr` boxes as
-`(deprecated)` and add a line beneath it:
+`(replacement proposed)` and add a line beneath it:
 
 ```markdown
-> **Migration note:** MongoDB, RabbitMQ and Apache Solr are deprecated. See
-> [ADR-001](./ADR-001-GCP-based-components.md) for the Firestore + GCS, Cloud Pub/Sub and
-> Vertex AI Search replacements, and `specs/product/PRD.md` for the delivery waves.
+> **Migration note:** Replacing MongoDB, RabbitMQ and Apache Solr with Firestore + GCS,
+> Cloud Pub/Sub and Vertex AI Search is **proposed** in
+> [ADR-001](./ADR-001-GCP-based-components.md) — status Proposed, no implementation work has
+> started. See `specs/product/PRD.md` for the delivery waves.
 ```
+
+**Do not write "deprecated" anywhere.** ADR-001 is still `Status: Proposed`, and the codebase
+contains zero `@Deprecated` annotations and zero GCP code — verified by grep. ADR-001 *plans* to
+deprecate these components in its Phase 1; calling them deprecated today states as fact work that
+has not begun, and a future agent would act on it by avoiding `dsh-solr` or assuming Firestore
+replacements already exist.
 
 - [ ] **Step 4: Mark the dead build machinery, without deleting it**
 

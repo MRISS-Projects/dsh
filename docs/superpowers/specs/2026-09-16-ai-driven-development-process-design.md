@@ -201,7 +201,7 @@ the job. A push to `DEVELOP` updates the baseline. No pom is modified.
 | `.github/workflows/spec-validation.yml` | Drop the trailing `\|\| true` on the markdownlint step. Today the lint gate cannot fail, so it is decoration. Removing it is only safe *because* the new config is tuned to pass on existing content — so this change lands in the same commit as `.markdownlint.json`, never before it. |
 | `.github/ISSUE_TEMPLATE/story.md` | New INVEST story template for step 2. |
 | `.github/copilot-instructions.md` | Add rows for `CLAUDE.md` and the process doc; fix line 17, which currently directs agents to `parent-pom.xml` (G5). |
-| `specs/architecture/system-design.md` | Mark the MongoDB / Solr / RabbitMQ boxes deprecated and link ADR-001. Stack table still says "Java 11+" and "Travis CI"; correct to Java 17 and GitHub Actions. |
+| `specs/architecture/system-design.md` | Mark the MongoDB / Solr / RabbitMQ boxes as "replacement proposed" and link ADR-001 (its status is Proposed; nothing is deprecated yet). Stack table still says "Java 11+" and "Travis CI"; correct to Java 17 and GitHub Actions. |
 | `install-parent-pom.sh`, `parent-pom.xml` | Add deprecation headers. **Not deleted** — `build-ci*.sh` still reference them. Removal is a Wave 0 story. |
 
 ---
