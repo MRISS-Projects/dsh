@@ -4,7 +4,7 @@
 | --- | --- |
 | **Date** | 2026-09-16 |
 | **Status** | Approved (brainstorm) |
-| **Scope** | Repo initialisation for Claude Code + enforcement of a 6-step AI-driven development process |
+| **Scope** | Repo initialisation for Claude Code + enforcement of a 7-step AI-driven development process |
 | **Supersedes** | Nothing. Complements `.github/copilot-instructions.md`, which remains the standards source of truth. |
 
 ---
@@ -13,7 +13,7 @@
 
 The DSH repository is already spec-driven and well documented for GitHub Copilot, but it has no
 entry point for Claude Code and no encoded development process. The owner wants a repeatable
-6-step loop — brainstorm to PRD, PRD task to GitHub story, story to detailed spec, spec to code
+7-step loop — brainstorm to PRD, PRD task to GitHub story, story to detailed spec, spec to code
 via TDD, code review, then CI-gated merge — built on the Superpowers skill set rather than prose
 convention.
 
@@ -74,7 +74,7 @@ up and break the incoming integration.
 ```text
 CLAUDE.md  ──────────────── thin router, ~120 lines
   │
-  ├─→ docs/process/ai-driven-development.md   the 6 steps, mapped to skills
+  ├─→ docs/process/ai-driven-development.md   the 7 steps, mapped to skills
   ├─→ docs/devops/README.md                   branching + CI/CD + release, with diagrams
   ├─→ specs/product/PRD.md                    waves and their stories
   │
@@ -155,7 +155,7 @@ couples the steps; everything else is derived from the issue or the working tree
 ### 4.1 CLAUDE.md
 
 Sections, in order: identity paragraph; module map table; build and test commands; branch rules;
-quality gates; the 6-step contract with the skill per step; a "where things live" delegation table.
+quality gates; the 7-step contract with the skill per step; a "where things live" delegation table.
 
 Build commands must reflect D5 — `mvn -B install`, no `install-parent-pom.sh`.
 
