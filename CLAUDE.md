@@ -100,7 +100,7 @@ A story is not done until both pass:
 
 ## The development process
 
-Six steps. Full detail in `docs/process/ai-driven-development.md`.
+Seven steps. Full detail in `docs/process/ai-driven-development.md`.
 
 | Step | Do this | Skill |
 |---|---|---|
@@ -108,8 +108,17 @@ Six steps. Full detail in `docs/process/ai-driven-development.md`.
 | 2 | Turn a PRD task into an INVEST story on GitHub | `dsh-new-story` |
 | 3 | Turn the story into a reviewed spec on the task branch | `dsh-story-spec` |
 | 4 | Build the spec with TDD — red first, then green | `dsh-build-story` |
-| 5 | Code review | `dsh-ship-story` |
-| 6 | Commit, push, CI green, then merge | `dsh-ship-story` |
+| 5 | Local code review | `dsh-ship-story` |
+| 6 | Commit, push, open the PR | `dsh-ship-story` |
+| 7 | PR review cycle — CI and reviewer findings, triaged, fixed or answered, until green with every thread resolved | `dsh-pr-cycle` |
+
+Step 7 repeats. Each round is: read CI and the review comments, **triage them** (a finding may be
+stale, or right for the wrong reason, or propose a remedy that does not work), then one commit per
+fix and one push per round. It ends when every check is green *and* every review thread is
+resolved — not at green alone.
+
+`dsh-pr-cycle` is invocable on its own. A review round often lands days after the PR opened; you do
+not need to re-run steps 5 and 6 to handle it.
 
 **Two things Claude never does:** close a GitHub issue, or merge a pull request. Both are
 yours. Claude creates issues and PRs only after you approve the content.

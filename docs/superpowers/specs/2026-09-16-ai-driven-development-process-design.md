@@ -89,7 +89,12 @@ CLAUDE.md  ──────────────── thin router, ~120 li
 `CLAUDE.md` restates **no** standard. It states identity, commands, branch rules, gates, and the
 process contract, then delegates.
 
-### 3.2 The six steps and their skills
+### 3.2 The seven steps and their skills
+
+**Amended 2026-09-16.** The original design had six steps, with step 6 reading "commit, push, CI
+green, then merge". Executing this plan showed that collapses a real loop: after the PR opens, CI
+results and automated review comments arrive and need triage, fixes and replies over repeated
+rounds. That loop is now step 7, owned by `dsh-pr-cycle`. See §3.2.1.
 
 | Step | Action | Skill | Artifact | Hard stop |
 | --- | --- | --- | --- | --- |
@@ -97,11 +102,34 @@ process contract, then delegates.
 | 2 | Task becomes an INVEST story | `dsh-new-story` | GitHub issue | Owner approves body before `gh issue create` |
 | 3 | Story becomes a detailed spec | `dsh-story-spec` → `superpowers:brainstorming` + `writing-plans` | `specs/stories/<n>-<slug>.md` | Refuses `master` as parent; owner approves spec before commit/push |
 | 4 | Spec becomes code, TDD | `dsh-build-story` → `superpowers:test-driven-development` + `executing-plans` | Code + tests | Red must fail for the right reason before green |
-| 5 | Code review | `dsh-ship-story` → `/code-review`, `superpowers:receiving-code-review` | Review findings | Owner reads findings before fixes land |
-| 6 | Commit, push, CI, merge | `dsh-ship-story` → `verification-before-completion` + `finishing-a-development-branch` | PR, green CI | **Never merges.** Stops at green. |
+| 5 | Local code review | `dsh-ship-story` → `/code-review`, `superpowers:receiving-code-review` | Review findings | Owner reads findings before fixes land |
+| 6 | Commit, push, open PR | `dsh-ship-story` → `verification-before-completion` | Open PR, CI running | Owner approves title/body/base before push |
+| 7 | PR review cycle | `dsh-pr-cycle` → `superpowers:receiving-code-review` | Fixes, replies, green PR | **Never merges.** Stops at green **and** all threads resolved. |
 
 Steps 5 and 6 share one skill because they are a continuous flow, but the review gate between
 them is an explicit stop, not a formality.
+
+#### 3.2.1 Why step 7 is its own step and its own skill
+
+**It repeats and it is asynchronous.** A review round can land hours or days after the PR opened,
+in a session that never ran steps 5 and 6. Folding it into `dsh-ship-story` would mean re-entering
+a skill whose first half is already done — an easy way for an agent to redo something it should not.
+
+**Its substance is triage, not compliance.** A review comment is a claim. Three checks apply:
+is it still true at current HEAD, is the stated *mechanism* right or only the conclusion, and would
+the proposed remedy actually work. Evidence from PR #91, the pull request that introduced this
+process: of seven automated review comments, **two were already fixed** by later commits, **one was
+right for the wrong reason** (it claimed non-numeric baselines silently passed; they failed closed —
+only blank ones passed), and **one proposed a remedy that would not have worked** (step-scoping an
+env var, when Maven interpolates the token at build time). Four of seven needed an answer rather
+than obedience. A step that said "address the review comments" would have made the code worse.
+
+**It is not named after Copilot.** Copilot is one participant; a human reviewer's comments follow
+the same loop. Naming the step after the tool would date the document and under-cover the case that
+matters more.
+
+**Definition of done changed.** The original design stopped at green CI. A PR can be green with
+open conversations on it, so step 7 stops at green **and** every thread resolved.
 
 ### 3.3 Story spec front matter
 
@@ -243,7 +271,7 @@ checked by running them, not by reading them.
 The PRD turns ADR-001's five phases into schedulable work with issues already triaged against it.
 Dead build machinery is labelled as dead.
 
-**Negative.** Five project skills are five more files to keep true as the process evolves; a skill
+**Negative.** Six project skills are six more files to keep true as the process evolves; a skill
 that lies is worse than no skill. The coverage baseline file must be committed and will conflict
 on concurrent branches. `ci.yml` runs the full multi-module build with integration tests on every
 PR, which is slower than the current no-op.

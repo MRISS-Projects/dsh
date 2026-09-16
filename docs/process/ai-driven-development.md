@@ -1,13 +1,14 @@
 # The AI-driven development process
 
-`CLAUDE.md` states the six steps of this loop as a compact table and links here for the detail.
+`CLAUDE.md` states the seven steps of this loop as a compact table and links here for the detail.
 This document is that detail: for each step, what it takes as input, which skill does the work,
 what artifact it produces, what the hard stop is, and what "done" looks like. Branch rules and
 quality gates are defined once in `CLAUDE.md` and referenced, not restated, below.
 
-**Status of the five project skills.** `dsh-plan-wave`, `dsh-new-story`, `dsh-story-spec`,
-`dsh-build-story` and `dsh-ship-story` are specified here as the process's entry points. They exist
-in the repo today, under `.claude/skills/<name>/SKILL.md`. What has not been verified is whether
+**Status of the six project skills.** `dsh-plan-wave`, `dsh-new-story`, `dsh-story-spec`,
+`dsh-build-story`, `dsh-ship-story` and `dsh-pr-cycle` are specified here as the process's entry
+points. They exist in the repo today, under `.claude/skills/<name>/SKILL.md`. What has not been
+verified is whether
 they successfully *load* in a running Claude Code session — skill discovery happens at startup, so
 confirming that needs a restart against this branch. Treat the descriptions below as the contract
 each skill's `SKILL.md` must satisfy, not as confirmation that a session has already loaded them.
@@ -27,19 +28,31 @@ flowchart TD
     I --> J["4. TDD build<br/>dsh-build-story"]
     J --> K{"Red first,<br/>then green?"}
     K -->|no| J
-    K -->|yes| L["5. Code review<br/>dsh-ship-story"]
+    K -->|yes| L["5. Local code review<br/>dsh-ship-story"]
     L --> M{"Findings<br/>accepted?"}
     M -->|changes needed| J
     M -->|clean| N["6. Push and open PR<br/>dsh-ship-story"]
-    N --> O{"CI green?<br/>tests + coverage ratchet"}
-    O -->|no| J
-    O -->|yes| P["STOP - human merges"]
+    N --> Q["7. PR review cycle<br/>dsh-pr-cycle"]
+    Q --> R{"Triage each finding"}
+    R -->|stale| S["Reply and resolve"]
+    R -->|incorrect| T["Reply with evidence"]
+    R -->|valid| J
+    S --> U
+    T --> U
+    U{"Green AND all<br/>threads resolved?"}
+    U -->|no| Q
+    U -->|yes| P["STOP - human merges"]
 ```
 
-Three edges loop backward, and each one matters: a red test that fails for the wrong reason sends
+Four edges loop backward, and each one matters: a red test that fails for the wrong reason sends
 step 4 back into step 4 (`K -->|no| J`); review findings that need changes send step 5 back into
-step 4 (`M -->|changes needed| J`); a red CI run sends step 6 back into step 4 (`O -->|no| J`).
-Nothing downstream of "code exists" is trusted until it has been re-verified from the build up.
+step 4 (`M -->|changes needed| J`); a *valid* PR finding sends step 7 back into step 4
+(`R -->|valid| J`), because a fix is still code and still gets a failing test first; and a round
+that has not converged sends step 7 back into itself (`U -->|no| Q`).
+
+Note what the triage node does **not** do: it does not route every finding to a fix. Stale and
+incorrect findings leave through reply edges without touching the code. That asymmetry is the
+point of the step.
 
 ## Step 1: Brainstorm, then update the PRD with waves
 
@@ -113,7 +126,7 @@ red; the loop stays at step 4 until it is (`K -->|no| J` in the diagram).
 **Done looks like.** Every item in the spec has a red-then-green cycle behind it, and
 `mvn -B install` passes locally — the increment is ready for review.
 
-## Step 5: Code review
+## Step 5: Local code review
 
 **Input.** The completed implementation on the task branch, `mvn -B install` green locally.
 
@@ -129,27 +142,64 @@ even though it shares a skill with step 6.
 **Done looks like.** Findings are either accepted as clean with no changes needed, or every
 required change has been made and re-reviewed until it is.
 
-## Step 6: Commit, push, CI green, then merge
+## Step 6: Commit, push, open the pull request
 
 **Input.** A clean review from step 5.
 
-**Skill.** `dsh-ship-story`, which hands off to `verification-before-completion` and
-`finishing-a-development-branch`.
+**Skill.** `dsh-ship-story`, which hands off to `verification-before-completion`.
 
-**Artifact.** A pushed branch, an open pull request, and (if the run succeeds) a green CI run.
+**Artifact.** A pushed branch and an open pull request, with the first CI run started.
 `.github/workflows/ci.yml` enforces the quality gates defined in `CLAUDE.md` — all tests passing
 under `mvn -B install` and the coverage ratchet against `.github/coverage-baseline.txt` — on every
 PR. Everything currently runs under surefire; there is no failsafe configuration and no `*IT.java`
 test in the repo, so integration tests are not yet a gate CI enforces separately from unit tests.
 Implementing them is tracked as `#46` in PRD Wave 0.
 
-**Hard stop.** Claude commits, pushes, and opens the pull request, then **stops**. A red CI run
-sends the work back to step 4 (`O -->|no| J`). A green CI run is also a stop: Claude never merges
-the PR and never closes the originating issue — see "Why Claude stops at green" below.
+**Hard stop.** The owner approves the PR title, body and base branch **before** the push. `--base`
+is never `master`; if the story spec's front matter says `master`, something went wrong in step 3.
 
-**Done looks like, for Claude.** The PR is open, CI is green against the gates it actually
-enforces, and the PR is left for the repo owner. Merging is the owner's action and is outside what
-this process asks Claude to do.
+**Done looks like.** The PR is open and CI is running. Everything that happens on the PR after
+that — CI results, Copilot comments, human comments — is step 7.
+
+## Step 7: The PR review cycle
+
+**Input.** An open pull request with a failed check or an unresolved review thread.
+
+**Skill.** `dsh-pr-cycle`, which hands off to `superpowers:receiving-code-review`. It is
+**invocable on its own**: a review round often arrives hours or days after the PR opened, in a
+fresh session, and handling it must not mean re-running steps 5 and 6.
+
+**Artifact.** Commits that fix valid findings, replies on every thread, and a green PR.
+
+This step **repeats**. One round is: read the state from GitHub, triage the findings, fix or
+answer them, push once, re-verify.
+
+**Triage is the substance of this step, and the reason it is written down.** A review comment is a
+claim, not an instruction. Check each finding three ways:
+
+| Check | Why it matters |
+|---|---|
+| Is it still true at current HEAD? | Reviews are pinned to the commit they ran against; later commits may already have fixed it. A stale finding needs a reply, not a patch. |
+| Is the stated mechanism right, or only the conclusion? | A finding can be right for the wrong reason. Fixing what it *says* rather than what is *wrong* fixes nothing. |
+| Would the proposed remedy actually work? | Reviewers suggest fixes without running them. |
+
+This is not hypothetical. On PR #91 — the pull request that introduced this process — seven
+automated review comments produced: two already fixed by later commits, one whose conclusion was
+right but whose stated mechanism was wrong, and one whose proposed remedy would not have worked.
+Four of seven needed an answer rather than obedience. A step that said "address the review
+comments" would have made the code worse.
+
+**Mechanics.** One commit per fix, so each is reviewable and revertible alone. One push per round,
+so CI runs track rounds rather than individual commits. A reply on every finding, including the
+ones you fix, naming the commit and — where you disagreed — showing the evidence.
+
+**Hard stop.** Claude never merges the PR and never closes the originating issue. Claude does not
+resolve a thread whose resolution the owner has not seen: stale findings that have been answered
+may be resolved, but a thread for a finding Claude *fixed* stays open so the owner can check the
+fix, unless they say otherwise.
+
+**Done looks like.** Every check green **and** every review thread resolved. Green alone is not
+done — a PR can be green with seven open conversations on it.
 
 ## Story spec front matter
 
@@ -173,14 +223,22 @@ or from the working tree at the time.
 
 ## Why Claude stops at green
 
-Step 2 ends with Claude opening a GitHub issue. Step 6 ends with Claude opening a pull request and
-watching CI turn green. Both of those actions are reversible and reviewable: an issue can be
-edited or closed, a PR can be revised, retargeted, or closed without ever having touched `master`.
-Neither one commits the repository owner to anything irreversible on its own.
+Step 2 ends with Claude opening a GitHub issue. Step 6 ends with Claude opening a pull request, and
+step 7 ends with that PR green and its threads resolved. All of those actions are reversible and
+reviewable: an issue can be edited or closed, a PR can be revised, retargeted, or closed without
+ever having touched `master`, and a reply on a review thread can be corrected. None of them commits
+the repository owner to anything irreversible.
 
 Closing an issue and merging a pull request are different in kind, not just in degree. A merge
 changes the branch history other people build on; a closed issue stops being visible work in
 progress. Both are judgment calls about whether the work is actually finished and actually wanted
 — calls that belong to whoever owns the repository, not to the agent that did the work. So Claude
 never performs either action: it creates issues and PRs only after the owner approves their
-content, and it stops the moment CI is green, leaving the merge itself to the owner.
+content, and it stops once CI is green and the review threads are resolved, leaving the merge
+itself to the owner.
+
+Resolving a review thread sits just inside that line, and step 7 treats it carefully. Resolving
+hides a conversation from the default view, so Claude resolves only threads whose outcome the owner
+has already seen — a stale finding that has been answered, for instance. A thread for a finding
+Claude *fixed* stays open by default, because the owner may want to check the fix before the
+discussion disappears.

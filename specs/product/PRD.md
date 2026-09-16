@@ -7,7 +7,7 @@ This PRD turns the proposed GCP migration in
 into schedulable waves of work, and triages the existing GitHub issue backlog into those waves.
 It is the single place that says what DSH builds next and in what order.
 
-The PRD is step 1's output in the six-step process described in
+The PRD is step 1's output in the seven-step process described in
 [`docs/process/ai-driven-development.md`](../../docs/process/ai-driven-development.md): the
 `dsh-plan-wave` skill updates it after a brainstorming pass, `dsh-new-story` reads a task from it
 to draft a GitHub issue, and the wave-to-milestone mapping in §3 tells `dsh-new-story` which
@@ -78,7 +78,7 @@ now the single source of truth for that work.
 
 - **The markdown lint glob already covers `.claude/**`.** `.github/workflows/spec-validation.yml`'s
   `validate-markdown` job and its trigger `paths:` were widened on the branch that created this
-  PRD, so the five project skills under `.claude/skills/` sit inside the enforcing gate. Done, not
+  PRD, so the project skills under `.claude/skills/` sit inside the enforcing gate. Done, not
   pending.
 - **The JaCoCo aggregate's scope is already complete — there is nothing to widen.** Verified
   directly: `dsh-coverage-report/pom.xml` depends on all 8 code-bearing modules (`dsh-data`,
