@@ -94,6 +94,18 @@ migration, plus gaps found while writing this PRD.
    an enforcing gate but is advisory only. This mirrors the `|| true` problem already fixed for
    markdownlint: either make it actually fail the job on a missing reference, or remove it and stop
    describing it as a gate.
+6. **Use a minimally-scoped token for CI package reads (security).** `.github/workflows/ci.yml`
+   exposes `DEPLOY_TOKEN` in the job-wide `env:` block, so every step — including
+   `mvn -B install`, which compiles and runs test code authored in the pull request — can read it.
+   The same token is used by `documentation-sync.yml` with `git-auto-commit-action`, so it is
+   **write-capable**, not read-only. Fork pull requests do not receive secrets, so the exposure is
+   limited to same-repository branches; but `ci.yml` runs on *every* pull request with no path
+   filter, which is a wider surface than the pre-existing `api-testing.yml`.
+   Step-scoping the variable does not fix this on its own: the generated `settings.xml` references
+   `${env.DEPLOY_TOKEN}`, which Maven interpolates at build time, so the build step genuinely needs
+   it. The real fix is a **separate GitHub PAT with only `read:packages`**, stored as its own
+   secret and used by `ci.yml` and `api-testing.yml`, leaving the write-capable `DEPLOY_TOKEN` to
+   the release and documentation workflows that actually push.
 
 The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item —
 see §6 for why it belongs in accepted risks rather than the backlog.
