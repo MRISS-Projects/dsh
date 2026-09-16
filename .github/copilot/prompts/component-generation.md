@@ -6,7 +6,7 @@ Use these prompt templates with GitHub Copilot Chat to scaffold new DSH componen
 
 ## New Spring Boot Service
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a Spring Boot @Service
 class for [ServiceName] in the DSH project.
 
@@ -24,7 +24,7 @@ Requirements:
 
 ## New REST Controller
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a Spring Boot
 @RestController for [ResourceName] in the DSH project.
 
@@ -44,7 +44,7 @@ Requirements:
 
 ## New DTO Class
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a DTO record/class for
 [DtoName] in the DSH project.
 
@@ -61,7 +61,7 @@ Requirements:
 
 ## New Repository
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a Spring Data
 [MongoDB/JPA] repository for [EntityName] in the DSH project.
 
@@ -77,7 +77,7 @@ Requirements:
 
 ## New Exception Class
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a custom exception class
 for [ExceptionName] in the DSH project.
 
@@ -93,7 +93,7 @@ Requirements:
 
 ## New Configuration Class
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a Spring @Configuration
 class for [ConfigName] in the DSH project.
 

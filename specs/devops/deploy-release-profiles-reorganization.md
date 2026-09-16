@@ -34,7 +34,7 @@ All changes to `parent-poms` must be validated first (FR001–FR010); DSH change
 
 After this refactoring, the three deployment profiles must follow this strict hierarchy:
 
-```
+```text
 deployment                     (generic — present at parent-poms/pom.xml and inherited everywhere)
   └── release-deployment        (release-specific — non-SNAPSHOT goals only)
         └── product-release-deployment  (product-specific — starts at parent-poms/products/pom.xml)
@@ -43,7 +43,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
 **Activation convention** (replaces `-P`):
 
 | Profile | Activation flag |
-|---------|----------------|
+| --------- | ---------------- |
 | `deployment` | `-Ddeployment` |
 | `release-deployment` | `-Drelease-deployment` |
 | `product-release-deployment` | `-Dproduct-release-deployment` |
@@ -114,7 +114,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
 - **Files to update**:
 
   | File | Current usage | Replacement |
-  |------|---------------|-------------|
+  | ------ | --------------- | ------------- |
   | `.github/workflows/build.yml` | `-P deployment` | `-Ddeployment` |
   | `.github/workflows/build.yml` | `-P deployment,release-deployment` | `-Ddeployment -Drelease-deployment` |
   | `.github/workflows/deploy.yml` | `-P deployment` | `-Ddeployment` |
@@ -188,11 +188,13 @@ deployment                     (generic — present at parent-poms/pom.xml and i
 ### FR009 — Adopt `markdowndoc-maven-plugin` for PDF Generation (parent-poms)
 
 - **Description**: PDF documentation generation must use:
+
   ```xml
   <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
   <artifactId>markdowndoc-maven-plugin</artifactId>
   <version>2.1.4</version>
   ```
+
   The `<version>` and base `<configuration>` must be declared in `<pluginManagement>` at
   `parent-poms/pom.xml`. Individual modules reference this plugin without repeating the version.
 - **Acceptance Criteria**:
@@ -210,7 +212,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
 - **Workflow validation requirements**:
 
   | Workflow | File | Trigger | Required outcome |
-  |----------|------|---------|-----------------|
+  | ---------- | ------ | --------- | ----------------- |
   | Build | `.github/workflows/build.yml` | Push to any branch | Must pass all steps (build, deployment-profile build, site generation) |
   | Deploy | `.github/workflows/deploy.yml` | Manual — `release_type=snapshots` | Must pass all steps (build, snapshot artifact deploy, snapshot site deploy) |
 
@@ -227,6 +229,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
   `parent-poms/products/pom.xml` at its **current SNAPSHOT version** so that DSH immediately
   inherits all refactored profile definitions from `parent-poms` once they are committed.
 - **Current state**:
+
   ```xml
   <parent>
       <groupId>com.mriss.mriss-parent</groupId>
@@ -234,6 +237,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
       <version>3.8.0-SNAPSHOT</version>
   </parent>
   ```
+
 - **Required state at implementation time**: The `<version>` must match whatever SNAPSHOT is
   active in `parent-poms/products/pom.xml` at the moment of implementation. As of this writing,
   this is `3.8.0-SNAPSHOT`. If `parent-poms` advances its version before DSH changes are applied,
@@ -270,7 +274,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
 - **Files to update**:
 
   | File | Current usage | Replacement |
-  |------|---------------|-------------|
+  | ------ | --------------- | ------------- |
   | `build-ci.sh` | any `-P` usage | equivalent `-D` flags |
   | `build-ci-release.sh` | any `-P` usage | equivalent `-D` flags |
   | `build-ci-stage.sh` | any `-P` usage | equivalent `-D` flags |
@@ -349,7 +353,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
 
 ### Data Flow After Refactoring
 
-```
+```text
 parent-poms/pom.xml
 │  profiles: deployment (-Ddeployment), release-deployment (-Drelease-deployment)
 │  pluginManagement: markdowndoc, scm-publish, release plugin (root defaults)
@@ -391,7 +395,7 @@ parent-poms/pom.xml
 ### CI/CD Acceptance Gates
 
 | Gate | Repo | Workflow / Command | Pass Condition |
-|------|------|--------------------|---------------|
+| ------ | ------ | -------------------- | --------------- |
 | Build | `parent-poms` | `build.yml` (push) | All steps green |
 | Deploy snapshots | `parent-poms` | `deploy.yml` (`release_type=snapshots`) | All steps green |
 | API Testing | `dsh` | `api-testing.yml` (manual) | All Postman tests pass |
@@ -401,8 +405,8 @@ parent-poms/pom.xml
 
 ## References
 
-- User story (parent-poms): https://github.com/MRISS-Projects/parent-poms/issues/56
-- User story (dsh): https://github.com/MRISS-Projects/dsh/issues/84
+- User story (parent-poms): <https://github.com/MRISS-Projects/parent-poms/issues/56>
+- User story (dsh): <https://github.com/MRISS-Projects/dsh/issues/84>
 - Related spec: `specs/features/pom-hierarchy-migration.md`
 - Parent root POM: `D:/IdeaProjects/parent-poms/pom.xml`
 - Products POM: `D:/IdeaProjects/parent-poms/products/pom.xml`
@@ -413,4 +417,3 @@ parent-poms/pom.xml
 - GitHub Actions (dsh spec-validation): `.github/workflows/spec-validation.yml` (MRISS-Projects/dsh)
 - Java conventions: `.github/copilot/rules/java-conventions.md`
 - Architecture overview: `specs/architecture/system-design.md`
-

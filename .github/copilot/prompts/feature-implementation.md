@@ -6,7 +6,7 @@ Use these prompt templates with GitHub Copilot Chat to implement features define
 
 ## Implement Feature from Specification
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), implement the feature described in
 specs/features/[feature-file].md for the DSH project.
 
@@ -32,7 +32,7 @@ Requirements:
 
 ## Implement Feature – Frontend
 
-```
+```text
 As a Frontend Developer (see /.github/roles.md), implement the UI for the feature
 described in specs/features/[feature-file].md for the DSH project.
 
@@ -49,7 +49,7 @@ Requirements:
 
 ## Implement Feature – DevOps Support
 
-```
+```text
 As a DevOps Developer (see /.github/roles.md), set up the infrastructure and CI/CD
 support for the feature described in specs/features/[feature-file].md.
 
@@ -65,7 +65,7 @@ Requirements:
 
 ## Implement Feature – Product Manager Review
 
-```
+```text
 As a Product Manager (see /.github/roles.md), review and refine the feature
 specification at specs/features/[feature-file].md before implementation begins.
 
@@ -76,4 +76,3 @@ Requirements:
 - Validate that the feature aligns with overall project goals in README.md
 - Update the specification if gaps are found
 ```
-

@@ -10,6 +10,7 @@ assignees: ''
 <!-- Describe the API change being requested -->
 
 ## Type of Change
+
 - [ ] New endpoint
 - [ ] Modify existing endpoint (breaking change)
 - [ ] Modify existing endpoint (non-breaking change)
@@ -34,6 +35,7 @@ assignees: ''
 ```
 
 ## Breaking Change Assessment
+
 - [ ] This is a **breaking change** (requires API version bump)
 - [ ] This is a **non-breaking change** (backwards compatible)
 
@@ -44,6 +46,7 @@ assignees: ''
 <!-- If breaking, describe how existing clients should migrate -->
 
 ## Acceptance Criteria
+
 - [ ] OpenAPI spec updated in `specs/api/openapi/dsh-rest-api.yaml`
 - [ ] Implementation updated in `dsh-rest-api` module
 - [ ] Postman collection updated in `specs/api/postman/`

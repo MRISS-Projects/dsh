@@ -1,11 +1,12 @@
 # Indexing Workflow Specification
 
 ## Overview
+
 The indexing workflow describes how documents submitted via the REST API are processed asynchronously by the `dsh-doc-indexer-worker` module, from task enqueuing through analysis and Solr indexing to final status persistence.
 
 ## Workflow Steps
 
-```
+```text
 1. Document Received
    └── REST API persists document metadata (status: processing)
    └── REST API enqueues indexing task
@@ -40,28 +41,32 @@ The indexing workflow describes how documents submitted via the REST API are pro
 ## Functional Requirements
 
 ### FR001: Asynchronous Processing
+
 - Documents must be processed without blocking the REST API response
 - Processing queue must support at-least-once delivery semantics
 - Failed tasks must be retried up to 3 times before marking as failed
 
 ### FR002: Status Tracking
+
 - Document status is always queryable via `GET /api/v1/documents/{documentId}`
 - Status transitions: `processing` → `completed` | `failed`
 - Status updates must be atomic (no partial updates visible to clients)
 
 ### FR003: Solr Indexing
+
 - Document full text must be indexed in Solr on successful analysis
 - Solr index must be updated atomically with status change
 - Solr document must be removed if the parent document is deleted
 
 ### FR004: Performance
+
 - Worker must process 95% of documents under 10 MB within 30 seconds
 - Worker must handle at least 10 concurrent document processing tasks
 
 ## Error Handling
 
 | Scenario | Behaviour |
-|----------|-----------|
+| ---------- | ----------- |
 | File not found / corrupted | Immediate failure; status → failed |
 | Unsupported file format | Immediate failure; status → failed |
 | Analysis timeout | Retry up to 3 times; then status → failed |
@@ -69,6 +74,7 @@ The indexing workflow describes how documents submitted via the REST API are pro
 | Database unavailable | Retry with backoff; do not lose task |
 
 ## References
+
 - System Architecture: `../architecture/system-design.md`
 - Document Analysis: `./document-analysis.md`
 - Performance Benchmarks: `../testing/performance-benchmarks/`

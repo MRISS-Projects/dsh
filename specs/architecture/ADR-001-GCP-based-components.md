@@ -44,7 +44,7 @@ All new GCP-based implementations must be introduced behind **interfaces** (or t
 The codebase already follows an interface-based approach in several areas:
 
 | Interface | Current Implementation | Module | Status |
-|-----------|----------------------|--------|--------|
+| ----------- | ---------------------- | -------- | -------- |
 | `DocumentDao` | `MongoDocumentDao` | `dsh-data` | ✅ Interface exists — ready for a new GCP implementation |
 | `DocumentQueueService` | `DocumentQueueServiceImpl` (RabbitMQ) | `dsh-rest-api` | ✅ Interface exists — ready for a new GCP implementation |
 | `DocumentHandlingService` | `DocumentHandlingServiceImpl` | `dsh-rest-api` | ✅ Interface exists — no direct infrastructure coupling (delegates to `DocumentDao`) |
@@ -54,7 +54,7 @@ The codebase already follows an interface-based approach in several areas:
 ##### Components Requiring Refactoring Before GCP Implementation
 
 | Component | Issue | Required Refactoring |
-|-----------|-------|---------------------|
+| ----------- | ------- | --------------------- |
 | `DocumentRepository` (`dsh-data`) | Directly extends `MongoRepository`, binding the interface to MongoDB. | Extract a technology-neutral `DocumentPersistenceRepository` interface with methods `save`, `findById`, `findByToken`, `findByFileHash`, `deleteAll`. Create `MongoDocumentPersistenceRepository` (deprecated) wrapping the current `DocumentRepository`, and a new `FirestoreDocumentPersistenceRepository`. |
 | `enqueue-docId-context.xml` / `dequeue-docId-context.xml` | Spring Integration AMQP XML configuration hardcoded for RabbitMQ (`int-amqp:outbound-channel-adapter`, `rabbit:*` beans). | Replace with Java-based `@Configuration` classes behind a profile. Create `RabbitMqIntegrationConfig` (deprecated, `@Profile("rabbitmq")`) and `PubSubIntegrationConfig` (`@Profile("gcp")`). |
 | `OrderedTermVectorComponent` (`dsh-solr`) | A custom Solr `SearchComponent` plugin — extends `TermVectorComponent` directly, tightly coupled to Solr internals (`ResponseBuilder`, `SolrParams`, `NamedList`). | Extract the **sorting logic** (term vector ordering by TF/DF/TF-IDF, ascending/descending) into a technology-neutral `TermVectorOrderingService` interface. The Solr-specific wrapper becomes a deprecated adapter; the new GCP adapter will call Vertex AI Search and apply the same ordering in the application layer. |
@@ -65,7 +65,7 @@ The codebase already follows an interface-based approach in several areas:
 #### 3.1 MongoDB → Firestore (Native Mode) + Google Cloud Storage
 
 | Aspect | Detail |
-|--------|--------|
+| -------- | -------- |
 | **Document metadata & highlights** | Stored in **Firestore** collections. The `Document` model entity will be annotated with `@com.google.cloud.spring.data.firestore.Document`. |
 | **Original file binary contents** | Stored in **Google Cloud Storage (GCS)**. The `Document` entity's `byte[] originalFileContents` field (up to 50 MB per FR001 in `document-analysis.md`) will be replaced with a `String fileStorageUri` pointing to the GCS object. This is required because Firestore has a **1 MB document size limit**. |
 | **Spring dependency** | `spring-cloud-gcp-starter-data-firestore`, `spring-cloud-gcp-starter-storage` |
@@ -74,7 +74,7 @@ The codebase already follows an interface-based approach in several areas:
 #### 3.2 RabbitMQ → Google Cloud Pub/Sub
 
 | Aspect | Detail |
-|--------|--------|
+| -------- | -------- |
 | **Messaging** | Replace AMQP channels with **Pub/Sub** topics and subscriptions. The REST API publishes document IDs to a Pub/Sub topic; the indexer worker receives them via a push or pull subscription. |
 | **Delivery semantics** | Pub/Sub supports at-least-once delivery, matching FR001 in `indexing-workflow.md`. Dead-letter topics handle the "retry up to 3 times" requirement natively. |
 | **Spring dependency** | `spring-cloud-gcp-starter-pubsub`, `spring-integration-gcp` |
@@ -84,7 +84,7 @@ The codebase already follows an interface-based approach in several areas:
 #### 3.3 Apache Solr → Vertex AI Search
 
 | Aspect | Detail |
-|--------|--------|
+| -------- | -------- |
 | **Full-text search** | Replace Solr core with **Vertex AI Search** (formerly Discovery Engine / Enterprise Search). Fully managed, serverless, built-in NLP-based ranking. |
 | **Spring dependency** | `google-cloud-discoveryengine` (Vertex AI Search client library) |
 | **Custom component migration** | See §4 — Migration Plan for `OrderedTermVectorComponent`. |
@@ -97,7 +97,7 @@ The codebase already follows an interface-based approach in several areas:
 **Goal**: Refactor all infrastructure-coupled code to use technology-neutral interfaces. Mark current implementations as deprecated.
 
 | Task | Module | Detail |
-|------|--------|--------|
+| ------ | -------- | -------- |
 | 1.1 | `dsh-data` | Create `DocumentPersistenceRepository` interface. Wrap existing `DocumentRepository` (Mongo) as `MongoDocumentPersistenceRepository implements DocumentPersistenceRepository`. Mark with `@Deprecated`. |
 | 1.2 | `dsh-data` | Refactor `MongoDocumentDao` to depend on `DocumentPersistenceRepository` instead of `DocumentRepository` directly. Mark `MongoDocumentDao` with `@Deprecated`. |
 | 1.3 | `dsh-rest-api` | Convert `enqueue-docId-context.xml` / `dequeue-docId-context.xml` to Java `@Configuration` classes. Create `RabbitMqIntegrationConfig` (`@Profile("rabbitmq")`). Mark with `@Deprecated`. |
@@ -109,7 +109,7 @@ The codebase already follows an interface-based approach in several areas:
 #### Phase 2 — GCP Implementation: Firestore + GCS (MongoDB Replacement)
 
 | Task | Module | Detail |
-|------|--------|--------|
+| ------ | -------- | -------- |
 | 2.1 | `dsh-data` | Add `spring-cloud-gcp-starter-data-firestore` and `spring-cloud-gcp-starter-storage` dependencies. |
 | 2.2 | `dsh-data` | Create `FirestoreDocumentPersistenceRepository implements DocumentPersistenceRepository`. Map `Document` fields to Firestore collections. |
 | 2.3 | `dsh-data` | Create `FirestoreDocumentDao implements DocumentDao` (`@Profile("gcp")`). Wire to `FirestoreDocumentPersistenceRepository`. |
@@ -119,7 +119,7 @@ The codebase already follows an interface-based approach in several areas:
 #### Phase 3 — GCP Implementation: Cloud Pub/Sub (RabbitMQ Replacement)
 
 | Task | Module | Detail |
-|------|--------|--------|
+| ------ | -------- | -------- |
 | 3.1 | `dsh-rest-api` | Add `spring-cloud-gcp-starter-pubsub` and `spring-integration-gcp` dependencies. |
 | 3.2 | `dsh-rest-api` | Create `PubSubIntegrationConfig` (`@Profile("gcp")`) — defines `PubSubTemplate`, outbound channel adapter to a `document-tasks` topic. |
 | 3.3 | `dsh-rest-api` | Create `PubSubDocumentQueueServiceImpl implements DocumentQueueService` (`@Profile("gcp")`). Publishes document IDs to the Pub/Sub topic. |
@@ -129,21 +129,21 @@ The codebase already follows an interface-based approach in several areas:
 #### Phase 4 — GCP Implementation: Vertex AI Search (Solr Replacement)
 
 | Task | Module | Detail |
-|------|--------|--------|
+| ------ | -------- | -------- |
 | 4.1 | `dsh-solr` (or new `dsh-search` module) | Add `google-cloud-discoveryengine` dependency. |
 | 4.2 | New module / `dsh-solr` | Create `VertexAiSearchIndexingService` — indexes document content in a Vertex AI Search data store using the Document AI / ingestion APIs. |
 | 4.3 | New module / `dsh-solr` | Create `VertexAiSearchQueryService` — executes full-text search queries via the Vertex AI Search serving API. |
 | 4.4 | **`OrderedTermVectorComponent` migration** | Vertex AI Search does not expose raw term vectors (TF, DF, TF-IDF) like Solr's `TermVectorComponent`. The migration strategy is: |
-|      | | **a)** At **indexing time**, compute TF/DF/TF-IDF statistics in the application layer (Java) using the extracted document text, *before* sending to Vertex AI Search. Store these statistics as structured metadata fields on the Vertex AI Search document or in Firestore. |
-|      | | **b)** Extract the sorting logic currently in `SortedNamedList` / `TermsVectorComparator` / `Order` into the new `TermVectorOrderingService` implementation (`VertexAiTermVectorOrderingService`). This service retrieves the pre-computed term statistics from Firestore or Vertex AI Search metadata and applies the same ascending/descending sort by the requested field (TF, DF, TF-IDF). |
-|      | | **c)** The `order` query parameter format (`order=tv.tf;desc`) is preserved in the REST API. The `dsh-rest-api` delegates to `TermVectorOrderingService`, which is now infrastructure-agnostic. |
-|      | | **d)** Classes reusable as-is in the new implementation: `Order` (enum), `OrderOptions` (POJO), `TermsVectorComparator` (generic `Comparator<Object>` — only depends on `OrderOptions`). Only `OrderedTermVectorComponent` and `SortedNamedList` are Solr-coupled and need replacement. |
+| | | **a)** At **indexing time**, compute TF/DF/TF-IDF statistics in the application layer (Java) using the extracted document text, *before* sending to Vertex AI Search. Store these statistics as structured metadata fields on the Vertex AI Search document or in Firestore. |
+| | | **b)** Extract the sorting logic currently in `SortedNamedList` / `TermsVectorComparator` / `Order` into the new `TermVectorOrderingService` implementation (`VertexAiTermVectorOrderingService`). This service retrieves the pre-computed term statistics from Firestore or Vertex AI Search metadata and applies the same ascending/descending sort by the requested field (TF, DF, TF-IDF). |
+| | | **c)** The `order` query parameter format (`order=tv.tf;desc`) is preserved in the REST API. The `dsh-rest-api` delegates to `TermVectorOrderingService`, which is now infrastructure-agnostic. |
+| | | **d)** Classes reusable as-is in the new implementation: `Order` (enum), `OrderOptions` (POJO), `TermsVectorComparator` (generic `Comparator<Object>` — only depends on `OrderOptions`). Only `OrderedTermVectorComponent` and `SortedNamedList` are Solr-coupled and need replacement. |
 | 4.5 | **`AdvancedNumberFilter` migration** | Evaluate Vertex AI Search's built-in tokenisation/filtering. If number filtering is not natively supported, implement a `NumberFilterPreProcessor` in the indexing pipeline that strips or normalises numeric tokens before content is sent to Vertex AI Search. |
 
 #### Phase 5 — Validation & Cutover
 
 | Task | Detail |
-|------|--------|
+| ------ | -------- |
 | 5.1 | Run both profiles (`rabbitmq`/`mongodb` and `gcp`) in parallel in a staging environment. Compare results for functional parity. |
 | 5.2 | Execute integration tests from `specs/testing/test-plans/` against GCP profile. |
 | 5.3 | Performance-test against benchmarks in `specs/testing/performance-benchmarks/` (FR004: 95% of docs < 10 MB within 30 s). |
@@ -175,7 +175,7 @@ The codebase already follows an interface-based approach in several areas:
 ## Alternatives Considered
 
 | Alternative | Reason for Rejection |
-|-------------|---------------------|
+| ------------- | --------------------- |
 | **MongoDB Atlas on GCP** (instead of Firestore) | Viable but not a native GCP service; does not benefit from unified GCP IAM/billing integration as deeply. |
 | **Elastic Cloud on GCP** (instead of Vertex AI Search) | Easier Solr-to-Elasticsearch migration (concepts map closely), but still requires cluster management. Chosen path favours fully serverless. |
 | **Cloud Tasks** (instead of Pub/Sub) | Cloud Tasks is designed for task dispatch, not pub/sub messaging. Pub/Sub better matches the existing event-driven, fan-out architecture. |
@@ -197,4 +197,3 @@ The codebase already follows an interface-based approach in several areas:
 - `OrderedTermVectorComponent`: `dsh-solr/solr-terms-vector-order/.../OrderedTermVectorComponent.java`
 - `AdvancedNumberFilter`: `dsh-solr/solr-advanced-numbers-filter/.../AdvancedNumberFilter.java`
 - Roles: [`/.github/roles.md`](../../.github/roles.md)
-

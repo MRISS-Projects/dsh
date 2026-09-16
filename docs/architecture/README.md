@@ -17,6 +17,7 @@ Architecture documentation is generated from and maintained in sync with the spe
 The `/.github/workflows/documentation-sync.yml` workflow synchronises documentation from specs on every push to `develop` or `main`.
 
 ## References
+
 - Source specs: `/specs/architecture/system-design.md`
 - Component diagrams: `/specs/architecture/component-diagrams/`
 - Sequence diagrams: `/specs/architecture/sequence-diagrams/`

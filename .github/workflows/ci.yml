@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - DEVELOP
+      - 'staging-*-RC'
+      - '*.x'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build, Test and Coverage Gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
+    env:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # The parent com.mriss.mriss-parent:products is resolved from GitHub
+      # Packages. install-parent-pom.sh is deliberately NOT used: it installs
+      # com.mriss:mriss-parent:1.2.4, a legacy artifact no module inherits from.
+      - name: Configure Maven settings for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                        https://maven.apache.org/xsd/settings-1.0.0.xsd">
+              <servers>
+                  <server>
+                      <id>MRISS-Projects-maven-repo</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.DEPLOY_TOKEN}</password>
+                  </server>
+                  <server>
+                      <id>MRISS-Projects-maven-repo-plugins</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.DEPLOY_TOKEN}</password>
+                  </server>
+                  <server>
+                      <id>github.com</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.DEPLOY_TOKEN}</password>
+                  </server>
+              </servers>
+              <profiles>
+                  <profile>
+                      <id>github-packages</id>
+                      <properties>
+                          <github.personal.token>${env.DEPLOY_TOKEN}</github.personal.token>
+                          <mongo.host>localhost</mongo.host>
+                          <mongo.port>27017</mongo.port>
+                          <mongo.user>dshuser</mongo.user>
+                          <mongo.password>dshpass</mongo.password>
+                      </properties>
+                      <repositories>
+                          <repository>
+                              <id>MRISS-Projects-maven-repo</id>
+                              <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+                              <releases><enabled>true</enabled></releases>
+                              <snapshots><enabled>true</enabled></snapshots>
+                          </repository>
+                      </repositories>
+                      <pluginRepositories>
+                          <pluginRepository>
+                              <id>MRISS-Projects-maven-repo-plugins</id>
+                              <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+                              <releases><enabled>true</enabled></releases>
+                              <snapshots><enabled>true</enabled></snapshots>
+                          </pluginRepository>
+                      </pluginRepositories>
+                  </profile>
+              </profiles>
+              <activeProfiles>
+                  <activeProfile>github-packages</activeProfile>
+              </activeProfiles>
+          </settings>
+          EOF
+
+      - name: Create MongoDB user and database
+        run: |
+          docker run --rm --network host mongo:6 mongosh --host localhost --eval '
+            db.getSiblingDB("dsh").createUser({
+              user: "dshuser",
+              pwd: "dshpass",
+              roles: [{ role: "readWrite", db: "dsh" }]
+            });
+          '
+
+      # No -U: the parent is a SNAPSHOT and -U would re-resolve it on every
+      # run, so the same commit could build differently on different days.
+      # Parent upgrades are deliberate and manual.
+      - name: Build and test all modules
+        run: mvn -B install --file pom.xml
+
+      - name: Coverage ratchet
+        run: |
+          chmod +x scripts/check-coverage.sh
+          ./scripts/check-coverage.sh \
+            dsh-coverage-report/target/site/jacoco-aggregate/jacoco.csv \
+            .github/coverage-baseline.txt
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
+          if-no-files-found: ignore
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-aggregate
+          path: dsh-coverage-report/target/site/jacoco-aggregate/**
+          if-no-files-found: ignore

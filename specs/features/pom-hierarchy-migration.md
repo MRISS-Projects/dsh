@@ -337,6 +337,7 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
 ## Technical Implementation Notes
 
 ### Module Integration
+
 - **`parent-poms/pom.xml`**: Receives Failsafe naming config, Surefire exclusion, JaCoCo check,
   Surefire/Failsafe/JaCoCo reporting, removal of Jenkins `ciManagement`.
 - **`parent-poms/products/pom.xml`**: Receives Spring Boot `2.3.12.RELEASE`, updated Spring Fox /
@@ -349,6 +350,7 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   `.md`; plugin versions removed.
 
 ### Sequencing (Implementation Order)
+
 1. **Step 1** – Update `parent-poms/pom.xml`: Failsafe/Surefire config (FR013), JaCoCo check
    (FR014), reporting (FR012), remove Jenkins `ciManagement` (FR008), add `pluginManagement`
    entries for any plugin currently only versioned in DSH.
@@ -365,7 +367,8 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
 7. **Step 7** – Validate full build: `mvn -f dsh/pom.xml verify site -DskipTests`.
 
 ### Data Flow
-```
+
+```text
 parent-poms/pom.xml  (root – plugin versions, Failsafe/Surefire/JaCoCo config, reporting)
     └── parent-poms/products/pom.xml  (Spring Boot BOM, Spring Fox, dependency management)
             └── dsh/pom.xml  (DSH-specific modules, enforcer, DSH profiles only)
@@ -379,15 +382,18 @@ parent-poms/pom.xml  (root – plugin versions, Failsafe/Surefire/JaCoCo config,
 ## Testing Requirements
 
 ### Unit Tests
+
 - Each POM change must be validated with `mvn validate` at the module level.
 - Property inheritance verified with `mvn help:effective-pom`.
 
 ### Integration Tests
+
 - `mvn -f dsh/pom.xml verify` must pass with no Surefire/Failsafe mis-categorization.
 - `mvn -f dsh/pom.xml site` must generate HTML reports for Surefire, Failsafe, and JaCoCo.
 - Coverage gate: build must fail if any module drops below 95% (FR014).
 
 ### Regression Tests
+
 - Snapshot deployment: `mvn -f dsh/pom.xml deploy -DskipTests` must reach
   `https://maven.pkg.github.com/MRISS-Projects/maven-repo`.
 - Spring Boot application context loads in `dsh-rest-api` with Spring Boot `2.3.12.RELEASE`.
@@ -404,4 +410,3 @@ parent-poms/pom.xml  (root – plugin versions, Failsafe/Surefire/JaCoCo config,
 - Java conventions: `.github/copilot/rules/java-conventions.md`
 - Test plans: `specs/testing/test-plans/`
 - Acceptance criteria: `specs/requirements/acceptance-criteria/`
-

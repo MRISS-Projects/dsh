@@ -24,5 +24,6 @@ This directory contains troubleshooting documentation for the DSH system.
 - **Solr**: check the Solr admin UI at `http://localhost:8983/solr`
 
 ## References
+
 - Architecture: `/specs/architecture/system-design.md`
 - User guides: `../user-guides/`
