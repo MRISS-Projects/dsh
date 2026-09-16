@@ -6,10 +6,11 @@ what artifact it produces, what the hard stop is, and what "done" looks like. Br
 quality gates are defined once in `CLAUDE.md` and referenced, not restated, below.
 
 **Status of the five project skills.** `dsh-plan-wave`, `dsh-new-story`, `dsh-story-spec`,
-`dsh-build-story` and `dsh-ship-story` are specified here as the process's entry points. They live
-under `.claude/skills/<name>/SKILL.md`. As of this document, they describe intended behaviour —
-treat the descriptions below as the contract each skill must satisfy once it exists, not as a
-report that they are installed and working today.
+`dsh-build-story` and `dsh-ship-story` are specified here as the process's entry points. They exist
+in the repo today, under `.claude/skills/<name>/SKILL.md`. What has not been verified is whether
+they successfully *load* in a running Claude Code session — skill discovery happens at startup, so
+confirming that needs a restart against this branch. Treat the descriptions below as the contract
+each skill's `SKILL.md` must satisfy, not as confirmation that a session has already loaded them.
 
 ## The loop
 
@@ -136,16 +137,19 @@ required change has been made and re-reviewed until it is.
 `finishing-a-development-branch`.
 
 **Artifact.** A pushed branch, an open pull request, and (if the run succeeds) a green CI run.
-`.github/workflows/ci.yml` enforces the three quality gates defined in `CLAUDE.md` — unit tests,
-integration tests, and the coverage ratchet against `.github/coverage-baseline.txt` — on every PR.
+`.github/workflows/ci.yml` enforces the quality gates defined in `CLAUDE.md` — all tests passing
+under `mvn -B install` and the coverage ratchet against `.github/coverage-baseline.txt` — on every
+PR. Everything currently runs under surefire; there is no failsafe configuration and no `*IT.java`
+test in the repo, so integration tests are not yet a gate CI enforces separately from unit tests.
+Implementing them is tracked as `#46` in PRD Wave 0.
 
 **Hard stop.** Claude commits, pushes, and opens the pull request, then **stops**. A red CI run
 sends the work back to step 4 (`O -->|no| J`). A green CI run is also a stop: Claude never merges
 the PR and never closes the originating issue — see "Why Claude stops at green" below.
 
-**Done looks like, for Claude.** The PR is open, CI is green against all three gates, and the PR
-is left for the repo owner. Merging is the owner's action and is outside what this process asks
-Claude to do.
+**Done looks like, for Claude.** The PR is open, CI is green against the gates it actually
+enforces, and the PR is left for the repo owner. Merging is the owner's action and is outside what
+this process asks Claude to do.
 
 ## Story spec front matter
 

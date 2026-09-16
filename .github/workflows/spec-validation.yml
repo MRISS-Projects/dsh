@@ -3,17 +3,23 @@ on:
   push:
     paths:
       - 'specs/**'
-      - 'docs/wiki/**'
+      - 'docs/**'
       - '.github/copilot-instructions.md'
       - '.github/copilot/**'
       - '.github/roles.md'
+      - '.markdownlint.json'
+      - 'CLAUDE.md'
+      - '.claude/**'
   pull_request:
     paths:
       - 'specs/**'
-      - 'docs/wiki/**'
+      - 'docs/**'
       - '.github/copilot-instructions.md'
       - '.github/copilot/**'
       - '.github/roles.md'
+      - '.markdownlint.json'
+      - 'CLAUDE.md'
+      - '.claude/**'
 
 jobs:
   validate-openapi:
@@ -56,6 +62,7 @@ jobs:
       - name: Lint markdown files
         run: |
           markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
+            'CLAUDE.md' '.claude/**/*.md' \
             --ignore 'docs/wiki/**' \
             --config .markdownlint.json
 

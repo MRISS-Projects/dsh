@@ -88,13 +88,14 @@ back into the branch it came from. **Never branch from `master`. Never open a PR
 
 ## Quality gates
 
-A story is not done until all three pass:
+A story is not done until both pass:
 
-1. All unit tests pass.
-2. All integration tests pass.
-3. Aggregate instruction coverage has not dropped below `.github/coverage-baseline.txt`.
+1. All tests pass under `mvn -B install` (surefire only — there is no failsafe configuration and
+   no `*IT.java` test in the repo today, so "integration tests" are not yet a separately enforced
+   gate; implementing them is tracked as `#46` in PRD Wave 0).
+2. Aggregate instruction coverage has not dropped below `.github/coverage-baseline.txt`.
 
-`.github/workflows/ci.yml` enforces all three on every PR. Run `mvn -B install` then
+`.github/workflows/ci.yml` enforces both on every PR. Run `mvn -B install` then
 `./scripts/check-coverage.sh` to check locally before pushing.
 
 ## The development process

@@ -165,7 +165,7 @@ to proceed if the parent is `master`**.
 | Issue | Reason | Superseded by |
 | --- | --- | --- |
 | #65 — Implement indexer-worker daemon | Body specifies RabbitMQ enqueue and Solr storage. | Waves 3 and 4 |
-| #47 — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 deprecates. | Wave 2 |
+| #47 — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 proposes replacing. | Wave 2 |
 
 Issue #52 was reviewed and **kept**: it mentions Mongo only as one option for automatic
 file-hash generation; the file-hash-as-a-service idea survives the migration intact.

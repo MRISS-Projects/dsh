@@ -27,7 +27,12 @@ Invoke `superpowers:verification-before-completion` first. Evidence before asser
 
     ./scripts/check-coverage.sh
 
-Read `parent_branch` from the front matter of `specs/stories/<n>-<slug>.md`, then:
+Read `parent_branch` from the front matter of `specs/stories/<n>-<slug>.md`.
+
+## Hard stop
+
+Show the human the PR title, the PR body, and the resolved base branch. Wait for approval.
+**Then** run:
 
     git push -u origin issue-<n>-<slug>
     gh pr create --base <parent_branch> --title "<title>" --body "Closes #<n>" --fill

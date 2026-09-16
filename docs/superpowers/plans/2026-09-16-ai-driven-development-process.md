@@ -1271,7 +1271,7 @@ CI testing, which is why it sits in Wave 3 rather than Wave 0.
 | Issue | Reason | Superseded by |
 | --- | --- | --- |
 | #65 — Implement indexer-worker daemon | Body specifies RabbitMQ enqueue and Solr storage | Waves 3 and 4 |
-| #47 — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, deprecated by ADR-001 | Wave 2 |
+| #47 — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 proposes replacing | Wave 2 |
 
 Add a line recording that **#52 was reviewed and kept** — it mentions Mongo only as one
 option for automatic file-hash generation, and the idea survives the migration.
@@ -1293,9 +1293,9 @@ close() { # number reason
   gh issue close "$1" --reason "not planned" --comment "$2"
 }
 
-close 65 "Won't fix. This story specifies RabbitMQ enqueue and Solr storage, both deprecated by ADR-001. Superseded by PRD Wave 3 (Cloud Pub/Sub) and Wave 4 (Vertex AI Search). See specs/product/PRD.md."
+close 65 "Won't fix. This story specifies RabbitMQ enqueue and Solr storage, both replaced by the migration proposed in ADR-001. Superseded by PRD Wave 3 (Cloud Pub/Sub) and Wave 4 (Vertex AI Search). See specs/product/PRD.md."
 
-close 47 "Won't fix. This targets MongoDocumentDao, which ADR-001 deprecates in favour of the Firestore implementation. Ordering behaviour will be specified against the new repository in PRD Wave 2. See specs/product/PRD.md."
+close 47 "Won't fix. This targets MongoDocumentDao, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour will be specified against the new repository in PRD Wave 2. See specs/product/PRD.md."
 ```
 
 - [ ] **Step 4: Verify the script is syntactically valid without executing it**
@@ -1328,7 +1328,7 @@ git commit -m "docs: add PRD with waves and triaged backlog
 
 Waves 1-5 mirror the five migration phases in ADR-001. Existing open
 issues are triaged into waves; #65 and #47 are recorded as won't-fix
-because they target RabbitMQ/Solr/Mongo code the ADR deprecates. #49 is
+because they target RabbitMQ/Solr/Mongo code the ADR proposes replacing. #49 is
 re-scoped from Docker containers to GCP emulators.
 
 Closures ship as scripts/close-wontfix-issues.sh for manual review; it is

@@ -70,17 +70,30 @@ migration, plus gaps found while writing this PRD.
    parent is `com.mriss.mriss-parent:products` (see root `pom.xml`). They survive only because the
    Travis-era `build-ci*.sh` scripts still reference them. Removing all of it together is one
    story.
-2. **Widen the markdown lint glob to cover `.claude/**`.** `.github/workflows/spec-validation.yml`
-   lints `specs/**`, `.github/**`, and `docs/**`, so the five project skills under
-   `.claude/skills/` sit outside the enforcing gate.
-3. **Widen the JaCoCo aggregate's scope.** The aggregate currently measures only 2,028
-   instructions total across the whole project (recomputed from CI run 35104004578's uploaded
-   artifact). That is a narrow slice of a 13-module codebase, so the headline coverage number is
-   misleading.
-4. **Revisit the coverage baseline once the scope is fixed.** `.github/coverage-baseline.txt` is
-   `98.13`. On a 2,028-instruction denominator that floor is brittle — one new untested
-   ~100-instruction class drops the aggregate to roughly 93.5% and turns the build red. The
-   ADR-001 migration (waves 1-5) adds substantial new code and will fight this gate as written.
+2. ~~Widen the markdown lint glob to cover `.claude/**`.~~ **Done** in this fix wave:
+   `.github/workflows/spec-validation.yml`'s `validate-markdown` job and its trigger `paths:` now
+   both cover `CLAUDE.md` and `.claude/**`, so the five project skills under `.claude/skills/` are
+   inside the enforcing gate.
+3. **The JaCoCo aggregate's scope is already complete — no widening needed.** Verified directly:
+   `dsh-coverage-report/pom.xml` depends on all 8 code-bearing modules (`dsh-data`, `dsh-rest-api`,
+   `dsh-doc-indexer-worker`, `dsh-doc-processor-worker`, `dsh-keyword-extractor`,
+   `dsh-top-sentences-extractor`, `solr-advanced-numbers-filter`, `solr-terms-vector-order`) plus
+   `dsh-test-dataset` (no main sources), and the aggregate's CSV contains 15 packages spanning all
+   8 of them. The rest of the 13 modules are aggregator POMs (root, `dsh-doc-analyser`, `dsh-solr`,
+   `dsh-coverage-report`) with no production code of their own. The whole repository has 38 main
+   `.java` files, so 2,028 instructions **is** the entire codebase, not a slice of it. The
+   codebase is simply small — which is exactly what makes the coverage floor sensitive to a single
+   new class.
+4. **Revisit the coverage baseline.** `.github/coverage-baseline.txt` is `98.13`. On a
+   2,028-instruction denominator that floor is brittle — one new untested ~100-instruction class
+   drops the aggregate to roughly 93.5% and turns the build red. The ADR-001 migration (waves 1-5)
+   adds substantial new code and will fight this gate as written.
+5. **Make `check-spec-references` enforcing, or remove it.** The `check-spec-references` job in
+   `.github/workflows/spec-validation.yml` initializes `missing=0`, never increments it, prints a
+   `WARNING` for each unresolved reference, and always exits 0 — it cannot fail a run. It reads as
+   an enforcing gate but is advisory only. This mirrors the `|| true` problem already fixed for
+   markdownlint: either make it actually fail the job on a missing reference, or remove it and stop
+   describing it as a gate.
 
 The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item —
 see §6 for why it belongs in accepted risks rather than the backlog.
@@ -253,6 +266,7 @@ Closure is recorded here for visibility; the issues are not closed by this PRD �
   parent-poms work has settled; no story and no owner action are needed today.
 - **Coverage badge and CI figure disagree.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate currently computes
-  98.13% (against a 2,028-instruction denominator — see Wave 0 tasks 4 and 5). The two either
-  measure different scopes or the badge is stale; they should be reconciled once the aggregate's
-  scope is widened, rather than trusted as-is in the meantime.
+  98.13% against a 2,028-instruction denominator, which is the whole codebase, not a partial one —
+  see Wave 0 tasks 3 and 4. The two either measure different scopes or the badge is stale; they
+  should be reconciled directly (e.g. regenerating the badge), rather than trusted as-is in the
+  meantime.
