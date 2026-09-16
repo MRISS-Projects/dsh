@@ -188,7 +188,7 @@ reusable workflows. The main `README.md` is not touched; it describes the system
 
 | Aspect | Detail |
 | --- | --- |
-| Triggers | All pull requests; pushes to `issue-**`, `DEVELOP`, `staging-*-RC`, `*.x` |
+| Triggers | All pull requests (unfiltered); pushes to `DEVELOP`, `staging-*-RC`, `*.x`. Task branches are gated by the `pull_request` trigger, deliberately **not** listed under `push` — listing both would run the full build twice for every task-branch PR. |
 | Runtime | `ubuntu-latest`, JDK 17 Temurin, Maven cache |
 | Services | `mongo:6`, `rabbitmq:3-management`, plus the Mongo user bootstrap lifted from `api-testing.yml` |
 | Auth | `~/.m2/settings.xml` for GitHub Packages via `DEPLOY_TOKEN`, same shape as `api-testing.yml` |
