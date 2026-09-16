@@ -54,9 +54,16 @@ re-resolves on Maven's daily refresh interval, so the same commit can build diff
 different days — which defeats the manual, deliberate upgrade model D5 exists to support.
 `api-testing.yml` compounds this by passing `-U`, forcing a re-resolve every run.
 
-Mitigation in this design: `ci.yml` **omits `-U`**. The real fix — pinning a released parent
-version — is recorded as a PRD story for the owner to schedule. It is not applied here because
-changing the parent version is a release-engineering decision, not a documentation one.
+Mitigation in this design: `ci.yml` **omits `-U`**, limiting drift to Maven's daily refresh rather
+than forcing a re-resolve every run.
+
+**Updated 2026-09-16, per the repo owner:** pinning a released parent version is *not* scheduled
+work and must not be recorded as a backlog task. Upcoming work on the `MRISS-Projects/parent-poms`
+project will change this repository, and tracking a `SNAPSHOT` is how those changes reach it
+without cutting a parent release per iteration. The reproducibility cost is therefore an **accepted
+trade-off with a named mitigation**, not an oversight. It is worth revisiting only once the
+`parent-poms` work has settled. A backlog entry here would actively mislead: someone could pick it
+up and break the incoming integration.
 
 ---
 

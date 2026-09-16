@@ -99,7 +99,14 @@ from the local `parent-pom.xml`. That is a separate, legacy artifact: no module 
 inherits from it, and `ci.yml` does not call this script. It is not part of the working build
 pipeline described above.
 
-The current pin to `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT` is a known reproducibility
-risk: Maven refreshes `SNAPSHOT` metadata daily, so the same commit in this repository can resolve
+The current pin to `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT` carries a known reproducibility
+cost: Maven refreshes `SNAPSHOT` metadata daily, so the same commit in this repository can resolve
 a different parent POM — and therefore build differently — on different days depending on when it
-is built relative to that refresh. This is tracked as a future PRD task rather than fixed here.
+is built relative to that refresh.
+
+**This is an accepted decision, not an oversight — do not "fix" it.** Upcoming work on the
+`MRISS-Projects/parent-poms` project will change this repository, and tracking a `SNAPSHOT` is how
+those changes reach it without cutting a parent release per iteration. `ci.yml` omitting `-U` is
+the deliberate mitigation: it limits drift to Maven's daily refresh rather than forcing a
+re-resolve on every run. Pinning a released parent version is worth revisiting only once the
+`parent-poms` work has settled.
