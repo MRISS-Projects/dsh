@@ -36,12 +36,19 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
                       │
              ┌────────┴────────┐
              ▼                 ▼
-     ┌──────────────┐  ┌──────────────┐
-     │   MongoDB    │  │  dsh-solr    │
-     │  (documents) │  │ (full-text   │
-     │              │  │  indexing)   │
-     └──────────────┘  └──────────────┘
+     ┌──────────────────┐  ┌──────────────────┐
+     │      MongoDB      │  │     dsh-solr      │
+     │  (replacement     │  │  (replacement     │
+     │   proposed)       │  │   proposed)       │
+     │  (documents)      │  │ (full-text        │
+     │                   │  │  indexing)        │
+     └──────────────────┘  └──────────────────┘
 ```
+
+> **Migration note:** [ADR-001](./ADR-001-GCP-based-components.md) (Status: Proposed) proposes
+> replacing MongoDB, RabbitMQ and Apache Solr with Firestore + GCS, Cloud Pub/Sub, and Vertex AI
+> Search respectively. No migration work has started — these components remain the active
+> implementation. See `specs/product/PRD.md` for the delivery waves.
 
 ## Module Responsibilities
 
@@ -85,11 +92,11 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 
 | Layer | Technology |
 | ------- | ----------- |
-| Language | Java 11+ |
+| Language | Java 17 |
 | Framework | Spring Boot, Spring Framework |
 | Build | Maven (multi-module) |
 | Persistence | MongoDB, Apache Solr |
-| CI | Travis CI (`.travis.yml`), GitHub Actions |
+| CI | GitHub Actions (Travis config retained but inactive) |
 | Testing | JUnit 5, Mockito, AssertJ |
 
 ## Cross-Cutting Concerns

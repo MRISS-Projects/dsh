@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DEPRECATED - com.mriss:mriss-parent:1.2.4.
+  No module in this repository inherits from this POM. The active parent is
+  com.mriss.mriss-parent:products, resolved from GitHub Packages.
+  Retained only because build-ci*.sh still reference it via install-parent-pom.sh.
+  Removal is tracked as a Wave 0 task in specs/product/PRD.md.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">

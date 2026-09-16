@@ -17,7 +17,9 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 
 ### Code Structure
 
-- Follow Maven multi-module project structure (see `pom.xml` and `parent-pom.xml`)
+- Follow Maven multi-module project structure (see `pom.xml`). The parent POM is
+  `com.mriss.mriss-parent:products`, resolved from GitHub Packages — the root
+  `parent-pom.xml` is a deprecated legacy artifact that no module inherits from.
 - Use Spring Boot for microservices (existing pattern in dsh-rest-api)
 - Implement clean architecture patterns
 - Reference specifications in `/specs/` directory before implementing features
@@ -59,6 +61,10 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 | Development guide | `/docs/copilot/development-guide.md` |
 | Team roles | `/.github/roles.md` |
 | DevOps — deploy/release profiles reorganization | `/specs/devops/deploy-release-profiles-reorganization.md` |
+| Claude Code entry point | `/CLAUDE.md` |
+| AI-driven development process | `/docs/process/ai-driven-development.md` |
+| Branching, CI/CD and release pipeline | `/docs/devops/README.md` |
+| Product requirements and waves | `/specs/product/PRD.md` |
 
 ## Wiki References
 
