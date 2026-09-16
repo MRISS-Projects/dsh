@@ -731,7 +731,7 @@ Cover, for each of the six steps: what it takes as input, which Superpowers skil
 
 Include this Mermaid diagram of the loop:
 
-```markdown
+````markdown
 ```mermaid
 flowchart TD
     A[Idea or need] --> B["1. Brainstorm<br/>dsh-plan-wave"]
@@ -754,8 +754,7 @@ flowchart TD
     O -->|yes| P["STOP - human merges"]
 ```
 
-<!-- markdownlint-disable-next-line MD040 -->
-```
+````
 
 Add a short section, **"Why Claude stops at green"**, explaining spec decision D4: creating an issue or a PR is reversible and reviewable; closing an issue and merging a PR are neither, so they stay with the repo owner.
 
@@ -805,7 +804,7 @@ Use the output to drive the diagram. Do not draw a trigger the YAML does not hav
 
 Branching and release model:
 
-```markdown
+````markdown
 ```mermaid
 gitGraph
     commit id: "master"
@@ -824,12 +823,11 @@ gitGraph
     commit id: "hotfix line"
 ```
 
-<!-- markdownlint-disable-next-line MD040 -->
-```
+````
 
 Pipeline map:
 
-```markdown
+````markdown
 ```mermaid
 flowchart LR
     subgraph gates["Gates - run per change"]
@@ -849,8 +847,7 @@ flowchart LR
     end
 ```
 
-<!-- markdownlint-disable-next-line MD040 -->
-```
+````
 
 Add a table of each workflow, its trigger, and what it gates. Add a short **"Parent POM"** section recording that `com.mriss.mriss-parent:products` comes from GitHub Packages, that upgrades are manual, and that the current `3.8.0-SNAPSHOT` pin is a known reproducibility risk tracked in the PRD (spec §2.1).
 
