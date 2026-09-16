@@ -574,9 +574,10 @@ Keep it to roughly 120 lines. It states identity, commands, rules and process �
 # CLAUDE.md
 
 Document Smart Highlights (DSH) is a Java 17 / Spring Boot multi-module Maven system that
-analyses documents and produces smart highlights. It is mid-migration from self-managed
-MongoDB / RabbitMQ / Solr to managed GCP services — see
-`specs/architecture/ADR-001-GCP-based-components.md`.
+analyses documents and produces smart highlights. It currently runs on self-managed
+MongoDB / RabbitMQ / Solr. A migration to managed GCP services (Firestore + GCS, Cloud Pub/Sub,
+Vertex AI Search) is **proposed** in `specs/architecture/ADR-001-GCP-based-components.md` —
+status Proposed, no implementation work has started yet.
 
 ## This file is a router
 
@@ -602,7 +603,7 @@ agent in this repo: commands, branch rules, gates, and the development process.
 | Module | Responsibility |
 |---|---|
 | `dsh-rest-api` | Public REST API, Spring Boot |
-| `dsh-doc-analyser` | Analysis engine; sub-modules for keyword and top-sentence extraction |
+| `dsh-doc-analyser` | Analysis engine; sub-modules for keyword extraction, top-sentence extraction, and doc processing (`dsh-doc-processor-worker`) |
 | `dsh-doc-indexer-worker` | Async indexing worker |
 | `dsh-data` | Shared models and persistence |
 | `dsh-solr` | Solr integration and custom plugins (replacement proposed — see ADR-001) |
