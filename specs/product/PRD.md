@@ -24,9 +24,11 @@ not work already in progress.
   the process) — independent, negotiable, valuable, estimable, small, and testable. A task too
   large for one task branch gets split into more than one story at that point, not written as a
   single oversized story.
-- An issue number next to a task (e.g. `#48`) means an existing GitHub issue was triaged into that
-  wave and should be referenced from the resulting story. A task with no issue number is new work
-  identified while writing this PRD, and does not yet have an issue.
+- An issue number next to a task (e.g. `#48`) means a GitHub issue exists for it and should be
+  referenced from the resulting story. Wave 0's items all have issues; waves 1-6 mostly do not yet,
+  and their tasks become issues via `dsh-new-story` when they are picked up.
+- Where an item has an issue, **the issue is the source of truth** for its rationale and acceptance
+  criteria — this document should not restate them, so the two cannot drift apart.
 - Waves 1-5 mirror the five migration phases in ADR-001 §4 one-for-one. Their task lists are drawn
   directly from those phase tables — no tasks were invented here that ADR-001 does not already
   enumerate.
@@ -62,55 +64,35 @@ migration, plus gaps found while writing this PRD.
 - `#46` — Implement integration tests using embedded tomcat server
 - `#70` — Project link not working at maven generated site
 - `#90` — index.html missing from published site on gh-pages (root + all submodules)
+- `#92` — Remove dead `install-parent-pom.sh` and root `parent-pom.xml`
+- `#93` — Revisit the coverage gate shape once the GCP migration is underway
+- `#94` — Make `check-spec-references` enforcing, or remove it
+- `#95` — Use a read-only token for CI package authentication (security)
 
-**New tasks identified while writing this PRD (no issue yet):**
+Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
+while reviewing the branch that introduced it; each carries its full rationale and acceptance
+criteria. The paragraphs that originated them have been removed from this document — the issues are
+now the single source of truth for that work.
 
-1. **Remove `install-parent-pom.sh` and the root `parent-pom.xml`.** They install
-   `com.mriss:mriss-parent:1.2.4`, an artifact no module in this repo inherits from — the real
-   parent is `com.mriss.mriss-parent:products` (see root `pom.xml`). They survive only because the
-   Travis-era `build-ci*.sh` scripts still reference them. Removing all of it together is one
-   story.
-2. ~~Widen the markdown lint glob to cover `.claude/**`.~~ **Done** in this fix wave:
-   `.github/workflows/spec-validation.yml`'s `validate-markdown` job and its trigger `paths:` now
-   both cover `CLAUDE.md` and `.claude/**`, so the five project skills under `.claude/skills/` are
-   inside the enforcing gate.
-3. **The JaCoCo aggregate's scope is already complete — no widening needed.** Verified directly:
-   `dsh-coverage-report/pom.xml` depends on all 8 code-bearing modules (`dsh-data`, `dsh-rest-api`,
-   `dsh-doc-indexer-worker`, `dsh-doc-processor-worker`, `dsh-keyword-extractor`,
-   `dsh-top-sentences-extractor`, `solr-advanced-numbers-filter`, `solr-terms-vector-order`) plus
-   `dsh-test-dataset` (no main sources), and the aggregate's CSV contains 15 packages spanning all
-   8 of them. The rest of the 13 modules are aggregator POMs (root, `dsh-doc-analyser`, `dsh-solr`,
-   `dsh-coverage-report`) with no production code of their own. The whole repository has 38 main
-   `.java` files, so 2,028 instructions **is** the entire codebase, not a slice of it. The
-   codebase is simply small — which is exactly what makes the coverage floor sensitive to a single
-   new class.
-4. **Revisit the coverage baseline once waves 1-5 are underway.** `.github/coverage-baseline.txt`
-   is `95.00`, against a measured `98.13`. It was lowered from `98.13` by an explicit owner
-   decision: on a 2,028-instruction denominator the original floor left no headroom — one new
-   untested ~100-instruction class dropped the aggregate below it and turned the build red, and
-   the ADR-001 migration (waves 1-5) adds exactly that kind of code.
-   The accepted trade-off is that coverage can now decay from 98.13 to 95.00 before the gate
-   notices. Revisit once the migration's shape is clear: either raise the floor back toward actual
-   coverage, or replace the flat floor with a tolerance band (for example, "missed instructions
-   must not increase by more than N"), which ratchets without blocking normal work.
-5. **Make `check-spec-references` enforcing, or remove it.** The `check-spec-references` job in
-   `.github/workflows/spec-validation.yml` initializes `missing=0`, never increments it, prints a
-   `WARNING` for each unresolved reference, and always exits 0 — it cannot fail a run. It reads as
-   an enforcing gate but is advisory only. This mirrors the `|| true` problem already fixed for
-   markdownlint: either make it actually fail the job on a missing reference, or remove it and stop
-   describing it as a gate.
-6. **Use a minimally-scoped token for CI package reads (security).** `.github/workflows/ci.yml`
-   exposes `DEPLOY_TOKEN` in the job-wide `env:` block, so every step — including
-   `mvn -B install`, which compiles and runs test code authored in the pull request — can read it.
-   The same token is used by `documentation-sync.yml` with `git-auto-commit-action`, so it is
-   **write-capable**, not read-only. Fork pull requests do not receive secrets, so the exposure is
-   limited to same-repository branches; but `ci.yml` runs on *every* pull request with no path
-   filter, which is a wider surface than the pre-existing `api-testing.yml`.
-   Step-scoping the variable does not fix this on its own: the generated `settings.xml` references
-   `${env.DEPLOY_TOKEN}`, which Maven interpolates at build time, so the build step genuinely needs
-   it. The real fix is a **separate GitHub PAT with only `read:packages`**, stored as its own
-   secret and used by `ci.yml` and `api-testing.yml`, leaving the write-capable `DEPLOY_TOKEN` to
-   the release and documentation workflows that actually push.
+**Two findings from the same review are deliberately *not* issues:**
+
+- **The markdown lint glob already covers `.claude/**`.** `.github/workflows/spec-validation.yml`'s
+  `validate-markdown` job and its trigger `paths:` were widened on the branch that created this
+  PRD, so the five project skills under `.claude/skills/` sit inside the enforcing gate. Done, not
+  pending.
+- **The JaCoCo aggregate's scope is already complete — there is nothing to widen.** Verified
+  directly: `dsh-coverage-report/pom.xml` depends on all 8 code-bearing modules (`dsh-data`,
+  `dsh-rest-api`, `dsh-doc-indexer-worker`, `dsh-doc-processor-worker`, `dsh-keyword-extractor`,
+  `dsh-top-sentences-extractor`, `solr-advanced-numbers-filter`, `solr-terms-vector-order`) plus
+  `dsh-test-dataset` (no main sources), and the aggregate CSV contains 15 packages spanning all 8.
+  The remaining modules of the 13 are aggregator POMs (root, `dsh-doc-analyser`, `dsh-solr`,
+  `dsh-coverage-report`) with no production code. The repository has 38 main `.java` files, so
+  2,028 instructions **is** the entire codebase, not a slice.
+
+  This matters because it reframes `#93`: the coverage floor is sensitive to a single new class
+  because the codebase is genuinely small, not because the measurement is partial. An earlier draft
+  of this PRD claimed the scope was narrow and asked for it to be widened — that was wrong, and it
+  had gated the baseline work behind a task that could never complete.
 
 The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item —
 see §6 for why it belongs in accepted risks rather than the backlog.
@@ -258,14 +240,14 @@ scheduled after it so the migration lands first.
 
 ## 5. Won't-fix
 
-Two open issues are superseded by the ADR-001 migration itself and will not be built as written.
-Closure is recorded here for visibility; the issues are not closed by this PRD — see
-`scripts/close-wontfix-issues.sh`, which is for manual review, not automatic execution.
+Two issues were superseded by the ADR-001 migration itself and will not be built as written. Both
+were **closed as `not planned` on 2026-09-16** by the repo owner, each with a comment naming the
+wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what was run.
 
 | Issue | Reason | Superseded by |
 |---|---|---|
-| `#65` — Implement indexer-worker daemon | Its body specifies enqueuing via RabbitMQ and storing results in Solr — both surfaces this migration replaces. | Wave 3 (Cloud Pub/Sub) and Wave 4 (Vertex AI Search) |
-| `#47` — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour belongs on the new repository, not the one being replaced. | Wave 2 (Firestore + GCS) |
+| `#65` (closed) — Implement indexer-worker daemon | Its body specifies enqueuing via RabbitMQ and storing results in Solr — both surfaces this migration replaces. | Wave 3 (Cloud Pub/Sub) and Wave 4 (Vertex AI Search) |
+| `#47` (closed) — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour belongs on the new repository, not the one being replaced. | Wave 2 (Firestore + GCS) |
 
 `#52` is explicitly **not** in this table — see Wave 6 above for why it was reviewed and kept.
 
@@ -284,6 +266,7 @@ Closure is recorded here for visibility; the issues are not closed by this PRD �
 - **Coverage badge and CI figure disagree.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate currently computes
   98.13% against a 2,028-instruction denominator, which is the whole codebase, not a partial one —
-  see Wave 0 tasks 3 and 4. The two either measure different scopes or the badge is stale; they
+  see Wave 0's note on aggregate scope, and `#93`. The two either measure different scopes or the
+  badge is stale; they
   should be reconciled directly (e.g. regenerating the badge), rather than trusted as-is in the
   meantime.
