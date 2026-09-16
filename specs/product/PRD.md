@@ -84,10 +84,15 @@ migration, plus gaps found while writing this PRD.
    `.java` files, so 2,028 instructions **is** the entire codebase, not a slice of it. The
    codebase is simply small — which is exactly what makes the coverage floor sensitive to a single
    new class.
-4. **Revisit the coverage baseline.** `.github/coverage-baseline.txt` is `98.13`. On a
-   2,028-instruction denominator that floor is brittle — one new untested ~100-instruction class
-   drops the aggregate to roughly 93.5% and turns the build red. The ADR-001 migration (waves 1-5)
-   adds substantial new code and will fight this gate as written.
+4. **Revisit the coverage baseline once waves 1-5 are underway.** `.github/coverage-baseline.txt`
+   is `95.00`, against a measured `98.13`. It was lowered from `98.13` by an explicit owner
+   decision: on a 2,028-instruction denominator the original floor left no headroom — one new
+   untested ~100-instruction class dropped the aggregate below it and turned the build red, and
+   the ADR-001 migration (waves 1-5) adds exactly that kind of code.
+   The accepted trade-off is that coverage can now decay from 98.13 to 95.00 before the gate
+   notices. Revisit once the migration's shape is clear: either raise the floor back toward actual
+   coverage, or replace the flat floor with a tolerance band (for example, "missed instructions
+   must not increase by more than N"), which ratchets without blocking normal work.
 5. **Make `check-spec-references` enforcing, or remove it.** The `check-spec-references` job in
    `.github/workflows/spec-validation.yml` initializes `missing=0`, never increments it, prints a
    `WARNING` for each unresolved reference, and always exits 0 — it cannot fail a run. It reads as
