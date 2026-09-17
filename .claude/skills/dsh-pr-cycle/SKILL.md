@@ -13,7 +13,12 @@ is the PR number.
 
 ## Input
 
-An open pull request, and at least one of: a failed CI check, or unresolved review threads.
+An open pull request, and at least one of: a failed CI check, unresolved review threads, or **a
+completed review that raised nothing** where the story's spec records review-round outcomes.
+
+That third case is easy to miss, because nothing about the PR looks like it needs attention. A
+review can close with zero comments and still owe the spec a data point — and a round that is
+never invoked is a data point never recorded. See §3's last bullet.
 
 ## 1. Gather the actual state
 
