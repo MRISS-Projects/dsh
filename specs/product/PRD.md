@@ -121,9 +121,9 @@ only caller was the deleted `post-release-script.sh`, and the generated-vs-check
 `README.md`. `#92`'s spec promised the follow-up rather than widening its own scope.
 
 `#103` was spun off from `#93`'s review round. Copilot raised six findings on PR #102; five were
-right, and one — repeated four times — asserted that `-Denforcer.skip=true` bypasses the new
-coverage-data guard and "must be verified/fixed in the shared parent". Running it showed the
-opposite, and produced the second upstream commit: the guard is unaffected, but DSH's *other*
+right, and one — repeated in 3 of its 9 comments — asserted that `-Denforcer.skip=true` bypasses
+the new coverage-data guard and "must be verified/fixed in the shared parent". Running it showed
+the opposite, and produced the second upstream commit: the guard is unaffected, but DSH's *other*
 enforcer execution has no `<skip>` and **is** disabled by that flag, so the caveat was wrong in a
 different way than the review claimed. `#103` was opened on the reading that two gaps made that
 round expensive, and **the first of the two turned out to be false.** Copilot code review reads
