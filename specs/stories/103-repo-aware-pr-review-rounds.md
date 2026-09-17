@@ -24,8 +24,8 @@ reviewer was told about and did not apply
   `.claude/skills/dsh-pr-cycle/SKILL.md`, `.claude/skills/dsh-ship-story/SKILL.md`,
   `docs/process/ai-driven-development.md`
 
-On PR #102 Copilot raised six findings. Five were valid. One — repeated across four comments —
-claimed `-Denforcer.skip=true` bypasses `enforce-coverage-data-exists` and "must be
+On PR #102 Copilot raised six findings. Five were valid. One — repeated across three of its nine
+comments — claimed `-Denforcer.skip=true` bypasses `enforce-coverage-data-exists` and "must be
 verified/fixed in the shared parent". It does not: that execution sets `<skip>` explicitly, which
 beats the parameter's `enforcer.skip` user property. A single run shows both behaviours, because
 DSH's *other* enforcer execution (`enforce-lowercase-artifact-id`, root `pom.xml`) has no
@@ -195,9 +195,37 @@ has never said is who wins when verification is contested.
 ### 7.3 `.claude/skills/dsh-ship-story/SKILL.md`
 
 Step 6 gains a note that `Balanced` is the effort level to request for a substantive pull
-request, that `Lite` is cost-efficient and targeted, and that the choice is **a per-PR human
-action taken under Reviewers when the review is requested** — not a repository setting and not
-something Claude can select.
+request, that `Lite` is cost-efficient and targeted, and that the choice is **a human action
+Claude cannot take**.
+
+**Corrected during step 7, after the fact was checked against GitHub's documentation.** This
+section, the shipped skill and §7.4's process note all originally said the effort level is "not a
+repository setting". **That is false.** There are three layers, and collapsing them to one denied
+a setting that exists:
+
+| Layer | What it governs |
+|---|---|
+| Organization default | Inherited by repositories that have not set their own |
+| Repository setting | Settings > Copilot > Code review > "Review effort level" — the default for **automatic** reviews |
+| Per-PR choice | Under **Reviewers** when a review is requested; applies to that review alone and changes neither default |
+
+Sources: [Configuring code review][cfg-review] ("next to 'Review effort level', select the effort
+level for automatic reviews in this repository") and the [effort levels GA changelog][effort-ga]
+("Your choice only applies to that review and doesn't change the repository or organization
+default").
+
+What survives unchanged: there is no workflow to change, no file in this repository sets it, and
+Claude cannot select any of the three.
+
+**Why this is recorded rather than quietly fixed.** The claim was asserted without being checked,
+inside the story whose purpose is to stop exactly that. §11.2 records the same failure twice over
+already; this is the third instance and the only one caught after the code shipped to a pull
+request rather than before. It also bears on the experiment: PR #105's round-1 review arrived
+**automatically**, so its `Lite` came from a default — the very layer this section denied — and
+not from a per-PR choice.
+
+[cfg-review]: https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/configure-code-review
+[effort-ga]: https://github.blog/changelog/2026-08-07-copilot-code-review-effort-levels-are-generally-available/
 
 ### 7.4 `docs/process/ai-driven-development.md`
 
@@ -354,7 +382,7 @@ three files is one finding, not three.
 |---|---|---|---|---|---|
 | Baseline — PR #102 | `Lite` | no | **yes** — 1 finding, restated in 3 of 9 comments | 6 distinct, in 9 comments | 1 of 6 |
 | Round 1 — PR #105, first review | `Lite` | yes | **no** | **0**, in 0 comments | — (none raised) |
-| Round 2 — this PR, re-requested | `Balanced` | yes | *pending* | *pending* | *pending* |
+| Round 2 — PR #105, re-requested | `Balanced` | yes | **no** | **2 distinct, in 2 comments** | 0 of 2 |
 
 **Baseline, reconstructed from GitHub rather than from memory.** Copilot's single review of PR #102
 (`2026-09-17T19:04:42Z`, commit `fb3f0a09`, state `COMMENTED`) carried 2 surfaced inline comments
@@ -413,14 +441,43 @@ figure of 9, which it does not return. Leaving either in a section headed "recon
 GitHub rather than from memory" would have shipped this story's own failure mode inside its
 evidence.
 
-**Round 2 is still outstanding.** It needs the Copilot review re-requested at `Balanced`, which is
-a human action on the pull request page. Until it is recorded here, **AC006 stays open** and the
-story is not claiming a result it has not measured.
+**Round 2, taken on this pull request.** The review was re-requested at `Balanced` and submitted
+at `2026-09-17T22:31:19Z` against commit `da8b7c93`. The footer records `Files reviewed: 7/7`,
+`Comments generated: 2` and `Review effort level: Balanced`. Verdict: "Changes recommended". No
+finding asserted that a gate is missing or bypassable. Both findings were **valid and were
+fixed** — neither needed an answer instead of a fix:
 
-**The §11.1 assumption is still unverified.** Whether the effort level can be raised and the
-Copilot review re-requested on an already-open PR is checked when round 2 is attempted. If it
-cannot be done, round 2 moves to the next story's PR and this table records that outcome rather
-than a data point that was never taken.
+- `specs/product/PRD.md` and `specs/stories/103-…:27` still said the false `#102` finding was
+  repeated **four** times, contradicting the reconstruction in this section, which says 3.
+
+**This is the sharpest result of the three, and it is not flattering.** §11.2 already stated that
+the "4" had been "inherited from the `#93`-era prose in §2 and `specs/product/PRD.md`" — it named
+the two locations carrying the error and then left both uncorrected. The local `superpowers`
+review missed it, round 1 at `Lite` missed it, and the author missed it. `Balanced` found it in
+one pass, on unchanged code, and flagged it as "previously missed".
+
+**What the three points support, and what they do not.**
+
+- *Baseline → round 1* isolates the skill: at the same effort level, the false gate-bypass finding
+  that recurred in 3 comments did not recur at all. Consistent with the salience hypothesis; not
+  proof, for the reasons recorded above round 1.
+- *Round 1 → round 2* isolates effort, and is the cleaner of the two. Same commit family, same
+  skill, effort raised: findings went 0 → 2, both valid, both real defects on code round 1 had
+  already reviewed. **`Balanced` is measurably deeper than `Lite` on this repository's material**,
+  which is the evidence AC005's rule was previously asserted without.
+- Neither point licenses a claim about *why* the `#102` false finding did not recur. Two variables
+  moved across the three rounds and each was isolated once, at n=1 per cell, against a
+  nondeterministic reviewer.
+
+**The §11.1 assumption is verified, not assumed.** The effort level *can* be raised and the
+Copilot review re-requested on an already-open pull request: round 2 was taken that way, and the
+review body states `Review effort level: Balanced` where round 1's states `Lite`. Round 2 did not
+need to move to another story's PR.
+
+**A correction this round also produced.** Checking how the effort level is actually selected
+showed that §7.3's "not a repository setting" was false — there are three layers, one of them a
+repository setting. Recorded in §7.3 with citations. It bears on the reading of round 1: that
+review arrived automatically, so its `Lite` came from a default, not from a per-PR choice.
 
 ## 12. Out of scope
 
