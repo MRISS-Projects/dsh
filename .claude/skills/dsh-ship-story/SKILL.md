@@ -26,6 +26,11 @@ Invoke `superpowers:verification-before-completion` first. Evidence before asser
     echo "Monitor with:  tail -f .logs/mvn-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
+That one command is the whole gate. `jacoco:check` enforces 95% LINE and BRANCH per module and
+`enforce-coverage-data-exists` rejects a module that produced no coverage data at all; both are
+bound to `verify` and inherited from `parent-poms`, so there is no second command to run and
+nothing to find by grepping this repository.
+
 Read `parent_branch` from the front matter of `specs/stories/<n>-<slug>.md`.
 
 ## Hard stop

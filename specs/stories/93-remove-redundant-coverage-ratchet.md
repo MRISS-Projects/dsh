@@ -433,6 +433,13 @@ there is no failsafe configuration and no `*IT.java` test in the repository (`#4
 asserted a gate that does not exist — the same fault as the coverage claims this story removes. It
 survived only because nothing else in the sentence was wrong.
 
+**Deleting the invocation is not enough on its own.** AC004 requires these skills to *describe* the
+inherited gate, and a skill that merely loses a line describes nothing: an agent invoking
+`dsh-pr-cycle` alone, which the process explicitly supports, would never learn what the gate is or
+that it lives in the parent. So `dsh-ship-story` and `dsh-pr-cycle` each gain the same short
+paragraph naming `jacoco:check`, `enforce-coverage-data-exists` and their origin. `dsh-build-story`
+already carries the longer version.
+
 These three were not in the issue's original AC004 either. Left alone they would instruct an agent
 to run a deleted script on every story.
 

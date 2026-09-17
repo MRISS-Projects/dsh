@@ -70,6 +70,11 @@ Run the local gate first, then push once:
     echo "Monitor with:  tail -f .logs/mvn-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
+That one command is the whole gate. `jacoco:check` enforces 95% LINE and BRANCH per module and
+`enforce-coverage-data-exists` rejects a module that produced no coverage data at all; both are
+bound to `verify` and inherited from `parent-poms`, so there is no second command to run and
+nothing to find by grepping this repository.
+
 Batching the round into one push keeps CI runs proportional to review rounds rather than to
 individual fixes.
 
