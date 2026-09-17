@@ -1,5 +1,12 @@
 # AI-Driven Development Process Implementation Plan
 
+> **Status: completed, historical record — do not execute.** This plan was delivered on
+> 2026-09-16. It is kept for the reasoning it captures, not as instructions. The repository has
+> moved on since: where anything here conflicts with `CLAUDE.md`, `docs/devops/README.md` or
+> `docs/process/ai-driven-development.md`, **those files are correct and this one is not.** Known
+> divergences: the `-U` constraint below was reversed by `#99`, and CI now authenticates with
+> `PACKAGES_READ_TOKEN`, not `DEPLOY_TOKEN`, per `#95`.
+>
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Initialise the DSH repository for Claude Code and encode a 6-step AI-driven development process, closing the four gaps that currently prevent that process from running.

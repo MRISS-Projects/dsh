@@ -71,7 +71,11 @@ status. `.logs/` is gitignored; never commit a build log. In `ci.yml` do **not**
 GitHub Actions already captures the output.
 
 Upgrading the parent version is a deliberate, manual edit to the root `pom.xml`. CI never
-rebuilds `parent-poms` and never passes `-U`.
+rebuilds `parent-poms`, and both Maven invocations in this repository's workflows pass `-U` —
+while the parent is a `SNAPSHOT`, tracking the current one on every run is the intended contract.
+The release wrappers build through reusable workflows in `parent-poms`, which set their own flags.
+See
+`docs/devops/README.md`, "Parent POM", for why, and for when to drop the flag.
 
 ## Branch rules
 

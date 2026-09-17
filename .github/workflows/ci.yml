@@ -132,11 +132,18 @@ jobs:
             });
           '
 
-      # No -U: the parent is a SNAPSHOT and -U would re-resolve it on every
-      # run, so the same commit could build differently on different days.
-      # Parent upgrades are deliberate and manual.
+      # -U, deliberately: the parent is a SNAPSHOT, and while it is, tracking the
+      # current parent POM on every run is the intended contract - this repository
+      # is the first consumer of parent-poms changes. Omitting -U never bought
+      # reproducibility: Maven refreshes SNAPSHOT metadata on its own daily
+      # schedule, and the ~/.m2 cache restored by setup-java varies in age, so the
+      # parent still moved - just invisibly. Parent version upgrades remain a
+      # deliberate, manual edit to the root pom.xml; -U only refreshes the SNAPSHOT
+      # that pom already names. When the parent is pinned to a released version,
+      # drop -U: resolution becomes reproducible and the flag stops earning its
+      # place. See docs/devops/README.md, "Parent POM".
       - name: Build and test all modules
-        run: mvn -B install --file pom.xml
+        run: mvn -B -U install --file pom.xml
 
       - name: Coverage ratchet
         run: |
