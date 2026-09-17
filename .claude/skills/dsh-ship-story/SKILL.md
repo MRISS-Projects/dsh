@@ -36,11 +36,21 @@ Show the human the PR title, the PR body, and the resolved base branch. Wait for
 **Then** run:
 
     git push -u origin issue-<n>-<slug>
-    gh pr create --base <parent_branch> --title "<title>" --body "Closes #<n>" --fill
+    gh pr create --base <parent_branch> --title "<title>" --body "Refs #<n>" --fill
     gh run watch
 
 **`--base` is never `master`.** If the front matter says `master`, something went wrong
 upstream in step 3 - stop and raise it.
+
+**`Refs`, not `Closes` — and do not "fix" this back.** GitHub only auto-closes a linked issue
+when the pull request merges into the repository's **default branch**. Here that is `master`,
+and a story PR never targets it: it targets `DEVELOP`, an RC branch, or a hotfix line. So
+`Closes #<n>` would silently do nothing on every story PR, while reading as though the issue
+were handled. Verified on `#98` - merged into `staging-0.3.0-SNAPSHOT-RC` with `Closes #95` in
+the body, and `#95` stayed open.
+
+Closing the issue stays the human's call, which is what the hard stop below already requires.
+The issue's real close point is when the release merges the RC into `master`.
 
 ## Where this skill stops
 
