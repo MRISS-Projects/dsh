@@ -193,22 +193,24 @@ oversight and re-open it.
 
 Numbered to match `#95`. AC005-AC008 cover the additions this spec makes to it — see §9.
 
-- [ ] AC001: `PACKAGES_READ_TOKEN` is a classic PAT holding `read:packages` and no other scope,
+- [x] AC001: `PACKAGES_READ_TOKEN` is a classic PAT holding `read:packages` and no other scope,
   stored as a repository secret. Already in place per §4; the scope is confirmed by the repository
   owner against the PAT's settings page or the `x-oauth-scopes` header, not by the Actions API.
-- [ ] AC002: `ci.yml` and `api-testing.yml` reference `PACKAGES_READ_TOKEN` and no longer reference
+- [x] AC002: `ci.yml` and `api-testing.yml` reference `PACKAGES_READ_TOKEN` and no longer reference
   `DEPLOY_TOKEN` anywhere, including in comments.
-- [ ] AC003: `DEPLOY_TOKEN` still appears in exactly the five workflows listed in §6 —
+- [x] AC003: `DEPLOY_TOKEN` still appears in exactly the five workflows listed in §6 —
   `documentation-sync.yml`, `stage.yml`, `staging.yml`, `release.yml`, `hotfix.yml` — and nowhere
   else under `.github/workflows/`.
-- [ ] AC004: Both workflows still resolve `com.mriss.mriss-parent:products` from GitHub Packages
+- [x] AC004: Both workflows still resolve `com.mriss.mriss-parent:products` from GitHub Packages
   and pass. Demonstrated by CI itself on the pull request.
-- [ ] AC005: Both workflows fail with the explicit `::error::` message from §5.1 when the secret is
+- [x] AC005: Both workflows fail with the explicit `::error::` message from §5.1 when the secret is
   absent, before Maven runs.
-- [ ] AC006: `docs/devops/README.md` carries the `## Secrets` section from §5.3, and its contents
-  match `.github/workflows/` workflow for workflow.
-- [ ] AC007: Markdown lint passes over the changed documentation.
-- [ ] AC008: CI is green on the pull request, and the coverage ratchet is unaffected — no
+- [x] AC006: `docs/devops/README.md` carries the `## Secrets` section from §5.3. Every workflow
+  under `.github/workflows/` is named in that section, and the secret each one is listed against is
+  the secret that workflow actually references — so the section cannot drift from the directory
+  unnoticed. Swept in §11 step 6.
+- [x] AC007: Markdown lint passes over the changed documentation.
+- [x] AC008: CI is green on the pull request, and the coverage ratchet is unaffected — no
   production code is touched.
 
 ## 9. Issue body reconciliation — applied
@@ -329,3 +331,17 @@ red-first through the one mechanism that actually executes a workflow.
    locally, not as evidence for AC004.
 
 5. **Markdown lint** for AC007, using the command in `CLAUDE.md`.
+
+6. **Sweep for AC006**, scoped to the `## Secrets` section rather than the whole file — grepping
+   all of `docs/devops/README.md` would be satisfied by the Workflow Reference table above it and
+   would mask a genuine gap:
+
+   ```bash
+   awk '/^## Secrets$/,/^## Parent POM$/' docs/devops/README.md > /tmp/sec.txt
+   git ls-files '.github/workflows/*' | xargs -n1 basename | while read -r f; do
+     grep -q "$f" /tmp/sec.txt && echo "covered  $f" || echo "MISSING  $f"
+   done
+   ```
+
+   Expected: all nine workflows covered. A workflow added later without a line in that section
+   fails this, which is the point — the section is a claim about the whole directory.
