@@ -78,7 +78,7 @@ criteria.
 | `#94` | open | Make `check-spec-references` enforcing, or remove it |
 | `#95` | **closed** — PR #98 | Use a read-only token for CI package authentication |
 | `#97` | open | Resolve the tooling orphaned by the Travis estate removal |
-| `#99` | open | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
+| `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -93,10 +93,10 @@ build-failing, so the second gate (`scripts/check-coverage.sh` plus
 
 `#99` came later still, spun off from `#95`'s out-of-scope list while that story was being built:
 `ci.yml` and `api-testing.yml` disagreed on `-U`, so the two could resolve different parent
-SNAPSHOTs from the same commit. It is resolved *towards* `-U` rather than away from it — while the parent is
-a `-SNAPSHOT` and this repository is the first consumer of `parent-poms` changes, tracking the
-current parent on every run is the intended contract, and omitting `-U` never bought
-reproducibility in the first place.
+SNAPSHOTs from the same commit. It was resolved *towards* `-U` rather than away from it — while the
+parent is a `-SNAPSHOT` and this repository is the first consumer of `parent-poms` changes,
+tracking the current parent on every run is the intended contract, and omitting `-U` never bought
+reproducibility in the first place. Shipped in PR #100.
 
 `#97` was spun off from `#92` when that story shipped: removing the Travis estate deliberately left
 three things behind — four uncalled `mvn` wrapper scripts, the `update-readme` Maven profile whose
