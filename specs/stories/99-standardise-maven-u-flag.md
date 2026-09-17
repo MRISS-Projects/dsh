@@ -126,6 +126,7 @@ needs no edit.
 | `documentation-sync.yml`, `wiki-sync.yml`, `spec-validation.yml` | No Maven invocation at all. Confirmed by sweeping `.github/workflows/` for `mvn`. |
 | `CLAUDE.md`'s Commands table | Local `mvn -B install` stays as-is. A developer deciding when to refresh their own `~/.m2` is not the inconsistency this story fixes, and `-U` on every local build of a 13-module reactor costs a metadata check for no gain. Decided explicitly, not overlooked. |
 | `specs/stories/95-read-only-ci-package-token.md` | A shipped story's record. Its §10 already resolves *towards* `-U`, so it neither contradicts this change nor needs rewriting to avoid doing so. |
+| `docs/superpowers/plans/2026-09-16-*.md`, `docs/superpowers/specs/2026-09-16-*.md` | **Banner added, body untouched.** Both are tracked, both sit in AC004's `docs/**` scope, and both carried the pre-change rule — the plan as a live `## Global Constraints` line ("Never pass `-U` to Maven in `ci.yml`") that an agent executing the plan would obey. Rewriting their bodies would falsify a record of what was decided on 2026-09-16, so each gets a status banner instead: completed/superseded, with `CLAUDE.md` and `docs/devops/README.md` named as authoritative and the `-U` and `DEPLOY_TOKEN` divergences called out. The second of those was already stale from `#95`. |
 | Root `pom.xml` | Pinning a released parent is Wave 0's closing goal, not this story. |
 | `cache: 'maven'` in both workflows | Kept. With `-U` the cache no longer decides *which* parent is resolved, only how much is re-downloaded — which is what a build cache should decide. |
 
@@ -168,6 +169,13 @@ apply. The gates are greps and the existing CI run:
 
 1. **AC001 and AC004 are executable checks.** Run both greps locally before pushing and paste the
    output into the PR body.
+
+   **Run AC004's sweep unfiltered.** The first attempt piped the results through
+   `grep -v "^docs/superpowers/"`, on the assumption that the directory was agent scratch output.
+   It is not: both files there are tracked, sit inside the `docs/**` scope AC004 names, and held
+   the pre-change rule. The filter made the check pass by hiding its only real failures. Local
+   code review caught it. Any exclusion applied to an AC's own verification must be justified in
+   this spec, not applied at the command line.
 2. **The real test is CI itself.** `ci.yml` runs on the pull request, so the changed build step
    executes against a real runner. A green run proves `-U` resolves `3.8.0-SNAPSHOT` successfully
    with the read-only package token from `#95`.
@@ -201,3 +209,11 @@ apply. The gates are greps and the existing CI run:
   ships first, AC005's wording is the only thing affected and the conflict is a trivial one in
   `ci.yml`.
 - **Pinning the Maven version in workflows.** That is `#87`.
+- **Making a dead package token fail the build.** Raised by local review of this story. `ci.yml`'s
+  "Verify package credentials are present" step (lines 57-62) checks only that the secret is
+  non-empty, never that it authenticates. Under `-U` a token that has expired or lost
+  `read:packages` produces a `401` metadata `WARNING` on *every* run while the build stays green
+  off the `setup-java` cache — silently building against a frozen parent until the cache evicts,
+  at which point the failure surfaces with no visible link to the credential. `-U` raises the
+  frequency of that warning, so it makes an existing blind spot easier to ignore; it does not
+  create it. A follow-up issue, not a change to this story.

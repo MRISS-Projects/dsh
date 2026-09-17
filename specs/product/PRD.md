@@ -92,8 +92,8 @@ build-failing, so the second gate (`scripts/check-coverage.sh` plus
 `.github/coverage-baseline.txt`) is the redundant one and is what the issue removes.
 
 `#99` came later still, spun off from `#95`'s out-of-scope list while that story was being built:
-`ci.yml` and `api-testing.yml` disagree on `-U`, so the two can resolve different parent SNAPSHOTs
-from the same commit. It is resolved *towards* `-U` rather than away from it — while the parent is
+`ci.yml` and `api-testing.yml` disagreed on `-U`, so the two could resolve different parent
+SNAPSHOTs from the same commit. It is resolved *towards* `-U` rather than away from it — while the parent is
 a `-SNAPSHOT` and this repository is the first consumer of `parent-poms` changes, tracking the
 current parent on every run is the intended contract, and omitting `-U` never bought
 reproducibility in the first place.
@@ -311,17 +311,17 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
 
 - **SNAPSHOT parent pin — accepted deliberately, not an oversight.** The root `pom.xml`
   intentionally tracks `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT`. A SNAPSHOT parent
-  re-resolves on Maven's daily snapshot refresh, so the same commit can build differently on
-  different days — that is a real reproducibility cost. It is accepted because upcoming work on
-  the `MRISS-Projects/parent-poms` project will change this repository's parent, and staying on
-  the SNAPSHOT is how those changes reach DSH without a release cycle per iteration.
-  Every CI Maven invocation passes `-U` (`#99`), which does not add drift — it makes the drift the
-  SNAPSHOT pin already carried consistent and visible instead of dependent on cache age. **Do not
-  file this as
-  a separate task.** It is not a standing risk with no end date: Wave 0 now carries the parent-poms
-  goal explicitly — clear both open milestones there, release `3.8.0` and `3.9.0`, then re-pin this
-  repo's root `pom.xml` to the released `3.9.0`. **This risk closes when that completes**, and needs
-  no owner action before then.
+  re-resolves as the parent moves, so the same commit can build differently from one run to the
+  next — that is a real reproducibility cost. It is accepted because upcoming work on the
+  `MRISS-Projects/parent-poms` project will change this repository's parent, and staying on the
+  SNAPSHOT is how those changes reach DSH without a release cycle per iteration. Both Maven
+  invocations in this repository's workflows pass `-U` (`#99`), which does not add that drift — it
+  makes the drift the SNAPSHOT pin already carried consistent and visible, instead of dependent on
+  the age of whatever `~/.m2` cache the runner restored. **Do not file this as a separate task.**
+  It is not a standing risk with no end date: Wave 0 now carries the parent-poms goal explicitly —
+  clear both open milestones there, release `3.8.0` and `3.9.0`, then re-pin this repo's root
+  `pom.xml` to the released `3.9.0`. **This risk closes when that completes**, and needs no owner
+  action before then.
 - **Coverage badge and CI figure disagree.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate currently computes
   98.13% against a 2,028-instruction denominator, which is the whole codebase, not a partial one —

@@ -1,5 +1,12 @@
 # Design: AI-Driven Development Process for DSH
 
+> **Status: historical record — superseded in part.** This design was delivered on 2026-09-16 and
+> is kept for its reasoning, not as a current description of the repository. Where it conflicts
+> with `CLAUDE.md`, `docs/devops/README.md` or `docs/process/ai-driven-development.md`, **those
+> files are correct and this one is not.** Known divergences: §2.1's recommendation that `ci.yml`
+> omit `-U` was reversed by `#99`, and the `DEPLOY_TOKEN` authentication described here was
+> replaced by `PACKAGES_READ_TOKEN` in `#95`.
+
 | Field | Value |
 | --- | --- |
 | **Date** | 2026-09-16 |
