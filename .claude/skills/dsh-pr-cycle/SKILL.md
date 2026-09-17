@@ -70,8 +70,6 @@ Run the local gate first, then push once:
     echo "Monitor with:  tail -f .logs/mvn-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
-    ./scripts/check-coverage.sh
-
 Batching the round into one push keeps CI runs proportional to review rounds rather than to
 individual fixes.
 

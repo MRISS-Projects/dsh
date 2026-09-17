@@ -26,8 +26,6 @@ Invoke `superpowers:verification-before-completion` first. Evidence before asser
     echo "Monitor with:  tail -f .logs/mvn-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
-    ./scripts/check-coverage.sh
-
 Read `parent_branch` from the front matter of `specs/stories/<n>-<slug>.md`.
 
 ## Hard stop

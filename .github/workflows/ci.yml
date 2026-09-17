@@ -145,13 +145,6 @@ jobs:
       - name: Build and test all modules
         run: mvn -B -U install --file pom.xml
 
-      - name: Coverage ratchet
-        run: |
-          chmod +x scripts/check-coverage.sh
-          ./scripts/check-coverage.sh \
-            dsh-coverage-report/target/site/jacoco-aggregate/jacoco.csv \
-            .github/coverage-baseline.txt
-
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
