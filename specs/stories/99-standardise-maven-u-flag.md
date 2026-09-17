@@ -190,9 +190,17 @@ apply. The gates are greps and the existing CI run:
    ```
 
    The build then succeeded from the parent POM already in the local repository. This is worth
-   recording as a property of the change rather than a defect in it: under `-U`, a failed metadata
-   refresh degrades to a `WARNING` and a stale-but-working parent, not a hard failure. It makes CI —
-   where the credential exists — the only place the resolution path is actually exercised.
+   recording as a property of the change rather than a defect in it, but the behaviour is
+   **conditional on that cached copy**, and the two cases differ sharply:
+
+   | Local repository | A 401 on the parent's metadata |
+   |---|---|
+   | Holds a usable `3.8.0-SNAPSHOT` parent | Degrades to a `WARNING`; the build proceeds against the cached, possibly stale parent |
+   | Does not (fresh runner, evicted cache) | The SNAPSHOT cannot be resolved at all; Maven fails with a non-resolvable parent POM |
+
+   So a broken credential is **not** harmless — it is intermittently invisible, which is worse. On
+   CI it usually lands in the first row, because `actions/setup-java` restores `~/.m2`. Either way
+   CI, where the credential exists, is the only place the resolution path is actually exercised.
 3. **`api-testing.yml` is path-scoped** to `dsh-rest-api/**` and `specs/api/**`, so this PR will
    not trigger it. That is expected, and no reason to touch it — it is already on `-U`.
 4. **Markdown lint** runs in `spec-validation.yml`, whose `paths:` filter covers `docs/**`,
@@ -213,7 +221,8 @@ apply. The gates are greps and the existing CI run:
   "Verify package credentials are present" step (lines 57-62) checks only that the secret is
   non-empty, never that it authenticates. Under `-U` a token that has expired or lost
   `read:packages` produces a `401` metadata `WARNING` on *every* run while the build stays green
-  off the `setup-java` cache — silently building against a frozen parent until the cache evicts,
-  at which point the failure surfaces with no visible link to the credential. `-U` raises the
+  off the `setup-java` cache — silently building against a frozen parent for as long as that cache
+  holds a usable parent. When it does not, the same credential fault stops being a warning and
+  fails the build outright, with no visible link back to the token. `-U` raises the
   frequency of that warning, so it makes an existing blind spot easier to ignore; it does not
   create it. A follow-up issue, not a change to this story.
