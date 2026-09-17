@@ -382,7 +382,7 @@ three files is one finding, not three.
 |---|---|---|---|---|---|
 | Baseline — PR #102 | `Lite` | no | **yes** — 1 finding, restated in 3 of 9 comments | 6 distinct, in 9 comments | 1 of 6 |
 | Round 1 — PR #105, first review | `Lite` | yes | **no** | **0**, in 0 comments | — (none raised) |
-| Round 2 — PR #105, re-requested | `Balanced` | yes | **no** | **2 distinct, in 2 comments** | 0 of 2 |
+| Round 2 — PR #105, re-requested | `Balanced` | yes | **no** | **3 distinct, in 4 comments** | 1 of 3 |
 
 **Baseline, reconstructed from GitHub rather than from memory.** Copilot's single review of PR #102
 (`2026-09-17T19:04:42Z`, commit `fb3f0a09`, state `COMMENTED`) carried 2 surfaced inline comments
@@ -442,13 +442,23 @@ GitHub rather than from memory" would have shipped this story's own failure mode
 evidence.
 
 **Round 2, taken on this pull request.** The review was re-requested at `Balanced` and submitted
-at `2026-09-17T22:31:19Z` against commit `da8b7c93`. The footer records `Files reviewed: 7/7`,
-`Comments generated: 2` and `Review effort level: Balanced`. Verdict: "Changes recommended". No
-finding asserted that a gate is missing or bypassable. Both findings were **valid and were
-fixed** — neither needed an answer instead of a fix:
+at `2026-09-17T22:31:19Z` against commit `da8b7c93`. Verdict: "Changes recommended". No finding
+asserted that a gate is missing or bypassable. **4 comments carrying 3 distinct findings** — 2
+surfaced inline and 2 suppressed in the review body:
 
-- `specs/product/PRD.md` and `specs/stories/103-…:27` still said the false `#102` finding was
-  repeated **four** times, contradicting the reconstruction in this section, which says 3.
+| Finding | Comments | Verdict |
+|---|---|---|
+| `dsh-pr-cycle`'s outcome-update bullet is unreachable: Input requires a failed check or an unresolved thread, so a zero-comment review can never invoke the round | `.claude/skills/dsh-pr-cycle/SKILL.md:79` | valid — fixed |
+| The stale "four comments" count, contradicting this section's reconstruction | `specs/product/PRD.md:128`, `specs/stories/103-…:27` | valid — fixed |
+| AC006's round 2 was still a row of placeholders | `specs/stories/103-…:357` | true when reviewed, and deliberate — **answered, not fixed**; closed by this round |
+
+So: 1 of 3 needed an answer rather than a fix. The first finding is the sharper of the two valid
+ones — it is a defect in a mechanism added earlier in this same session, and round 1 had already
+demonstrated it without anyone noticing.
+
+**The footer's "Comments generated" counts only the surfaced comments.** Round 2's read
+`Comments generated: 2` while 4 comments existed; `#102`'s read the same while 9 existed. Neither
+number is the count this table wants.
 
 **This is the sharpest result of the three, and it is not flattering.** §11.2 already stated that
 the "4" had been "inherited from the `#93`-era prose in §2 and `specs/product/PRD.md`" — it named
@@ -462,9 +472,9 @@ one pass, on unchanged code, and flagged it as "previously missed".
   that recurred in 3 comments did not recur at all. Consistent with the salience hypothesis; not
   proof, for the reasons recorded above round 1.
 - *Round 1 → round 2* isolates effort, and is the cleaner of the two. Same commit family, same
-  skill, effort raised: findings went 0 → 2, both valid, both real defects on code round 1 had
-  already reviewed. **`Balanced` is measurably deeper than `Lite` on this repository's material**,
-  which is the evidence AC005's rule was previously asserted without.
+  skill, effort raised: findings went 0 → 3, two of them real defects on code round 1 had already
+  reviewed and passed. **`Balanced` is measurably deeper than `Lite` on this repository's
+  material**, which is the evidence AC005's rule was previously asserted without.
 - Neither point licenses a claim about *why* the `#102` false finding did not recur. Two variables
   moved across the three rounds and each was isolated once, at n=1 per cell, against a
   nondeterministic reviewer.
@@ -478,6 +488,29 @@ need to move to another story's PR.
 showed that §7.3's "not a repository setting" was false — there are three layers, one of them a
 repository setting. Recorded in §7.3 with citations. It bears on the reading of round 1: that
 review arrived automatically, so its `Lite` came from a default, not from a per-PR choice.
+
+**Three miscounts in one section, and what they have in common.** This story's evidence has now
+been wrong about a comment count three times: the baseline said 4 where it was 3, the reproduce
+block cited an endpoint that returns 4 for a figure of 9, and round 2 was first recorded as "2
+distinct, in 2 comments" where it was 3 in 4. Each was caught — by the local review, by `Balanced`,
+and by querying the endpoint before replying — and none reached a merge. But the pattern is the
+point.
+
+The cause is the same every time: **Copilot's review is split across two sources and each read
+used only one.** Surfaced comments live at `pulls/<n>/comments`; suppressed comments live inside
+the review body; the footer's `Comments generated` counts only the former. The baseline error came
+from reading the endpoint alone, round 2's from reading the body alone. Counting correctly needs
+both, every time:
+
+```bash
+gh api repos/MRISS-Projects/dsh/pulls/<n>/comments --paginate \
+  --jq '.[] | "\(.path):\(.line // .original_line)"'          # surfaced
+gh api repos/MRISS-Projects/dsh/pulls/<n>/reviews \
+  --jq '.[] | select(.user.login | test("[Cc]opilot")) | .body'  # suppressed, in the body
+```
+
+That two-command pair is the method this table is filled from, and it is written here so the next
+round does not rediscover it the hard way.
 
 ## 12. Out of scope
 
