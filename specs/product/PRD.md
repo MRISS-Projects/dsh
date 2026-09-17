@@ -74,23 +74,31 @@ criteria.
 | `#70` | open | Project link not working at maven generated site |
 | `#90` | open | index.html missing from published site on gh-pages (root + all submodules) |
 | `#92` | **closed** — PR #96 | Remove the dead Travis build estate |
-| `#93` | open | Remove the redundant coverage ratchet — `jacoco:check` at 95% is already inherited |
+| `#93` | **closed** — PR #102 | Remove the redundant coverage ratchet — `jacoco:check` at 95% is already inherited |
 | `#94` | open | Make `check-spec-references` enforcing, or remove it |
 | `#95` | **closed** — PR #98 | Use a read-only token for CI package authentication |
 | `#97` | open | Resolve the tooling orphaned by the Travis estate removal |
 | `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
 | `#101` | open | Fail CI when the package token cannot authenticate, not just when it is absent |
+| `#103` | open | Make PR review rounds repo-aware and authoritative |
+| `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
 criteria. The paragraphs that originated them have been removed from this document — the issues are
 now the single source of truth for that work.
 
-`#93` has since been **rewritten**, and its entry above carries the new title. It was opened on a
-false premise — that DSH had no coverage threshold — and now asks for the opposite of what it
-originally asked: `jacoco:check` at 95% is inherited from parent-poms, per module and
-build-failing, so the second gate (`scripts/check-coverage.sh` plus
-`.github/coverage-baseline.txt`) is the redundant one and is what the issue removes.
+`#93` was **rewritten** before it was built, and its entry above carries the new title. It was
+opened on a false premise — that DSH had no coverage threshold — and ended up asking for the
+opposite of what it originally asked: `jacoco:check` at 95% is inherited from parent-poms, per
+module and build-failing, so the second gate (`scripts/check-coverage.sh` plus
+`.github/coverage-baseline.txt`) was the redundant one. Shipped in PR #102, which removed that gate
+and left `jacoco:check` as the only one.
+
+Closing the blind spot the removal opened needed a change in `parent-poms`, not here:
+`jacoco:check` skips a module that produced no exec data, so a module with production classes and
+no tests would have passed at 0%. That went upstream as two direct commits under `CLAUDE.md`'s
+light round trip, both referenced on `#93`. The reason there were two is recorded in `#103` below.
 
 `#99` came later still, spun off from `#95`'s out-of-scope list while that story was being built:
 `ci.yml` and `api-testing.yml` disagreed on `-U`, so the two could resolve different parent
@@ -111,6 +119,26 @@ review.
 three things behind — four uncalled `mvn` wrapper scripts, the `update-readme` Maven profile whose
 only caller was the deleted `post-release-script.sh`, and the generated-vs-checked-in status of
 `README.md`. `#92`'s spec promised the follow-up rather than widening its own scope.
+
+`#103` was spun off from `#93`'s review round. Copilot raised six findings on PR #102; five were
+right, and one — repeated four times — asserted that `-Denforcer.skip=true` bypasses the new
+coverage-data guard and "must be verified/fixed in the shared parent". Running it showed the
+opposite, and produced the second upstream commit: the guard is unaffected, but DSH's *other*
+enforcer execution has no `<skip>` and **is** disabled by that flag, so the caveat was wrong in a
+different way than the review claimed. Two gaps made that round expensive — Copilot had no
+review-specific repository context, and nothing written down said who adjudicates a disputed
+finding or that evidence rather than seniority settles it. `#93` was not widened to cover them:
+they concern how a review round is set up and arbitrated, not the coverage gate, and one of the two
+fixes lands in a `.github/skills` file that has nothing to do with coverage.
+
+`#104` came out of reconciling this document after `#93` merged. The badge-versus-aggregate
+disagreement had sat in §6 as a risk phrased as an open question — "either they measure different
+scopes or the badge is stale". Checking it answered the question: the badge reads the same
+`INSTRUCTION` counter from the same aggregate CSV as the 98.13% figure, so it is stale, and it is
+stale because the `process-badges` profile can only be activated with `-P`, which this estate
+deliberately abandoned. A diagnosed defect with a known cause is work, not a risk, so it became an
+issue. It was not folded into `#93` because that story removed a coverage *gate* and explicitly
+preserved the reporting path the badge belongs to — the two touch the same module and nothing else.
 
 **Two findings from the same review are deliberately *not* issues:**
 
@@ -331,10 +359,36 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   clear both open milestones there, release `3.8.0` and `3.9.0`, then re-pin this repo's root
   `pom.xml` to the released `3.9.0`. **This risk closes when that completes**, and needs no owner
   action before then.
-- **Coverage badge and CI figure disagree.** The committed badge
-  `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate currently computes
-  98.13% against a 2,028-instruction denominator, which is the whole codebase, not a partial one —
-  see Wave 0's note on aggregate scope, and `#93`. The two either measure different scopes or the
-  badge is stale; they
-  should be reconciled directly (e.g. regenerating the badge), rather than trusted as-is in the
-  meantime.
+- **The coverage badge is stale, and nothing regenerates it.** The committed badge
+  `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
+  against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
+  Wave 0's note on aggregate scope.
+
+  Earlier drafts of this risk left open whether the two measure different scopes or the badge had
+  simply gone stale. **It is staleness, and that is now settled.** The badge is configured with
+  `<metric>instruction</metric>` against `jacoco-aggregate/jacoco.csv` in
+  `dsh-coverage-report/pom.xml` — the same counter and the same file the aggregate figure comes
+  from, so the two cannot legitimately disagree. The file's only commit is the April 2026
+  directory-casing rename, so its content is older than that.
+
+  The cause is not an infrequent pipeline run. The `process-badges` profile is
+  `activeByDefault=false` with no property activation, so it is reachable only with
+  `-P process-badges` — and no workflow in this repository passes `-P` at all, nor does any
+  reusable workflow in `parent-poms`. The only occurrences in the tracked tree are historical
+  planning documents. So the profile was orphaned by the estate's deliberate move away from `-P`
+  (see `parent-poms`' CLAUDE.md: "never reintroduce `-P`"), not by scheduling. Running
+  `staging.yml` more often would not fix it.
+
+  Whoever picks this up should also expect the profile's `maven-scm-plugin` `checkin` execution,
+  which commits the badge back to the repository from inside the build — a git write needing
+  credentials, and one that interacts with the `[skip ci]` conventions.
+
+  **`#93` closing does not close this.** That story removed the second coverage *gate* and
+  deliberately left the `dsh-coverage-report` aggregation, the badge and CI's uploaded artifact
+  untouched — the reporting path is exactly what this risk concerns.
+
+  **Now tracked by `#104` in Wave 0**, which carries the full diagnosis and the two side-findings
+  that came with it: the badge's `<passing>70</passing>` threshold contradicts the real 95% gate,
+  and `maven-scm-plugin` is pinned locally to `1.9.5` against `parent-poms`' managed `2.1.0`. This
+  entry should be deleted when `#104` ships — `#104`'s AC005 requires that — since a diagnosed
+  defect with an owner is work in a wave, not a standing risk.
