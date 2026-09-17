@@ -79,13 +79,6 @@ workflow hosted in the separate `MRISS-Projects/parent-poms` repository, which d
 Maven release work. They are only ever started by a person from the Actions tab, never by a push
 or PR.
 
-`.travis.yml` and the `build-ci*.sh` scripts (`build-ci.sh`, `build-ci-stage.sh`,
-`build-ci-staging.sh`, `build-ci-release.sh`) still exist in the repository root and still
-reference Travis-specific variables (`TRAVIS_BRANCH`, `TRAVIS_PULL_REQUEST`). They are leftovers
-from before the move to GitHub Actions. The active gates are the GitHub Actions workflows in the
-table above; the Travis configuration is not part of the working pipeline and should not be relied
-on.
-
 ## Parent POM
 
 Every module in this repository inherits from `com.mriss.mriss-parent:products`, resolved from
@@ -94,11 +87,6 @@ the `MRISS-Projects/maven-repo` GitHub Packages registry (see the `<parent>` blo
 builds with plain `mvn install`, deliberately without `-U`, because the parent is currently pinned
 to a `SNAPSHOT` version. Parent version upgrades are a deliberate, manual step, not something a
 workflow does automatically.
-
-The repository also contains `install-parent-pom.sh`, which installs `com.mriss:mriss-parent:1.2.4`
-from the local `parent-pom.xml`. That is a separate, legacy artifact: no module in this repository
-inherits from it, and `ci.yml` does not call this script. It is not part of the working build
-pipeline described above.
 
 The current pin to `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT` carries a known reproducibility
 cost: Maven refreshes `SNAPSHOT` metadata daily, so the same commit in this repository can resolve

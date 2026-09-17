@@ -18,8 +18,7 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 ### Code Structure
 
 - Follow Maven multi-module project structure (see `pom.xml`). The parent POM is
-  `com.mriss.mriss-parent:products`, resolved from GitHub Packages — the root
-  `parent-pom.xml` is a deprecated legacy artifact that no module inherits from.
+  `com.mriss.mriss-parent:products`, resolved from GitHub Packages.
 - Use Spring Boot for microservices (existing pattern in dsh-rest-api)
 - Implement clean architecture patterns
 - Reference specifications in `/specs/` directory before implementing features

@@ -1,6 +1,5 @@
 # Document Smart Highlights
 
-[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=master)](https://travis-ci.org/MRISS-Projects/dsh)
 ![Jacoco](dsh-coverage-report/badges/jacoco.svg)
 
 ## Version
@@ -348,11 +347,11 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 1. In order to build, both MongoDB and RabbitMQ services should be running. 
 2. Maven development user settings should be correctly configured (see configuration
-   section below)
+   section below). Your `~/.m2/settings.xml` must also authenticate against GitHub Packages,
+   which is where the parent POM `com.mriss.mriss-parent:products` resolves from.
 3. At the root dsh folder type:
 
 ```
-./install-parent-pom.sh
 mvn clean install
 ```
 #### Tomcat
