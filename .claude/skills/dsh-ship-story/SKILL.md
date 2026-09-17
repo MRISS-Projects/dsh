@@ -58,16 +58,27 @@ The issue's real close point is when the release merges the RC into `master`.
 
 ## Ask for the right review effort
 
-Copilot code review runs at a selectable **effort level**, chosen **per pull request** under
-**Reviewers** at the moment the review is requested. It is not a repository setting, there is no
-workflow to change, and **Claude cannot select it** — it is a human action on the PR page.
+Copilot code review runs at a selectable **effort level**. Three layers set it, and they are not
+the same thing:
+
+| Layer | What it governs |
+|---|---|
+| Organization default | Inherited by repositories that have not set their own |
+| **Repository setting** | Settings > Copilot > Code review > "Review effort level" — the default for **automatic** reviews |
+| **Per-PR choice** | Chosen under **Reviewers** when a review is requested. Applies to that one review only and changes neither default |
 
 - **`Lite`** — cost-efficient and targeted.
 - **`Balanced`** — the level to request for a **substantive** pull request.
 
-So when you hand the PR over, say which one this PR wants. A review is only as good as the facts
+**Claude cannot select any of them** — there is no workflow to change and no file in this
+repository that sets it. Every layer is a human action, on the PR page or in repository settings.
+
+So when you hand the PR over, say which level this PR wants. A review is only as good as the facts
 it applies; on a substantive change, buying the higher effort level is cheaper than a round spent
 answering a finding that the repository already contradicts.
+
+Note which layer supplied it when you record a result: a review that arrives **automatically**,
+without being requested, ran at the repository or organization default, not at a per-PR choice.
 
 ## Where this skill stops
 
