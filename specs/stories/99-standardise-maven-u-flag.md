@@ -171,6 +171,20 @@ apply. The gates are greps and the existing CI run:
 2. **The real test is CI itself.** `ci.yml` runs on the pull request, so the changed build step
    executes against a real runner. A green run proves `-U` resolves `3.8.0-SNAPSHOT` successfully
    with the read-only package token from `#95`.
+
+   **A local run cannot prove that, and did not.** Running the changed command locally
+   (`mvn -B -U install`, `BUILD SUCCESS`, 13/13 modules) produced:
+
+   ```text
+   [WARNING] Could not transfer metadata com.mriss.mriss-parent:products:3.8.0-SNAPSHOT/maven-metadata.xml
+   from/to MRISS-Projects-maven-repo (https://maven.pkg.github.com/MRISS-Projects/maven-repo):
+   status code: 401, reason phrase: Unauthorized (401)
+   ```
+
+   The build then succeeded from the parent POM already in the local repository. This is worth
+   recording as a property of the change rather than a defect in it: under `-U`, a failed metadata
+   refresh degrades to a `WARNING` and a stale-but-working parent, not a hard failure. It makes CI —
+   where the credential exists — the only place the resolution path is actually exercised.
 3. **`api-testing.yml` is path-scoped** to `dsh-rest-api/**` and `specs/api/**`, so this PR will
    not trigger it. That is expected, and no reason to touch it — it is already on `-U`.
 4. **Markdown lint** runs in `spec-validation.yml`, whose `paths:` filter covers `docs/**`,

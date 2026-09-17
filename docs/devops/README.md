@@ -63,7 +63,7 @@ table below) and matches it; no trigger shown here is invented.
 
 | Workflow | Trigger(s) | What it gates / does |
 | --- | --- | --- |
-| `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn install`, no `-U`), then runs the coverage ratchet (`scripts/check-coverage.sh` against `.github/coverage-baseline.txt`). This is the primary correctness gate. |
+| `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B -U install`), then runs the coverage ratchet (`scripts/check-coverage.sh` against `.github/coverage-baseline.txt`). This is the primary correctness gate. |
 | `spec-validation.yml` | `push` and `pull_request`, both scoped to paths `specs/**`, `docs/**`, `.github/copilot-instructions.md`, `.github/copilot/**`, `.github/roles.md`, `.markdownlint.json`, `CLAUDE.md`, `.claude/**` | Lints the OpenAPI spec with Redocly, lints Markdown under `specs/`, `.github/`, `docs/` (excluding `docs/wiki/**`), `CLAUDE.md` and `.claude/` with markdownlint, and checks references from `copilot-instructions.md` — this last check is advisory only: it prints a `WARNING` per unresolved reference but always exits 0, so it never fails the job. |
 | `api-testing.yml` | `push` to `DEVELOP`/`main` and `pull_request`, both scoped to paths `dsh-rest-api/**`, `specs/api/**`; `workflow_dispatch` | Builds the full project, boots `dsh-rest-api` against MongoDB/RabbitMQ service containers, and runs the Postman collections in `specs/api/postman/` via Newman. |
 | `documentation-sync.yml` | `push` to `DEVELOP`/`main`, scoped to paths `specs/api/openapi/**`, `specs/architecture/**`, `specs/features/**`, `docs/wiki/**`; `workflow_dispatch` | Two jobs: regenerates HTML API docs from the OpenAPI spec into `docs/api/`, and refreshes the table of contents in `specs/features/*.md` and `specs/architecture/*.md`. Both auto-commit with `[skip ci]`. |
@@ -121,18 +121,24 @@ registry.
 Every module in this repository inherits from `com.mriss.mriss-parent:products`, resolved from
 the `MRISS-Projects/maven-repo` GitHub Packages registry (see the `<parent>` block in the root
 `pom.xml`). CI (`ci.yml`) configures a Maven `settings.xml` with credentials for that registry and
-builds with plain `mvn install`, deliberately without `-U`, because the parent is currently pinned
-to a `SNAPSHOT` version. Parent version upgrades are a deliberate, manual step, not something a
-workflow does automatically.
+builds with `mvn -B -U install`, as does `api-testing.yml`. Parent version upgrades are a
+deliberate, manual edit to the root `pom.xml`, not something a workflow does automatically; `-U`
+only refreshes the `SNAPSHOT` that `pom.xml` already names.
 
 The current pin to `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT` carries a known reproducibility
-cost: Maven refreshes `SNAPSHOT` metadata daily, so the same commit in this repository can resolve
-a different parent POM — and therefore build differently — on different days depending on when it
-is built relative to that refresh.
+cost: the same commit in this repository can resolve a different parent POM — and therefore build
+differently — from one run to the next.
 
-**This is an accepted decision, not an oversight — do not "fix" it.** Upcoming work on the
-`MRISS-Projects/parent-poms` project will change this repository, and tracking a `SNAPSHOT` is how
-those changes reach it without cutting a parent release per iteration. `ci.yml` omitting `-U` is
-the deliberate mitigation: it limits drift to Maven's daily refresh rather than forcing a
-re-resolve on every run. Pinning a released parent version is worth revisiting only once the
-`parent-poms` work has settled.
+**The SNAPSHOT pin is an accepted decision, not an oversight — do not "fix" it.** Upcoming work on
+the `MRISS-Projects/parent-poms` project will change this repository, and tracking a `SNAPSHOT` is
+how those changes reach it without cutting a parent release per iteration. Pinning a released
+parent version is worth revisiting only once the `parent-poms` work has settled — it is Wave 0's
+closing goal in `specs/product/PRD.md` §4.
+
+**`-U` is how that decision is stated, not a mitigation of it.** Omitting the flag never bought
+reproducibility, for two reasons: Maven refreshes `SNAPSHOT` metadata on its own daily schedule, so
+the parent re-resolved anyway at a moment nobody chose; and `actions/setup-java` restores `~/.m2`
+from a cache whose age varies run to run, so *whether* a given run saw a new parent depended on
+state invisible in the build log. Passing `-U` everywhere makes the drift consistent and legible
+instead of accidental. **When the parent is pinned to a released version, drop `-U`** — at that
+point resolution is genuinely reproducible and the flag no longer earns its place.

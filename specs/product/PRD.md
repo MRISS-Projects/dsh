@@ -315,8 +315,9 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   different days — that is a real reproducibility cost. It is accepted because upcoming work on
   the `MRISS-Projects/parent-poms` project will change this repository's parent, and staying on
   the SNAPSHOT is how those changes reach DSH without a release cycle per iteration.
-  `.github/workflows/ci.yml` omits `-U` specifically to limit the drift — it does not force a
-  re-resolve on every run, only lets Maven's normal refresh interval apply. **Do not file this as
+  Every CI Maven invocation passes `-U` (`#99`), which does not add drift — it makes the drift the
+  SNAPSHOT pin already carried consistent and visible instead of dependent on cache age. **Do not
+  file this as
   a separate task.** It is not a standing risk with no end date: Wave 0 now carries the parent-poms
   goal explicitly — clear both open milestones there, release `3.8.0` and `3.9.0`, then re-pin this
   repo's root `pom.xml` to the released `3.9.0`. **This risk closes when that completes**, and needs
