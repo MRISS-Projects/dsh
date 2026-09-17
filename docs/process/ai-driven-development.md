@@ -197,6 +197,33 @@ right but whose stated mechanism was wrong, and one whose proposed remedy would 
 Four of seven needed an answer rather than obedience. A step that said "address the review
 comments" would have made the code worse.
 
+**Who adjudicates a disputed finding.** Claude makes the final call and does not change correct
+work to satisfy a review — but **the tiebreaker is evidence, not seniority**. A contested verdict
+is settled by something that can be run, shown or cited, never by whose position it is; and where
+no evidence can be produced either way, the dispute is reported as unresolved rather than won by
+default.
+
+**The seat rule.** Reviewer-facing content and author-facing content are different jobs for
+different readers, and they live in different directories:
+
+| Seat | Directory | Read by | Purpose |
+|---|---|---|---|
+| Ours | `.claude/skills/` | Claude | How the author works — the eight steps of this process |
+| GitHub's | `.github/skills/` | Copilot code review | What an adversarial reviewer must know |
+
+The rule is **additive**. `CLAUDE.md`, `.github/copilot-instructions.md` and
+`.github/copilot/rules/*` keep being read by whoever reads them today; nothing is moved out of
+them and nothing is stripped from them to make room for the other seat. Losing context we already
+have is a worse outcome than duplicating a sentence. Copilot's review is adversarial by design and
+is driven from its own seat; the local review in step 5 is review of our own work, which is a
+different seat and not a substitute for it.
+
+**Effort level is a per-PR human choice.** Copilot code review runs at a selectable effort level,
+picked under **Reviewers** when the review is requested — not a repository setting, and not
+something Claude can select. `Lite` is cost-efficient and targeted; `Balanced` is what a
+substantive pull request wants. `#102` was reviewed on `Lite`, which is the leading candidate for
+why facts that were present in `CLAUDE.md` at the reviewed commit did not reach its findings.
+
 **Mechanics.** One commit per fix, so each is reviewable and revertible alone. One push per round,
 so CI runs track rounds rather than individual commits. A reply on every finding, including the
 ones you fix, naming the commit and — where you disagreed — showing the evidence.

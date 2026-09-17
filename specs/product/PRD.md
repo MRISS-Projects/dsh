@@ -125,11 +125,17 @@ right, and one — repeated four times — asserted that `-Denforcer.skip=true` 
 coverage-data guard and "must be verified/fixed in the shared parent". Running it showed the
 opposite, and produced the second upstream commit: the guard is unaffected, but DSH's *other*
 enforcer execution has no `<skip>` and **is** disabled by that flag, so the caveat was wrong in a
-different way than the review claimed. Two gaps made that round expensive — Copilot had no
-review-specific repository context, and nothing written down said who adjudicates a disputed
-finding or that evidence rather than seniority settles it. `#93` was not widened to cover them:
-they concern how a review round is set up and arbitrated, not the coverage gate, and one of the two
-fixes lands in a `.github/skills` file that has nothing to do with coverage.
+different way than the review claimed. `#103` was opened on the reading that two gaps made that
+round expensive, and **the first of the two turned out to be false.** Copilot code review reads
+`CLAUDE.md` from the head branch of the pull request, and `CLAUDE.md` at `fb3f0a09` — the exact
+commit reviewed — already stated in bold that both coverage gates are inherited from `parent-poms`
+and will not be found by grepping this repository, and that `-Denforcer.skip=true` does not reach
+the guard. The context was present and did not reach the finding, so the gap is salience and
+reviewer effort, not absence; `#102` was reviewed on `Lite`. The second gap stands as written:
+nothing said who adjudicates a disputed finding, or that evidence rather than seniority settles it.
+`#93` was not widened to cover either: they concern how a review round is set up and arbitrated,
+not the coverage gate, and one of the fixes lands in a `.github/skills` file that has nothing to do
+with coverage.
 
 `#104` came out of reconciling this document after `#93` merged. The badge-versus-aggregate
 disagreement had sat in §6 as a risk phrased as an open question — "either they measure different

@@ -224,9 +224,21 @@ placement, not rationale. A wrong rationale left in place would outlive the issu
 - **The other five `dsh-*` skills.** They are in our seat and no reviewer behaviour depends on
   them. Whether Copilot reads that directory at all is §12's open question, and speculative edits
   to seven files ahead of the answer is the wrong order.
-- **Any workflow under `.github/workflows/`.** Effort level is a per-PR human choice; there is no
-  workflow to change. `markdownlint` already covers `.github/**/*.md`, so the new file needs no
-  glob change to be gated.
+- **Any workflow under `.github/workflows/`, with one amendment recorded below.** Effort level is
+  a per-PR human choice; there is no workflow to change for it.
+
+  **Amended during step 5.** This section originally justified leaving workflows alone with
+  "`markdownlint` already covers `.github/**/*.md`, so the new file needs no glob change to be
+  gated". That is true of the *lint glob* (`spec-validation.yml`, the `markdownlint` invocation)
+  and incomplete about the *trigger*: the workflow's `paths:` filters list `.github/copilot/**`
+  and `.github/roles.md` but not `.github/skills/**`, so a future pull request touching only the
+  review skill — the file most likely to be edited alone — would never start the job. This pull
+  request is unaffected, because it also touches `specs/**`, `docs/**` and `.claude/**`.
+
+  `.github/skills/**` is therefore added to both the `push:` and `pull_request:` `paths:` lists.
+  Two lines, no behaviour change to any job, and it makes §11's claim that the new file "is inside
+  the enforcing gate from the moment it lands" true of the trigger as well as the glob. Nothing
+  else under `.github/workflows/` is touched.
 
 ## 9. Issue body reconciliation
 
@@ -318,13 +330,72 @@ reviewer inclined to dispute an unfindable gate has something to dispute.
 
 **What is recorded** for each round: whether any finding asserts a gate is missing or bypassable,
 the total finding count, and how many needed an answer rather than a fix — the same shape as the
-`#102` tally already in `docs/process/ai-driven-development.md`.
+`#91` tally in `docs/process/ai-driven-development.md`. (An earlier draft of this section called
+that a `#102` tally. It is `#91`'s; `#102` had none, and §11.2 records `#102`'s for the first
+time.)
 
 **One assumption to verify, not assume.** Whether the effort level can be changed and the Copilot
 review re-requested on an already-open PR. The issue records effort as a per-PR choice made under
 Reviewers, which implies it, but implication is not evidence. If it cannot be done, round 2 moves
 to the next story's PR and this section records that, rather than the story claiming a data point
 it did not take.
+
+### 11.2 Recorded outcomes
+
+Filled in as each data point is taken.
+
+**How a finding is counted**, stated before the numbers so rounds 1 and 2 are tallied the same
+way. A **comment** is one anchored review comment, whether surfaced inline or listed under
+"Suppressed comments" in the review body. A **distinct finding** is one claim, counted once even
+when the reviewer repeats it against several files — so the companion-guard claim raised against
+three files is one finding, not three.
+
+| Point | Effort | Skill | Gate-missing or bypass finding? | Findings | Needed an answer, not a fix |
+|---|---|---|---|---|---|
+| Baseline — PR #102 | `Lite` | no | **yes** — 1 finding, restated in 3 of 9 comments | 6 distinct, in 9 comments | 1 of 6 |
+| Round 1 — this PR, first review | `Lite` | yes | *pending* | *pending* | *pending* |
+| Round 2 — this PR, re-requested | `Balanced` | yes | *pending* | *pending* | *pending* |
+
+**Baseline, reconstructed from GitHub rather than from memory.** Copilot's single review of PR #102
+(`2026-09-17T19:04:42Z`, commit `fb3f0a09`, state `COMMENTED`) carried 2 surfaced inline comments
+and 7 suppressed comments — 9 comments, 6 distinct findings. Five were valid and were fixed. The
+sixth — that `-Denforcer.skip=true` bypasses `enforce-coverage-data-exists` and "must be
+verified/fixed in the shared parent" — was false, and appeared in 3 of the 9 comments:
+`.github/copilot/rules/testing-patterns.md:98`, `CLAUDE.md:110`, and
+`specs/stories/93-remove-redundant-coverage-ratchet.md:284`. The effort level is not inferred: the
+review body footer states it.
+
+```bash
+# the review itself - submitted_at, commit, state
+gh api repos/MRISS-Projects/dsh/pulls/102/reviews \
+  --jq '.[] | "\(.submitted_at) \(.user.login) commit=\(.commit_id[0:8]) state=\(.state)"'
+
+# the body carries the 7 suppressed comments, the per-file summary table,
+# and the line "Review effort level: Lite"
+gh api repos/MRISS-Projects/dsh/pulls/102/reviews \
+  --jq '.[] | select(.user.login | test("[Cc]opilot")) | .body'
+```
+
+The `pulls/102/comments` endpoint is **not** the way to reproduce the count: it returns 4, being
+the 2 surfaced Copilot comments plus 2 human replies, and it never sees the 7 suppressed ones,
+which exist only inside the review body.
+
+**Two corrections made to this section during step 5**, both caught by the local code review and
+both of the kind this story exists to prevent. The comment count was first written as 4, inherited
+from the `#93`-era prose in §2 and `specs/product/PRD.md` rather than from the reconstruction it
+claimed to come from; it is 3. And the reproduce block first cited the `comments` endpoint for the
+figure of 9, which it does not return. Leaving either in a section headed "reconstructed from
+GitHub rather than from memory" would have shipped this story's own failure mode inside its
+evidence.
+
+**Rounds 1 and 2 are taken in step 7**, not here. They need an open pull request, so they are
+recorded during `dsh-pr-cycle` and this table is updated in the same round. Until then AC006 is
+open, and the story is not claiming a result it has not measured.
+
+**The §11.1 assumption is still unverified.** Whether the effort level can be raised and the
+Copilot review re-requested on an already-open PR is checked when round 2 is attempted. If it
+cannot be done, round 2 moves to the next story's PR and this table records that outcome rather
+than a data point that was never taken.
 
 ## 12. Out of scope
 

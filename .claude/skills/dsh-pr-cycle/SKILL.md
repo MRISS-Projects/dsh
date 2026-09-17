@@ -49,6 +49,16 @@ that input and watch what happens. Evidence beats argument in the reply either w
 Classify each finding as **valid** (fix it), **stale** (already fixed — reply and resolve), or
 **incorrect** (reply with your evidence; do not change code to satisfy a wrong claim).
 
+### Who adjudicates a disputed finding
+
+Claude makes the final call, and does not change correct work to satisfy a review. **But the
+tiebreaker is evidence, not seniority.** A contested verdict is settled by something that can be
+run, shown or cited — a build log, a command's output, a commit, a line in a file at the commit
+under review — never by whose position it is.
+
+Where no evidence can be produced either way, the dispute is **reported as unresolved** rather
+than won by default. Say what would settle it, and hand that to the human.
+
 Show the human your triage — finding, verdict, rationale, intended fix — before you act on it.
 
 ## 3. Fix and reply
@@ -59,6 +69,9 @@ Show the human your triage — finding, verdict, rationale, intended fix — bef
   names the commit. Where you disagreed, say so plainly and show the evidence.
 - A fix that changes behaviour needs a test that would have caught the original defect — TDD still
   applies, so go through `dsh-build-story`.
+- **If the story's spec records review-round outcomes, update it in the same round** — from the
+  round's actual data, pulled from GitHub, not from recollection. `#103`'s §11.2 is the first of
+  these, and its AC006 stays open until the rounds it names are recorded.
 
 ## 4. One push per round
 

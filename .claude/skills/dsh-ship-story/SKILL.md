@@ -35,7 +35,8 @@ Read `parent_branch` from the front matter of `specs/stories/<n>-<slug>.md`.
 
 ## Hard stop
 
-Show the human the PR title, the PR body, and the resolved base branch. Wait for approval.
+Show the human the PR title, the PR body, the resolved base branch, and which review effort level
+this PR wants ("Ask for the right review effort", below). Wait for approval.
 **Then** run:
 
     git push -u origin issue-<n>-<slug>
@@ -54,6 +55,19 @@ the body, and `#95` stayed open.
 
 Closing the issue stays the human's call, which is what the hard stop below already requires.
 The issue's real close point is when the release merges the RC into `master`.
+
+## Ask for the right review effort
+
+Copilot code review runs at a selectable **effort level**, chosen **per pull request** under
+**Reviewers** at the moment the review is requested. It is not a repository setting, there is no
+workflow to change, and **Claude cannot select it** — it is a human action on the PR page.
+
+- **`Lite`** — cost-efficient and targeted.
+- **`Balanced`** — the level to request for a **substantive** pull request.
+
+So when you hand the PR over, say which one this PR wants. A review is only as good as the facts
+it applies; on a substantive change, buying the higher effort level is cheaper than a round spent
+answering a finding that the repository already contradicts.
 
 ## Where this skill stops
 
