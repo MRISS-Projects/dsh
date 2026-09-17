@@ -553,7 +553,9 @@ skipped wholesale. Compare against the step 1 baseline.
 
 **4b. The guard's disarm semantics, as a matrix.** The condition has six clauses and the properties
 that feed four of them are not declared in the pom, so "it works" has to mean each clause was
-exercised. Every row below was run:
+exercised. The four property clauses get a row each below; the two `java.io.File` clauses are
+exercised by the full build in step 4, where the five modules without a source directory take the
+`!isDirectory()` branch and the eight with exec data take the `isFile()` one. Every row was run:
 
 | Run | Expected | Why it discriminates |
 |---|---|---|
@@ -563,6 +565,8 @@ exercised. Every row below was run:
 | `-pl dsh-data clean install -Dtest=none -Dsurefire.failIfNoSpecifiedTests=false` | **FAILURE** | Proves removing those defaults did not disarm the guard by accident |
 | `-pl dsh-data clean install -Djacoco.skip=true` | SUCCESS | Tests run and pass, no exec written — must not fail |
 | `-pl dsh-data clean install -Dmaven.test.skip=true` | SUCCESS | No compile, no tests, no exec |
+| `-pl dsh-data clean install -Dmaven.test.skip.exec=true` | SUCCESS | Classes compiled, tests not executed, no exec |
+| `-pl dsh-data clean install -Dtest=none ... -Denforcer.skip=true` | **FAILURE** | The guard's explicit `<skip>` beats `enforcer.skip`; see §4.3 |
 
 The fourth row is the one that matters most. The three SUCCESS rows above it would all pass a guard
 that had been silently disabled, so without a row that must still fail, the matrix would prove
