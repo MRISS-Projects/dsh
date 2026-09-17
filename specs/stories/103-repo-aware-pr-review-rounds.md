@@ -353,7 +353,7 @@ three files is one finding, not three.
 | Point | Effort | Skill | Gate-missing or bypass finding? | Findings | Needed an answer, not a fix |
 |---|---|---|---|---|---|
 | Baseline — PR #102 | `Lite` | no | **yes** — 1 finding, restated in 3 of 9 comments | 6 distinct, in 9 comments | 1 of 6 |
-| Round 1 — this PR, first review | `Lite` | yes | *pending* | *pending* | *pending* |
+| Round 1 — PR #105, first review | `Lite` | yes | **no** | **0**, in 0 comments | — (none raised) |
 | Round 2 — this PR, re-requested | `Balanced` | yes | *pending* | *pending* | *pending* |
 
 **Baseline, reconstructed from GitHub rather than from memory.** Copilot's single review of PR #102
@@ -380,6 +380,31 @@ The `pulls/102/comments` endpoint is **not** the way to reproduce the count: it 
 the 2 surfaced Copilot comments plus 2 human replies, and it never sees the 7 suppressed ones,
 which exist only inside the review body.
 
+**Round 1, taken on this pull request.** Copilot reviewed PR #105 automatically on open — no
+review had to be requested — at `2026-09-17T22:10:55Z`, against commit `15938fe0`, state
+`COMMENTED`. The verdict was "Approval recommended". The footer records `Files reviewed: 7/7`,
+`Comments generated: 0` and `Review effort level: Lite`. The effort level this round needed
+arrived by default, so baseline → round 1 isolates the skill exactly as designed. No finding of
+any kind was raised, and in particular none asserting that a gate is missing or bypassable.
+
+```bash
+gh api repos/MRISS-Projects/dsh/pulls/105/reviews \
+  --jq '.[] | select(.user.login | test("[Cc]opilot")) | .body'
+gh api repos/MRISS-Projects/dsh/pulls/105/comments --paginate --jq 'length'   # 0
+```
+
+**What round 1 does and does not license saying.** The comparison is more direct than §11.1
+anticipated. The exact proposition Copilot contradicted three times on `#102` — that
+`-Denforcer.skip=true` does not reach `enforce-coverage-data-exists` — is asserted three times in
+this diff: in `.github/skills/code-review/SKILL.md`, in §3 above, and in `specs/product/PRD.md`.
+Same reviewer, same effort level, same assertion in front of it. This time it drew nothing.
+
+That is the result the salience hypothesis predicts, but one sample does not establish it. A
+zero-finding review is equally consistent with a diff that simply had less to find, and Copilot is
+not deterministic — the same input can yield a different review. It is therefore recorded as **a
+data point consistent with the hypothesis, not a confirmation of it.** AC006 asks for the
+measurement and forbids claiming an unmeasured cause; this is the former.
+
 **Two corrections made to this section during step 5**, both caught by the local code review and
 both of the kind this story exists to prevent. The comment count was first written as 4, inherited
 from the `#93`-era prose in §2 and `specs/product/PRD.md` rather than from the reconstruction it
@@ -388,9 +413,9 @@ figure of 9, which it does not return. Leaving either in a section headed "recon
 GitHub rather than from memory" would have shipped this story's own failure mode inside its
 evidence.
 
-**Rounds 1 and 2 are taken in step 7**, not here. They need an open pull request, so they are
-recorded during `dsh-pr-cycle` and this table is updated in the same round. Until then AC006 is
-open, and the story is not claiming a result it has not measured.
+**Round 2 is still outstanding.** It needs the Copilot review re-requested at `Balanced`, which is
+a human action on the pull request page. Until it is recorded here, **AC006 stays open** and the
+story is not claiming a result it has not measured.
 
 **The §11.1 assumption is still unverified.** Whether the effort level can be raised and the
 Copilot review re-requested on an already-open PR is checked when round 2 is attempted. If it
