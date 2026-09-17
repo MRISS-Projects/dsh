@@ -98,3 +98,7 @@ A new round starts if CI is red or new comments arrived. Otherwise you are done 
 
 Report the PR URL, the check status, a line per finding with its verdict and commit, and anything
 still open. Then hand back.
+
+After the human merges and closes the issue, step 8 (`dsh-reconcile-prd`) reconciles
+`specs/product/PRD.md` against GitHub — including any issue this review round spun off. That is a
+separate invocation, not something to run ahead of the merge.

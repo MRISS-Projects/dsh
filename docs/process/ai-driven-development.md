@@ -1,15 +1,15 @@
 # The AI-driven development process
 
-`CLAUDE.md` states the seven steps of this loop as a compact table and links here for the detail.
+`CLAUDE.md` states the eight steps of this loop as a compact table and links here for the detail.
 This document is that detail: for each step, what it takes as input, which skill does the work,
 what artifact it produces, what the hard stop is, and what "done" looks like. Branch rules and
 quality gates are defined once in `CLAUDE.md` and referenced, not restated, below.
 
-**Status of the six project skills.** `dsh-plan-wave`, `dsh-new-story`, `dsh-story-spec`,
-`dsh-build-story`, `dsh-ship-story` and `dsh-pr-cycle` are specified here as the process's entry
-points. They exist in the repo today, under `.claude/skills/<name>/SKILL.md`. What has not been
-verified is whether
-they successfully *load* in a running Claude Code session — skill discovery happens at startup, so
+**Status of the seven project skills.** `dsh-plan-wave`, `dsh-new-story`, `dsh-story-spec`,
+`dsh-build-story`, `dsh-ship-story`, `dsh-pr-cycle` and `dsh-reconcile-prd` are specified here as
+the process's entry points. They exist in the repo today, under
+`.claude/skills/<name>/SKILL.md`. What has not been verified is whether they successfully *load*
+in a running Claude Code session — skill discovery happens at startup, so
 confirming that needs a restart against this branch. Treat the descriptions below as the contract
 each skill's `SKILL.md` must satisfy, not as confirmation that a session has already loaded them.
 
@@ -41,7 +41,9 @@ flowchart TD
     T --> U
     U{"Green AND all<br/>threads resolved?"}
     U -->|no| Q
-    U -->|yes| P["STOP - human merges"]
+    U -->|yes| P["STOP - human merges and closes the issue"]
+    P --> V["8. Reconcile the PRD<br/>dsh-reconcile-prd"]
+    V --> C
 ```
 
 Four edges loop backward, and each one matters: a red test that fails for the wrong reason sends
@@ -49,6 +51,10 @@ step 4 back into step 4 (`K -->|no| J`); review findings that need changes send 
 step 4 (`M -->|changes needed| J`); a *valid* PR finding sends step 7 back into step 4
 (`R -->|valid| J`), because a fix is still code and still gets a failing test first; and a round
 that has not converged sends step 7 back into itself (`U -->|no| Q`).
+
+A fifth backward edge is not a failure path but the loop closing: step 8 writes back into
+`specs/product/PRD.md` (`V --> C`), so the document a story was drawn from is the document its
+outcome returns to.
 
 Note what the triage node does **not** do: it does not route every finding to a fix. Stale and
 incorrect findings leave through reply edges without touching the code. That asymmetry is the
@@ -201,6 +207,46 @@ fix, unless they say otherwise.
 **Done looks like.** Every check green **and** every review thread resolved. Green alone is not
 done — a PR can be green with seven open conversations on it.
 
+## Step 8: Reconcile the PRD after the merge
+
+**Input.** A pull request the owner has merged and an issue the owner has closed — or a session
+that created new issues which are not yet in a wave. This step is **invocable on its own**, and
+usually runs in a later session than the one that built the story.
+
+**Skill.** `dsh-reconcile-prd`.
+
+**Artifact.** A commit on `specs/product/PRD.md`: statuses flipped to match GitHub, issues created
+mid-story added to the wave their milestone maps to, drifted titles corrected, and any prose that
+explained a rewritten issue brought back into line.
+
+**Why this is a step and not a habit.** The PRD goes stale in two directions at once, and both are
+invisible from inside the story that caused them. Forward: an issue the PRD lists as pending has
+shipped. Backward: a story that spun off follow-up work left issues on GitHub that the PRD has
+never heard of — `#97` came out of `#92` that way, and `#99` out of `#95`. Neither shows up while
+you are working the branch, because the branch is about the issue you started with. Left alone
+across a few stories, the PRD stops being the place that says what DSH builds next, which is the
+one job it has.
+
+**GitHub is the ground truth.** Every edit in this step moves the PRD towards what `gh issue list`
+reports. The reverse — adjusting GitHub to match the PRD — is a planning decision, and planning is
+step 1.
+
+**What the PRD records.** Number, status, title. Nothing else. The issue remains the single source
+of truth for rationale and acceptance criteria, exactly as the PRD's own §2 requires, so a
+reconciliation never copies acceptance criteria into the document to make it more readable. The one
+thing worth adding in prose is **provenance**: when an issue was spun off from another mid-story,
+a sentence on where it came from and why it was not folded into its parent. GitHub cannot tell the
+next reader that.
+
+**Hard stop.** The owner approves the PRD diff before it is committed — and the two standing
+prohibitions still apply with full force. Claude does not close the issue and does not merge the
+pull request; this step exists precisely *because* the owner already did both. An issue with no
+milestone cannot be placed in a wave: say so and ask, rather than guessing.
+
+**Done looks like.** Every issue GitHub knows about is either in a wave with the right status, in
+the won't-fix table, or explicitly reported back as unplaceable. The next reader can open the PRD
+and see what has shipped and what has not without cross-checking GitHub.
+
 ## Story spec front matter
 
 `dsh-story-spec` writes machine-readable front matter at the top of every story spec so that later
@@ -246,7 +292,7 @@ plugin versions, release/stage/hotfix workflow behaviour, coverage thresholds.
 
 1. **Open an issue in `parent-poms`.** A plain issue is enough — INVEST framing is for product
    stories, and parent-poms is infrastructure. Its repo keeps a deliberately lightweight Claude
-   configuration, and this seven-step process is not ported there.
+   configuration, and this eight-step process is not ported there.
 2. **Ensure the next milestone there is open as a `-SNAPSHOT`.**
 3. **Implement and test it in parent-poms** against that `-SNAPSHOT`.
 4. **Validate end to end from DSH** by temporarily pointing this repo's root `pom.xml` at that
@@ -287,3 +333,10 @@ hides a conversation from the default view, so Claude resolves only threads whos
 has already seen — a stale finding that has been answered, for instance. A thread for a finding
 Claude *fixed* stays open by default, because the owner may want to check the fix before the
 discussion disappears.
+
+Step 8 does not move that line — it starts on the far side of it. The merge and the close are the
+owner's, and step 8 only runs once they have happened; its whole input is a decision the owner has
+already taken. Recording that decision in the PRD is bookkeeping about the past, not a judgement
+about whether the work was wanted, which is why it is safe for Claude to do and why it is a step of
+its own rather than a tail on step 7. Step 7 cannot do it: at the time step 7 ends, the merge has
+not happened yet.

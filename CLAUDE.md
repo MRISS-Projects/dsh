@@ -99,7 +99,7 @@ A story is not done until both pass:
 
 ## The development process
 
-Seven steps. Full detail in `docs/process/ai-driven-development.md`.
+Eight steps. Full detail in `docs/process/ai-driven-development.md`.
 
 | Step | Do this | Skill |
 |---|---|---|
@@ -110,6 +110,7 @@ Seven steps. Full detail in `docs/process/ai-driven-development.md`.
 | 5 | Local code review | `dsh-ship-story` |
 | 6 | Commit, push, open the PR | `dsh-ship-story` |
 | 7 | PR review cycle — CI and reviewer findings, triaged, fixed or answered, until green with every thread resolved | `dsh-pr-cycle` |
+| 8 | After you merge and close the issue — reconcile the PRD against GitHub | `dsh-reconcile-prd` |
 
 Step 7 repeats. Each round is: read CI and the review comments, **triage them** (a finding may be
 stale, or right for the wrong reason, or propose a remedy that does not work), then one commit per
@@ -118,6 +119,12 @@ resolved — not at green alone.
 
 `dsh-pr-cycle` is invocable on its own. A review round often lands days after the PR opened; you do
 not need to re-run steps 5 and 6 to handle it.
+
+Step 8 starts where your merge ends. Once the PR is merged and the issue closed,
+`specs/product/PRD.md` is stale in two ways: the issue it tracked is still listed as open, and
+any issue the story spun off along the way is not listed at all. `dsh-reconcile-prd` reconciles
+the document against GitHub — status, placement by milestone, drifted titles — and is likewise
+invocable on its own.
 
 **Two things Claude never does:** close a GitHub issue, or merge a pull request. Both are
 yours. Claude creates issues and PRs only after you approve the content.
@@ -152,4 +159,4 @@ on every module here. Grepping only this repo's poms will tell you it does not e
 fix those first. A release that leaves its own milestone half-done makes the version meaningless.
 
 **Keep parent-poms' Claude setup lightweight.** It has a deliberately minimal `CLAUDE.md` and none
-of this repo's seven-step process. It is infrastructure. Do not port this process there.
+of this repo's eight-step process. It is infrastructure. Do not port this process there.

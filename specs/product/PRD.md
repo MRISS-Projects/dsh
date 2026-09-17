@@ -7,11 +7,12 @@ This PRD turns the proposed GCP migration in
 into schedulable waves of work, and triages the existing GitHub issue backlog into those waves.
 It is the single place that says what DSH builds next and in what order.
 
-The PRD is step 1's output in the seven-step process described in
+The PRD is step 1's output in the eight-step process described in
 [`docs/process/ai-driven-development.md`](../../docs/process/ai-driven-development.md): the
 `dsh-plan-wave` skill updates it after a brainstorming pass, `dsh-new-story` reads a task from it
 to draft a GitHub issue, and the wave-to-milestone mapping in §3 tells `dsh-new-story` which
-milestone to set on that issue.
+milestone to set on that issue. Step 8's `dsh-reconcile-prd` closes the loop the other way,
+reconciling this document against GitHub once a story has merged and its issue is closed.
 
 ADR-001 itself is **Status: Proposed**. No migration code exists yet — the codebase has no GCP
 dependencies and no code marked `@Deprecated`. Waves 1-5 below describe the work ADR-001 proposes,
@@ -29,6 +30,10 @@ not work already in progress.
   and their tasks become issues via `dsh-new-story` when they are picked up.
 - Where an item has an issue, **the issue is the source of truth** for its rationale and acceptance
   criteria — this document should not restate them, so the two cannot drift apart.
+- Where a wave lists its issues in a table, the `Status` column carries only what GitHub says:
+  `open`, or `closed` naming the pull request that delivered it. It is maintained by step 8
+  (`dsh-reconcile-prd`) after a merge, never hand-edited ahead of one. Titles in that column are
+  the GitHub titles, normalised to sentence case with any `[STORY]` prefix dropped.
 - Waves 1-5 mirror the five migration phases in ADR-001 §4 one-for-one. Their task lists are drawn
   directly from those phase tables — no tasks were invented here that ADR-001 does not already
   enumerate.
@@ -55,25 +60,36 @@ These three milestones already exist in GitHub. `dsh-new-story` sets `--mileston
 Milestone: `0.3.0-SNAPSHOT`. Housekeeping and build-health work that has no dependency on the GCP
 migration, plus gaps found while writing this PRD.
 
-**Triaged issues:**
+**Triaged issues.** `Status` is reconciled against GitHub in step 8 of the process
+(`dsh-reconcile-prd`); the issue itself remains the source of truth for rationale and acceptance
+criteria.
 
-- `#85` — Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17
-- `#86` — Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven
-- `#87` — Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions
-- `#43` — Configure surefire, jacoco and other useful reports for the maven generated docs
-- `#46` — Implement integration tests using embedded tomcat server
-- `#70` — Project link not working at maven generated site
-- `#90` — index.html missing from published site on gh-pages (root + all submodules)
-- `#92` — Remove the dead Travis build estate
-- `#93` — Revisit the coverage gate shape once the GCP migration is underway
-- `#94` — Make `check-spec-references` enforcing, or remove it
-- `#95` — Use a read-only token for CI package authentication (security)
-- `#99` — Standardise Maven builds on `-U` while the parent is a SNAPSHOT
+| Issue | Status | Title |
+|---|---|---|
+| `#85` | open | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
+| `#86` | open | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
+| `#87` | open | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions |
+| `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
+| `#46` | open | Implement integration tests using embedded tomcat server |
+| `#70` | open | Project link not working at maven generated site |
+| `#90` | open | index.html missing from published site on gh-pages (root + all submodules) |
+| `#92` | **closed** — PR #96 | Remove the dead Travis build estate |
+| `#93` | open | Remove the redundant coverage ratchet — `jacoco:check` at 95% is already inherited |
+| `#94` | open | Make `check-spec-references` enforcing, or remove it |
+| `#95` | **closed** — PR #98 | Use a read-only token for CI package authentication |
+| `#97` | open | Resolve the tooling orphaned by the Travis estate removal |
+| `#99` | open | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
 criteria. The paragraphs that originated them have been removed from this document — the issues are
 now the single source of truth for that work.
+
+`#93` has since been **rewritten**, and its entry above carries the new title. It was opened on a
+false premise — that DSH had no coverage threshold — and now asks for the opposite of what it
+originally asked: `jacoco:check` at 95% is inherited from parent-poms, per module and
+build-failing, so the second gate (`scripts/check-coverage.sh` plus
+`.github/coverage-baseline.txt`) is the redundant one and is what the issue removes.
 
 `#99` came later still, spun off from `#95`'s out-of-scope list while that story was being built:
 `ci.yml` and `api-testing.yml` disagree on `-U`, so the two can resolve different parent SNAPSHOTs
@@ -81,6 +97,11 @@ from the same commit. It is resolved *towards* `-U` rather than away from it —
 a `-SNAPSHOT` and this repository is the first consumer of `parent-poms` changes, tracking the
 current parent on every run is the intended contract, and omitting `-U` never bought
 reproducibility in the first place.
+
+`#97` was spun off from `#92` when that story shipped: removing the Travis estate deliberately left
+three things behind — four uncalled `mvn` wrapper scripts, the `update-readme` Maven profile whose
+only caller was the deleted `post-release-script.sh`, and the generated-vs-checked-in status of
+`README.md`. `#92`'s spec promised the follow-up rather than widening its own scope.
 
 **Two findings from the same review are deliberately *not* issues:**
 
@@ -97,10 +118,11 @@ reproducibility in the first place.
   `dsh-coverage-report`) with no production code. The repository has 38 main `.java` files, so
   2,028 instructions **is** the entire codebase, not a slice.
 
-  This matters because it reframes `#93`: the coverage floor is sensitive to a single new class
+  This matters because it reframed `#93`: the coverage floor is sensitive to a single new class
   because the codebase is genuinely small, not because the measurement is partial. An earlier draft
   of this PRD claimed the scope was narrow and asked for it to be widened — that was wrong, and it
-  had gated the baseline work behind a task that could never complete.
+  had gated the baseline work behind a task that could never complete. `#93` has since been
+  rewritten around the real problem — see the note above the table.
 
 **Wave 0 also has a goal in another repository.** DSH inherits from
 `com.mriss.mriss-parent:products`, maintained in `MRISS-Projects/parent-poms`. Wave 0 is not
