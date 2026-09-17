@@ -80,7 +80,7 @@ criteria.
 | `#97` | open | Resolve the tooling orphaned by the Travis estate removal |
 | `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
 | `#101` | open | Fail CI when the package token cannot authenticate, not just when it is absent |
-| `#103` | open | Make PR review rounds repo-aware and authoritative |
+| `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
 | `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
@@ -135,7 +135,10 @@ reviewer effort, not absence; `#102` was reviewed on `Lite`. The second gap stan
 nothing said who adjudicates a disputed finding, or that evidence rather than seniority settles it.
 `#93` was not widened to cover either: they concern how a review round is set up and arbitrated,
 not the coverage gate, and one of the fixes lands in a `.github/skills` file that has nothing to do
-with coverage.
+with coverage. Shipped in PR #105, which added `.github/skills/code-review/SKILL.md` as the
+reviewer-facing seat and wrote the adjudication rule into `dsh-pr-cycle` and step 7 of the process
+doc. Like `#93`, it was **rewritten before it was built**, because the premise it was opened on
+did not survive checking.
 
 `#104` came out of reconciling this document after `#93` merged. The badge-versus-aggregate
 disagreement had sat in §6 as a risk phrased as an open question — "either they measure different
