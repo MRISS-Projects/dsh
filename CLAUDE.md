@@ -47,7 +47,6 @@ The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages v
 | Full build with tests | `mvn -B install` |
 | Fast build, no tests | `mvn -B -DskipTests install` |
 | Single module | `mvn -B -pl dsh-data -am install` |
-| Coverage gate (after a full build) | `./scripts/check-coverage.sh` |
 | Markdown lint | `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
 
 ### Always log local Maven runs
@@ -96,10 +95,26 @@ A story is not done until both pass:
 1. All tests pass under `mvn -B install` (surefire only — there is no failsafe configuration and
    no `*IT.java` test in the repo today, so "integration tests" are not yet a separately enforced
    gate; implementing them is tracked as `#46` in PRD Wave 0).
-2. Aggregate instruction coverage has not dropped below `.github/coverage-baseline.txt`.
+2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
+   by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
+   module which produced no coverage data at all. **Both are inherited from
+   `MRISS-Projects/parent-poms`, not declared here — grepping this repository will not find them.**
 
-`.github/workflows/ci.yml` enforces both on every PR. Run `mvn -B install` then
-`./scripts/check-coverage.sh` to check locally before pushing.
+`.github/workflows/ci.yml` enforces both gates on every PR. `mvn -B install` runs them itself,
+because they are bound to `verify`; there is no second command to run. If coverage fails, add
+tests — never weaken the gate.
+
+`-DskipTests`, `-Dmaven.test.skip=true`, `-Dmaven.test.skip.exec=true` and `-Djacoco.skip=true`
+disarm the data guard along with the thing they skip, so the documented fast build stays green.
+`-Dcoverage.data.check.skip=true` disables the guard on its own and exists for a module that is
+genuinely exempt.
+
+`-Denforcer.skip=true` is the wrong tool, in both directions. It does **not** disable the coverage
+guard: that execution sets `<skip>` explicitly, and explicit configuration beats the parameter's
+`enforcer.skip` user property. It **does** disable this repository's own
+`enforce-lowercase-artifact-id` rule in the root `pom.xml`, which sets no `<skip>`. So reaching for
+it silently drops a check you wanted while leaving the one you were trying to bypass armed. Both
+halves verified by running it.
 
 ## The development process
 
@@ -161,6 +176,27 @@ on every module here. Grepping only this repo's poms will tell you it does not e
 
 **Before releasing parent-poms, clear the milestone being released.** If it still has open issues,
 fix those first. A release that leaves its own milestone half-done makes the version meaningless.
+
+#### The light round trip, for a small change
+
+Not every shared change earns an issue, a milestone and a release. A small, self-contained build
+change — one plugin execution, a property, a version bump in `pluginManagement` — takes a shorter
+path:
+
+1. Commit it directly on parent-poms `master`. No issue is opened there.
+2. `mvn -B install` locally in parent-poms, so the `-SNAPSHOT` in your local repository carries the
+   change and the consuming repo can be verified against it without `-U`.
+3. Dispatch parent-poms' `deploy.yml` with `release_type: snapshots`. **Deploy, not release** — no
+   version bump, no tag, no milestone to clear.
+4. Comment the resulting commit SHA on the originating issue in this repo.
+
+**Step 4 is the condition, not a courtesy.** The commit has no issue of its own, so that comment is
+the only record connecting a change in shared infrastructure to the reason it was made. Without it
+the change is untraceable. Skipping it means using the full round trip above instead.
+
+This path is for a change small enough to review in one sitting and to describe in one comment.
+Anything touching the release workflows, the coverage thresholds, or the profile structure is not
+small — use the full round trip.
 
 **Keep parent-poms' Claude setup lightweight.** It has a deliberately minimal `CLAUDE.md` and none
 of this repo's eight-step process. It is infrastructure. Do not port this process there.

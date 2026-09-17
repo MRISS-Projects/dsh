@@ -32,11 +32,12 @@ Log the build and give the human something to watch - see "Always log local Mave
     echo "Monitor with:  tail -f .logs/mvn-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
-    ./scripts/check-coverage.sh
+That one command is the whole gate. Every module with production sources holds at least 95% LINE
+and 95% BRANCH coverage, enforced by `jacoco:check`, and a module that produced no coverage data at
+all fails `enforce-coverage-data-exists` - the companion guard that exists because `jacoco:check`
+silently skips a module with no exec data. Both are bound to `verify` and inherited from
+`parent-poms`, so the build fails by itself - there is no second command to run, and nothing to
+find by grepping this repository. All tests pass. A red build is not "done with a known issue".
 
-All unit tests pass, all integration tests pass, and coverage has not dropped below
-`.github/coverage-baseline.txt`. A red build is not "done with a known issue".
-
-If the coverage ratchet fails, add tests. Editing `.github/coverage-baseline.txt` to make
-it pass is falsifying the gate - if a drop is genuinely justified, say so out loud and let
-the human decide.
+If the coverage gate fails, add tests. Weakening the gate to make it pass is falsifying it - if a
+drop is genuinely justified, say so out loud and let the human decide.

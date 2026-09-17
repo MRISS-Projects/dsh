@@ -85,8 +85,21 @@ class DocumentControllerTest {
 
 ## Coverage Requirements
 
-- Minimum 80% line coverage for service classes
-- Minimum 70% line coverage overall (enforced by dsh-coverage-report module)
+- Minimum 95% LINE and 95% BRANCH coverage per module, enforced by `jacoco:check` bound to
+  `verify`, so a shortfall fails `mvn -B install`
+- A module with production sources that produces no coverage data at all fails the
+  `enforce-coverage-data-exists` guard, which closes the gap left by `jacoco:check` skipping a
+  module with no exec data
+- Both are inherited from `MRISS-Projects/parent-poms`, not declared in this repository — grepping
+  here will not find them. `dsh-coverage-report` aggregates coverage for reporting and enforces
+  nothing
+- `-DskipTests`, `-Dmaven.test.skip=true`, `-Dmaven.test.skip.exec=true` and `-Djacoco.skip=true`
+  disarm the data guard along with what they skip; `-Dcoverage.data.check.skip=true` disables it for
+  a genuinely exempt module
+- `-Denforcer.skip=true` does **not** disable the guard — that execution sets `<skip>` explicitly,
+  which beats the parameter's `enforcer.skip` user property — but it *does* disable this
+  repository's own `enforce-lowercase-artifact-id` rule, which sets none. It is the wrong tool in
+  both directions
 - All critical paths (error handling, edge cases) must be explicitly tested
 
 ## Performance Tests
