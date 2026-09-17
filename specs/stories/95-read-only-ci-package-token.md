@@ -94,8 +94,9 @@ Five live references to `DEPLOY_TOKEN`, all replaced by `PACKAGES_READ_TOKEN`:
 | 61, 66, 71 | `<password>${env.DEPLOY_TOKEN}</password>` | `<password>${env.PACKAGES_READ_TOKEN}</password>` |
 | 78 | `<github.personal.token>${env.DEPLOY_TOKEN}</github.personal.token>` | `<github.personal.token>${env.PACKAGES_READ_TOKEN}</github.personal.token>` |
 
-The `env:` block also gains the comment block that moves out of `api-testing.yml` (§5.2), rewritten
-for the new secret.
+The `env:` block also gains a comment block mirroring the one rewritten in `api-testing.yml`
+(§5.2). Both files carry it — it does not move out of one into the other, or `api-testing.yml`'s
+`env:` block would be left undocumented.
 
 A preflight step is inserted **after** "Set up JDK 17" and **before** "Configure Maven settings for
 GitHub Packages":
@@ -104,7 +105,7 @@ GitHub Packages":
       - name: Verify package credentials are present
         run: |
           if [ -z "$PACKAGES_READ_TOKEN" ]; then
-            echo "::error::PACKAGES_READ_TOKEN is not set. Add it under Settings → Secrets and variables → Actions."
+            echo "::error::PACKAGES_READ_TOKEN is unavailable to this run. Pull requests from forks do not receive repository secrets; otherwise add it under Settings → Secrets and variables → Actions."
             exit 1
           fi
 ```
@@ -113,6 +114,12 @@ Without it, an absent or empty secret surfaces as a Maven 401 on `com.mriss.mris
 partway through dependency resolution, which reads as a broken parent rather than a missing
 credential.
 
+The message covers two distinct causes deliberately. Both workflows trigger on bare
+`pull_request`, and GitHub withholds *all* repository secrets from fork pull requests — so the
+guard fires there too, on a repository where the secret is correctly configured. Telling that
+maintainer to "add it under Settings" would point away from the real cause. One message covering
+both beats branching on `github.event.pull_request.head.repo.fork` for a five-line guard.
+
 ### 5.2 `.github/workflows/api-testing.yml`
 
 The same five references, at lines 45, 73, 78, 83 and 90, and the same preflight step in the same
@@ -120,8 +127,20 @@ position.
 
 Lines 40-44 additionally carry a comment block that is now actively wrong — it instructs the reader
 to create `DEPLOY_TOKEN` as a classic PAT with the `read:packages` scope, which is the precise
-conflation this story exists to end. It is rewritten to describe `PACKAGES_READ_TOKEN`, and to say
-in one line that `DEPLOY_TOKEN` is deliberately not used here.
+conflation this story exists to end. It is rewritten to describe `PACKAGES_READ_TOKEN`.
+
+It does **not** name `DEPLOY_TOKEN` while doing so. An earlier draft of this section asked for a
+line saying `DEPLOY_TOKEN` is deliberately not used here, which AC002 forbids — it bars the name
+from this file including in comments — and which AC003 would also break, since it confines the name
+to five workflows. The acceptance criteria win. The comment states the rule without naming the
+write-capable secret, and points at the `## Secrets` section of `docs/devops/README.md` (§5.3),
+which names it and carries the full invariant:
+
+```yaml
+      # This workflow builds pull-request code, so the credential it puts in
+      # the environment must not be able to write. See the Secrets section of
+      # docs/devops/README.md for which token each workflow may use.
+```
 
 ### 5.3 `docs/devops/README.md`
 
@@ -133,10 +152,18 @@ repository reaches for the right one:
 | Secret | Scope | Used by | Why |
 |---|---|---|---|
 | `PACKAGES_READ_TOKEN` | `read:packages` only | `ci.yml`, `api-testing.yml` | Resolving `com.mriss.mriss-parent:products` from the `MRISS-Projects/maven-repo` registry. Both workflows build pull-request code, so the credential they expose must not be able to write. |
-| `DEPLOY_TOKEN` | write-capable | `documentation-sync.yml`, `stage.yml`, `staging.yml`, `release.yml`, `hotfix.yml` | Pushing auto-generated docs, and deploying artifacts via the reusable parent-poms workflows. None of these runs pull-request code. |
+| `DEPLOY_TOKEN` | write-capable | `documentation-sync.yml`, `stage.yml`, `staging.yml`, `release.yml`, `hotfix.yml` | Pushing auto-generated docs, and deploying artifacts via the reusable parent-poms workflows. None of these runs pull-request code on an automatic trigger. |
 
 The section also states the rule plainly: **a workflow that builds pull-request code never receives
 `DEPLOY_TOKEN`.**
+
+It must also carry the manual-dispatch caveat, or the rule overstates itself. `documentation-sync.yml`
+declares `workflow_dispatch` alongside its `push` trigger, and a dispatched run executes the
+workflow from whichever ref the operator picks — so it can be aimed at an unmerged branch and will
+check that branch out with `DEPLOY_TOKEN` in hand. That needs write access, so it is not open to a
+pull-request author, but it makes the rule a statement about automatic triggers rather than an
+absolute. AC006 requires the section to match `.github/workflows/` workflow for workflow, and an
+unqualified "triggers on `push` only" would fail it.
 
 `wiki-sync.yml` uses `secrets.GITHUB_TOKEN` and is unaffected; the section says so, so that a reader
 comparing against `.github/workflows/` does not read the omission as an oversight.
@@ -145,7 +172,7 @@ comparing against `.github/workflows/` does not read the omission as an oversigh
 
 | File | Why |
 |---|---|
-| `.github/workflows/documentation-sync.yml` | Passes `DEPLOY_TOKEN` to `actions/checkout` so `git-auto-commit-action` can push past rulesets that block `GITHUB_TOKEN`. Genuinely needs write. Triggers on `push` only — never on `pull_request`. |
+| `.github/workflows/documentation-sync.yml` | Passes `DEPLOY_TOKEN` to `actions/checkout` so `git-auto-commit-action` can push past rulesets that block `GITHUB_TOKEN`. Genuinely needs write. Triggers on `push` and `workflow_dispatch` — never on `pull_request`. |
 | `.github/workflows/release.yml`, `stage.yml`, `staging.yml`, `hotfix.yml` | `workflow_dispatch` only, started by a person, and they pass `DEPLOY_TOKEN` as a `secrets:` input to reusable workflows in `MRISS-Projects/parent-poms` that deploy artifacts. |
 | `.github/workflows/wiki-sync.yml` | Uses `secrets.GITHUB_TOKEN`, not `DEPLOY_TOKEN`. |
 | `.github/workflows/spec-validation.yml` | Uses no Maven and no package registry. |
@@ -184,11 +211,14 @@ Numbered to match `#95`. AC005-AC008 cover the additions this spec makes to it �
 - [ ] AC008: CI is green on the pull request, and the coverage ratchet is unaffected — no
   production code is touched.
 
-## 9. Issue body reconciliation — required before shipping
+## 9. Issue body reconciliation — applied
 
 The process treats the GitHub issue as the source of truth. This spec goes beyond `#95` as written
-in three ways, and the issue must be edited to match **before the pull request opens**. Claude does
-not edit `#95` without the repository owner's approval of the text.
+in three ways, and the issue had to be edited to match **before the pull request opens**.
+
+**Done** — `#95` was reconciled on 2026-09-17, on the repository owner's instruction, with the four
+points below. AC001 is now checked off there: the owner confirmed the PAT's scope against its own
+settings page when they created it on 2026-09-16.
 
 1. **AC001 is already satisfied.** The secret was created on 2026-09-16, after the issue was
    raised. The issue should record this, and should say that its scope is verified by the owner
@@ -196,6 +226,8 @@ not edit `#95` without the repository owner's approval of the text.
 2. **The preflight guard is new** — AC005 has no counterpart in the issue.
 3. **The `## Secrets` section is new** — AC006 has no counterpart. The issue's AC003 states the
    invariant; this spec additionally writes it down where a workflow author will find it.
+4. **`ci.yml` cannot be dispatched manually** — found while building, not during spec review. See
+   §11 step 1. The issue records it so that AC005's evidence is not mistaken for a shortcut.
 
 The issue's **Out of Scope** clause — rotating `DEPLOY_TOKEN`, and any change to the reusable
 workflows in `MRISS-Projects/parent-poms` — is correct as written and carries over unchanged.
@@ -213,7 +245,14 @@ workflows in `MRISS-Projects/parent-poms` — is correct as written and carries 
   through that repository's own issue and release cycle.
 - **`api-testing.yml`'s `mvn -B -U install`.** It uses `-U` where `ci.yml` deliberately does not, so
   the two workflows can resolve different parent SNAPSHOTs on the same commit. A real
-  inconsistency, unrelated to credentials. **Raise as a separate Wave 0 issue.**
+  inconsistency, unrelated to credentials. **Raise as a separate Wave 0 issue**, resolved *towards*
+  `-U`, not away from it: while the parent is a `-SNAPSHOT` and this repository is the first
+  consumer of `parent-poms` changes, tracking the current parent on every run is the intended
+  contract. Omitting `-U` never bought reproducibility anyway — Maven refreshes SNAPSHOT metadata
+  on its own daily schedule and `actions/setup-java` restores `~/.m2` from cache, so today's
+  `ci.yml` already drifts, just unpredictably. That issue must also rewrite the comment above
+  `ci.yml`'s build step and `## Parent POM` in `docs/devops/README.md`, both of which currently
+  argue the opposite.
 
 ## 11. Testing approach
 
@@ -225,11 +264,42 @@ red-first through the one mechanism that actually executes a workflow.
 
 **Order of verification:**
 
-1. **Red for AC005, before the main change.** On the task branch, with the guard step added but
-   the secret reference still pointing at a name that does not exist, dispatch `ci.yml` manually
-   from the Actions tab and confirm the job fails at "Verify package credentials are present" with
-   the `::error::` message — not later, at Maven. This proves the guard fires rather than merely
-   being present. Revert the deliberate misname in the same task before committing.
+1. **Red for AC005, before the main change.** With the guard step added but the secret reference
+   pointing at a name that does not exist, confirm the job fails at "Verify package credentials
+   are present" with the `::error::` message — not later, at Maven. This proves the guard fires
+   rather than merely being present.
+
+   **`ci.yml` cannot be dispatched.** `workflow_dispatch` is only offered for workflows present on
+   the default branch, and `ci.yml` is not yet on `master` — it arrived with `#91` and reaches
+   `master` only at the next release. `api-testing.yml` *is* on `master` with a
+   `workflow_dispatch` trigger, and carries a byte-identical guard step, so it is the workflow that
+   was driven red. Redo this on `ci.yml` once it lands on `master`; until then the evidence
+   transfers.
+
+   Done on a throwaway branch (`tmp-95-guard-red`, pushed and deleted) so that no deliberate
+   misname ever entered the task branch's history. Result —
+   [run 35215797648](https://github.com/MRISS-Projects/dsh/actions/runs/35215797648):
+
+   ```text
+   success   Set up JDK 17
+   failure   Verify package credentials are present
+   skipped   Configure Maven settings for GitHub Packages
+   skipped   Build entire project (all modules must be installed first)
+   ```
+
+   with the `::error::` annotation emitted before Maven ran, which is the point of the guard.
+
+   **That run predates the message rewording** prompted by step 5 review — it emitted the earlier
+   "is not set. Add it under Settings…" text. The guard's control flow is byte-identical since; only
+   the string changed, and the new string is covered by the harness below. Re-dispatching for a
+   wording change was not judged worth a second CI run, but the distinction is recorded rather than
+   glossed.
+
+   The guard is additionally driven red/green outside CI, by extracting the step's `run:` body from
+   each workflow and executing it with the variable unset and set. That harness also asserts the
+   step's position between "Set up JDK 17" and "Configure Maven settings", and performs the AC002
+   and AC003 sweeps of step 3. It is verification scaffolding, not a committed test — this story
+   adds no test, per the opening of this section.
 
 2. **Green for AC002/AC004.** Push the branch; `ci.yml` runs on the pull request and must go green
    through `mvn -B install` and the coverage ratchet. This is the load-bearing check: it proves a

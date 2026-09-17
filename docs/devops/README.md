@@ -79,6 +79,43 @@ workflow hosted in the separate `MRISS-Projects/parent-poms` repository, which d
 Maven release work. They are only ever started by a person from the Actions tab, never by a push
 or PR.
 
+## Secrets
+
+Two credentials reach these workflows, and the split between them is deliberate: **a workflow that
+builds pull-request code never receives `DEPLOY_TOKEN`.** Pull-request code is authored outside the
+repository's review gate but compiles and runs inside the job, so any secret in that job's
+environment is readable by it. The only credential such a job may hold is one that cannot write.
+
+| Secret | Scope | Used by | Why |
+| --- | --- | --- | --- |
+| `PACKAGES_READ_TOKEN` | `read:packages` only | `ci.yml`, `api-testing.yml` | Resolving `com.mriss.mriss-parent:products` from the `MRISS-Projects/maven-repo` registry. Both workflows build pull-request code, so the credential they expose must not be able to write. |
+| `DEPLOY_TOKEN` | write-capable | `documentation-sync.yml`, `stage.yml`, `staging.yml`, `release.yml`, `hotfix.yml` | Pushing auto-generated docs, and deploying artifacts via the reusable `parent-poms` workflows. None of these runs pull-request code on an automatic trigger — but see the dispatch caveat below. |
+
+**The caveat: manual dispatch.** `documentation-sync.yml` declares `workflow_dispatch` alongside
+its `push` trigger, and the four release wrappers are `workflow_dispatch` only. A dispatched run
+executes the workflow file from whichever ref the operator selects, so it *can* be pointed at an
+unmerged branch and will then check that branch out with `DEPLOY_TOKEN` in hand. That is a
+deliberate act by somebody who already holds write access to this repository, not an avenue open to
+a pull-request author — but it does mean the rule above is a statement about automatic triggers
+rather than an absolute. Weigh that before adding `workflow_dispatch` to anything else that holds
+`DEPLOY_TOKEN`.
+
+`PACKAGES_READ_TOKEN` must be a **classic** Personal Access Token. Fine-grained tokens reach
+organisation-owned packages only where the organisation has opted in; the classic PAT with
+`read:packages` is the documented route for `maven.pkg.github.com`. Authentication is required even
+though `MRISS-Projects/maven-repo` is public — the GitHub Packages Maven registry demands
+credentials for anonymous-readable packages — which is why the credential is swapped here rather
+than dropped.
+
+Both `ci.yml` and `api-testing.yml` open with a `Verify package credentials are present` step that
+fails with an explicit `::error::` annotation when the secret is missing. Without it an absent
+secret surfaces much later as a Maven 401 on `com.mriss.mriss-parent:products`, which reads as a
+broken parent rather than a missing credential.
+
+The two remaining workflows hold neither secret, and that is not an oversight: `wiki-sync.yml` uses
+the built-in `secrets.GITHUB_TOKEN`, and `spec-validation.yml` touches no Maven build and no package
+registry.
+
 ## Parent POM
 
 Every module in this repository inherits from `com.mriss.mriss-parent:products`, resolved from

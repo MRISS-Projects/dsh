@@ -37,12 +37,17 @@ jobs:
           - 15672:15672
 
     env:
-      # DEPLOY_TOKEN must be stored as a repository secret.
-      # Create a GitHub Personal Access Token (classic) with the
-      # "read:packages" scope from an account that has read access to the
-      # MRISS-Projects organization, then add it to this repo's secrets as
-      # DEPLOY_TOKEN (Settings → Secrets and variables → Actions).
-      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+      # PACKAGES_READ_TOKEN must be stored as a repository secret.
+      # Create a GitHub Personal Access Token (classic) holding the
+      # "read:packages" scope and no other scope, from an account with read
+      # access to the MRISS-Projects organization, then add it to this repo's
+      # secrets as PACKAGES_READ_TOKEN
+      # (Settings -> Secrets and variables -> Actions).
+      #
+      # This workflow builds pull-request code, so the credential it puts in
+      # the environment must not be able to write. See the Secrets section of
+      # docs/devops/README.md for which token each workflow may use.
+      PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,6 +58,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
+
+      - name: Verify package credentials are present
+        run: |
+          if [ -z "$PACKAGES_READ_TOKEN" ]; then
+            echo "::error::PACKAGES_READ_TOKEN is unavailable to this run. Pull requests from forks do not receive repository secrets; otherwise add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
 
       # Configure Maven settings so it can read from the GitHub Packages registry
       # (https://maven.pkg.github.com/MRISS-Projects/maven-repo) where
@@ -70,24 +82,24 @@ jobs:
                   <server>
                       <id>MRISS-Projects-maven-repo</id>
                       <username>${env.GITHUB_ACTOR}</username>
-                      <password>${env.DEPLOY_TOKEN}</password>
+                      <password>${env.PACKAGES_READ_TOKEN}</password>
                   </server>
                   <server>
                       <id>MRISS-Projects-maven-repo-plugins</id>
                       <username>${env.GITHUB_ACTOR}</username>
-                      <password>${env.DEPLOY_TOKEN}</password>
+                      <password>${env.PACKAGES_READ_TOKEN}</password>
                   </server>
                   <server>
                       <id>github.com</id>
                       <username>${env.GITHUB_ACTOR}</username>
-                      <password>${env.DEPLOY_TOKEN}</password>
+                      <password>${env.PACKAGES_READ_TOKEN}</password>
                   </server>
               </servers>
               <profiles>
                   <profile>
                       <id>github-packages</id>
                       <properties>
-                          <github.personal.token>${env.DEPLOY_TOKEN}</github.personal.token>
+                          <github.personal.token>${env.PACKAGES_READ_TOKEN}</github.personal.token>
                           <!-- MongoDB connection properties used by Maven resource filtering
                                in dsh-data/src/main/resources/mongo.properties -->
                           <mongo.host>localhost</mongo.host>
