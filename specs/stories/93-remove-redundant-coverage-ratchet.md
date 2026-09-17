@@ -278,11 +278,16 @@ is wider than the repository being changed.
 
 Four caveats a consumer should know about, all found by testing rather than by reading:
 
-- **`-Denforcer.skip=true` does not skip this execution.** An explicit `<skip>` in the plugin
-  configuration takes precedence over the parameter's `enforcer.skip` user property, so the usual
-  global escape hatch for the enforcer is inert here. `coverage.data.check.skip` is the one that
-  works. This is the only enforcer execution bound anywhere in parent-poms, so nothing else is
-  affected.
+- **`-Denforcer.skip=true` does not skip this execution — but it does skip DSH's other one.** An
+  explicit `<skip>` in the plugin configuration takes precedence over the parameter's
+  `enforcer.skip` user property, so the usual global escape hatch is inert against this guard;
+  `coverage.data.check.skip` is the one that works. It is the only enforcer execution in
+  parent-poms, but not the only one in a consuming build: DSH binds `enforce-lowercase-artifact-id`
+  in its own root `pom.xml`, with no `<skip>`, and that one *is* skipped by the flag. A single run
+  with `-Denforcer.skip=true` shows both behaviours in one log — `Skipping Rule Enforcement.` for
+  the lowercase rule, and the coverage guard failing the build regardless. The flag therefore drops
+  a check the developer wanted while leaving armed the one they were trying to bypass, which is why
+  it should not be reached for at all.
 - **A stale `jacoco.exec` disarms the guard.** The test is `isFile()`, with no check on freshness,
   so any incremental local build that does not re-run tests is satisfied by the previous run's file.
   CI is unaffected because it builds from a fresh checkout. This is a property of the gate, not just

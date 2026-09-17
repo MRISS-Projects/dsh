@@ -104,10 +104,17 @@ A story is not done until both pass:
 because they are bound to `verify`; there is no second command to run. If coverage fails, add
 tests — never weaken the gate.
 
-`-DskipTests`, `-Dmaven.test.skip=true` and `-Djacoco.skip=true` disarm the data guard along with
-the thing they skip, so the documented fast build stays green. `-Dcoverage.data.check.skip=true`
-disables the guard on its own and exists for a module that is genuinely exempt — note that
-`-Denforcer.skip=true` does **not** work here, because the execution sets `<skip>` explicitly.
+`-DskipTests`, `-Dmaven.test.skip=true`, `-Dmaven.test.skip.exec=true` and `-Djacoco.skip=true`
+disarm the data guard along with the thing they skip, so the documented fast build stays green.
+`-Dcoverage.data.check.skip=true` disables the guard on its own and exists for a module that is
+genuinely exempt.
+
+`-Denforcer.skip=true` is the wrong tool, in both directions. It does **not** disable the coverage
+guard: that execution sets `<skip>` explicitly, and explicit configuration beats the parameter's
+`enforcer.skip` user property. It **does** disable this repository's own
+`enforce-lowercase-artifact-id` rule in the root `pom.xml`, which sets no `<skip>`. So reaching for
+it silently drops a check you wanted while leaving the one you were trying to bypass armed. Both
+halves verified by running it.
 
 ## The development process
 
