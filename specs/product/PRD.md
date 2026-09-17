@@ -79,6 +79,7 @@ criteria.
 | `#95` | **closed** — PR #98 | Use a read-only token for CI package authentication |
 | `#97` | open | Resolve the tooling orphaned by the Travis estate removal |
 | `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
+| `#101` | open | Fail CI when the package token cannot authenticate, not just when it is absent |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -97,6 +98,14 @@ SNAPSHOTs from the same commit. It was resolved *towards* `-U` rather than away 
 parent is a `-SNAPSHOT` and this repository is the first consumer of `parent-poms` changes,
 tracking the current parent on every run is the intended contract, and omitting `-U` never bought
 reproducibility in the first place. Shipped in PR #100.
+
+`#101` was spun off from `#99` during that story's review: `ci.yml`'s credential step checks that
+`PACKAGES_READ_TOKEN` is non-empty, never that it authenticates, so a dead token yields either a
+green build against a cached parent or — once the cache misses — a failure that reads as a broken
+parent rather than a broken credential. It predates `#99` and was left out of it deliberately:
+`#99` changed how often the symptom appears, not the presence-only check that hides it, and
+folding a second CI behaviour change into a flag-and-prose story would have made both harder to
+review.
 
 `#97` was spun off from `#92` when that story shipped: removing the Travis estate deliberately left
 three things behind — four uncalled `mvn` wrapper scripts, the `update-readme` Maven profile whose
