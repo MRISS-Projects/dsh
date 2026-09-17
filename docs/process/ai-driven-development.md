@@ -157,7 +157,9 @@ required change has been made and re-reviewed until it is.
 **Artifact.** A pushed branch and an open pull request, with the first CI run started.
 `.github/workflows/ci.yml` enforces the quality gates defined in `CLAUDE.md` — all tests passing
 under `mvn -B install`, and 95% LINE and BRANCH coverage per module from the `jacoco:check`
-inherited from `parent-poms` — on every PR. Everything currently runs under surefire; there is no
+inherited from `parent-poms`, together with the `enforce-coverage-data-exists` guard that fails a
+module which produced no coverage data at all — on every PR. Everything currently runs under
+surefire; there is no
 failsafe configuration and no `*IT.java` test in the repo, so integration tests are not yet a gate
 CI enforces separately from unit tests. Implementing them is tracked as `#46` in PRD Wave 0.
 
