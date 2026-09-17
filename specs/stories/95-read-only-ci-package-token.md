@@ -234,10 +234,12 @@ workflows in `MRISS-Projects/parent-poms` — is correct as written and carries 
 
 ## 10. Out of scope
 
-- **Rotating `DEPLOY_TOKEN`.** Worth doing, since the value has been readable by pull-request code
-  on same-repository branches since `ci.yml` was introduced, and the secret dates from 2026-04-13.
-  It is a credential operation with no change to this repository, so it does not belong in a task
-  branch. **Raise as a separate Wave 0 issue.**
+- **Rotating `DEPLOY_TOKEN`.** Worth doing, since the value had been readable by pull-request code
+  on same-repository branches since `ci.yml` was introduced, and the secret dated from 2026-04-13.
+  A credential operation with no change to this repository, so it does not belong in a task branch.
+  **Done — the repository owner rotated it on 2026-09-17 and re-inserted the new value in both
+  `MRISS-Projects/dsh` and `MRISS-Projects/parent-poms`.** No issue was needed. This change stops
+  the exposure going forward; the rotation is what closes the window that was already open.
 - **Step-scoping the `env:` block.** Analysed in §2 and rejected: it narrows nothing, because the
   step that needs the variable is the step that runs pull-request code.
 - **Any change to `MRISS-Projects/parent-poms`.** Its reusable workflows deploy artifacts and
@@ -245,7 +247,7 @@ workflows in `MRISS-Projects/parent-poms` — is correct as written and carries 
   through that repository's own issue and release cycle.
 - **`api-testing.yml`'s `mvn -B -U install`.** It uses `-U` where `ci.yml` deliberately does not, so
   the two workflows can resolve different parent SNAPSHOTs on the same commit. A real
-  inconsistency, unrelated to credentials. **Raise as a separate Wave 0 issue**, resolved *towards*
+  inconsistency, unrelated to credentials. **Raised as `#99`**, resolved *towards*
   `-U`, not away from it: while the parent is a `-SNAPSHOT` and this repository is the first
   consumer of `parent-poms` changes, tracking the current parent on every run is the intended
   contract. Omitting `-U` never bought reproducibility anyway — Maven refreshes SNAPSHOT metadata

@@ -68,11 +68,19 @@ migration, plus gaps found while writing this PRD.
 - `#93` — Revisit the coverage gate shape once the GCP migration is underway
 - `#94` — Make `check-spec-references` enforcing, or remove it
 - `#95` — Use a read-only token for CI package authentication (security)
+- `#99` — Standardise Maven builds on `-U` while the parent is a SNAPSHOT
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
 criteria. The paragraphs that originated them have been removed from this document — the issues are
 now the single source of truth for that work.
+
+`#99` came later still, spun off from `#95`'s out-of-scope list while that story was being built:
+`ci.yml` and `api-testing.yml` disagree on `-U`, so the two can resolve different parent SNAPSHOTs
+from the same commit. It is resolved *towards* `-U` rather than away from it — while the parent is
+a `-SNAPSHOT` and this repository is the first consumer of `parent-poms` changes, tracking the
+current parent on every run is the intended contract, and omitting `-U` never bought
+reproducibility in the first place.
 
 **Two findings from the same review are deliberately *not* issues:**
 
