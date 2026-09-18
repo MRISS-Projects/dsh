@@ -254,9 +254,23 @@ check 'Apache Maven 3.9.90 (0000000000000000000000000000000000000000)'  # expect
 The third case is the reason for `-F` and the trailing space; without them it is accepted.
 
 **In CI, the evidence is the log.** After the change, both workflows print an `Apache Maven 3.9.9`
-line from the `Verify Maven version` step. Record that line from each of the two workflow runs on
-the pull request — that is AC001 through AC005 evidenced from the runs themselves rather than from
-the diff.
+line from the `Verify Maven version` step. Record that line from each of the two workflow runs —
+that is AC001 through AC005 evidenced from the runs themselves rather than from the diff.
+
+**Only one of the two runs itself, though.** `api-testing.yml`'s `pull_request` trigger is scoped to
+`paths: ['dsh-rest-api/**', 'specs/api/**']`, and a workflow-only change touches neither, so **it
+does not run on this story's own pull request** and its copy of the guard would go unexercised. Its
+`workflow_dispatch` trigger is the way round:
+
+```bash
+gh workflow run api-testing.yml --ref issue-86-pin-maven-3-9-9-in-workflows
+```
+
+The dispatched run boots MongoDB and RabbitMQ service containers, builds the full reactor, starts
+`dsh-rest-api` and runs the Postman collections, so it is a heavier run than the guard needs — but
+it is the only way to make AC004 and AC005 true for that workflow by execution rather than by
+inspection. Anyone editing `api-testing.yml` without touching `dsh-rest-api/` or `specs/api/` has
+the same problem, `#87` included.
 
 **The red state is worth capturing once.** Before adding the pinning step, the `Verify Maven
 version` step alone will report whatever the runner ships. Push that first if you want the record;
