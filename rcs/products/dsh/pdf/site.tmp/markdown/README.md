@@ -1,11 +1,10 @@
 # Document Smart Highlights
 
-[![Build Status](https://travis-ci.org/MRISS-Projects/dsh.svg?branch=${branch.name})](https://travis-ci.org/MRISS-Projects/dsh)
 ![Jacoco](dsh-coverage-report/badges/jacoco.svg)
 
 ## Version
 
-0.3.0-SNAPSHOT - ${timestamp}
+0.3.0-SNAPSHOT - RC4 - 20260918-133443
 
 ## Introduction
 
@@ -347,12 +346,12 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 #### Building From Sources
 
 1. In order to build, both MongoDB and RabbitMQ services should be running. 
-2. Maven development user settings should be correctly configured (see configuration
-   section below)
+2. Maven development user settings should be correctly configured — see
+   [Maven Settings for GitHub Packages](#maven-settings-for-github-packages) below, which is
+   what lets Maven resolve the parent POM `com.mriss.mriss-parent:products`.
 3. At the root dsh folder type:
 
 ```
-./install-parent-pom.sh
 mvn clean install
 ```
 #### Tomcat
@@ -374,6 +373,75 @@ mvn clean install
 4. Look at the address: http://localhost:8080 
 
 ## Configuration
+
+### Maven Settings for GitHub Packages
+
+The parent POM `com.mriss.mriss-parent:products` is published to GitHub Packages, so no build
+of this repository resolves until your `~/.m2/settings.xml` authenticates against that registry.
+Three server ids and one property are needed — the same four things that
+`.github/workflows/ci.yml` writes into its own `settings.xml`:
+
+| Entry | Used for |
+| --- | --- |
+| server `MRISS-Projects-maven-repo` | resolving the parent POM and other MRISS artifacts |
+| server `MRISS-Projects-maven-repo-plugins` | resolving MRISS Maven plugins |
+| server `github.com` | `maven-scm-plugin`, when a `-Ddeployment` build commits the regenerated `README.md` |
+| property `github.personal.token` | `maven-changes-plugin`, which reads the closed milestone issues that go into the generated `README.md`. It is a Maven property, not a server credential — the `readme-generation` profile in `parent-poms` wires it into the plugin's `personalToken` parameter — so **omitting it fails silently**: `failOnError` is `false`, the issue list is never produced, and the generated `README.md` comes out with an empty Release Notes section |
+
+The credential is one and the same classic personal access token, carrying `read:packages` and
+nothing else, issued from an account with read access to the `MRISS-Projects` organisation. This
+repository is public, so no issue-reading scope is required on top. Paste it into all four places
+in your own `~/.m2/settings.xml`; it is never committed to this repository. The CI side of the same
+token is described under Secrets in `docs/devops/README.md`.
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>MRISS-Projects-maven-repo</id>
+      <username>YOUR-GITHUB-USERNAME</username>
+      <password>YOUR-PACKAGES-READ-TOKEN</password>
+    </server>
+    <server>
+      <id>MRISS-Projects-maven-repo-plugins</id>
+      <username>YOUR-GITHUB-USERNAME</username>
+      <password>YOUR-PACKAGES-READ-TOKEN</password>
+    </server>
+    <server>
+      <id>github.com</id>
+      <username>YOUR-GITHUB-USERNAME</username>
+      <password>YOUR-PACKAGES-READ-TOKEN</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>github-packages</id>
+      <properties>
+        <github.personal.token>YOUR-PACKAGES-READ-TOKEN</github.personal.token>
+      </properties>
+      <repositories>
+        <repository>
+          <id>MRISS-Projects-maven-repo</id>
+          <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>MRISS-Projects-maven-repo-plugins</id>
+          <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>github-packages</activeProfile>
+  </activeProfiles>
+</settings>
+```
 
 ### MongoDB Access Properties
 
@@ -515,6 +583,12 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [101](https://github.com/MRISS-Projects/dsh/issues/101) | task | [STORY] Fail CI when the package token cannot authenticate, not just when it is absent | null | mriss | 9/18/26 |
+| [103](https://github.com/MRISS-Projects/dsh/issues/103) | task | Make PR review rounds repo-aware and authoritative | null | mriss | 9/17/26 |
+| [93](https://github.com/MRISS-Projects/dsh/issues/93) | task | Remove the redundant coverage ratchet - jacoco:check at 95% is already inherited | null | mriss | 9/17/26 |
+| [99](https://github.com/MRISS-Projects/dsh/issues/99) | task | [STORY] Standardise Maven builds on -U while the parent is a SNAPSHOT | null | mriss | 9/17/26 |
+| [95](https://github.com/MRISS-Projects/dsh/issues/95) | bug | Use a read-only token for CI package authentication | null | mriss | 9/17/26 |
+| [92](https://github.com/MRISS-Projects/dsh/issues/92) | task | Remove the dead Travis build estate | null | mriss | 9/17/26 |
 | [84](https://github.com/MRISS-Projects/dsh/issues/84) | task | [FEATURE] Unify/reorg of deploy/release profiles | mriss | mriss | 5/22/26 |
 | [72](https://github.com/MRISS-Projects/dsh/issues/72) | task | Refactor all artifactId names to be lower case to be in  maven naming standards | mriss | mriss | 5/22/26 |
 | [83](https://github.com/MRISS-Projects/dsh/issues/83) | enhancement | [FEATURE] Adapt DSH to the new parent poms version 3.8.0 | mriss | mriss | 4/23/26 |

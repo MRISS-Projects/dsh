@@ -19,11 +19,7 @@
 <fo:block text-align="center" font-size="16pt" space-before.optimum="30pt" space-after.optimum="14pt" font-family="Garamond,serif">Document Smart Highlights</fo:block>
 
 Document Smart Highlights
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
-<fo:basic-link external-destination="https://travis-ci.org/MRISS-Projects/dsh">
-<fo:inline color="green"><fo:external-graphic height="100%" width="100%" content-height="scale-down-to-fit" content-width="scale-down-to-fit" src="https://travis-ci.org/MRISS-Projects/dsh.svg?branch=${branch.name}"/>
-</fo:inline></fo:basic-link>
-<fo:external-graphic height="100%" width="100%" content-height="scale-down-to-fit" content-width="scale-down-to-fit" src="dsh-coverage-report/badges/jacoco.svg"/>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif"><fo:external-graphic height="100%" width="100%" content-height="scale-down-to-fit" content-width="scale-down-to-fit" src="dsh-coverage-report/badges/jacoco.svg"/>
 </fo:block>
 
 
@@ -31,7 +27,7 @@ Document Smart Highlights
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - ${timestamp}</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - RC4 - 20260918-133443</fo:block>
 </fo:block>
 
 
@@ -1558,8 +1554,12 @@ service&#160;rabbitmq-server&#160;start
 </fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>Maven development user settings should be correctly configured (see configuration
-section below)</fo:block>
+<fo:block>Maven development user settings should be correctly configured — see
+
+<fo:basic-link internal-destination="#maven-settings-for-github-packages">
+<fo:inline color="blue">Maven Settings for GitHub Packages</fo:inline></fo:basic-link> below, which is
+what lets Maven resolve the parent POM 
+<fo:inline font-family="monospace" font-size="10pt">com.mriss.mriss-parent:products</fo:inline>.</fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -1577,9 +1577,7 @@ section below)</fo:block>
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">./install-parent-pom.sh
-<fo:block/>
-mvn&#160;clean&#160;install
+<fo:inline font-family="monospace" font-size="10pt">mvn&#160;clean&#160;install
 <fo:block/>
 </fo:inline></fo:block>
 </fo:block>
@@ -1705,7 +1703,210 @@ This will install Tomcat as a windows service.</fo:block>
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.1   MongoDB Access Properties</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.1   Maven Settings for GitHub Packages</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The parent POM 
+<fo:inline font-family="monospace" font-size="10pt">com.mriss.mriss-parent:products</fo:inline> is published to GitHub Packages, so no build
+of this repository resolves until your 
+<fo:inline font-family="monospace" font-size="10pt">~/.m2/settings.xml</fo:inline> authenticates against that registry.
+Three server ids and one property are needed — the same four things that
+
+<fo:inline font-family="monospace" font-size="10pt">.github/workflows/ci.yml</fo:inline> writes into its own 
+<fo:inline font-family="monospace" font-size="10pt">settings.xml</fo:inline>:</fo:block>
+
+
+<fo:block padding-before="9pt" padding-after="12pt">
+<fo:table table-omit-footer-at-break="false" table-layout="fixed" width="100%">
+<fo:table-column column-width="proportional-column-width(1)"/>
+<fo:table-column column-width="proportional-column-width(1)"/>
+
+<fo:table-body>
+
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Entry</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="7pt" display-align="after" background-color="#bbbbbb" color="white" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="10pt" font-weight="bold" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Used for</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+server 
+<fo:inline font-family="monospace" font-size="10pt">MRISS-Projects-maven-repo</fo:inline></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+resolving the parent POM and other MRISS artifacts</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+server 
+<fo:inline font-family="monospace" font-size="10pt">MRISS-Projects-maven-repo-plugins</fo:inline></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+resolving MRISS Maven plugins</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+server 
+<fo:inline font-family="monospace" font-size="10pt">github.com</fo:inline></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:inline font-family="monospace" font-size="10pt">maven-scm-plugin</fo:inline>, when a 
+<fo:inline font-family="monospace" font-size="10pt">-Ddeployment</fo:inline> build commits the regenerated 
+<fo:inline font-family="monospace" font-size="10pt">README.md</fo:inline></fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+property 
+<fo:inline font-family="monospace" font-size="10pt">github.personal.token</fo:inline></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:inline font-family="monospace" font-size="10pt">maven-changes-plugin</fo:inline>, which reads the closed milestone issues that go into the generated 
+<fo:inline font-family="monospace" font-size="10pt">README.md</fo:inline>. It is a Maven property, not a server credential — the 
+<fo:inline font-family="monospace" font-size="10pt">readme-generation</fo:inline> profile in 
+<fo:inline font-family="monospace" font-size="10pt">parent-poms</fo:inline> wires it into the plugin's 
+<fo:inline font-family="monospace" font-size="10pt">personalToken</fo:inline> parameter — so 
+<fo:inline font-weight="bold">omitting it fails silently</fo:inline>: 
+<fo:inline font-family="monospace" font-size="10pt">failOnError</fo:inline> is 
+<fo:inline font-family="monospace" font-size="10pt">false</fo:inline>, the issue list is never produced, and the generated 
+<fo:inline font-family="monospace" font-size="10pt">README.md</fo:inline> comes out with an empty Release Notes section</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+
+</fo:table-body>
+</fo:table>
+</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The credential is one and the same classic personal access token, carrying 
+<fo:inline font-family="monospace" font-size="10pt">read:packages</fo:inline> and
+nothing else, issued from an account with read access to the 
+<fo:inline font-family="monospace" font-size="10pt">MRISS-Projects</fo:inline> organisation. This
+repository is public, so no issue-reading scope is required on top. Paste it into all four places
+in your own 
+<fo:inline font-family="monospace" font-size="10pt">~/.m2/settings.xml</fo:inline>; it is never committed to this repository. The CI side of the same
+token is described under Secrets in 
+<fo:inline font-family="monospace" font-size="10pt">docs/devops/README.md</fo:inline>.</fo:block>
+
+
+<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
+<fo:inline font-family="monospace" font-size="10pt">&lt;settings&gt;
+<fo:block/>
+&#160;&#160;&lt;servers&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;server&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;id&gt;MRISS-Projects-maven-repo&lt;/id&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;username&gt;YOUR-GITHUB-USERNAME&lt;/username&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;password&gt;YOUR-PACKAGES-READ-TOKEN&lt;/password&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;/server&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;server&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;id&gt;MRISS-Projects-maven-repo-plugins&lt;/id&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;username&gt;YOUR-GITHUB-USERNAME&lt;/username&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;password&gt;YOUR-PACKAGES-READ-TOKEN&lt;/password&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;/server&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;server&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;id&gt;github.com&lt;/id&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;username&gt;YOUR-GITHUB-USERNAME&lt;/username&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;password&gt;YOUR-PACKAGES-READ-TOKEN&lt;/password&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;/server&gt;
+<fo:block/>
+&#160;&#160;&lt;/servers&gt;
+<fo:block/>
+&#160;&#160;&lt;profiles&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;profile&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;id&gt;github-packages&lt;/id&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;properties&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;github.personal.token&gt;YOUR-PACKAGES-READ-TOKEN&lt;/github.personal.token&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;/properties&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;repositories&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;repository&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;id&gt;MRISS-Projects-maven-repo&lt;/id&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;url&gt;https://maven.pkg.github.com/MRISS-Projects/maven-repo&lt;/url&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;releases&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;/releases&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;snapshots&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;/snapshots&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;/repository&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;/repositories&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;pluginRepositories&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;pluginRepository&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;id&gt;MRISS-Projects-maven-repo-plugins&lt;/id&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;url&gt;https://maven.pkg.github.com/MRISS-Projects/maven-repo&lt;/url&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;releases&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;/releases&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;snapshots&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;/snapshots&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;/pluginRepository&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&#160;&#160;&lt;/pluginRepositories&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;/profile&gt;
+<fo:block/>
+&#160;&#160;&lt;/profiles&gt;
+<fo:block/>
+&#160;&#160;&lt;activeProfiles&gt;
+<fo:block/>
+&#160;&#160;&#160;&#160;&lt;activeProfile&gt;github-packages&lt;/activeProfile&gt;
+<fo:block/>
+&#160;&#160;&lt;/activeProfiles&gt;
+<fo:block/>
+&lt;/settings&gt;
+<fo:block/>
+</fo:inline></fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.2   MongoDB Access Properties</fo:block>
 
 <fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Edit or create the maven user 
 <fo:inline font-family="monospace" font-size="10pt">settings.xml</fo:inline> file typically at 
@@ -1749,7 +1950,7 @@ at windows) folder and add a default activated profile similar to this:</fo:bloc
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.2   Tomcat Admin User Configuration</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.3   Tomcat Admin User Configuration</fo:block>
 
 <fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Stop Tomcat if it is already started, and edit the file 
 <fo:inline font-family="monospace" font-size="10pt">TOMCAT_HOME/conf/tomcat-users.xml</fo:inline>.
@@ -2025,6 +2226,174 @@ Updated</fo:block>
 </fo:table-row>
 
 
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/101">
+<fo:inline color="green">101</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+[STORY] Fail CI when the package token cannot authenticate, not just when it is absent</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/18/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/103">
+<fo:inline color="green">103</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Make PR review rounds repo-aware and authoritative</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/17/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/93">
+<fo:inline color="green">93</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Remove the redundant coverage ratchet - jacoco:check at 95% is already inherited</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/17/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/99">
+<fo:inline color="green">99</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+[STORY] Standardise Maven builds on -U while the parent is a SNAPSHOT</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/17/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/95">
+<fo:inline color="green">95</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+bug</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Use a read-only token for CI package authentication</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/17/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/92">
+<fo:inline color="green">92</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Remove the dead Travis build estate</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/17/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
 
 <fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
 <fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
