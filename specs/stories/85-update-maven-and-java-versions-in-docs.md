@@ -267,6 +267,23 @@ four or five entries, deterministic, and needs no macro at all.
 that is recorded on the follow-up issue as a finding, and the hand-written lists stay — they are
 correct either way.
 
+**Found while building — the macro was the less important half of this question.** The render
+produced no macro warning, consistent with the analysis above. But it exposed a defect the analysis
+could not have predicted: **Doxia generates heading anchors in its own scheme, and a hand-written
+contents list must match it.** The first render emitted `id="Donwload_and_Installation"` —
+capitalised, underscore-separated — while the lists had been written with GitHub-style
+`#donwload-and-installation`. **Every contents link on both pages was dead, and the build was
+green.** Nothing in `mvn site` warns about an unresolved in-page anchor.
+
+Both files now use Doxia's form, verified by extracting every `href="#…"` and every generated `id`
+from the rendered HTML and checking each link against the anchor set (§9.4).
+
+This has a consequence the follow-up issue must carry: the two anchor conventions are **mutually
+exclusive**. Doxia's form is correct in the generated site and wrong when the same `.md` is browsed
+on GitHub, which would want the lowercase-hyphen form. The site wins, because `src/site/markdown/`
+exists to feed it — and it is not a regression, since GitHub never rendered the APT originals at
+all. But it is a real cost of the APT-to-Markdown move, and it applies to all 15 remaining pages.
+
 ### 7.5 Files to change in parent-poms
 
 | File | Change |
@@ -338,6 +355,9 @@ them changes what every future project is born with. That is a separate decision
   AC002 return nothing over them.
 - [ ] **AC009** — parent-poms' site renders both pages, `maven.html` and `java.html` exist with
   their content and their in-page link lists, and `infrastructure/src/site/site.xml` needs no edit.
+  **Met, and it caught the story's one real defect** — see §7.4. Verified mechanically: every
+  `href="#…"` in each rendered page resolves to a generated `id`, which was false on the first
+  render and true on the second. `site.xml` was not touched.
 - [ ] **AC010** — The follow-up migration issue exists in parent-poms on `3.9.0-SNAPSHOT`, and the
   `#57` commit SHA is commented on `#85`.
 - [ ] **AC011** — `#94` carries a comment recording the two findings in §10.1: the single false
@@ -414,6 +434,19 @@ wait $MVN_PID; echo "maven exit=$?"
 Confirm `target/site/maven.html` and `target/site/java.html` exist, carry the converted content,
 and that the nav entries from `site.xml` still resolve. Record whether any macro-in-comment form
 rendered, for §7.4's open question and the follow-up issue.
+
+**A green build is not evidence the pages are right.** Extract every `href="#…"` and every generated
+`id` from each rendered page and check each link against the anchor set — an unresolved in-page
+anchor produces no warning and does not fail `mvn site`. This is what caught the defect in §7.4:
+
+```bash
+for p in java maven; do
+  ids=$(grep -oE 'id="[A-Za-z][^"]*"' "$p.html" | sed 's/id="//;s/"//' | sort -u)
+  for l in $(grep -oE 'href="#[^"]*"' "$p.html" | sed 's/href="#//;s/"//' | sort -u); do
+    echo "$ids" | grep -qx "$l" || echo "BROKEN -> $p.html #$l"
+  done
+done
+```
 
 ### 9.5 What is not tested
 
