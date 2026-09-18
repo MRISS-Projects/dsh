@@ -55,7 +55,11 @@ survive there today:
 | Line | Placeholder | Filled by |
 |---|---|---|
 | 7 | `${project.build.version}` | a `deployment` / `release-deployment` profile property |
-| 513 | `${issues.text.list}` | `maven-changes-plugin:github-text-list` |
+| 582 | `${issues.text.list}` | `maven-changes-plugin:github-text-list` |
+
+Those two are the *only* placeholders the source may contain — see §5.3, which explains why a third
+one would be a disclosure bug rather than a typo. The second line number moves whenever anything is
+inserted above it; `grep -n '\${' src/site/markdown/README.md` is the check that does not go stale.
 
 The committed `README.md` was last machine-generated on **2020-02-22** — its version line still
 reads `0.3.0-SNAPSHOT - 20200222-214018` — and has been hand-edited since, including by `#92`,
