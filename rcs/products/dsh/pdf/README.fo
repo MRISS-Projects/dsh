@@ -27,7 +27,7 @@ Document Smart Highlights
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - RC4 - 20260918-133443</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - RC6 - 20260918-224757</fo:block>
 </fo:block>
 
 
@@ -234,7 +234,7 @@ status querying and document processing results (keywords and relevant sentences
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Java 1.8</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Java 17 (Temurin)</fo:block>
 
 </fo:block>
 </fo:list-item-body>
@@ -245,7 +245,7 @@ status querying and document processing results (keywords and relevant sentences
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Maven 3.3.9</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Maven 3.9.9</fo:block>
 
 </fo:block>
 </fo:list-item-body>
@@ -335,9 +335,9 @@ status querying and document processing results (keywords and relevant sentences
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Download a J2SE JDK 1.8 platform from 
-<fo:basic-link external-destination="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">
-<fo:inline color="green">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</fo:inline></fo:basic-link>.</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Download an Eclipse Temurin JDK 17 from 
+<fo:basic-link external-destination="https://adoptium.net/temurin/releases/?version=17">
+<fo:inline color="green">https://adoptium.net/temurin/releases/?version=17</fo:inline></fo:basic-link>.</fo:block>
 
 
 <fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
@@ -349,11 +349,12 @@ status querying and document processing results (keywords and relevant sentences
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>
-<fo:inline font-weight="bold">IMPORTANT NOTE</fo:inline>: Download and install 
-<fo:inline font-weight="bold">JDK, not a JRE</fo:inline>. Avoid
-downloading packages with J2EE and/or net beans.
-Search the download page for Java SE Development Kit (JDK) or
-JDK 8 Update XX.</fo:block>
+<fo:inline font-weight="bold">IMPORTANT NOTE</fo:inline>: Download and install a 
+<fo:inline font-weight="bold">JDK, not a JRE</fo:inline>. On the
+download page select Version 
+<fo:inline font-weight="bold">17 (LTS)</fo:inline>, your operating system and
+architecture, and the 
+<fo:inline font-weight="bold">JDK</fo:inline> package type.</fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -382,7 +383,7 @@ JDK 8 Update XX.</fo:block>
 </fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>There should be a .exe windows installer. Just follow the
+<fo:block>There should be a .msi windows installer. Just follow the
 instructions.</fo:block>
 </fo:list-item-body>
 </fo:list-item>
@@ -432,7 +433,7 @@ instructions.</fo:block>
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">ln&#160;-s&#160;jdk1.8.0_XX&#160;java&#160;(where&#160;XX&#160;is&#160;the&#160;update&#160;number&#160;of&#160;your&#160;download)
+<fo:inline font-family="monospace" font-size="10pt">ln&#160;-s&#160;jdk-17.0.20.1+1&#160;java&#160;(use&#160;the&#160;directory&#160;name&#160;the&#160;archive&#160;extracted&#160;to)
 <fo:block/>
 </fo:inline></fo:block>
 
@@ -478,7 +479,7 @@ If it does not appear at your home folder, using the file explorer, type
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">export&#160;JAVA_HOME=/your/jdk/parent/folder
+<fo:inline font-family="monospace" font-size="10pt">export&#160;JAVA_HOME=/your/jdk/parent/folder/java
 <fo:block/>
 export&#160;PATH=$JAVA_HOME/bin:$PATH
 <fo:block/>
@@ -621,11 +622,11 @@ Edit.</fo:block>
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">java&#160;version&#160;"1.8.0_45"
+<fo:inline font-family="monospace" font-size="10pt">openjdk&#160;version&#160;"17.0.20.1"&#160;2026-08-18
 <fo:block/>
-Java(TM)&#160;SE&#160;Runtime&#160;Environment&#160;(build&#160;1.8.0_45-b14)
+OpenJDK&#160;Runtime&#160;Environment&#160;Temurin-17.0.20.1+1&#160;(build&#160;17.0.20.1+1)
 <fo:block/>
-Java&#160;HotSpot(TM)&#160;64-Bit&#160;Server&#160;VM&#160;(build&#160;25.45-b02,&#160;mixed&#160;mode)
+OpenJDK&#160;64-Bit&#160;Server&#160;VM&#160;Temurin-17.0.20.1+1&#160;(build&#160;17.0.20.1+1,&#160;mixed&#160;mode,&#160;sharing)
 <fo:block/>
 </fo:inline></fo:block>
 
@@ -651,10 +652,10 @@ Java&#160;HotSpot(TM)&#160;64-Bit&#160;Server&#160;VM&#160;(build&#160;25.45-b02
 </fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>Dowload maven 
-<fo:inline font-weight="bold">3.3.9</fo:inline> from 
-<fo:basic-link external-destination="http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip">
-<fo:inline color="green">http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip</fo:inline></fo:basic-link></fo:block>
+<fo:block>Download maven 
+<fo:inline font-weight="bold">3.9.9</fo:inline> from 
+<fo:basic-link external-destination="https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip">
+<fo:inline color="green">https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip</fo:inline></fo:basic-link></fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -701,11 +702,11 @@ Java&#160;HotSpot(TM)&#160;64-Bit&#160;Server&#160;VM&#160;(build&#160;25.45-b02
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+<fo:inline font-family="monospace" font-size="10pt">export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
 <fo:block/>
 export&#160;PATH=$M2_HOME/bin:$PATH
 <fo:block/>
-export&#160;MAVEN_OPTS='-Xmx1024m&#160;-XX:MaxPermSize=256m'
+export&#160;MAVEN_OPTS='-Xmx1024m'
 <fo:block/>
 </fo:inline></fo:block>
 
@@ -729,7 +730,7 @@ should look like this:</fo:block>
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
 <fo:inline font-family="monospace" font-size="10pt">export&#160;JAVA_HOME=/your/jdk/parent/folder/java
 <fo:block/>
-export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
 <fo:block/>
 export&#160;PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
 <fo:block/>
@@ -787,19 +788,15 @@ export&#160;MAVEN_OPTS='-Xmx1024m'
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">Java&#160;HotSpot(TM)&#160;64-Bit&#160;Server&#160;VM&#160;warning:&#160;ignoring&#160;option&#160;MaxPermSize=256m;&#160;support&#160;was&#160;removed&#160;in&#160;8.0
+<fo:inline font-family="monospace" font-size="10pt">Apache&#160;Maven&#160;3.9.9&#160;(8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
 <fo:block/>
-Apache&#160;Maven&#160;3.3.1&#160;(cab6659f9874fa96462afef40fcf6bc033d58c1c;&#160;2015-03-13T17:10:27-03:00)
+Maven&#160;home:&#160;/home/[YOUR_USER]/apps/apache-maven-3.9.9
 <fo:block/>
-Maven&#160;home:&#160;/home/riss/apps/maven
-<fo:block/>
-Java&#160;version:&#160;1.8.0_45,&#160;vendor:&#160;Oracle&#160;Corporation
-<fo:block/>
-Java&#160;home:&#160;/home/riss/apps/jdk1.8.0_45/jre
+Java&#160;version:&#160;17.0.20.1,&#160;vendor:&#160;Eclipse&#160;Adoptium,&#160;runtime:&#160;/home/[YOUR_USER]/apps/jdk-17.0.20.1+1
 <fo:block/>
 Default&#160;locale:&#160;en_US,&#160;platform&#160;encoding:&#160;UTF-8
 <fo:block/>
-OS&#160;name:&#160;"linux",&#160;version:&#160;"3.13.0-55-generic",&#160;arch:&#160;"amd64",&#160;family:&#160;"unix"
+OS&#160;name:&#160;"linux",&#160;version:&#160;"6.8.0-45-generic",&#160;arch:&#160;"amd64",&#160;family:&#160;"unix"
 <fo:block/>
 </fo:inline></fo:block>
 
@@ -935,17 +932,15 @@ OS&#160;name:&#160;"linux",&#160;version:&#160;"3.13.0-55-generic",&#160;arch:&#
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">Apache&#160;Maven&#160;3.3.9&#160;(0728685237757ffbf44136acec0402957f723d9a;&#160;2013-09-17&#160;12:22:22-0300)
+<fo:inline font-family="monospace" font-size="10pt">Apache&#160;Maven&#160;3.9.9&#160;(8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
 <fo:block/>
-Maven&#160;home:&#160;C:\data\apache-maven-3.3.9
+Maven&#160;home:&#160;C:\data\apache-maven-3.9.9
 <fo:block/>
-Java&#160;version:&#160;1.8.0_45,&#160;vendor:&#160;Oracle&#160;Corporation
-<fo:block/>
-Java&#160;home:&#160;C:\Program&#160;Files\Java\jdk1.8.0_45\jre
+Java&#160;version:&#160;17.0.20.1,&#160;vendor:&#160;Eclipse&#160;Adoptium,&#160;runtime:&#160;C:\Program&#160;Files\Eclipse&#160;Adoptium\jdk-17.0.20.1+1
 <fo:block/>
 Default&#160;locale:&#160;en_US,&#160;platform&#160;encoding:&#160;Cp1252
 <fo:block/>
-OS&#160;name:&#160;"windows&#160;8.1",&#160;version:&#160;"6.3",&#160;arch:&#160;"amd64",&#160;family:&#160;"dos"
+OS&#160;name:&#160;"windows&#160;11",&#160;version:&#160;"10.0",&#160;arch:&#160;"amd64",&#160;family:&#160;"windows"
 <fo:block/>
 </fo:inline></fo:block>
 
@@ -2226,6 +2221,62 @@ Updated</fo:block>
 </fo:table-row>
 
 
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/86">
+<fo:inline color="green">86</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/18/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/97">
+<fo:inline color="green">97</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+[STORY] Resolve the tooling orphaned by the Travis estate removal</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/18/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
 
 <fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
 <fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
