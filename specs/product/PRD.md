@@ -76,7 +76,7 @@ criteria.
 | `#93` | **closed** — PR #102 | Remove the redundant coverage ratchet — `jacoco:check` at 95% is already inherited |
 | `#94` | open | Make `check-spec-references` enforcing, or remove it |
 | `#95` | **closed** — PR #98 | Use a read-only token for CI package authentication |
-| `#97` | open | Resolve the tooling orphaned by the Travis estate removal |
+| `#97` | **closed** — PR #107 | Resolve the tooling orphaned by the Travis estate removal |
 | `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
 | `#101` | **closed** — PR #106 | Fail CI when the package token cannot authenticate, not just when it is absent |
 | `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
@@ -118,6 +118,19 @@ review. Shipped in PR #106.
 three things behind — four uncalled `mvn` wrapper scripts, the `update-readme` Maven profile whose
 only caller was the deleted `post-release-script.sh`, and the generated-vs-checked-in status of
 `README.md`. `#92`'s spec promised the follow-up rather than widening its own scope.
+
+Shipped in PR #107. Two of the issue's premises did not survive checking and the spec corrected
+them rather than implementing against them. The third — that `update-readme` was merely callerless
+— was the smaller half of a defect in `parent-poms`: three of the four README executions carried
+`<inherited>false</inherited>`, which excludes every descendant POM, so README regeneration was
+unreachable from *every* consuming project and the `Update README.md on Master` step of the release
+and hotfix workflows was a no-op everywhere. That went upstream as `parent-poms#68`, now closed and
+deployed as a snapshot; DSH inherits a `readme-generation` profile and keeps no local replacement.
+The story also deleted five module `readme.md` site pages, because Maven's `<file><exists>` is
+case-insensitive on NTFS and those files made the new profile activate — and `maven-scm-plugin`
+fall through to `git commit -a` — in five modules that had no README to stage. The first README
+this repository has generated since **2020-02-22** landed inside PR #107 itself, pushed there by a
+`staging.yml` dispatch against the task branch.
 
 `#103` was spun off from `#93`'s review round. Copilot raised six findings on PR #102; five were
 right, and one — repeated in 3 of its 9 comments — asserted that `-Denforcer.skip=true` bypasses
@@ -176,13 +189,21 @@ finished until that repo's open milestones are cleared and released, and DSH is 
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0-SNAPSHOT` | `#57`, `#58`, `#13` | Clear, then release **3.8.0** |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69` | Clear, then release **3.9.0** |
 
 `parent-poms#67` was raised from this work: `maven-failsafe-plugin` is configured there in
 `<pluginManagement>` with the right includes, but never activated, so integration tests cannot run
 in any inheriting project. It adds a profile keyed on `-DintegrationTests`, so `mvn clean install`
 keeps running unit tests only — and the inherited 95% `jacoco:check` keeps measuring unit-test
 coverage — while integration tests run on request, in CI. DSH `#46` is blocked on it.
+
+`parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
+`project-release.yml` re-versions a newly cut hotfix branch with
+`mvn -DprocessAllModules=true -DnewVersion=<v> versions:set`, and that command was measured against
+this reactor writing **only the root POM** — one of 13 — which would leave a hotfix branch whose
+twelve modules name a parent version that does not exist. It surfaced while choosing
+`set-version.sh`'s body, not by working on the release path, and it sits on `3.9.0-SNAPSHOT` so it
+does not add to what must be cleared before **3.8.0** is released.
 
 At the end of Wave 0 the root `pom.xml` should inherit from a **released `3.9.0`**, not a SNAPSHOT.
 That also retires the accepted risk in §6 — see there for why the SNAPSHOT pin stands until then.
