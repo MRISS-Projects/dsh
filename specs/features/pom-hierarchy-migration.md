@@ -49,7 +49,10 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   | `release-deployment`         | Yes (implicit via parent)     | `parent-poms/pom.xml`          | **Remove from DSH**                                    |
 
 - **Acceptance Criteria**:
-  - `mvn -P deployment validate` succeeds, picking up the parent profile.
+  - `mvn -Ddeployment validate` succeeds, picking up the parent profile. Property activation, not
+    `-P`: this estate deliberately abandoned `-P` because profile merging misbehaved across the
+    multi-module inheritance chain — see the `FR013` comments in `pom.xml` and `FR004`/`FR005` in
+    `parent-poms`.
   - No profile `<id>` appears in both a DSH POM and an ancestor POM without a justifying comment.
 
 ---
