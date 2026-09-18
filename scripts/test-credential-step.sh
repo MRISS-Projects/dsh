@@ -32,7 +32,7 @@ trap 'rm -rf "$WORK"' EXIT
 PASS=0
 FAIL=0
 
-mkdir -p "$WORK/stub" "$WORK/nopom" "$WORK/commented"
+mkdir -p "$WORK/stub" "$WORK/nopom" "$WORK/commented" "$WORK/oneline" "$WORK/sharedline"
 
 awk '
   /- name: Verify package credentials/ { found = 1; next }
@@ -72,6 +72,25 @@ cat > "$WORK/commented/pom.xml" <<'POM'
     <artifactId>products</artifactId>
     <!-- <version>3.7.0-SNAPSHOT</version> -->
     <version>3.8.0-SNAPSHOT</version>
+  </parent>
+</project>
+POM
+
+# Two legal POMs that a line-oriented parser reads wrongly. The second is the
+# dangerous one: with one field per `cut`, all three coordinates collapse onto
+# the first value, the non-empty guard passes, and the step probes a nonsense
+# URL - which a working token answers with 404, so it warns and passes while
+# testing nothing. Raised by Copilot on PR #106; see the story spec §11.2.
+cat > "$WORK/oneline/pom.xml" <<'POM'
+<project>
+  <parent><groupId>g.one</groupId><artifactId>a-one</artifactId><version>v1</version></parent>
+</project>
+POM
+
+cat > "$WORK/sharedline/pom.xml" <<'POM'
+<project>
+  <parent>
+    <groupId>g.two</groupId><artifactId>a-two</artifactId><version>v2</version>
   </parent>
 </project>
 POM
@@ -146,6 +165,14 @@ USE_STUB=1 STUB_CODE=200 PACKAGES_READ_TOKEN="pretend-valid" \
 USE_STUB=1 STUB_CODE=200 PACKAGES_READ_TOKEN="pretend-valid" \
   run_case "a commented-out <version> inside the live block is ignored too" \
     "$WORK/commented" 0 "(parent 3.8.0-SNAPSHOT)"
+
+USE_STUB=1 STUB_CODE=200 PACKAGES_READ_TOKEN="pretend-valid" \
+  run_case "a <parent> written entirely on one line is read correctly" \
+    "$WORK/oneline" 0 "can read g.one:a-one (parent v1)"
+
+USE_STUB=1 STUB_CODE=200 PACKAGES_READ_TOKEN="pretend-valid" \
+  run_case "coordinates sharing one line do not collapse onto the first value" \
+    "$WORK/sharedline" 0 "can read g.two:a-two (parent v2)"
 
 echo
 echo "Against a stubbed curl, for statuses the live registry cannot return without a working credential:"

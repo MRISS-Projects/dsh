@@ -77,13 +77,23 @@ jobs:
           # commented-out <parent> above the live one would otherwise win, and
           # its dead coordinates answer 404 even with a perfectly good token:
           # the check would warn and pass forever while testing nothing. The
-          # parser assumes one element per line, which is how this pom.xml is
-          # written; a one-line <parent> block trips the guard below instead of
-          # being misread.
+          # coordinates are then read element by element, so the block's line
+          # layout does not matter.
           parent=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' pom.xml | sed -n '/<parent>/,/<\/parent>/p')
-          group=$(echo "$parent" | grep '<groupId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
-          artifact=$(echo "$parent" | grep '<artifactId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
-          version=$(echo "$parent" | grep '<version>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
+
+          # grep -o matches the element wherever it sits, rather than assuming
+          # one element per line. Splitting the line instead collapsed all three
+          # coordinates onto the first value whenever a legal <parent> put them
+          # on one line - and that passed the guard below, so the step probed a
+          # nonsense URL, collected a 404 from a working token, and warned
+          # instead of checking anything.
+          coord() {
+            echo "$parent" | grep -o "<$1>[^<]*</$1>" | head -1 | sed -e "s|<$1>||" -e "s|</$1>||" | tr -d ' '
+          }
+
+          group=$(coord groupId)
+          artifact=$(coord artifactId)
+          version=$(coord version)
 
           if [ -z "$group" ] || [ -z "$artifact" ] || [ -z "$version" ]; then
             echo "::error::Could not read the <parent> coordinates from pom.xml, so the credential cannot be checked. Fix this step rather than skipping it: a malformed URL would make the check pass silently."
