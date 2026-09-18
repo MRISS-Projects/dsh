@@ -901,4 +901,4 @@ same four executions through the same profile, and §4.4 records what remains un
   the root POM**, one of 13 — which would leave a hotfix branch whose root carries the new version
   while twelve modules still name a parent version that does not exist. Found while choosing
   `set-version.sh`'s body, not by working on the release path, and the release path is not this
-  story's subject. Raised as a `parent-poms` issue; see the reference recorded on `#97`.
+  story's subject. Raised as `MRISS-Projects/parent-poms#69`, on milestone `3.9.0-SNAPSHOT`.
