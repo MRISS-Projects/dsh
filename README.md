@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC6 - ${timestamp}
+0.3.0-SNAPSHOT - RC6 - 20260918-225016
 
 ## Introduction
 
