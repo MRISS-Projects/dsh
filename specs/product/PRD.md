@@ -78,7 +78,7 @@ criteria.
 | `#95` | **closed** — PR #98 | Use a read-only token for CI package authentication |
 | `#97` | open | Resolve the tooling orphaned by the Travis estate removal |
 | `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
-| `#101` | open | Fail CI when the package token cannot authenticate, not just when it is absent |
+| `#101` | **closed** — PR #106 | Fail CI when the package token cannot authenticate, not just when it is absent |
 | `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
 | `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
 
@@ -112,7 +112,7 @@ green build against a cached parent or — once the cache misses — a failure t
 parent rather than a broken credential. It predates `#99` and was left out of it deliberately:
 `#99` changed how often the symptom appears, not the presence-only check that hides it, and
 folding a second CI behaviour change into a flag-and-prose story would have made both harder to
-review.
+review. Shipped in PR #106.
 
 `#97` was spun off from `#92` when that story shipped: removing the Travis estate deliberately left
 three things behind — four uncalled `mvn` wrapper scripts, the `update-readme` Maven profile whose
