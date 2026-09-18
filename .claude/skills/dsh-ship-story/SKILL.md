@@ -53,8 +53,12 @@ and a story PR never targets it: it targets `DEVELOP`, an RC branch, or a hotfix
 were handled. Verified on `#98` - merged into `staging-0.3.0-SNAPSHOT-RC` with `Closes #95` in
 the body, and `#95` stayed open.
 
-Closing the issue stays the human's call, which is what the hard stop below already requires.
-The issue's real close point is when the release merges the RC into `master`.
+Closing the issue stays the human's call, which is what the hard stop below already requires. In
+practice they close it as soon as the story PR merges into its parent branch: `#92`, `#93`, `#95`,
+`#99`, `#101`, `#103` and `#97` were every one closed that way, with milestone `0.3.0-SNAPSHOT`
+still open and the RC unreleased. So expect the issue to be closed on merge, and
+`dsh-reconcile-prd` to be runnable straight afterwards — do not tell the human an issue should stay
+open until the release. Claude still never closes it, whichever point that is.
 
 ## Ask for the right review effort
 
