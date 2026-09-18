@@ -8,6 +8,12 @@ milestone: 0.3.0-SNAPSHOT
 
 # Story 97 — Resolve the tooling orphaned by the Travis estate removal
 
+> **This story starts in `MRISS-Projects/parent-poms`, not here.** No DSH change in §5 is
+> verifiable until the upstream profile of §4 is on `parent-poms` `master` and deployed as a
+> snapshot. The DSH edits build green against the *old* parent — deleting the `update-readme`
+> profile breaks nothing by itself — so a local `mvn -B install` that passes before that point
+> proves nothing about the feature. Follow the order in §8.1, and see AC009.
+
 ## 1. Story
 
 **As a** developer working in this repository
@@ -148,6 +154,10 @@ property to plain `${project.version}`.
 The feature belongs upstream: `parent-poms` exists to be reused, and every product repository that
 keeps a `src/site/markdown/README.md` should get README regeneration by inheriting it, not by
 copying it. DSH keeps no local replacement.
+
+**This section is built first.** It is not background for the DSH work in §5 — it is the first
+task of the story, and §5 cannot be verified before it lands. `dsh-build-story` describes a
+single-repository TDD loop and will not say this on its own.
 
 ### 4.1 What is added
 
