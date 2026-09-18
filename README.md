@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - 20200222-214018
+0.3.0-SNAPSHOT - RC4 - 20260918-133443
 
 ## Introduction
 
@@ -346,9 +346,9 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 #### Building From Sources
 
 1. In order to build, both MongoDB and RabbitMQ services should be running. 
-2. Maven development user settings should be correctly configured (see configuration
-   section below). Your `~/.m2/settings.xml` must also authenticate against GitHub Packages,
-   which is where the parent POM `com.mriss.mriss-parent:products` resolves from.
+2. Maven development user settings should be correctly configured — see
+   [Maven Settings for GitHub Packages](#maven-settings-for-github-packages) below, which is
+   what lets Maven resolve the parent POM `com.mriss.mriss-parent:products`.
 3. At the root dsh folder type:
 
 ```
@@ -373,6 +373,75 @@ mvn clean install
 4. Look at the address: http://localhost:8080 
 
 ## Configuration
+
+### Maven Settings for GitHub Packages
+
+The parent POM `com.mriss.mriss-parent:products` is published to GitHub Packages, so no build
+of this repository resolves until your `~/.m2/settings.xml` authenticates against that registry.
+Three server ids and one property are needed — the same four things that
+`.github/workflows/ci.yml` writes into its own `settings.xml`:
+
+| Entry | Used for |
+| --- | --- |
+| server `MRISS-Projects-maven-repo` | resolving the parent POM and other MRISS artifacts |
+| server `MRISS-Projects-maven-repo-plugins` | resolving MRISS Maven plugins |
+| server `github.com` | `maven-scm-plugin`, when a `-Ddeployment` build commits the regenerated `README.md` |
+| property `github.personal.token` | `maven-changes-plugin`, which reads the closed milestone issues that go into the generated `README.md`. It is a Maven property, not a server credential — the `readme-generation` profile in `parent-poms` wires it into the plugin's `personalToken` parameter — so **omitting it fails silently**: `failOnError` is `false`, the issue list is never produced, and the generated `README.md` comes out with an empty Release Notes section |
+
+The credential is one and the same classic personal access token, carrying `read:packages` and
+nothing else, issued from an account with read access to the `MRISS-Projects` organisation. This
+repository is public, so no issue-reading scope is required on top. Paste it into all four places
+in your own `~/.m2/settings.xml`; it is never committed to this repository. The CI side of the same
+token is described under Secrets in `docs/devops/README.md`.
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>MRISS-Projects-maven-repo</id>
+      <username>YOUR-GITHUB-USERNAME</username>
+      <password>YOUR-PACKAGES-READ-TOKEN</password>
+    </server>
+    <server>
+      <id>MRISS-Projects-maven-repo-plugins</id>
+      <username>YOUR-GITHUB-USERNAME</username>
+      <password>YOUR-PACKAGES-READ-TOKEN</password>
+    </server>
+    <server>
+      <id>github.com</id>
+      <username>YOUR-GITHUB-USERNAME</username>
+      <password>YOUR-PACKAGES-READ-TOKEN</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>github-packages</id>
+      <properties>
+        <github.personal.token>YOUR-PACKAGES-READ-TOKEN</github.personal.token>
+      </properties>
+      <repositories>
+        <repository>
+          <id>MRISS-Projects-maven-repo</id>
+          <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>MRISS-Projects-maven-repo-plugins</id>
+          <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>github-packages</activeProfile>
+  </activeProfiles>
+</settings>
+```
 
 ### MongoDB Access Properties
 
@@ -513,25 +582,39 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 ### Version 0.3.0-SNAPSHOT
 
 | # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [101](https://github.com/MRISS-Projects/dsh/issues/101) | task | [STORY] Fail CI when the package token cannot authenticate, not just when it is absent | null | mriss | 9/18/26 |
+| [103](https://github.com/MRISS-Projects/dsh/issues/103) | task | Make PR review rounds repo-aware and authoritative | null | mriss | 9/17/26 |
+| [93](https://github.com/MRISS-Projects/dsh/issues/93) | task | Remove the redundant coverage ratchet - jacoco:check at 95% is already inherited | null | mriss | 9/17/26 |
+| [99](https://github.com/MRISS-Projects/dsh/issues/99) | task | [STORY] Standardise Maven builds on -U while the parent is a SNAPSHOT | null | mriss | 9/17/26 |
+| [95](https://github.com/MRISS-Projects/dsh/issues/95) | bug | Use a read-only token for CI package authentication | null | mriss | 9/17/26 |
+| [92](https://github.com/MRISS-Projects/dsh/issues/92) | task | Remove the dead Travis build estate | null | mriss | 9/17/26 |
+| [84](https://github.com/MRISS-Projects/dsh/issues/84) | task | [FEATURE] Unify/reorg of deploy/release profiles | mriss | mriss | 5/22/26 |
+| [72](https://github.com/MRISS-Projects/dsh/issues/72) | task | Refactor all artifactId names to be lower case to be in  maven naming standards | mriss | mriss | 5/22/26 |
+| [83](https://github.com/MRISS-Projects/dsh/issues/83) | enhancement | [FEATURE] Adapt DSH to the new parent poms version 3.8.0 | mriss | mriss | 4/23/26 |
+| [68](https://github.com/MRISS-Projects/dsh/issues/68) | wontfix | Update readme file with instructions on how to install SOLR. | mriss | mriss | 4/23/26 |
+| [67](https://github.com/MRISS-Projects/dsh/issues/67) | wontfix | Implement configuration class and setup as a daemon. | mriss | mriss | 4/23/26 |
+| [66](https://github.com/MRISS-Projects/dsh/issues/66) | wontfix | Configure and test OpenNLP POS filter. | mriss | mriss | 4/23/26 |
+| [13](https://github.com/MRISS-Projects/dsh/issues/13) | wontfix | Create and test SOLR DAO | mriss | mriss | 4/23/26 |
+| [71](https://github.com/MRISS-Projects/dsh/issues/71) | task | Adapt pom structure to new parent poms. | mriss | mriss | 4/13/26 |
 | [14](https://github.com/MRISS-Projects/dsh/issues/14) | task | Install and get trained on SOLR tutorial | mriss | mriss | 2/22/20 |
 
 ### Version 0.2.4
 
 | # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
+| --- | ---- | ------- | -------- | -------- | ------- |
 | [64](https://github.com/MRISS-Projects/dsh/issues/64) | bug | Test code report is being generated with 0 tests. | null | mriss | 4/26/19 |
 
 ### Version 0.2.3
 
 | # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
+| --- | ---- | ------- | -------- | -------- | ------- |
 | [63](https://github.com/MRISS-Projects/dsh/issues/63) | bug | Attach jacoco badge generation at verify phase is generating badge with 0% | mriss | mriss | 4/26/19 |
 
 ### Version 0.2.2
 
 | # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
+| --- | ---- | ------- | -------- | -------- | ------- |
 | [61](https://github.com/MRISS-Projects/dsh/issues/61) | enhancement | Add jacoco badge | mriss | mriss | 4/14/19 |
 | [60](https://github.com/MRISS-Projects/dsh/issues/60) | enhancement | Add travis badge. | mriss | mriss | 4/14/19 |
 | [59](https://github.com/MRISS-Projects/dsh/issues/59) | enhancement | Add jacoco coverage plugin and report. | mriss | mriss | 4/12/19 |
@@ -539,13 +622,13 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 ### Version 0.2.1
 
 | # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
+| --- | ---- | ------- | -------- | -------- | ------- |
 | [58](https://github.com/MRISS-Projects/dsh/issues/58) | bug | stage is being executed at master during release process | mriss | mriss | 4/11/19 |
 
 ### Version 0.2.0
 
 | # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
+| --- | ---- | ------- | -------- | -------- | ------- |
 | [40](https://github.com/MRISS-Projects/dsh/issues/40) | task | Add DSH to travis CI following settings from changes plugin. | mriss | mriss | 4/11/19 |
 | [39](https://github.com/MRISS-Projects/dsh/issues/39) | task | Publish dsh site on gh-pages branch instead of another repo. | null | mriss | 3/18/19 |
 | [41](https://github.com/MRISS-Projects/dsh/issues/41) | task | Move project from organization to the git project dsh. Change next milestone to 0.2.0 | mriss | mriss | 3/18/19 |
@@ -553,7 +636,7 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 ### Version 0.0.1
 
 | # | Type | Summary | Assignee | Reporter | Updated |
-| - | ---- | ------- | -------- | -------- | ------- |
+| --- | ---- | ------- | -------- | -------- | ------- |
 | [32](https://github.com/MRISS-Projects/dsh/issues/32) | task | Configure DSH to use git as scm tool and proceed to release. | mriss | mriss | 3/15/19 |
 | [38](https://github.com/MRISS-Projects/dsh/issues/38) | task | Configure distribution management to local nexus and test snapshot deploy with deployment profile. | mriss | mriss | 3/1/19 |
 | [37](https://github.com/MRISS-Projects/dsh/issues/37) | task | Replace release notes and release history properties using deployment profile. | mriss | mriss | 10/14/18 |
