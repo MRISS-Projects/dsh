@@ -314,12 +314,45 @@ to `git commit -a` and sweeping whatever is dirty in its subtree into a commit t
 generated README. In CI the checkout is clean, so it would lie dormant; on a developer's machine
 running any `-Ddeployment` build it commits uncommitted work.
 
-The file-activated profile makes that path **structurally unreachable**: the profile exists only
-where `src/site/markdown/README.md` exists, which is exactly where `copy-readme-md` has just
-written a `README.md` for `includes` to match. `git add` always has a target, so the `-a` fallback
-is never selected. The neighbouring edge — `git add` staging nothing because the generated file is
-byte-identical — is likewise unreachable, because the version line embeds `${timestamp}` and
-therefore differs on every run.
+The file-activated profile makes that path **structurally unreachable — but only once §5.6 has
+run.** The profile exists only where `src/site/markdown/README.md` exists, which is exactly where
+`copy-readme-md` has just written a `README.md` for `includes` to match. `git add` always has a
+target, so the `-a` fallback is never selected. The neighbouring edge — `git add` staging nothing
+because the generated file is byte-identical — is likewise unreachable, because the version line
+embeds `${timestamp}` and therefore differs on every run.
+
+#### 4.2.1 The case-insensitivity hole, found during implementation
+
+"Where `src/site/markdown/README.md` exists" is not the same question on every filesystem. Maven's
+`<activation><file><exists>` resolves to a plain `File.exists()`, which is **case-insensitive on
+NTFS and on APFS**. Five DSH modules shipped a lowercase `src/site/markdown/readme.md` (§5.6), and
+on Windows every one of them matched.
+
+Worse, nothing else in the chain agrees. `maven-resources-plugin` and `maven-scm-plugin` both build
+their filesets through plexus' `DirectoryScanner`, which **is** case-sensitive. So in those five
+modules the profile activated, `copy-readme-md` reported `Copying 0 resource`, and
+`commit-readme-md` found nothing to stage — landing on exactly the `git commit -a` fallback this
+section exists to prevent.
+
+Reproduced on a throwaway clone of this branch, Maven 3.9.16, `maven-scm-plugin:2.1.0`, one
+unrelated edit to `dsh-solr/config/conf/solrconfig.xml`, then
+`mvn -B -Ddeployment -pl dsh-solr process-resources`:
+
+```text
+[INFO] --- scm:2.1.0:checkin (commit-readme-md) @ dsh-solr ---
+[INFO] Executing: cmd.exe /X /C "git commit --verbose -F ...maven-scm-166626542.commit -a"
+```
+
+The solrconfig edit was committed as `Auto-generated README.md [skip jenkins]`. Renaming that one
+`readme.md` made the profile stop activating in that module, which isolates case as the whole
+cause.
+
+On Linux — where `ci.yml` and all four release workflows run — the activation is exact, so CI was
+never exposed. The exposure was a developer machine, which is where §4.2's whole argument is
+aimed. §5.6 closes it by deleting the five files; AC010 guards it.
+
+The general rule this leaves for `parent-poms`, recorded in the §4.6 issue: a consuming project
+must not keep a case-variant of `README.md` under any submodule's `src/site/markdown`.
 
 ### 4.3 Why `<file><exists>` is trustworthy here, given §4.2 of spec 93
 
@@ -343,8 +376,14 @@ is genuinely resolved through inheritance:
 
 Both spellings were compared in the same run — relative `src/site/markdown/README.md` and
 interpolated `${basedir}/src/site/markdown/README.md`. On 3.9.9 they behave identically and
-per-module; MNG-2363 does not manifest. The interpolated form is the one adopted anyway, because it
-states the intent explicitly and does not depend on which basedir a reader assumes.
+per-module; MNG-2363 does not manifest. Re-measured on Maven 3.9.16 against the real 13-module DSH
+reactor rather than a synthetic one, they remain identical to each other — including in matching a
+lowercase `readme.md`, which is a property of the filesystem and not of the spelling (§4.2.1). The
+interpolated form is the one adopted, because it states the intent explicitly and does not depend
+on which basedir a reader assumes.
+
+What the table does **not** cover, and §4.2.1 does, is that "file present" is answered by the
+filesystem's own case rules. On Linux the activation is exact; on NTFS and APFS it is not.
 
 The distinction from `#93` stands on its own terms: a coverage gate must not be silently skippable,
 so it was built to evaluate at execution time. README generation is the opposite case — a feature
@@ -361,9 +400,11 @@ Within parent-poms itself, behaviour is unchanged. Only its own root holds
 order survive the move. Its `deploy.yml` snapshot path must still produce an `Auto-generated
 README.md` commit — that is the upstream regression check.
 
-Within DSH, the same holds: no submodule has a `README.md` at all, and only the root has
-`src/site/markdown/README.md`. Every other `README.md` in the repository lives under `docs/` or
-`specs/`, which are not Maven modules.
+Within DSH, the same holds **after §5.6**: only the root has `src/site/markdown/README.md`, and no
+submodule has a `README.md` at its own root. Before §5.6 that was true only of the uppercase
+spelling — five modules carried `src/site/markdown/readme.md`, which a case-insensitive filesystem
+treats as the same file. Every other `README.md` in the repository lives under `docs/` or `specs/`,
+which are not Maven modules.
 
 The genuinely new behaviour is that **any** product repository root now regenerates and commits its
 README on any `-Ddeployment` build, where today only parent-poms does. Two things bound that:
@@ -384,13 +425,13 @@ This is profile structure, so `CLAUDE.md` puts it on the **full round trip**, no
 Two steps of that procedure are already satisfied and one does not apply:
 
 1. Open a plain issue in `parent-poms` — text in §4.6. INVEST framing is not required there.
-2. **Already true:** milestone `3.8.0-SNAPSHOT` is open, with `#59`, `#65` and `#67` still on it.
+2. **Already true:** milestone `3.8.0-SNAPSHOT` is open, with `#58`, `#57` and `#13` still on it (this story's own `#68` joins them).
 3. Implement and test there against that `-SNAPSHOT`.
 4. **Already true:** DSH's root `pom.xml` pins `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT`,
    which *is* the parent's live development version, and every Maven invocation in this repository
    passes `-U`. There is no temporary re-pointing to do and no step 6 re-pin.
 5. **Does not apply to this story.** Releasing parent-poms would require clearing milestone
-   `3.8.0-SNAPSHOT` first, and `#59`, `#65` and `#67` are not this story's work. `#97` ships against
+   `3.8.0-SNAPSHOT` first, and `#58`, `#57` and `#13` are not this story's work. `#97` ships against
    the deployed snapshot; the release happens when 3.8.0 is cut.
 
 What makes the change visible to DSH's CI and workflows is therefore a **snapshot deploy**, not a
@@ -427,19 +468,33 @@ Opened only after approval, per `CLAUDE.md`. Proposed title and body:
 > Fix: move the four README executions into a new `readme-generation` profile activated on
 > `-Ddeployment` **and** `<file><exists>${basedir}/src/site/markdown/README.md</exists>`, declared
 > between `deployment` and `release-deployment`, dropping the three `<inherited>false</inherited>`
-> lines. Correct the `products/pom.xml` comment, `CLAUDE.md:64` and
-> `specs/github-actions-reusable-workflows.md:97`, all of which describe `update-readme` as the
-> product-specific mechanism.
+> lines. Correct the `products/pom.xml` comment, `CLAUDE.md:64`,
+> `specs/github-actions-reusable-workflows.md:97` and `.claude/agents/pom-profile-reviewer.md:16`,
+> all of which describe `update-readme` as the product-specific mechanism.
+>
+> One caveat the file activation carries: Maven's `<file><exists>` is a plain `File.exists()`, which
+> is case-insensitive on NTFS and on APFS, while `maven-resources-plugin` and `maven-scm-plugin`
+> match their filesets case-sensitively through plexus' `DirectoryScanner`. A consuming module
+> holding a case-variant such as `src/site/markdown/readme.md` therefore activates the profile with
+> nothing for the executions to match, reinstating the `git commit -a` fallback on a developer
+> machine — verified against `MRISS-Projects/dsh` on Windows, where it committed an unrelated
+> `solrconfig.xml` edit under the message `Auto-generated README.md`. Linux CI is unaffected. A
+> consuming project must not keep a case-variant of `README.md` under any submodule's
+> `src/site/markdown`; DSH removed five such files as part of `#97`.
 >
 > Raised from `MRISS-Projects/dsh#97`. Full analysis in that repository at
 > `specs/stories/97-resolve-orphaned-travis-tooling.md`.
 
-Two documentation files in parent-poms describe the old arrangement and are corrected with it:
+Four documentation files in parent-poms describe the old arrangement and are corrected with it:
 
 - `CLAUDE.md:64` — the `update-readme` row of the profile table, which names it as the
-  product-specific README mechanism.
+  product-specific README mechanism. It is replaced by a `readme-generation` row, and the
+  `deployment` row loses its README executions.
 - `specs/github-actions-reusable-workflows.md:97` — `Profile: update-readme (activated by
-  -Dupdate-readme) — DSH-specific`.
+  -Dupdate-readme) — DSH-specific`, replaced by a `readme-generation` section.
+- `products/pom.xml:158-161` — the "fully covered by inheritance" comment of §3.2.
+- `.claude/agents/pom-profile-reviewer.md:16` — found during implementation; it names
+  `update-readme` as the product-repo example in the profile inheritance chain.
 
 ## 5. Files to change in DSH
 
@@ -493,14 +548,52 @@ wrapper should do behind a developer's back.
 **`maven-site.sh` and `maven-site-deploy.sh` — retained, documented, unchanged.** They stage the
 Maven site into `file:///tmp` for local preview and touch nothing shared.
 
-**`set-version.sh` — retained, documented, with an argument guard.** It is the local counterpart of
-what `project-release.yml` does in CI and is genuinely useful for re-versioning the whole reactor
-by hand; `parent-poms` keeps `set-version.sh` and `set-version.bat` at its own root for the same
-reason. Today it fails opaquely when called with no argument, passing an empty
-`-DdevelopmentVersion=` to Maven:
+**`set-version.sh` — retained, documented, with an argument guard and a corrected Maven
+invocation.** It is the local counterpart of what `project-release.yml` does in CI and is genuinely
+useful for re-versioning the whole reactor by hand; `parent-poms` keeps `set-version.sh` and
+`set-version.bat` at its own root for the same reason. Today it fails opaquely when called with no
+argument, passing an empty `-DdevelopmentVersion=` to Maven — and, as §8.2 measured, it does not do
+what it claims even when called correctly.
+
+Two forms were tried and rejected before the one that ships.
+
+**Rejected — `-DdevelopmentVersion`, the form the script already had.**
+
+```bash
+mvn --batch-mode -DdevelopmentVersion="$1" -DautoVersionSubmodules=true release:update-versions
+```
+
+It reaches all 13 POMs but **ignores the argument**: `parent-poms/pom.xml:371` binds
+`<developmentVersion>${build.NEXT_DEVELOPMENT_VERSION}</developmentVersion>` inside the release
+plugin's `<configuration>`, and explicit plugin configuration beats the `developmentVersion` user
+property. Asking for `9.9.9-CHAINTEST-SNAPSHOT` silently produced `0.3.1-SNAPSHOT` across the
+reactor — an auto-increment nobody asked for, with exit code 0. `project-stage.yml:131-133` already
+records this binding as the reason CI cannot use the flag either.
+
+**Rejected — `versions:set`, the form this spec originally nominated as the fallback.**
+
+```bash
+mvn --batch-mode -DprocessAllModules=true -DnewVersion="$1" versions:set
+```
+
+versions-maven-plugin 2.18.0 computed the change correctly — its debug log lists every module and
+the version each "will become" — and then wrote **only the root POM**. One of 13. With or without
+`-DprocessAllModules=true`. A script that renames the aggregator and leaves twelve children
+pointing at a parent version that no longer exists is worse than one that does nothing.
+
+**Shipped — the per-project release property, which is what `parent-poms`' own `set-version.sh`
+uses.**
 
 ```bash
 #!/bin/bash
+# Re-versions the whole 13-module reactor in place. The local counterpart of what
+# project-release.yml does in CI; nothing in CI calls this script.
+#
+# -Dproject.dev.<groupId>:<artifactId> is used rather than -DdevelopmentVersion because
+# parent-poms/pom.xml binds <developmentVersion> to ${build.NEXT_DEVELOPMENT_VERSION};
+# plugin configuration beats the -DdevelopmentVersion user property, so that flag is
+# silently ignored here and the reactor is auto-incremented instead. The per-project
+# property does override it. parent-poms' own set-version.sh uses the same mechanism.
 set -euo pipefail
 
 if [ $# -ne 1 ]; then
@@ -508,20 +601,30 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-mvn --batch-mode -DdevelopmentVersion="$1" -DautoVersionSubmodules=true release:update-versions
+mvn --batch-mode -DautoVersionSubmodules=true \
+    "-Dproject.dev.com.mriss.products:dsh=$1" \
+    release:update-versions
 ```
 
-If §8.2 shows that `release:update-versions` does not reach every module, the body is replaced by
-the form `project-release.yml` itself uses, and the spec's claim changes with it:
-
-```bash
-mvn --batch-mode -DprocessAllModules=true -DnewVersion="$1" versions:set
-```
+`-Dproject.dev.<groupId>:<artifactId>` is the release plugin's per-project override; unlike
+`developmentVersion` it is consulted ahead of the bound configuration. 13 of 13 POMs, verified in
+§8.2. The groupId:artifactId pair is DSH's reactor root and is hard-coded deliberately — the script
+re-versions this reactor, not an arbitrary one.
 
 ### 5.3 `src/site/markdown/README.md` — and only this copy
 
 AC004's content goes **into the source**. `README.md` is regenerated from this file, so an edit made
 directly to `README.md` is destroyed by the next staging or release run.
+
+**The source is a filtered resource, and that is a trap.** `copy-readme-md` copies it with
+`filtering=true`, so every `${...}` in this file is interpolated against the effective model — which
+includes properties from the developer's own `settings.xml`. Exactly two placeholders are meant to
+survive here, `${project.build.version}` on line 7 and `${issues.text.list}` in Release Notes. Any
+other one is a bug, and if it names a credential property such as `github.personal.token` it is a
+disclosure bug: the token would be substituted into the generated `README.md` and committed to a
+public repository by the next staging run. Prose about settings.xml therefore describes the
+placeholder syntax rather than quoting it. `grep -c '\${' src/site/markdown/README.md` must return
+**2**; `docs/devops/README.md` carries the same warning for whoever edits the file next.
 
 Two changes. First, near line 350, the sentence that currently sends the reader to a configuration
 section that does not answer the question:
@@ -611,6 +714,34 @@ Deleting the script leaves three documents instructing a reader to maintain it:
 Each is corrected to name the deployment path that actually exists: the reusable workflows in
 `parent-poms`, dispatched through `.github/workflows/{staging,release,hotfix,stage}.yml`.
 
+### 5.6 Five module `readme.md` site pages — deleted
+
+Added during implementation; §4.2's guarantee does not hold without it.
+
+Five modules ship a lowercase `src/site/markdown/readme.md`:
+
+- `dsh-solr/src/site/markdown/readme.md`
+- `dsh-solr/solr-terms-vector-order/src/site/markdown/readme.md`
+- `dsh-solr/solr-advanced-numbers-filter/src/site/markdown/readme.md`
+- `dsh-doc-analyser/src/site/markdown/readme.md`
+- `dsh-doc-analyser/dsh-doc-processor-worker/src/site/markdown/readme.md`
+
+Maven's `<activation><file><exists>` is a plain `File.exists()`, which is case-insensitive on
+NTFS and on APFS, so `src/site/markdown/README.md` matches `readme.md` and the profile activates
+in all five — reinstating the exact hazard §4.2 was designed to remove. §4.2 records the
+reproduction.
+
+They are deleted rather than renamed. Nothing links them: no `site-desc/site.xml` lists them, and
+`grep -rn 'readme\.html'` over the repository returns nothing, so they were reachable only by
+typing the URL. Their content is the 2020 module-README template — a version line, an empty
+`## Introduction`, and `*To be documented.*` under every other heading — and each module already
+has an `index.md` that serves as its site landing page. Deleting them removes unreachable
+placeholder pages and makes the profile's activation exact on every filesystem; renaming them
+would have preserved the same non-content under a new URL.
+
+The root `src/site/markdown/README.md` is untouched by this — it is the generator's source, and
+the only README source that remains anywhere in the reactor.
+
 ## 6. Files that deliberately stay unchanged
 
 | File | Why |
@@ -646,6 +777,12 @@ Each is corrected to name the deployment path that actually exists: the reusable
 - [ ] **AC009** — the `parent-poms` round trip is closed out: the issue from §4.6 exists, the change
   is on `parent-poms` `master`, `deploy.yml` has run with `release_type: snapshots`, and the
   resulting commit SHA is commented on `#97`.
+- [ ] **AC010** — no module of this reactor holds a case-variant of `README.md` under
+  `src/site/markdown`, so `readme-generation` activates at the root and nowhere else on a
+  case-insensitive filesystem as well as on Linux. Checked with
+  `git ls-files | grep -i 'src/site/markdown/readme'`, which must return only
+  `src/site/markdown/README.md`, and by a `-Ddeployment` reactor build whose log contains exactly
+  one `copy-resources (copy-readme-md)` line. See §4.2 and §5.6.
 
 ## 8. Testing approach
 
@@ -688,9 +825,15 @@ The test passes when the two counts are both **13** and the tree is clean at bot
 covers the guard: `./set-version.sh` with no argument must print usage and exit 1 without invoking
 Maven, and `./set-version.sh a b` likewise.
 
-If the counts disagree — `release:update-versions` leaving a module behind — the script is switched
-to the `versions:set -DprocessAllModules=true` form given in §5.2 and the test re-run unchanged.
-That is a substitution the AC anticipates, not a failure of it.
+If the counts disagree, the script body is wrong and is replaced — see §5.2, which records the two
+forms that were tried and rejected before the one now in the script. That is a substitution the AC
+anticipates, not a failure of it.
+
+**Measured outcome.** Both guards behave (`./set-version.sh` and `./set-version.sh a b` each print
+usage and exit 1 without invoking Maven), and the shipped body puts `9.9.9-CHAINTEST-SNAPSHOT` into
+13 of 13 POMs, with `git status --porcelain` clean at both ends. Note that `release:update-versions`
+rewrites the module POMs with CRLF line endings; git normalises them on checkout, so the diff stays
+at one line per module and the restore is exact.
 
 ### 8.3 AC002 and AC004 — the staging dispatch
 
@@ -742,7 +885,7 @@ same four executions through the same profile, and §4.4 records what remains un
   shell helpers and `#97` was never about them.
 - **The `setup-java@v4` deprecation warning** in `.github/workflows/ci.yml` — real, unrelated, and
   raised separately if it matters.
-- **Releasing `parent-poms`** — milestone `3.8.0-SNAPSHOT` still carries `#59`, `#65` and `#67`, and
+- **Releasing `parent-poms`** — milestone `3.8.0-SNAPSHOT` still carries `#58`, `#57` and `#13`, and
   `CLAUDE.md` forbids releasing a milestone that is not cleared. `#97` ships against the deployed
   snapshot; see §4.5.
 - **The `Update README.md on Master` step's other assumption** — that `process-resources` alone is
@@ -752,3 +895,10 @@ same four executions through the same profile, and §4.4 records what remains un
 - **Changing what the generated README contains.** The issue tables, their column set and the
   milestone filter are inherited configuration and stay as they are. This story restores
   generation; it does not redesign the output.
+- **`project-release.yml`'s hotfix re-versioning.** Line 187 runs
+  `mvn -B -DprocessAllModules=true -DnewVersion=<hotfix> versions:set` inside `target/checkout`,
+  then `scm:checkin`. That is the same command §5.2 measured against this reactor as writing **only
+  the root POM**, one of 13 — which would leave a hotfix branch whose root carries the new version
+  while twelve modules still name a parent version that does not exist. Found while choosing
+  `set-version.sh`'s body, not by working on the release path, and the release path is not this
+  story's subject. Raised as a `parent-poms` issue; see the reference recorded on `#97`.

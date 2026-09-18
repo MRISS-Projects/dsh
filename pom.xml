@@ -320,12 +320,16 @@
         <module>dsh-coverage-report</module>
     </modules>
     <profiles>
-        <!-- FR002: 'deployment' and 'product-release-deployment' removed – fully covered by parent hierarchy.
-             'release-deployment' removed – inherited from parent-poms/pom.xml.
-             'update-readme' kept – DSH-specific README SCM customisation. -->
+        <!-- FR002: the 'deployment' and 'product-release-deployment' profiles below hold only what is
+             DSH-specific; everything that duplicated parent-poms was removed and is covered by the
+             parent hierarchy. 'release-deployment' is not declared here at all - it is inherited
+             from parent-poms/pom.xml.
+             README generation is likewise not declared here - #97 moved it upstream into
+             parent-poms' 'readme-generation' profile, which activates on -Ddeployment wherever
+             src/site/markdown/README.md exists and so reaches this reactor root by inheritance.
+             DSH deliberately holds no local copy. -->
         <profile>
-            <!-- DSH-specific: kept because it overrides project.build.version with timestamp
-                 and runs the DSH pdf-plugin with generated-site as siteDirectory. -->
+            <!-- DSH-specific: kept because it runs the DSH pdf-plugin with generated-site as siteDirectory. -->
             <id>deployment</id>
             <!-- FR013: activated by -Ddeployment property instead of -P to avoid Maven merge bugs -->
             <activation>
@@ -333,9 +337,6 @@
                     <name>deployment</name>
                 </property>
             </activation>
-            <properties>
-                <project.build.version>${project.version} - ${timestamp}</project.build.version>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -421,88 +422,6 @@
                                     <includeReports>false</includeReports>
                                     <siteDirectory>${project.build.directory}/generated-site</siteDirectory>
                                     <docEncoding>UTF-8</docEncoding>
-                                </configuration>
-                                <inherited>false</inherited>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!-- FR002: update-readme kept – DSH-specific README SCM checkin customisation -->
-        <profile>
-            <id>update-readme</id>
-            <!-- FR013: activated by -Dupdate-readme property instead of -P -->
-            <activation>
-                <property>
-                    <name>update-readme</name>
-                </property>
-            </activation>
-            <properties>
-                <project.build.version>${project.version}</project.build.version>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-changes-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>generate-list-of-issues</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>github-text-list</goal>
-                                </goals>
-                                <configuration>
-                                    <includeOpenIssues>false</includeOpenIssues>
-                                    <onlyMilestoneIssues>true</onlyMilestoneIssues>
-                                    <columnNames>Id,Type,Summary,Assignee,Reporter,Updated</columnNames>
-                                    <failOnError>false</failOnError>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-readme-md</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>.</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/site/markdown</directory>
-                                            <includes>
-                                                <include>README.md</include>
-                                            </includes>
-                                            <targetPath>.</targetPath>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                                <inherited>false</inherited>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>commit-readme-md</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>checkin</goal>
-                                </goals>
-                                <configuration>
-                                    <basedir>${basedir}</basedir>
-                                    <includes>README.md</includes>
-                                    <message>Auto-generated README.md [skip]</message>
                                 </configuration>
                                 <inherited>false</inherited>
                             </execution>

@@ -56,7 +56,7 @@ support for the feature described in specs/features/[feature-file].md.
 Requirements:
 - Create or update GitHub Actions workflows in .github/workflows/
 - Update Maven pom.xml configurations if new modules or dependencies are needed
-- Update build scripts (deploy.sh) as necessary
+- Update the release path if it is affected: the `.github/workflows/{staging,release,hotfix,stage}.yml` wrappers and the reusable workflows they call in MRISS-Projects/parent-poms
 - Ensure quality gates and automated tests run for the new feature
 - Reference /specs/testing/performance-benchmarks/ for any performance targets
 ```

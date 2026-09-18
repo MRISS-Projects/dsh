@@ -67,7 +67,7 @@ This document defines the main roles within the DSH (Document Smart Highlights) 
 
 - Create and maintain CI/CD pipelines using GitHub Actions
 - Manage and update Maven `pom.xml` build configurations across all modules
-- Maintain build and deployment scripts (e.g., `deploy.sh`)
+- Maintain the release path: the thin `.github/workflows/{staging,release,hotfix,stage}.yml` wrappers and the reusable workflows they call in `MRISS-Projects/parent-poms`
 - Ensure quality gates and automated validation workflows
 - Manage infrastructure and deployment configurations
 
