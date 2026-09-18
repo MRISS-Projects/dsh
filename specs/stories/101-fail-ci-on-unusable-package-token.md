@@ -26,7 +26,7 @@ failure days later
   `specs/stories/99-standardise-maven-u-flag.md` §9
 
 Two workflows open with a step named `Verify package credentials are present`
-(`.github/workflows/ci.yml:57-62`, `.github/workflows/api-testing.yml:57-62`). Both contain the
+(`.github/workflows/ci.yml:58-63`, `.github/workflows/api-testing.yml:62-67`). Both contain the
 same four lines, and both test only that the secret is a non-empty string.
 
 ## 3. What the present check proves, and what it does not
@@ -91,21 +91,35 @@ scope, lost organisation access and an unauthorised SSO session all collapse int
 observable answer.
 
 ```text
-200     → pass, log which artifact was reachable
+2xx|3xx → pass, log which artifact was reachable
 401|403 → ::error:: naming the token and the likely causes, exit 1
 404     → ::warning::, pass  (see §4 — the credential authenticated)
-other   → ::warning::, pass
+other   → ::warning::, pass  (5xx, 429, connection failure)
 ```
 
-### 5.1 Why `404` and `5xx` pass rather than fail
+### 5.1 Why everything except `401` and `403` passes
 
-By §4 a `404` proves the token works, so failing on it would report a credential fault that the
-response has just ruled out. It still deserves a warning, because the URL needs fixing.
+By §4, only `401` and `403` can be laid at the credential's door. Every other status is something
+the registry produces *after* authenticating, so failing on one would report a credential fault the
+response has already ruled out.
 
-A `5xx` or a connection failure says nothing about the credential either way. Failing there would
-invent a new flaky gate in front of a build that is about to contact the same host and will report
-its own error, in its own words, if the registry is genuinely down. This story is about making a
-credential fault legible, not about adding a second opinion on the registry's uptime.
+- **`2xx` and `3xx` pass silently.** A redirect to an object store is a normal way for a package
+  registry to serve an artifact, and an unusable token never gets one — it gets a `401`. Matching
+  `200` alone would leave a build that is working perfectly printing "could not verify" on every
+  run, which is the warning-nobody-reads failure of §3 rebuilt in miniature. Caught in review; see
+  §11.
+- **`404` warns and passes.** It proves the token works and says the URL has gone stale, so it
+  names the URL.
+- **`5xx`, `429` and a connection failure warn and pass.** They say nothing about the credential
+  either way. Failing there would invent a new flaky gate in front of a build that is about to
+  contact the same host and will report its own error, in its own words, if the registry is
+  genuinely down.
+
+`403` is the one judgement call in that list. It is the usual answer to a token that authenticates
+but lacks `read:packages`, which is squarely this story's target — but GitHub also returns `403` for
+secondary rate limits, which is the flaky case the previous paragraph argues against. It stays a
+failure because the scope fault is far the likelier of the two here, and `docs/devops/README.md`
+words the message as "check the token first" rather than as proof the token is dead.
 
 ### 5.2 Why the URL is derived from `pom.xml`
 
@@ -133,15 +147,34 @@ already proven to work.
 malformed, the request `404`s, and by §5.1 the check would pass silently from then on. Empty
 coordinates are therefore an `::error::` in their own right.
 
+**Comments are stripped before the block is read** — same-line first, then multi-line ranges. A
+commented-out `<parent>` above the live one would otherwise win, and its dead coordinates answer
+`404` even with a perfectly good token: warn, pass, and test nothing, for as long as the comment
+survives. That is not hypothetical. The root `pom.xml` already carries a comment immediately above
+`<parent>`, and Wave 0 closes by editing the very version inside it — commenting out the old line
+is exactly how a person does that. Caught in review; see §11.
+
+The parser still assumes one element per line, which is how this `pom.xml` is written. A one-line
+`<parent>…</parent>` block is legal XML that it cannot read — it trips the empty-coordinates guard
+and fails loudly rather than probing a wrong URL. That is the right direction to fail in, and the
+step carries a comment saying so.
+
 ## 6. Files to change
 
 ### 6.1 `.github/workflows/ci.yml`
 
-Replace the step at lines 57-62. Rename it from `Verify package credentials are present` to
+Replace the step at `ci.yml:58-63`. Rename it from `Verify package credentials are present` to
 `Verify package credentials work` — the old name is an accurate description of the old behaviour and
 would be a misleading one for the new.
 
 ```yaml
+      # Checks that the token works, not merely that the secret is non-empty.
+      # An expired or revoked token is still a non-empty string, and Maven's
+      # reaction to one depends on whether the restored ~/.m2 happens to hold a
+      # usable parent - so it surfaces either as a WARNING on a green build
+      # against a frozen parent, or, once the cache misses, as a non-resolvable
+      # parent POM with nothing tying it back to the credential. See the
+      # Secrets section of docs/devops/README.md.
       - name: Verify package credentials work
         run: |
           if [ -z "$PACKAGES_READ_TOKEN" ]; then
@@ -149,7 +182,14 @@ would be a misleading one for the new.
             exit 1
           fi
 
-          parent=$(sed -n '/<parent>/,/<\/parent>/p' pom.xml)
+          # Comments are stripped first - same-line, then multi-line - because a
+          # commented-out <parent> above the live one would otherwise win, and
+          # its dead coordinates answer 404 even with a perfectly good token:
+          # the check would warn and pass forever while testing nothing. The
+          # parser assumes one element per line, which is how this pom.xml is
+          # written; a one-line <parent> block trips the guard below instead of
+          # being misread.
+          parent=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' pom.xml | sed -n '/<parent>/,/<\/parent>/p')
           group=$(echo "$parent" | grep '<groupId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
           artifact=$(echo "$parent" | grep '<artifactId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
           version=$(echo "$parent" | grep '<version>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
@@ -161,11 +201,20 @@ would be a misleading one for the new.
 
           url="https://maven.pkg.github.com/MRISS-Projects/maven-repo/$(echo "$group" | tr '.' '/')/$artifact/maven-metadata.xml"
 
+          # || code="000" is load-bearing: Actions runs this under `bash -e`, so
+          # a curl that exits non-zero on a network failure would abort the step
+          # instead of reaching the warning below. The grep pipelines above
+          # survive a no-match only because there is no pipefail - adding an
+          # explicit `shell: bash` here would set it, and the coordinates guard
+          # would then abort with no output at all, printing no ::error::.
           code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -u "$GITHUB_ACTOR:$PACKAGES_READ_TOKEN" "$url") || code="000"
 
           case "$code" in
-            200)
-              echo "PACKAGES_READ_TOKEN can read $group:$artifact (parent $version)."
+            2??|3??)
+              # Anything the registry can only answer once authenticated. A
+              # redirect to an object store counts: an unusable credential never
+              # gets one, it gets a 401.
+              echo "PACKAGES_READ_TOKEN can read $group:$artifact (parent $version) - HTTP $code."
               ;;
             401|403)
               echo "::error::PACKAGES_READ_TOKEN is set but cannot read $group:$artifact from GitHub Packages (HTTP $code). The secret is present, so this is not a missing-secret problem: the token has expired, has been revoked, has lost the read:packages scope, or has lost access to the MRISS-Projects organisation. Replace it under Settings → Secrets and variables → Actions with a classic PAT holding read:packages. See the Secrets section of docs/devops/README.md."
@@ -180,18 +229,22 @@ would be a misleading one for the new.
           esac
 ```
 
-Three details that are deliberate and easy to "tidy" into bugs:
+Four details that are deliberate and easy to "tidy" into bugs:
 
 - **`|| code="000"`.** GitHub Actions runs `run:` blocks under `bash -e`. Without it, a `curl` that
   exits non-zero on a network failure aborts the step, turning §5.1's warning into the failure that
   section argues against.
+- **No `shell:` key, therefore no `pipefail`.** The `grep` pipelines that read the coordinates
+  return 0 on a no-match only because errexit is unaccompanied by pipefail. Adding an explicit
+  `shell: bash` sets `-eo pipefail`, and the coordinates guard would then abort the step *before*
+  printing its `::error::` — a silent exit 1 in place of a diagnosis. Verified in review (§11).
 - **`--max-time 20`.** Bounds the step's contribution to job duration whatever the registry does.
 - **`$GITHUB_ACTOR` as the username.** Matches what the generated `settings.xml` already uses for
   the same three server entries, a few lines below.
 
 ### 6.2 `.github/workflows/api-testing.yml`
 
-The same replacement at lines 57-62 (AC005). That workflow builds the same reactor from the same
+The same replacement at `api-testing.yml:62-67` (AC005). That workflow builds the same reactor from the same
 parent with the same secret, so a credential fault reaches it identically.
 
 The step is copied rather than shared. Both files already carry a verbatim duplicate of the
@@ -246,21 +299,24 @@ for how its failure shows up.
 ## 8. Acceptance criteria
 
 - [ ] **AC001** — A `PACKAGES_READ_TOKEN` that is present but cannot read the parent artifact fails
-  `ci.yml` at the credential step, before `Build and test all modules` runs. Verified by §9.2.
+  `ci.yml` at the credential step, before `Build and test all modules` runs. Verified by §9.3.
 - [ ] **AC002** — The failure message names `PACKAGES_READ_TOKEN`, states that the secret *is*
   present so the reader does not go looking for a missing one, lists expiry, revocation, a lost
   `read:packages` scope and lost organisation access as the causes, and points at
   `docs/devops/README.md`. It does not surface as a Maven resolution error.
 - [ ] **AC003** — Every branch of the step is exercised against a deliberately invalid token or a
-  forced status code, not assumed. Transcripts in §9.
+  forced status code, not assumed. The harness is `scripts/test-credential-step.sh`, tracked rather
+  than thrown away, so the evidence is reproducible and a later edit to the step has something to
+  fail against. Transcripts in §9.
 - [ ] **AC004** — A valid token still passes and the step costs a small, bounded amount of time. The
-  invalid-token path completed in 841 ms locally (§9.2) and `--max-time 20` bounds the worst case;
+  invalid-token path completed in 913 ms locally (§9.3) and `--max-time 20` bounds the worst case;
   the valid-token path is one request of the same shape. Confirmed by the PR's own CI run — see the
-  honest limitation in §9.5.
+  honest limitation in §9.4.
 - [ ] **AC005** — `api-testing.yml` carries the identical step (§6.2).
 - [ ] **AC006** — `docs/devops/README.md` `## Secrets` describes the new behaviour, and no longer
-  says the step checks only for a missing secret. The old step name appears nowhere in tracked
-  Markdown.
+  says the step checks only for a missing secret. The old step name survives on no live surface:
+  `git grep "Verify package credentials are present" -- . ':!specs/stories/'` returns nothing. The
+  one exemption is declared and justified in §8.1.
 - [ ] **AC007** — Markdown lint passes over the changed documentation, using the command in
   `CLAUDE.md`'s Commands table.
 
@@ -269,90 +325,136 @@ AC001-AC006 are the issue's own criteria in its own order, tightened where §9 m
 known to touch documentation. Nothing here narrows the issue, so no reconciliation of the issue body
 is needed beyond adding AC007 when the PR opens; `dsh-ship-story` handles that.
 
+### 8.1 AC006's sweep carries one exemption, declared rather than filtered
+
+AC006 first read "the old step name appears nowhere in tracked Markdown". Run unfiltered during the
+build, that sweep **failed** — six hits across three files:
+
+| File | Hits | What they are |
+|---|---|---|
+| `specs/stories/101-fail-ci-on-unusable-package-token.md` | 3 | This spec: the before-state in §2, the rename in §6.1, the superseded paragraph quoted in §6.3 |
+| `specs/stories/95-read-only-ci-package-token.md` | 2 | A shipped story's record of the step as `#95` left it |
+| `specs/stories/99-standardise-maven-u-flag.md` | 1 | The out-of-scope paragraph that raised `#101` |
+
+Not one is a live instruction. Rewriting the two shipped specs would falsify the record of what was
+decided and when; rewriting this one would delete the before-state that makes the change legible.
+
+So the criterion was wrong, not the code. AC006 now exempts `specs/stories/` and says so here —
+`#99` §8 records what happens when an AC's own sweep is quietly narrowed at the command line to make
+it pass, and this is the same temptation arriving from the other direction. Every surface a reader
+might act on — both workflow files, `docs/devops/README.md`, `CLAUDE.md` — is clean.
+
 ## 9. Verification and evidence
 
 No production source changes, so `jacoco:check` and surefire are unaffected and TDD's red-green
 cycle has no unit test to hang on. The cycle still applies, with the step body as the unit under
-test: extract the `run:` block to a shell script, drive it through every branch, and only then paste
-it into the two workflows.
+test.
 
-### 9.1 Red — the current step passes a token that cannot authenticate
+### 9.1 The harness
 
-The existing four lines, run with an invalid token:
+`scripts/test-credential-step.sh` drives the step through every branch. It takes a workflow file as
+its argument, so the same suite runs against both. Two decisions make it a test of the change rather
+than a test of a copy of it:
 
-```text
-$ PACKAGES_READ_TOKEN="ghp_deliberatelyInvalid000000000000000000" bash verify-credentials-current.sh
-exit=0
-```
+- **It extracts the `run:` body from the workflow file itself** and executes that, so nothing can
+  pass while the shipped YAML says something else. The extractor matches the step-name *prefix*, so
+  it finds the old step as readily as the new one — which is what lets the same suite produce a
+  meaningful red.
+- **It runs the body under `bash -e`**, because that is the shell GitHub Actions gives a `run:`
+  block. Without it the `|| code="000"` guard of §6.1 would appear to work when it does not.
 
-No output, exit 0, job continues. That is the defect, reproduced.
+Statuses the live registry cannot return to this machine — `200`, `404`, `5xx`, and a `curl` that
+exits non-zero — are produced by a stub `curl` prepended to `PATH`, which prints a chosen status the
+way `-w '%{http_code}'` does. The `401` cases use the real registry.
 
-### 9.2 Green — the new step fails it, and says why
+### 9.2 Red — the step as it stood
 
-```text
-$ PACKAGES_READ_TOKEN="ghp_deliberatelyInvalid000000000000000000" bash verify-credentials.sh
-::error::PACKAGES_READ_TOKEN is set but cannot read com.mriss.mriss-parent:products from GitHub
-Packages (HTTP 401). The secret is present, so this is not a missing-secret problem: the token has
-expired, has been revoked, has lost the read:packages scope, or has lost access to the
-MRISS-Projects organisation. Replace it under Settings -> Secrets and variables -> Actions with a
-classic PAT holding read:packages. See the Secrets section of docs/devops/README.md.
-exit=1
-elapsed: 841 ms
-```
-
-### 9.3 The absent-secret branch still behaves as before
+The suite, run against `ci.yml` before the change:
 
 ```text
-$ PACKAGES_READ_TOKEN="" bash verify-credentials.sh
-::error::PACKAGES_READ_TOKEN is unavailable to this run. Pull requests from forks do not receive
-repository secrets; otherwise add it under Settings -> Secrets and variables -> Actions.
-exit=1
+Extracted 5 lines of step body from .github/workflows/ci.yml
+
+  PASS  absent secret fails and blames the fork, not the token
+  FAIL  invalid token fails
+          expected exit 1 containing: cannot read com.mriss.mriss-parent:products
+          got exit 0: <no output>
+  ... 10 further failures, all "got exit 0: <no output>"
+  PASS  step completed in 80 ms (< 5000 ms)
+
+  2 passed, 11 failed
 ```
 
-### 9.4 The unreadable-`<parent>` guard fires
+Every failure is the same defect: handed a credential that cannot authenticate, the step says
+nothing and exits 0. The two passes are the branches that must survive the change — the fork-PR
+message, and the cost bound.
 
-Run against a `pom.xml` with no `<parent>` block:
+### 9.3 Green — after the change
+
+Identical suite, same extraction, against the shipped `ci.yml`. Three of these cases postdate the
+review round of §11 — the `302`, and the two commented-`<parent>` cases:
 
 ```text
-$ PACKAGES_READ_TOKEN="anything" bash verify-credentials.sh
-::error::Could not read the <parent> coordinates from pom.xml, so the credential cannot be checked.
-Fix this step rather than skipping it: a malformed URL would make the check pass silently.
-exit=1
+Extracted 51 lines of step body from .github/workflows/ci.yml
+
+Against the live registry (needs network):
+  PASS  absent secret fails and blames the fork, not the token
+  PASS  invalid token fails
+  PASS  invalid token says the secret IS present
+  PASS  invalid token lists the causes
+  PASS  invalid token points at the documentation
+  PASS  unreadable <parent> fails rather than probing a malformed URL
+
+POM parsing, with the probe stubbed out:
+  PASS  a commented-out <parent> is ignored in favour of the live one
+  PASS  a commented-out <version> inside the live block is ignored too
+
+Against a stubbed curl, for statuses the live registry cannot return without a working credential:
+  PASS  200 passes and names the artifact it reached
+  PASS  403 fails like 401
+  PASS  404 warns and passes, because it proves the credential authenticated
+  PASS  404 names the stale URL so it can be fixed
+  PASS  302 passes: a redirect proves the credential authenticated, same as 404
+  PASS  500 warns and passes rather than inventing a flaky gate
+  PASS  a curl that exits non-zero does not abort the step under bash -e
+
+AC004 - cost of the step:
+  PASS  step completed in 941 ms (< 5000 ms)
+
+  16 passed, 0 failed
 ```
 
-### 9.5 What could not be verified locally, and why it is stated rather than claimed
+`api-testing.yml` run through the same suite: **16 passed, 0 failed**. The two extracted bodies were
+diffed and are byte-identical, 51 lines each, `md5 f7c261e2d0977861daac5db59133f459` — which is
+AC005's real check, stronger than reading them side by side.
 
-**The `200` branch was not observed.** It needs a working credential, and this machine has none to
-offer: reading the token out of the local `settings.xml` was denied by the agent's credential guard,
-and `#99` §8 records that the local credential was itself answering `401` against this registry. So
-the passing path rests on the registry answering `200` to an authenticated request for
-artifact-level metadata — reasonable, and exactly what Maven relies on, but an assumption until a
-runner executes it.
+Both files were also parsed with `js-yaml` after editing, confirming the literal block survives as
+YAML and that the step is named `Verify package credentials work` in each.
 
-**The PR's own CI run settles it.** `ci.yml` runs on the pull request with the real secret. If the
-assumption is wrong the step logs a `404` warning and the build still proceeds (§5.1), so a wrong
-guess here degrades the check rather than blocking the PR — and the warning names the URL, which is
-what makes it fixable in one commit. Watch for that warning on the first run and treat it as work
-remaining, not as noise.
+### 9.4 What the harness proves, and what only CI can
+
+**The stub proves the `case`, not the registry.** Every branch of the step's logic is now exercised,
+including `200` — but against a stubbed status, so it shows the step does the right thing *when* the
+registry answers `200`. It does not show that the registry answers `200` to an authenticated request
+for artifact-level metadata. Nothing on this machine can: reading the real token from the local
+`settings.xml` was denied by the agent's credential guard, and `#99` §8 records that credential
+answering `401` here anyway.
+
+**The PR's own CI run closes that gap**, running `ci.yml` with the real secret. If the URL is wrong
+the step logs the `404` warning and the build proceeds (§5.1), so a bad guess degrades the check
+rather than blocking the PR — and the warning names the URL, making it a one-commit fix. Watch for
+it on the first run and treat it as work remaining, not noise.
+
+**One shape of that gap is now closed by construction.** Before §11, only a literal `200` passed, so
+a registry that redirects artifact `GET`s to an object store would have warned on every green run
+for the life of the step. `2??|3??` removes that failure mode without waiting to find out which way
+the registry behaves. The remaining thing the first run can still reveal is the `404` — a wrong
+URL — and that one announces itself.
 
 **`api-testing.yml` will not run on this PR.** Its `paths:` filter covers `dsh-rest-api/**` and
-`specs/api/**`; this diff touches neither. Its copy of the step is verified by review against
-`ci.yml`'s, which is identical text — and by §9.1-9.4, which exercise that text directly.
+`specs/api/**`; this diff touches neither. Its copy is covered by the byte-identical diff above and
+by its own passing run of the suite.
 
-### 9.6 Branches reachable only with a working credential
-
-`404`, `5xx` and a connection failure cannot be produced from this machine: by §4, every request
-without a usable credential answers `401` whatever the path. Their handling is a `case` arm, driven
-directly with forced status codes:
-
-```text
-200 -> PASS: PACKAGES_READ_TOKEN can read com.mriss.mriss-parent:products (parent 3.8.0-SNAPSHOT).
-404 -> PASS with ::warning:: stale derived URL
-500 -> PASS with ::warning:: could not verify (HTTP 500)
-000 -> PASS with ::warning:: could not verify (HTTP 000)
-```
-
-### 9.7 Documentation
+### 9.5 Documentation
 
 Markdown lint runs in `spec-validation.yml`, whose `paths:` filter covers `docs/**` and `specs/**`.
 Both are in this diff, so the job fires. Run the command from `CLAUDE.md`'s Commands table locally
@@ -374,3 +476,31 @@ before pushing (AC007).
   what makes it invisible.
 - **Pinning the parent to a released version.** Wave 0's closing goal (`specs/product/PRD.md` §4).
   It would let §5.2 probe a versioned path, but it is not this story.
+- **Running `scripts/test-credential-step.sh` from CI.** It is a manual script, like
+  `scripts/close-wontfix-issues.sh` beside it. Wiring it into `spec-validation.yml` would mean a new
+  job and a decision about running the live-registry cases on every PR — a bigger change than the
+  step it guards.
+
+## 11. Local review round
+
+`dsh-ship-story` step 5. A reviewer read the diff and re-measured the claims it rests on rather than
+taking them: it reproduced §4's probe table independently, confirmed `bash -e` from this repository's
+own CI logs, diffed the fork-PR branch against the base commit to confirm it is untouched, and drove
+eight status codes through the extracted body. No Critical findings. Three were acted on, and each
+one produced a test before it produced a fix:
+
+| Finding | Verdict | What changed |
+|---|---|---|
+| Only `200` passed, so a redirecting registry would warn on every green run | **Accepted** | `2??\|3??`. The gap was between §4's own argument — everything but `401`/`403` proves authentication — and a `case` that implemented only part of it |
+| A commented-out `<parent>` above the live one is read instead of it | **Accepted** | Comments stripped before the range. Reproduced first: the step read `old.group:old-artifact`, got a `404` with a good token, warned, passed |
+| `docs/devops/README.md` called `403` "conclusive" | **Accepted** | Softened. `403` stays a failure — the scope fault is likelier here than a rate limit — but the prose no longer claims certainty it does not have |
+| The harness was session scratch, so AC003 was unreproducible | **Accepted** | Committed as `scripts/test-credential-step.sh` |
+| Spec cited "lines 57-62" for both files | **Accepted** | Verified wrong at the base commit; now `ci.yml:58-63` and `api-testing.yml:62-67` |
+| §6.1's snippet had drifted from the file | **Accepted** | Regenerated from `ci.yml` rather than hand-synced |
+| An explicit `shell: bash` would set `pipefail` and silence every `::error::` | **Accepted as a comment** | Latent, not a defect — the step does not set `shell:`. Documented in the step and in §6.1 so a future edit does not walk into it |
+| A one-line `<parent>` block fails on valid XML | **Partly** | Reproduced. Fixing it properly needs an XML parser; failing loudly is the designed behaviour, so it got a comment, not a rewrite (§5.2) |
+| Unclosed `<parent>` reports the wrong version; missing `pom.xml`; missing `curl` | **Declined** | Cosmetic, or unreachable after `actions/checkout`. Guarding states that cannot occur adds noise to a step whose whole value is a legible message |
+
+The first two are the ones worth remembering: both were cases where the implementation was narrower
+than the reasoning the spec had already written down, and neither was visible from the passing test
+suite — the suite had no test for them, which is why it stayed green.

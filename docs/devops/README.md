@@ -107,10 +107,31 @@ though `MRISS-Projects/maven-repo` is public — the GitHub Packages Maven regis
 credentials for anonymous-readable packages — which is why the credential is swapped here rather
 than dropped.
 
-Both `ci.yml` and `api-testing.yml` open with a `Verify package credentials are present` step that
-fails with an explicit `::error::` annotation when the secret is missing. Without it an absent
-secret surfaces much later as a Maven 401 on `com.mriss.mriss-parent:products`, which reads as a
-broken parent rather than a missing credential.
+Both `ci.yml` and `api-testing.yml` open with a `Verify package credentials work` step that fails
+the job before Maven runs — both when the secret is missing and when it is present but unusable.
+The missing case is almost always a pull request from a fork, which receives no repository secrets.
+The unusable case is a token that has expired, been revoked, lost the `read:packages` scope, or lost
+access to the organisation; the step catches it with one authenticated `GET` for the parent's
+artifact-level `maven-metadata.xml`, at coordinates read from the root `pom.xml`.
+
+A `401` there is conclusive. `maven.pkg.github.com` authenticates before it resolves a path, so it
+answers `401` even for an artifact that does not exist — which means the status cannot be blamed on
+a wrong URL. The step fails on it and names the token. It also fails on `403`, which is the usual
+answer to a token that authenticates but lacks `read:packages`; that one is a judgement rather than
+a certainty, because GitHub also returns `403` for secondary rate limits, so read the message as
+"check the token first", not as proof the token is dead.
+
+Everything else passes. A `2xx` or a `3xx` means the credential got through — a redirect to an
+object store is something an unusable token never receives. A `404` means the credential got
+through *and* the URL the step derived has gone stale, so it warns and names the URL. A `5xx`, a
+`429` or a connection failure says nothing about the credential either way, and precedes a build
+that is about to contact the same host and will report its own error if the registry is genuinely
+down.
+
+Without this step an unusable credential surfaces much later as a Maven `401` on
+`com.mriss.mriss-parent:products`, which reads as a broken parent rather than a broken credential —
+or, when the runner's restored `~/.m2` still holds a usable parent, as a `WARNING` on an otherwise
+green build compiling against a frozen one.
 
 The two remaining workflows hold neither secret, and that is not an oversight: `wiki-sync.yml` uses
 the built-in `secrets.GITHUB_TOKEN`, and `spec-validation.yml` touches no Maven build and no package

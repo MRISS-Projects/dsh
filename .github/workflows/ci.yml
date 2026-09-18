@@ -55,12 +55,65 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Verify package credentials are present
+      # Checks that the token works, not merely that the secret is non-empty.
+      # An expired or revoked token is still a non-empty string, and Maven's
+      # reaction to one depends on whether the restored ~/.m2 happens to hold a
+      # usable parent - so it surfaces either as a WARNING on a green build
+      # against a frozen parent, or, once the cache misses, as a non-resolvable
+      # parent POM with nothing tying it back to the credential. See the
+      # Secrets section of docs/devops/README.md.
+      - name: Verify package credentials work
         run: |
           if [ -z "$PACKAGES_READ_TOKEN" ]; then
             echo "::error::PACKAGES_READ_TOKEN is unavailable to this run. Pull requests from forks do not receive repository secrets; otherwise add it under Settings → Secrets and variables → Actions."
             exit 1
           fi
+
+          # Comments are stripped first - same-line, then multi-line - because a
+          # commented-out <parent> above the live one would otherwise win, and
+          # its dead coordinates answer 404 even with a perfectly good token:
+          # the check would warn and pass forever while testing nothing. The
+          # parser assumes one element per line, which is how this pom.xml is
+          # written; a one-line <parent> block trips the guard below instead of
+          # being misread.
+          parent=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' pom.xml | sed -n '/<parent>/,/<\/parent>/p')
+          group=$(echo "$parent" | grep '<groupId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
+          artifact=$(echo "$parent" | grep '<artifactId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
+          version=$(echo "$parent" | grep '<version>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
+
+          if [ -z "$group" ] || [ -z "$artifact" ] || [ -z "$version" ]; then
+            echo "::error::Could not read the <parent> coordinates from pom.xml, so the credential cannot be checked. Fix this step rather than skipping it: a malformed URL would make the check pass silently."
+            exit 1
+          fi
+
+          url="https://maven.pkg.github.com/MRISS-Projects/maven-repo/$(echo "$group" | tr '.' '/')/$artifact/maven-metadata.xml"
+
+          # || code="000" is load-bearing: Actions runs this under `bash -e`, so
+          # a curl that exits non-zero on a network failure would abort the step
+          # instead of reaching the warning below. The grep pipelines above
+          # survive a no-match only because there is no pipefail - adding an
+          # explicit `shell: bash` here would set it, and the coordinates guard
+          # would then abort with no output at all, printing no ::error::.
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -u "$GITHUB_ACTOR:$PACKAGES_READ_TOKEN" "$url") || code="000"
+
+          case "$code" in
+            2??|3??)
+              # Anything the registry can only answer once authenticated. A
+              # redirect to an object store counts: an unusable credential never
+              # gets one, it gets a 401.
+              echo "PACKAGES_READ_TOKEN can read $group:$artifact (parent $version) - HTTP $code."
+              ;;
+            401|403)
+              echo "::error::PACKAGES_READ_TOKEN is set but cannot read $group:$artifact from GitHub Packages (HTTP $code). The secret is present, so this is not a missing-secret problem: the token has expired, has been revoked, has lost the read:packages scope, or has lost access to the MRISS-Projects organisation. Replace it under Settings → Secrets and variables → Actions with a classic PAT holding read:packages. See the Secrets section of docs/devops/README.md."
+              exit 1
+              ;;
+            404)
+              echo "::warning::$url returned 404. The credential authenticated - this registry answers 401 for any unauthenticated request whatever the path - so PACKAGES_READ_TOKEN is usable and the build continues. The URL this step derives from the <parent> block of pom.xml is stale and should be corrected."
+              ;;
+            *)
+              echo "::warning::Could not verify PACKAGES_READ_TOKEN against $url (HTTP $code). Letting the build proceed; Maven reports its own error if the registry is genuinely unreachable."
+              ;;
+          esac
 
       - name: Configure Maven settings for GitHub Packages
         run: |
