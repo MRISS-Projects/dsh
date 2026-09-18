@@ -67,7 +67,7 @@ here, so §4 adds an assertion rather than a log line.
       - name: Set up Maven 3.9.9
         uses: stCarolas/setup-maven@v5
         with:
-          maven-version: 3.9.9
+          maven-version: '3.9.9'
 
       - name: Verify Maven version
         run: |
@@ -77,6 +77,9 @@ here, so §4 adds an assertion rather than a log line.
             exit 1
           }
 ```
+
+In the file the `Verify Maven version` step carries a comment block explaining why it exists, in the
+style of the credential check that follows it; the snippet above omits it for brevity.
 
 Three details are deliberate:
 
@@ -188,7 +191,9 @@ consumes; `3.8.0` shipping is a separate milestone-clearing exercise.
 
 ### 7.3 Files to change in parent-poms
 
-Branch `issue-58` from `master`. The same step pair as §4.1, with the same text:
+Branch `issue-58` from `master`. The same step pair as §4.1, with the same text **less the
+`docs/devops/README.md` pointer** in the error message — that file does not exist in `parent-poms`,
+and a failure there must not send a reader to a path they do not have:
 
 - **`.github/workflows/build.yml`** — insert after line 55 (end of `Set up JDK 17`), before the
   `mvn` invocations at lines 139, 149 and 157.
