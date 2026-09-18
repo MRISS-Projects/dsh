@@ -79,6 +79,26 @@ workflow hosted in the separate `MRISS-Projects/parent-poms` repository, which d
 Maven release work. They are only ever started by a person from the Actions tab, never by a push
 or PR.
 
+### The Maven toolchain is pinned, in both repositories
+
+`ci.yml` and `api-testing.yml` — the only two workflows here that invoke `mvn` — provision Java 17
+(Temurin) with `actions/setup-java@v4` and Maven **3.9.9** with `stCarolas/setup-maven@v5`, in that
+order, because the Maven action needs `JAVA_HOME` already set. Neither relies on the Maven bundled
+with the `ubuntu-latest` runner image, which GitHub changes without notice when the image is
+rebuilt.
+
+Each of the two then asserts the version before building, rather than trusting the pin. Maven prints
+no version banner under `-B`, so a `setup-maven` step that failed to take effect would otherwise
+leave a green build silently back on the runner's Maven. The `Verify Maven version` step fails the
+run instead — the same present-versus-working distinction the credential check draws in the Secrets
+section below.
+
+The four release wrappers run no Maven of their own. The reusable workflows they call in
+`parent-poms` pin the same 3.9.9, as do that repository's own `build.yml` and `deploy.yml`. **The
+version is bumped in both repositories or neither** — `deploy.yml` upstream is what publishes the
+parent SNAPSHOT this repository resolves on every `-U` build, so a pin that holds only on one side
+leaves the artifact and the build that consumes it on different Maven versions.
+
 ## README.md is a Generated File
 
 The root `README.md` is generated. Its source is `src/site/markdown/README.md`. **Edit the

@@ -59,6 +59,26 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Set up Maven 3.9.9
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: '3.9.9'
+
+      # Asserts the pin took effect, rather than trusting that it did. Maven
+      # prints no version banner under -B, so without this a setup-maven step
+      # that silently failed would leave the build green and back on whatever
+      # Maven the runner image ships - the condition the pin exists to remove,
+      # now invisible. Same present-versus-working distinction as the credential
+      # check below. grep -qF with a trailing space needs no regex escaping and
+      # stops a future 3.9.90 satisfying a check written for 3.9.9.
+      - name: Verify Maven version
+        run: |
+          mvn -version
+          mvn -version | grep -qF 'Apache Maven 3.9.9 ' || {
+            echo "::error::Expected Maven 3.9.9. The 'Set up Maven 3.9.9' step did not take effect, so this build would have run the runner image's Maven. See docs/devops/README.md, 'Workflow Reference'."
+            exit 1
+          }
+
       # Checks that the token works, not merely that the secret is non-empty.
       # An expired or revoked token is still a non-empty string, and Maven's
       # reaction to one depends on whether the restored ~/.m2 happens to hold a
