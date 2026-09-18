@@ -47,7 +47,7 @@ The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages v
 | Full build with tests | `mvn -B install` |
 | Fast build, no tests | `mvn -B -DskipTests install` |
 | Single module | `mvn -B -pl dsh-data -am install` |
-| Markdown lint | `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
+| Markdown lint | `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' 'CLAUDE.md' '.claude/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
 
 ### Always log local Maven runs
 
