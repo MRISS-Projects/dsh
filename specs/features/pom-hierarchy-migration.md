@@ -44,7 +44,8 @@ This feature is governed by **ADR-002** (`specs/architecture/ADR-002-pom-hierarc
   |------------------------------|-------------------------------|--------------------------------|--------------------------------------------------------|
   | `deployment`                 | Yes                           | `parent-poms/pom.xml`          | **Remove from DSH** – generic; fully covered by parent |
   | `product-release-deployment` | Yes                           | `parent-poms/products/pom.xml` | **Merge DSH-specific parts up**, then remove from DSH  |
-  | `update-readme`              | Yes                           | No                             | **Keep** – DSH-specific SCM checkin customisation      |
+  | `update-readme`              | No — deleted by `#97`         | No                             | **Removed** – README generation is inherited; see `readme-generation` below |
+  | `readme-generation`          | No, deliberately              | `parent-poms/pom.xml`          | **Inherit** – activates on `-Ddeployment` plus a `src/site/markdown/README.md`; DSH keeps no local copy |
   | `release-deployment`         | Yes (implicit via parent)     | `parent-poms/pom.xml`          | **Remove from DSH**                                    |
 
 - **Acceptance Criteria**:

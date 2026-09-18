@@ -79,6 +79,65 @@ workflow hosted in the separate `MRISS-Projects/parent-poms` repository, which d
 Maven release work. They are only ever started by a person from the Actions tab, never by a push
 or PR.
 
+## README.md is a Generated File
+
+The root `README.md` is generated. Its source is `src/site/markdown/README.md`. **Edit the
+source, never `README.md` itself** — the next staging, release or hotfix run overwrites the
+generated copy and a hand edit made there is lost without warning.
+
+Two placeholders are filled during generation:
+
+| Placeholder | Filled by |
+| --- | --- |
+| `${project.build.version}` | the `deployment` profile, as `<version> - <build number> - <timestamp>`; `project-staging.yml` passes `-Dbuild.number=RC<n>`, so an RC build renders `0.3.0-SNAPSHOT - RC7 - 20260918-002853`. `release-deployment` resets the property to the bare version, so a released README carries neither build number nor timestamp |
+| `${issues.text.list}` | `maven-changes-plugin:github-text-list`, which reads each milestone's closed issues from GitHub using the `github.com` server id |
+
+The runs that regenerate it are `staging.yml` (during `project-staging.yml`'s `clean deploy`) and
+`release.yml` / `hotfix.yml` (in their `Update README.md on Master` step). The generated file is
+committed as `Auto-generated README.md [skip jenkins]` by `github-actions[bot]`.
+
+The mechanism is the `readme-generation` profile **inherited from `parent-poms`** — nothing in
+this repository declares it, and grepping these poms will not find it. It activates when
+`-Ddeployment` is passed *and* the module holds a `src/site/markdown/README.md`, which in this
+reactor means the root and nothing else. DSH deliberately keeps no local copy of it; the
+`update-readme` profile that used to stand in for it was deleted by `#97`.
+
+`-Dcommit.readme.phase=none` disarms the **commit**, not the regeneration. `copy-readme-md` still
+overwrites the working-tree `README.md` with a fresh timestamp, so a local `-Ddeployment` run leaves
+it modified. Restore it afterwards:
+
+```bash
+mvn -B -Ddeployment -Dcommit.readme.phase=none process-resources
+git checkout -- README.md
+```
+
+The source is filtered with `filtering=true`, so **any `${...}` written into
+`src/site/markdown/README.md` is interpolated at generation time** — including Maven properties that
+hold credentials, such as `github.personal.token`. Write placeholder syntax there only when you mean
+the generator to fill it in.
+
+## Local Developer Scripts
+
+Five `.sh` files sit at the repository root. **None of them is called by CI**: every workflow either
+invokes Maven directly or delegates to a reusable workflow in `parent-poms`. They exist for local
+convenience only. Three are build tooling and are described below; the other two,
+`connect-mongo.sh` and `connect-mongo-super-user.sh`, are Mongo shell helpers covered in
+`docs/troubleshooting/README.md`.
+
+| Script | What it runs | When you would want it |
+| --- | --- | --- |
+| `set-version.sh <version>` | `release:update-versions` with `-DautoVersionSubmodules=true` and `-Dproject.dev.com.mriss.products:dsh=<version>` | Re-versioning the whole 13-module reactor by hand — the local counterpart of what `project-release.yml` does in CI. It refuses to run without exactly one argument. It uses the per-project `-Dproject.dev.<groupId>:<artifactId>` property rather than `-DdevelopmentVersion`, because `parent-poms/pom.xml` binds `<developmentVersion>` in the release plugin's configuration and configuration beats that user property — passing `-DdevelopmentVersion` looks like it works and silently auto-increments instead |
+| `maven-site.sh` | `mvn -Dsite.deployment.personal.main=file:///tmp clean site` | Rendering the Maven site locally to inspect it before a release publishes it to `gh-pages` |
+| `maven-site-deploy.sh` | `mvn -Dsite.deployment.personal.main=file:///tmp clean site-deploy` | The same, but exercising the `site-deploy` path with the deployment target redirected to `file:///tmp`, so nothing shared is touched |
+
+`maven-site.sh` and `maven-site-deploy.sh` also exist per module, eight copies of each, for
+rendering a single module's site.
+
+`deploy.sh` used to sit alongside them. `#97` deleted it: it referenced a global settings file
+that no longer exists on any machine, deployment is CI's job, and a local `-Ddeployment` build now
+regenerates and commits `README.md` — not something a convenience wrapper should do behind a
+developer's back.
+
 ## Secrets
 
 Two credentials reach these workflows, and the split between them is deliberate: **a workflow that
