@@ -67,7 +67,7 @@ criteria.
 | Issue | Status | Title |
 |---|---|---|
 | `#85` | open | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
-| `#86` | open | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
+| `#86` | **closed** — PR #108 | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
 | `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
 | `#46` | open | Implement integration tests using embedded tomcat server |
 | `#70` | open | Project link not working at maven generated site |
@@ -188,7 +188,7 @@ finished until that repo's open milestones are cleared and released, and DSH is 
 
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
-| `3.8.0-SNAPSHOT` | `#57`, `#58`, `#13` | Clear, then release **3.8.0** |
+| `3.8.0-SNAPSHOT` | `#57`, `#13` | Clear, then release **3.8.0** |
 | `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69` | Clear, then release **3.9.0** |
 
 `parent-poms#67` was raised from this work: `maven-failsafe-plugin` is configured there in
@@ -213,12 +213,19 @@ The round trip for making a change in parent-poms and re-pinning here is documen
 Note the overlap: parent-poms `#57`/`#58`/`#59` carry the same titles as DSH `#85`/`#86`/`#87`.
 Both repositories have workflows that invoke Maven and docs that cite versions, so the work is
 genuinely parallel rather than duplicated — each issue is scoped to its own repository and
-cross-links its twin. **DSH `#87` no longer sits in this wave** — it moved to Wave 1 on
-2026-09-17, for the reason recorded there — so that third pair no longer moves in step: parent-poms
-`#59` remains on that repo's `3.9.0-SNAPSHOT` milestone and is still part of the goal below, while
-its DSH twin waits for `0.4.0-SNAPSHOT`. Parent-poms `#13` (image links broken in the generated
-Maven site) is adjacent to DSH `#70` and `#90`; check whether those are symptoms of it before
-fixing them here.
+cross-links its twin.
+
+**The second pair is done, and was built as one cycle.** DSH `#86` and parent-poms `#58` both
+closed on 2026-09-18 — the first time a pair was delivered together rather than one repository at a
+time. It was cheap because the change needed no release: DSH's four release wrappers reference
+parent-poms' reusable workflows at `@master`, and `#58` touched no POM, so it reached DSH the
+moment it merged. That is the pattern to reuse for `#85`/`#57`, which are the same shape.
+
+**DSH `#87` no longer sits in this wave** — it moved to Wave 1 on 2026-09-17, for the reason
+recorded there — so the third pair no longer moves in step: parent-poms `#59` remains on that
+repo's `3.9.0-SNAPSHOT` milestone and is still part of the goal below, while its DSH twin waits for
+`0.4.0-SNAPSHOT`. Parent-poms `#13` (image links broken in the generated Maven site) is adjacent to
+DSH `#70` and `#90`; check whether those are symptoms of it before fixing them here.
 
 The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item
 **until the above completes** — see §6.
@@ -238,8 +245,10 @@ anything is deprecated today.
   Not an ADR-001 phase task, and so not in the task list below; it sits here the way `#48` does.
   **Moved out of Wave 0 on 2026-09-17** because `#86` and `#87` contradicted each other inside one
   wave: `#86` pins 3.9.9 in the workflows and `#87` replaces that same pin with 3.9.16, so building
-  both in Wave 0 meant writing a version and immediately rewriting it. Deferring `#87` lets `#86`
-  ship as written and the bump land once, later.
+  both in Wave 0 meant writing a version and immediately rewriting it. Deferring `#87` let `#86`
+  ship as written — it did, in PR #108 — and lets the bump land once, later. `#87` now has to change
+  the pin in both repositories: DSH `ci.yml` and `api-testing.yml`, and parent-poms' six workflows
+  via its twin `#59`.
 
 **Tasks (ADR-001 §4 Phase 1):**
 
