@@ -96,7 +96,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
        architecture, and the **JDK** package type.
              
  2. Windows
-    1. There should be a .exe windows installer. Just follow the
+    1. There should be a .msi windows installer. Just follow the
        instructions.
        
  3. Linux	
@@ -104,7 +104,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
     2. Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:
     
        ```
-       ln -s jdk-17.0.X+Y java (where X and Y match the release you downloaded)
+       ln -s jdk-17.0.20.1+1 java (use the directory name the archive extracted to)
        ```
 
 ##### Setting environment variables
@@ -116,7 +116,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
    `Ctrl+h`. Go to the end of the file and add:
        
     ```
-    export JAVA_HOME=/your/jdk/parent/folder
+    export JAVA_HOME=/your/jdk/parent/folder/java
    export PATH=$JAVA_HOME/bin:$PATH
    ```
 

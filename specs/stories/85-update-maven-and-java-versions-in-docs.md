@@ -326,14 +326,24 @@ them changes what every future project is born with. That is a separate decision
   `3.3.1` as well as `3.3.9`.
 - [ ] **AC002** — `src/site/markdown/README.md` contains no `-XX:MaxPermSize`.
 - [ ] **AC003** — The Java download link points at Adoptium Temurin 17, and the `ln -s` example and
-  both `Java home:` sample lines describe a Java 17 layout with no `jre` subdirectory.
+  the JDK paths in the samples describe a Java 17 layout with no `jre` subdirectory. **Met.**
+  *Reworded during local review:* this originally said "both `Java home:` sample lines", which
+  §3.3's build note contradicts — Maven 3.9.x emits no `Java home:` line and both were deleted, so
+  the criterion as first written could not be evaluated against the delivered file.
 - [ ] **AC004** — The `java -version` and both `mvn -version` sample blocks are real output from a
   Maven 3.9.9 + Temurin 17 toolchain, produced per §9.2, not hand-written. **Met, with one
-  qualification recorded rather than glossed:** the version, vendor, `runtime:` label, encoding and
-  OS lines are verbatim from the run; the *paths* and the locale were genericised to the
-  conventions this file already uses (`/home/[YOUR_USER]/…`, `C:\data\…`, `en_US`), because the raw
-  output carries this machine's home directory and a `pt_BR` locale. The Linux block is that same
-  real output transposed to Linux paths, which §9.2 anticipated.
+  qualification recorded rather than glossed**, corrected during local review because the first
+  wording overclaimed:
+
+  - **The `java -version` block and the Windows `mvn -version` block are real output.** Version,
+    vendor, `runtime:` label, encoding and OS lines are verbatim; only the *paths* and the locale
+    were genericised to the conventions this file already uses (`C:\data\…`, `en_US`), because the
+    raw output carries this machine's home directory and a `pt_BR` locale.
+  - **The Linux `mvn -version` block is an illustration, not a capture.** No Linux run happened.
+    Its Maven version, vendor and `runtime:` label come from the real run, but
+    `platform encoding: UTF-8` and the `OS name:` line — including the kernel string — do not and
+    could not. Calling the whole block verbatim was wrong; §9.2 anticipated a transposition and
+    this AC described it as a capture.
 - [ ] **AC005** — A grep for placeholder syntax in `src/site/markdown/README.md` returns exactly two
   lines, 7 and 578, and none was introduced anywhere else. **Met** — the grep returns exactly those
   two lines.
@@ -397,8 +407,11 @@ This doubles as the end-to-end test of the instructions: if following them does 
 working toolchain, the story is not done. The MaxPermSize defect in §3.2 is exactly what that
 exercise catches.
 
-The Windows block at 210-213 is produced on this machine directly. The Linux block at 184-188 keeps
-its Linux-shaped paths, with the version, vendor and `Java home:` lines taken from the real run.
+The Windows block is produced on this machine directly. The Linux block keeps its Linux-shaped
+paths, with the Maven version, vendor and `runtime:` lines taken from the real run — **not** the
+`OS name:` or encoding lines, which no Windows run can supply. See AC004 for what that block does
+and does not claim. (This sentence first named a `Java home:` line, which Maven 3.9.x does not
+emit — see §3.3.)
 
 ### 9.3 AC006 — the staging dispatch, and the check it needs
 
@@ -456,12 +469,20 @@ anchor produces no warning and does not fail `mvn site`. This is what caught the
 
 ```bash
 for p in java maven; do
-  ids=$(grep -oE 'id="[A-Za-z][^"]*"' "$p.html" | sed 's/id="//;s/"//' | sort -u)
-  for l in $(grep -oE 'href="#[^"]*"' "$p.html" | sed 's/href="#//;s/"//' | sort -u); do
-    echo "$ids" | grep -qx "$l" || echo "BROKEN -> $p.html #$l"
-  done
+  ids=$(grep -oE 'id="[^"]*"' "$p.html" | sed 's/^id="//;s/"$//' | sort -u)
+  grep -oE 'href="#[^"]*"' "$p.html" | sed 's/^href="#//;s/"$//' | sort -u |
+    while IFS= read -r l; do
+      printf '%s\n' "$ids" | grep -qxF -- "$l" || echo "BROKEN -> $p.html #$l"
+    done
 done
 ```
+
+**`-F` is load-bearing, and so is dropping the `[A-Za-z]` anchor.** Doxia's id encoding preserves
+`.`, so `maven.html` really does contain `id="Copying_settings.xml"`. Without `-F` the fragment is
+treated as a regex, each `.` matches any character, and a dead link can match a *different* live
+anchor — the script then prints nothing and passes on exactly the defect it exists to catch. The
+original `id="[A-Za-z]…"` pattern also skipped any anchor not starting with a letter. Both were
+found in local review, before `parent-poms#70` inherited the recipe (§7.6).
 
 ### 9.5 What is not tested
 
