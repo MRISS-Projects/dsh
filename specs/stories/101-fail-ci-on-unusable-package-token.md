@@ -103,11 +103,11 @@ By §4, only `401` and `403` can be laid at the credential's door. Every other s
 the registry produces *after* authenticating, so failing on one would report a credential fault the
 response has already ruled out.
 
-- **`2xx` and `3xx` pass silently.** A redirect to an object store is a normal way for a package
-  registry to serve an artifact, and an unusable token never gets one — it gets a `401`. Matching
-  `200` alone would leave a build that is working perfectly printing "could not verify" on every
-  run, which is the warning-nobody-reads failure of §3 rebuilt in miniature. Caught in review; see
-  §11.
+- **`2xx` and `3xx` pass**, logging one line that names the artifact reached and the status — no
+  warning annotation. A redirect to an object store is a normal way for a package registry to serve
+  an artifact, and an unusable token never gets one; it gets a `401`. Matching `200` alone would
+  leave a build that is working perfectly printing "could not verify" on every run, which is the
+  warning-nobody-reads failure of §3 rebuilt in miniature. Caught in review; see §11.1.
 - **`404` warns and passes.** It proves the token works and says the URL has gone stale, so it
   names the URL.
 - **`5xx`, `429` and a connection failure warn and pass.** They say nothing about the credential
@@ -152,12 +152,16 @@ commented-out `<parent>` above the live one would otherwise win, and its dead co
 `404` even with a perfectly good token: warn, pass, and test nothing, for as long as the comment
 survives. That is not hypothetical. The root `pom.xml` already carries a comment immediately above
 `<parent>`, and Wave 0 closes by editing the very version inside it — commenting out the old line
-is exactly how a person does that. Caught in review; see §11.
+is exactly how a person does that. Caught in review; see §11.1.
 
-The parser still assumes one element per line, which is how this `pom.xml` is written. A one-line
-`<parent>…</parent>` block is legal XML that it cannot read — it trips the empty-coordinates guard
-and fails loudly rather than probing a wrong URL. That is the right direction to fail in, and the
-step carries a comment saying so.
+**Each coordinate is matched as an element, not as a line.** `grep -o "<tag>[^<]*</tag>"` finds
+`<groupId>` wherever it sits, so the block's line layout does not matter. The first attempt split
+lines on `>` and `<` instead, which quietly assumed one element per line — and a legal `<parent>`
+that puts the three coordinates on a single line then collapsed all of them onto the *first* value,
+producing `g:g` from `<groupId>g</groupId><artifactId>a</artifactId>`. Three non-empty values passed
+the guard, so the step probed a URL for an artifact that does not exist, collected a `404` from a
+working token, warned, and checked nothing — the same silent-pass this section exists to prevent,
+arrived at from a different direction. Raised by Copilot on PR #106; see §11.2.
 
 ## 6. Files to change
 
@@ -186,13 +190,23 @@ would be a misleading one for the new.
           # commented-out <parent> above the live one would otherwise win, and
           # its dead coordinates answer 404 even with a perfectly good token:
           # the check would warn and pass forever while testing nothing. The
-          # parser assumes one element per line, which is how this pom.xml is
-          # written; a one-line <parent> block trips the guard below instead of
-          # being misread.
+          # coordinates are then read element by element, so the block's line
+          # layout does not matter.
           parent=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' pom.xml | sed -n '/<parent>/,/<\/parent>/p')
-          group=$(echo "$parent" | grep '<groupId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
-          artifact=$(echo "$parent" | grep '<artifactId>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
-          version=$(echo "$parent" | grep '<version>' | head -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' ')
+
+          # grep -o matches the element wherever it sits, rather than assuming
+          # one element per line. Splitting the line instead collapsed all three
+          # coordinates onto the first value whenever a legal <parent> put them
+          # on one line - and that passed the guard below, so the step probed a
+          # nonsense URL, collected a 404 from a working token, and warned
+          # instead of checking anything.
+          coord() {
+            echo "$parent" | grep -o "<$1>[^<]*</$1>" | head -1 | sed -e "s|<$1>||" -e "s|</$1>||" | tr -d ' '
+          }
+
+          group=$(coord groupId)
+          artifact=$(coord artifactId)
+          version=$(coord version)
 
           if [ -z "$group" ] || [ -z "$artifact" ] || [ -z "$version" ]; then
             echo "::error::Could not read the <parent> coordinates from pom.xml, so the credential cannot be checked. Fix this step rather than skipping it: a malformed URL would make the check pass silently."
@@ -237,7 +251,7 @@ Four details that are deliberate and easy to "tidy" into bugs:
 - **No `shell:` key, therefore no `pipefail`.** The `grep` pipelines that read the coordinates
   return 0 on a no-match only because errexit is unaccompanied by pipefail. Adding an explicit
   `shell: bash` sets `-eo pipefail`, and the coordinates guard would then abort the step *before*
-  printing its `::error::` — a silent exit 1 in place of a diagnosis. Verified in review (§11).
+  printing its `::error::` — a silent exit 1 in place of a diagnosis. Verified in review (§11.1), and re-confirmed against CI in §11.2.
 - **`--max-time 20`.** Bounds the step's contribution to job duration whatever the registry does.
 - **`$GITHUB_ACTOR` as the username.** Matches what the generated `settings.xml` already uses for
   the same three server entries, a few lines below.
@@ -390,11 +404,12 @@ message, and the cost bound.
 
 ### 9.3 Green — after the change
 
-Identical suite, same extraction, against the shipped `ci.yml`. Three of these cases postdate the
-review round of §11 — the `302`, and the two commented-`<parent>` cases:
+Identical suite, same extraction, against the shipped `ci.yml`. Five of these cases postdate a
+review round: the `302` and the two commented-`<parent>` cases from §11.1, and the two one-line
+cases from §11.2.
 
 ```text
-Extracted 51 lines of step body from .github/workflows/ci.yml
+Extracted 61 lines of step body from .github/workflows/ci.yml
 
 Against the live registry (needs network):
   PASS  absent secret fails and blames the fork, not the token
@@ -407,6 +422,8 @@ Against the live registry (needs network):
 POM parsing, with the probe stubbed out:
   PASS  a commented-out <parent> is ignored in favour of the live one
   PASS  a commented-out <version> inside the live block is ignored too
+  PASS  a <parent> written entirely on one line is read correctly
+  PASS  coordinates sharing one line do not collapse onto the first value
 
 Against a stubbed curl, for statuses the live registry cannot return without a working credential:
   PASS  200 passes and names the artifact it reached
@@ -418,13 +435,13 @@ Against a stubbed curl, for statuses the live registry cannot return without a w
   PASS  a curl that exits non-zero does not abort the step under bash -e
 
 AC004 - cost of the step:
-  PASS  step completed in 941 ms (< 5000 ms)
+  PASS  step completed in 931 ms (< 5000 ms)
 
-  16 passed, 0 failed
+  18 passed, 0 failed
 ```
 
-`api-testing.yml` run through the same suite: **16 passed, 0 failed**. The two extracted bodies were
-diffed and are byte-identical, 51 lines each, `md5 f7c261e2d0977861daac5db59133f459` — which is
+`api-testing.yml` run through the same suite: **18 passed, 0 failed**. The two extracted bodies were
+diffed and are byte-identical, 61 lines each, `md5 20df7d0777102dbf7c78f4c8d3200dbb` — which is
 AC005's real check, stronger than reading them side by side.
 
 Both files were also parsed with `js-yaml` after editing, confirming the literal block survives as
@@ -481,9 +498,11 @@ before pushing (AC007).
   job and a decision about running the live-registry cases on every PR — a bigger change than the
   step it guards.
 
-## 11. Local review round
+## 11. Review rounds
 
-`dsh-ship-story` step 5. A reviewer read the diff and re-measured the claims it rests on rather than
+### 11.1 Local review (step 5)
+
+A reviewer read the diff and re-measured the claims it rests on rather than
 taking them: it reproduced §4's probe table independently, confirmed `bash -e` from this repository's
 own CI logs, diffed the fork-PR branch against the base commit to confirm it is untouched, and drove
 eight status codes through the extracted body. No Critical findings. Three were acted on, and each
@@ -504,3 +523,62 @@ one produced a test before it produced a fix:
 The first two are the ones worth remembering: both were cases where the implementation was narrower
 than the reasoning the spec had already written down, and neither was visible from the passing test
 suite — the suite had no test for them, which is why it stayed green.
+
+**One verdict from this round was overturned in the next.** "A one-line `<parent>` block fails on
+valid XML" was marked *partly* and answered with a comment, on the strength of a reproduction
+showing the guard firing. That reproduction was of the wrong input — see §11.2.
+
+### 11.2 Copilot review, round 1 (step 7)
+
+PR [#106](https://github.com/MRISS-Projects/dsh/pull/106), first CI run green on every check.
+Copilot returned **🔵 Needs a closer look** with **6 suppressed comments and 0 posted threads** —
+which means there was nothing to resolve on the PR page, and the findings had to be read out of the
+review body. The review arrived **automatically**, so it ran at the repository or organisation
+default effort level, not at a per-PR choice.
+
+Six comments, three distinct claims; the first two were each raised twice, once per workflow.
+
+| Claim | Verdict | Outcome |
+|---|---|---|
+| A legal one-line `<parent>` block defeats the parser, so the guard passes and the probe uses a malformed URL | **Right conclusion, wrong mechanism — fixed** | See below |
+| Actions runs the step with `-eo pipefail`, so a no-match `grep` aborts before the guard can print | **Incorrect** | Answered with evidence; no change |
+| §5.1 claims `2xx`/`3xx` "pass silently" while the step prints a success line | **Valid** | Wording corrected |
+
+**The parser finding, and why the stated mechanism mattered.** Copilot's example was a block written
+entirely on one line, and its reasoning was that `cut -d'>' -f2` "returns the group value for all
+three fields". Run against that exact input, the step exits 1 with the coordinates guard — because
+the line begins `<parent>`, so the second field is `<groupId`, which the following `cut` empties. The
+stated mechanism does not occur there.
+
+It does occur one line further in. With `<parent>` on its own line and the three coordinates sharing
+the next one, all three fields collapse onto the first value:
+
+```text
+<parent>
+  <groupId>g.two</groupId><artifactId>a-two</artifactId><version>v2</version>
+</parent>
+
+  before: PACKAGES_READ_TOKEN can read g.two:g.two (parent g.two) - HTTP 200.   exit=0
+```
+
+Three non-empty values, guard satisfied, nonsense URL, `404` from a working token, warning, pass.
+The finding was right that the parser is defeated by a legal POM and right that the consequence is a
+silent pass; it was wrong about which POM and wrong about the mechanism. Fixing what it described
+would have changed nothing, because that case already failed correctly.
+
+The fix reads each coordinate as an element rather than as a line (§5.2), which covers both layouts
+— the one Copilot named now parses correctly instead of failing the guard, and the one it did not
+name stops collapsing. Two tests, red first, then the change.
+
+**The `pipefail` claim, settled by evidence rather than by position.** GitHub sets `-eo pipefail`
+only when a step declares `shell: bash`; a bare `run:` gets `bash -e`. This PR's own run says so:
+
+```text
+Verify package credentials work    shell: /usr/bin/bash -e {0}
+```
+
+No workflow in this repository sets a `shell:` key. So the pipelines do survive a no-match, the
+guard does print its `::error::` — CI demonstrated exactly that on the run under review — and
+running the harness under `pipefail` would model a shell this repository does not use. Declined, and
+the reply quotes the log line. The step already carries a comment about this trap, which is what
+makes the claim easy to answer rather than easy to accept.
