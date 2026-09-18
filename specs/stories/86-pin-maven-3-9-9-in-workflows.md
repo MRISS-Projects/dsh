@@ -155,6 +155,20 @@ reusable workflows in `parent-poms` already pin 3.9.9, at `project-stage.yml:55-
 
 ## 7. The parent-poms round trip
 
+> **Done.** This section was written before the upstream work and is kept for its reasoning, not as
+> outstanding work. What landed:
+>
+> | What | Evidence |
+> |---|---|
+> | `build.yml` and `deploy.yml` pinned | `MRISS-Projects/parent-poms@7411cbec`, on `master` |
+> | Verified by a real run | `deploy.yml` dispatched with `release_type: snapshots` — [run 35363898584](https://github.com/MRISS-Projects/parent-poms/actions/runs/35363898584), success, logging `Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)` |
+> | `maven-version` quoted in all six upstream steps | `MRISS-Projects/parent-poms@ea531f1f`, from this story's local review |
+> | Cross-referenced | Both SHAs commented on `#86` |
+>
+> `parent-poms#58` itself stays open until the repo owner closes it — Claude never closes an issue.
+> §7.1 and §7.2 below keep the present tense they were written in; the reasoning is what they are
+> for, and the next person scoping a round trip needs it more than they need a receipt.
+
 ### 7.1 Why it belongs in this cycle
 
 `parent-poms#58` is open, sits on milestone `3.8.0-SNAPSHOT`, and names `build.yml` and `deploy.yml`
@@ -232,6 +246,21 @@ added by this spec.
   notes that the wrappers inherit the same pin from `parent-poms`.
 - **AC008** — `parent-poms#58` is delivered in the same cycle: both workflows there pinned, merged
   to `master`, a `deploy.yml` snapshot dispatch green, and the SHA commented on `#86`.
+  **Met** — `parent-poms@7411cbec` on `master`, verified by
+  [run 35363898584](https://github.com/MRISS-Projects/parent-poms/actions/runs/35363898584)
+  (success), SHA commented on `#86`. See §7's completion table. Closing `#58` itself is the repo
+  owner's, not part of this criterion.
+
+**Evidence for the rest, gathered from runs rather than from the diff:**
+
+| AC | Evidence |
+|---|---|
+| AC001 | Sweep — the set of workflows that invoke `mvn` and the set matching `setup-maven@v5` are identical |
+| AC002 | Both files parsed with `js-yaml`: pin after `setup-java`, before every `mvn` |
+| AC003, AC005 | `Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)` logged by the guard in both workflows |
+| AC004 | CI [run 35367666876](https://github.com/MRISS-Projects/dsh/actions/runs/35367666876) and dispatched API Testing [run 35368154042](https://github.com/MRISS-Projects/dsh/actions/runs/35368154042), both success — see §9 on why the second needed a dispatch |
+| AC006 | Four wrappers untouched in the diff; §6 records why |
+| AC007 | `docs/devops/README.md`, "The Maven toolchain is pinned, in both repositories" |
 
 ## 9. Testing approach
 
@@ -297,12 +326,48 @@ removes from the build and it is not written down anywhere else.
 
 ## 11. Implementation order
 
-1. `parent-poms` `issue-58` — both workflows, merge to `master`, dispatch `deploy.yml` with
+All six steps are complete; the order is kept because it is the order that worked.
+
+1. ✅ `parent-poms` `issue-58` — both workflows, merge to `master`, dispatch `deploy.yml` with
    `release_type: snapshots`, comment the SHA on `#86`. Independent of everything below; doing it
-   first means the DSH spec cites a landed commit rather than an intention.
-2. `ci.yml` — pinning step plus guard.
-3. `api-testing.yml` — the same two steps.
-4. `docs/devops/README.md` — the toolchain paragraph.
-5. `mvn -B install` locally, logged to `.logs/mvn-install.log` per `CLAUDE.md`, to confirm nothing
-   broke.
-6. Push, open the PR, and collect the two `Apache Maven 3.9.9` log lines as AC evidence.
+   first means the DSH spec cites a landed commit rather than an intention. — `7411cbec`, plus
+   `ea531f1f` from local review.
+2. ✅ `ci.yml` — pinning step plus guard. — `1a8302a4`
+3. ✅ `api-testing.yml` — the same two steps. — `1a8302a4`
+4. ✅ `docs/devops/README.md` — the toolchain paragraph. — `1a8302a4`
+5. ✅ `mvn -B install` locally, logged to `.logs/mvn-install.log` per `CLAUDE.md`, to confirm nothing
+   broke. — BUILD SUCCESS, twice: before and after the review fix.
+6. ✅ Push, open the PR, and collect the two `Apache Maven 3.9.9` log lines as AC evidence. —
+   PR #108; both lines in §8's evidence table.
+
+## 12. Review rounds
+
+### 12.1 Local review (step 5)
+
+One finding, taken: `maven-version` was passed unquoted in both workflows, while `java-version: '17'`
+two lines above was quoted. Harmless for `3.9.9` and for `#87`'s `3.9.16` — both have two dots, so
+YAML types them as strings — but `3.10` parses as the float `3.1` and `4.0` as `4`, handing the
+action a version that does not exist. The symptom would be a `Verify Maven version` failure reading
+as a broken `setup-maven` step rather than as a quoting bug. Fixed here and, under `CLAUDE.md`'s
+light round trip, in all six upstream instances (`parent-poms@ea531f1f`). Verified with `js-yaml`:
+all eight files now parse the value to the string `"3.9.9"`.
+
+### 12.2 Copilot review, round 1 (step 7)
+
+Arrived **automatically**, so it ran at the repository or organisation default effort level, not at
+a per-PR choice — the same layer that supplied `#102`'s `Lite` review in `#103`'s history.
+
+One finding, on `specs/stories/86-pin-maven-3-9-9-in-workflows.md`: §7, AC008 and §11 read as
+outstanding work although `parent-poms#58` had already merged, so the spec appeared to name an
+unmet dependency.
+
+**Taken in part.** The conclusion was right and is fixed by §7's completion table, AC008's
+**Met** line and §11's per-step commits. Two parts were not adopted:
+
+- The finding said the spec instructs a future reviewer "to open and implement issue #58". It never
+  asked anyone to open it — §7.2's table says "Already open as `#58`". Only the implementing half
+  of the claim applied.
+- It proposed rewriting §7 as completed evidence. §7.1 and §7.2 are the *reasoning* — why a release
+  is not a gate for a workflow-only change, and which three of `CLAUDE.md`'s six round-trip steps
+  are no-ops. That argument is what the next round trip needs; a receipt is not. The completion
+  record was added above it instead, and the rationale kept in the present tense it was written in.
