@@ -66,7 +66,7 @@ criteria.
 
 | Issue | Status | Title |
 |---|---|---|
-| `#85` | open | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
+| `#85` | **closed** — PR #109 | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
 | `#86` | **closed** — PR #108 | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
 | `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
 | `#46` | open | Implement integration tests using embedded tomcat server |
@@ -188,8 +188,8 @@ finished until that repo's open milestones are cleared and released, and DSH is 
 
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
-| `3.8.0-SNAPSHOT` | `#57`, `#13` | Clear, then release **3.8.0** |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69` | Clear, then release **3.9.0** |
+| `3.8.0-SNAPSHOT` | `#13` | Clear, then release **3.8.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69`, `#70`, `#71` | Clear, then release **3.9.0** |
 
 `parent-poms#67` was raised from this work: `maven-failsafe-plugin` is configured there in
 `<pluginManagement>` with the right includes, but never activated, so integration tests cannot run
@@ -220,6 +220,32 @@ closed on 2026-09-18 — the first time a pair was delivered together rather tha
 time. It was cheap because the change needed no release: DSH's four release wrappers reference
 parent-poms' reusable workflows at `@master`, and `#58` touched no POM, so it reached DSH the
 moment it merged. That is the pattern to reuse for `#85`/`#57`, which are the same shape.
+
+**The first pair is done too, and the pattern held.** DSH `#85` and parent-poms `#57` both closed
+on 2026-09-19, delivered as one cycle for the same reason: `#57` touched no POM, so it reached DSH
+without a release. `#57` needed correcting before it could be built — its "Files to Update" list
+named `.md` files, while the rot was in `infrastructure/src/site/apt/{maven,java}.apt`, so read
+literally the issue was already done. Those two pages were converted to Markdown rather than edited
+as APT, which also made the issue's own file list true. Closing `#57` clears everything from
+`3.8.0-SNAPSHOT` except `#13`, which is now the single item standing between here and releasing
+**3.8.0**.
+
+**Two parent-poms issues were spun off from `#85`, both onto `3.9.0-SNAPSHOT`.**
+
+- `parent-poms#70` — convert the remaining 15 APT site pages to Markdown. `#85`'s two pages were
+  the pilot; this finishes the format migration, with `doxia-module-apt` leaving
+  `maven-site-plugin`'s dependency list as the completion criterion. It was not folded into `#57`
+  because a 15-file migration on `3.8.0-SNAPSHOT` would push the 3.8.0 release further out, which
+  is the opposite of why `#85` was picked up first. The 39 APT files under
+  `src/main/resources/archetype-resources/` are deliberately excluded — they are template content
+  shipped into new projects, so converting them is a separate decision.
+- `parent-poms#71` — `commit-readme-md` runs three times per staging run, and one of those commits
+  carries an unresolved `${timestamp}` into the published `README.md`. A later execution repairs
+  it, so a *successful* run ends correct; a run that fails inside that window leaves the consuming
+  repository holding a broken README, and nothing reports it. Reproduced twice, on two different
+  branches — including `staging-0.3.0-SNAPSHOT-RC` itself. It belongs upstream rather than here
+  because it is a defect in the inherited `readme-generation` profile, and it was not folded into
+  `#70` because the two share nothing but the repository.
 
 **DSH `#87` no longer sits in this wave** — it moved to Wave 1 on 2026-09-17, for the reason
 recorded there — so the third pair no longer moves in step: parent-poms `#59` remains on that
