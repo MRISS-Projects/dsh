@@ -9,7 +9,7 @@ on:
 
 jobs:
   staging:
-    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@master
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@issue-71-commit-readme-md-reentrancy
     with:
       git_project: dsh
       branch_name: ${{ inputs.branch_name }}
