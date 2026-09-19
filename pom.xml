@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.mriss.mriss-parent</groupId>
         <artifactId>products</artifactId>
-        <version>3.8.0-SNAPSHOT</version>
+        <version>3.8.0</version>
     </parent>
 
     <!-- THE BASICS -->
