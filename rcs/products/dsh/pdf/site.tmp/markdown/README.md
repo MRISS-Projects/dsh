@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC8 - 20260919-021123
+0.3.0-SNAPSHOT - RC9 - 20260919-191832
 
 ## Introduction
 
@@ -580,6 +580,7 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [94](https://github.com/MRISS-Projects/dsh/issues/94) | task | Make check-spec-references enforcing, or remove it | null | mriss | 9/19/26 |
 | [85](https://github.com/MRISS-Projects/dsh/issues/85) | task | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 | null | mriss | 9/19/26 |
 | [86](https://github.com/MRISS-Projects/dsh/issues/86) | task | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven | null | mriss | 9/18/26 |
 | [97](https://github.com/MRISS-Projects/dsh/issues/97) | task | [STORY] Resolve the tooling orphaned by the Travis estate removal | null | mriss | 9/18/26 |
