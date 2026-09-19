@@ -452,11 +452,11 @@ replaced with:
 > `.github/scripts/check-spec-references.test.sh`, which the same job runs first.
 
 The row's trigger column gains `.github/scripts/**` and `.github/workflows/spec-validation.yml`, to
-stay true to §7.3, and `.github/skills/**`,
-which the workflow has had all along and this cell has always omitted. §11 lists that omission as
-pre-existing drift, out of scope — but this change rewrites the cell, and line 59 of the same file
-claims the table was checked node-for-node against the live YAML. Leaving a known-false entry in a
-line this PR edits is not inheriting the drift, it is re-asserting it.
+stay true to §7.3, and `.github/skills/**`, which the workflow has had all along and this cell has
+always omitted. §11 lists that omission as pre-existing drift, out of scope — but this change
+rewrites the cell, and line 59 of the same file claims the table was checked node-for-node against
+the live YAML. Leaving a known-false entry in a line this PR edits is not inheriting the drift, it
+is re-asserting it.
 
 **The Mermaid node.** In the Pipeline Map, the `SV` node reads:
 
@@ -486,7 +486,7 @@ reference check is a gate now, so leaving it off the node would make that senten
 
 | AC | Text | How it is met |
 |---|---|---|
-| AC001 | Either the job fails when a referenced file does not exist, or the job is removed. | §5.1 condition 3. The job is kept and made enforcing; conditions 1 and 2 close the two ways it could still pass without verifying anything. |
+| AC001 | Either the job fails when a referenced file does not exist, or the job is removed. | §5.1 condition 5. The job is kept and made enforcing; conditions 1 to 4 close the ways it could otherwise still pass, or fail while misreporting why, without having verified anything. |
 | AC002 | If made enforcing, it passes on the current tree, or the broken references are fixed in the same PR. | Both. The checker passes on the tree as it stands (§10), and line 75 — the only non-resolving path, and prose rather than a broken link — is corrected in §7.4. |
 | AC003 | `docs/devops/README.md`'s workflow table matches the new behaviour. | §7.5, table row and Mermaid node. |
 
