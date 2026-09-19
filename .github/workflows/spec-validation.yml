@@ -7,7 +7,9 @@ on:
       - '.github/copilot-instructions.md'
       - '.github/copilot/**'
       - '.github/roles.md'
+      - '.github/scripts/**'
       - '.github/skills/**'
+      - '.github/workflows/spec-validation.yml'
       - '.markdownlint.json'
       - 'CLAUDE.md'
       - '.claude/**'
@@ -18,7 +20,9 @@ on:
       - '.github/copilot-instructions.md'
       - '.github/copilot/**'
       - '.github/roles.md'
+      - '.github/scripts/**'
       - '.github/skills/**'
+      - '.github/workflows/spec-validation.yml'
       - '.markdownlint.json'
       - 'CLAUDE.md'
       - '.claude/**'
@@ -77,14 +81,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Test the reference checker
+        run: bash .github/scripts/check-spec-references.test.sh
+
       - name: Verify referenced spec files exist
-        run: |
-          echo "Checking that files referenced in copilot-instructions.md exist..."
-          missing=0
-          while IFS= read -r line; do
-            file=$(echo "$line" | grep -oP '(?<=`)/[^`]+' | head -1)
-            if [ -n "$file" ] && [ ! -e ".${file}" ]; then
-              echo "WARNING: Referenced file not found: $file"
-            fi
-          done < .github/copilot-instructions.md
-          echo "Reference check complete."
+        run: bash .github/scripts/check-spec-references.sh
