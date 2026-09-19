@@ -104,7 +104,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
     2. Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:
     
        ```
-       ln -s jdk-17.0.20.1+1 java (use the directory name the archive extracted to)
+       # replace jdk-17.0.20.1+1 with the directory the archive extracted to
+       ln -s jdk-17.0.20.1+1 java
        ```
 
 ##### Setting environment variables
