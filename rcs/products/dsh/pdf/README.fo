@@ -27,7 +27,7 @@ Document Smart Highlights
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - RC6 - 20260918-224757</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - RC7 - 20260919-010658</fo:block>
 </fo:block>
 
 
@@ -433,7 +433,9 @@ instructions.</fo:block>
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">ln&#160;-s&#160;jdk-17.0.20.1+1&#160;java&#160;(use&#160;the&#160;directory&#160;name&#160;the&#160;archive&#160;extracted&#160;to)
+<fo:inline font-family="monospace" font-size="10pt">#&#160;replace&#160;jdk-17.0.20.1+1&#160;with&#160;the&#160;directory&#160;the&#160;archive&#160;extracted&#160;to
+<fo:block/>
+ln&#160;-s&#160;jdk-17.0.20.1+1&#160;java
 <fo:block/>
 </fo:inline></fo:block>
 
@@ -2221,6 +2223,34 @@ Updated</fo:block>
 </fo:table-row>
 
 
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/85">
+<fo:inline color="green">85</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/19/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
 
 <fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
 <fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
