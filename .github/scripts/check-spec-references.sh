@@ -54,6 +54,10 @@ total=0
 missing=0
 
 while IFS= read -r span; do
+  # Strip the delimiters. The slice is safe only because the pattern above cannot
+  # match fewer than three characters: a one-character span would make the length
+  # negative and abort bash. An empty span -- the single blank line a here-string
+  # feeds in when nothing matched -- slices to empty and is dropped just below.
   ref="${span:1:${#span}-2}"
   case "$ref" in
     /*) ;;

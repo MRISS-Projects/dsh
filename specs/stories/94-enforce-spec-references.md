@@ -242,6 +242,10 @@ total=0
 missing=0
 
 while IFS= read -r span; do
+  # Strip the delimiters. The slice is safe only because the pattern above cannot
+  # match fewer than three characters: a one-character span would make the length
+  # negative and abort bash. An empty span -- the single blank line a here-string
+  # feeds in when nothing matched -- slices to empty and is dropped just below.
   ref="${span:1:${#span}-2}"
   case "$ref" in
     /*) ;;
@@ -281,7 +285,11 @@ quietly:
 - **The `grep` status is captured, not discarded.** Assigning inside `if` keeps `set -e` from killing
   the script, while leaving the status available to distinguish "no matches" from "grep failed".
 - **The delimiters are stripped by substring, not by `tr`.** `tr -d` would also delete backticks from
-  inside a path, and a pipeline would hide the `grep` status that condition 3 depends on.
+  inside a path, and a pipeline would hide the `grep` status that condition 3 depends on. The slice
+  is safe only because the pattern cannot match fewer than three characters: a one-character span
+  would evaluate to a negative length and abort bash. An empty span — the blank line a here-string
+  feeds in when nothing matched — slices to empty and is dropped by the path filter, which is why
+  the zero-reference guard is still what reports it. The script states that invariant inline.
 
 ## 6. The tests
 
