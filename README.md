@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - dev - 20260919-153157
+0.3.0-SNAPSHOT - RC10 - 20260919-200804
 
 ## Introduction
 
@@ -578,96 +578,96 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 ### Version 0.3.0-SNAPSHOT
 
-| # | Tipo | Descrição | Responsável | Relator | Atualizado |
-| --- | ---- | --------- | ----------- | ------- | ---------- |
-| [94](https://github.com/MRISS-Projects/dsh/issues/94) | task | Make check-spec-references enforcing, or remove it | null | mriss | 19/09/2026 |
-| [85](https://github.com/MRISS-Projects/dsh/issues/85) | task | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 | null | mriss | 18/09/2026 |
-| [86](https://github.com/MRISS-Projects/dsh/issues/86) | task | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven | null | mriss | 18/09/2026 |
-| [97](https://github.com/MRISS-Projects/dsh/issues/97) | task | [STORY] Resolve the tooling orphaned by the Travis estate removal | null | mriss | 18/09/2026 |
-| [101](https://github.com/MRISS-Projects/dsh/issues/101) | task | [STORY] Fail CI when the package token cannot authenticate, not just when it is absent | null | mriss | 17/09/2026 |
-| [103](https://github.com/MRISS-Projects/dsh/issues/103) | task | Make PR review rounds repo-aware and authoritative | null | mriss | 17/09/2026 |
-| [93](https://github.com/MRISS-Projects/dsh/issues/93) | task | Remove the redundant coverage ratchet - jacoco:check at 95% is already inherited | null | mriss | 17/09/2026 |
-| [99](https://github.com/MRISS-Projects/dsh/issues/99) | task | [STORY] Standardise Maven builds on -U while the parent is a SNAPSHOT | null | mriss | 17/09/2026 |
-| [95](https://github.com/MRISS-Projects/dsh/issues/95) | bug | Use a read-only token for CI package authentication | null | mriss | 17/09/2026 |
-| [92](https://github.com/MRISS-Projects/dsh/issues/92) | task | Remove the dead Travis build estate | null | mriss | 17/09/2026 |
-| [84](https://github.com/MRISS-Projects/dsh/issues/84) | task | [FEATURE] Unify/reorg of deploy/release profiles | mriss | mriss | 22/05/2026 |
-| [72](https://github.com/MRISS-Projects/dsh/issues/72) | task | Refactor all artifactId names to be lower case to be in  maven naming standards | mriss | mriss | 22/05/2026 |
-| [83](https://github.com/MRISS-Projects/dsh/issues/83) | enhancement | [FEATURE] Adapt DSH to the new parent poms version 3.8.0 | mriss | mriss | 22/04/2026 |
-| [68](https://github.com/MRISS-Projects/dsh/issues/68) | wontfix | Update readme file with instructions on how to install SOLR. | mriss | mriss | 22/04/2026 |
-| [67](https://github.com/MRISS-Projects/dsh/issues/67) | wontfix | Implement configuration class and setup as a daemon. | mriss | mriss | 22/04/2026 |
-| [66](https://github.com/MRISS-Projects/dsh/issues/66) | wontfix | Configure and test OpenNLP POS filter. | mriss | mriss | 22/04/2026 |
-| [13](https://github.com/MRISS-Projects/dsh/issues/13) | wontfix | Create and test SOLR DAO | mriss | mriss | 22/04/2026 |
-| [71](https://github.com/MRISS-Projects/dsh/issues/71) | task | Adapt pom structure to new parent poms. | mriss | mriss | 12/04/2026 |
-| [14](https://github.com/MRISS-Projects/dsh/issues/14) | task | Install and get trained on SOLR tutorial | mriss | mriss | 22/02/2020 |
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [94](https://github.com/MRISS-Projects/dsh/issues/94) | task | Make check-spec-references enforcing, or remove it | null | mriss | 9/19/26 |
+| [85](https://github.com/MRISS-Projects/dsh/issues/85) | task | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 | null | mriss | 9/19/26 |
+| [86](https://github.com/MRISS-Projects/dsh/issues/86) | task | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven | null | mriss | 9/18/26 |
+| [97](https://github.com/MRISS-Projects/dsh/issues/97) | task | [STORY] Resolve the tooling orphaned by the Travis estate removal | null | mriss | 9/18/26 |
+| [101](https://github.com/MRISS-Projects/dsh/issues/101) | task | [STORY] Fail CI when the package token cannot authenticate, not just when it is absent | null | mriss | 9/18/26 |
+| [103](https://github.com/MRISS-Projects/dsh/issues/103) | task | Make PR review rounds repo-aware and authoritative | null | mriss | 9/17/26 |
+| [93](https://github.com/MRISS-Projects/dsh/issues/93) | task | Remove the redundant coverage ratchet - jacoco:check at 95% is already inherited | null | mriss | 9/17/26 |
+| [99](https://github.com/MRISS-Projects/dsh/issues/99) | task | [STORY] Standardise Maven builds on -U while the parent is a SNAPSHOT | null | mriss | 9/17/26 |
+| [95](https://github.com/MRISS-Projects/dsh/issues/95) | bug | Use a read-only token for CI package authentication | null | mriss | 9/17/26 |
+| [92](https://github.com/MRISS-Projects/dsh/issues/92) | task | Remove the dead Travis build estate | null | mriss | 9/17/26 |
+| [84](https://github.com/MRISS-Projects/dsh/issues/84) | task | [FEATURE] Unify/reorg of deploy/release profiles | mriss | mriss | 5/22/26 |
+| [72](https://github.com/MRISS-Projects/dsh/issues/72) | task | Refactor all artifactId names to be lower case to be in  maven naming standards | mriss | mriss | 5/22/26 |
+| [83](https://github.com/MRISS-Projects/dsh/issues/83) | enhancement | [FEATURE] Adapt DSH to the new parent poms version 3.8.0 | mriss | mriss | 4/23/26 |
+| [68](https://github.com/MRISS-Projects/dsh/issues/68) | wontfix | Update readme file with instructions on how to install SOLR. | mriss | mriss | 4/23/26 |
+| [67](https://github.com/MRISS-Projects/dsh/issues/67) | wontfix | Implement configuration class and setup as a daemon. | mriss | mriss | 4/23/26 |
+| [66](https://github.com/MRISS-Projects/dsh/issues/66) | wontfix | Configure and test OpenNLP POS filter. | mriss | mriss | 4/23/26 |
+| [13](https://github.com/MRISS-Projects/dsh/issues/13) | wontfix | Create and test SOLR DAO | mriss | mriss | 4/23/26 |
+| [71](https://github.com/MRISS-Projects/dsh/issues/71) | task | Adapt pom structure to new parent poms. | mriss | mriss | 4/13/26 |
+| [14](https://github.com/MRISS-Projects/dsh/issues/14) | task | Install and get trained on SOLR tutorial | mriss | mriss | 2/22/20 |
 
 ### Version 0.2.4
 
-| # | Tipo | Descrição | Responsável | Relator | Atualizado |
-| --- | ---- | --------- | ----------- | ------- | ---------- |
-| [64](https://github.com/MRISS-Projects/dsh/issues/64) | bug | Test code report is being generated with 0 tests. | null | mriss | 26/04/2019 |
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [64](https://github.com/MRISS-Projects/dsh/issues/64) | bug | Test code report is being generated with 0 tests. | null | mriss | 4/26/19 |
 
 ### Version 0.2.3
 
-| # | Tipo | Descrição | Responsável | Relator | Atualizado |
-| --- | ---- | --------- | ----------- | ------- | ---------- |
-| [63](https://github.com/MRISS-Projects/dsh/issues/63) | bug | Attach jacoco badge generation at verify phase is generating badge with 0% | mriss | mriss | 25/04/2019 |
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [63](https://github.com/MRISS-Projects/dsh/issues/63) | bug | Attach jacoco badge generation at verify phase is generating badge with 0% | mriss | mriss | 4/26/19 |
 
 ### Version 0.2.2
 
-| # | Tipo | Descrição | Responsável | Relator | Atualizado |
-| --- | ---- | --------- | ----------- | ------- | ---------- |
-| [61](https://github.com/MRISS-Projects/dsh/issues/61) | enhancement | Add jacoco badge | mriss | mriss | 14/04/2019 |
-| [60](https://github.com/MRISS-Projects/dsh/issues/60) | enhancement | Add travis badge. | mriss | mriss | 14/04/2019 |
-| [59](https://github.com/MRISS-Projects/dsh/issues/59) | enhancement | Add jacoco coverage plugin and report. | mriss | mriss | 12/04/2019 |
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [61](https://github.com/MRISS-Projects/dsh/issues/61) | enhancement | Add jacoco badge | mriss | mriss | 4/14/19 |
+| [60](https://github.com/MRISS-Projects/dsh/issues/60) | enhancement | Add travis badge. | mriss | mriss | 4/14/19 |
+| [59](https://github.com/MRISS-Projects/dsh/issues/59) | enhancement | Add jacoco coverage plugin and report. | mriss | mriss | 4/12/19 |
 
 ### Version 0.2.1
 
-| # | Tipo | Descrição | Responsável | Relator | Atualizado |
-| --- | ---- | --------- | ----------- | ------- | ---------- |
-| [58](https://github.com/MRISS-Projects/dsh/issues/58) | bug | stage is being executed at master during release process | mriss | mriss | 11/04/2019 |
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [58](https://github.com/MRISS-Projects/dsh/issues/58) | bug | stage is being executed at master during release process | mriss | mriss | 4/11/19 |
 
 ### Version 0.2.0
 
-| # | Tipo | Descrição | Responsável | Relator | Atualizado |
-| --- | ---- | --------- | ----------- | ------- | ---------- |
-| [40](https://github.com/MRISS-Projects/dsh/issues/40) | task | Add DSH to travis CI following settings from changes plugin. | mriss | mriss | 10/04/2019 |
-| [39](https://github.com/MRISS-Projects/dsh/issues/39) | task | Publish dsh site on gh-pages branch instead of another repo. | null | mriss | 17/03/2019 |
-| [41](https://github.com/MRISS-Projects/dsh/issues/41) | task | Move project from organization to the git project dsh. Change next milestone to 0.2.0 | mriss | mriss | 17/03/2019 |
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [40](https://github.com/MRISS-Projects/dsh/issues/40) | task | Add DSH to travis CI following settings from changes plugin. | mriss | mriss | 4/11/19 |
+| [39](https://github.com/MRISS-Projects/dsh/issues/39) | task | Publish dsh site on gh-pages branch instead of another repo. | null | mriss | 3/18/19 |
+| [41](https://github.com/MRISS-Projects/dsh/issues/41) | task | Move project from organization to the git project dsh. Change next milestone to 0.2.0 | mriss | mriss | 3/18/19 |
 
 ### Version 0.0.1
 
-| # | Tipo | Descrição | Responsável | Relator | Atualizado |
-| --- | ---- | --------- | ----------- | ------- | ---------- |
-| [32](https://github.com/MRISS-Projects/dsh/issues/32) | task | Configure DSH to use git as scm tool and proceed to release. | mriss | mriss | 14/03/2019 |
-| [38](https://github.com/MRISS-Projects/dsh/issues/38) | task | Configure distribution management to local nexus and test snapshot deploy with deployment profile. | mriss | mriss | 01/03/2019 |
-| [37](https://github.com/MRISS-Projects/dsh/issues/37) | task | Replace release notes and release history properties using deployment profile. | mriss | mriss | 13/10/2018 |
-| [36](https://github.com/MRISS-Projects/dsh/issues/36) | task | Replace version property ad readme and commit using deployment profile | mriss | mriss | 19/02/2018 |
-| [35](https://github.com/MRISS-Projects/dsh/issues/35) | task | Test maven site publication using github using deployment profile. | mriss | mriss | 14/02/2018 |
-| [34](https://github.com/MRISS-Projects/dsh/issues/34) | task | Configure changes plugin and changes report to use github issues and test maven site generation. | mriss | mriss | 12/02/2018 |
-| [33](https://github.com/MRISS-Projects/dsh/issues/33) | task | Configure maven scm to use git | mriss | mriss | 12/02/2018 |
-| [10](https://github.com/MRISS-Projects/dsh/issues/10) | task | Test rest API module inside tomcat server inside eclipse as a war distribution. | mriss | mriss | 10/02/2018 |
-| [30](https://github.com/MRISS-Projects/dsh/issues/30) | task | Configure Swagger | mriss | mriss | 04/02/2018 |
-| [11](https://github.com/MRISS-Projects/dsh/issues/11) | task | Create and test rest service layer: | mriss | mriss | 16/01/2018 |
-| [23](https://github.com/MRISS-Projects/dsh/issues/23) | task | Add message and error handling for RabbitMQ queue submission. | mriss | mriss | 09/01/2018 |
-| [22](https://github.com/MRISS-Projects/dsh/issues/22) | task | Create document submission workflow  | mriss | mriss | 06/01/2018 |
-| [28](https://github.com/MRISS-Projects/dsh/issues/28) | task | Create document status enumeration and define workflow transition and validation class. | mriss | mriss | 06/01/2018 |
-| [27](https://github.com/MRISS-Projects/dsh/issues/27) | task | Add extra columns at the Document model class for status description and status message. | mriss | mriss | 06/01/2018 |
-| [25](https://github.com/MRISS-Projects/dsh/issues/25) | task | Test message sending exception. | mriss | mriss | 03/01/2018 |
-| [17](https://github.com/MRISS-Projects/dsh/issues/17) | task | Create web service logic to generate token and return it while starting the document storage at mongo asynchronously. | mriss | mriss | 03/01/2018 |
-| [9](https://github.com/MRISS-Projects/dsh/issues/9) | task | Create services: | mriss | mriss | 19/12/2017 |
-| [21](https://github.com/MRISS-Projects/dsh/issues/21) | task | Create mongodb storage service. | mriss | mriss | 19/12/2017 |
-| [20](https://github.com/MRISS-Projects/dsh/issues/20) | task | Update documentation with RabbitMQ installation. | mriss | mriss | 18/12/2017 |
-| [18](https://github.com/MRISS-Projects/dsh/issues/18) | task | Create logic to enqueue the mongo document id to RabbitMQ using Spring integration example app. | mriss | mriss | 18/12/2017 |
-| [19](https://github.com/MRISS-Projects/dsh/issues/19) | task | Feature/mongo dao | mriss | mriss | 10/12/2017 |
-| [15](https://github.com/MRISS-Projects/dsh/issues/15) | task | Create and test MongoDAO | null | mriss | 09/12/2017 |
-| [16](https://github.com/MRISS-Projects/dsh/issues/16) | task | Test models | mriss | mriss | 09/12/2017 |
-| [12](https://github.com/MRISS-Projects/dsh/issues/12) | task | Create dsh-test-dataset module having all PDF and HTML files used for testing. | mriss | mriss | 07/12/2017 |
-| [8](https://github.com/MRISS-Projects/dsh/issues/8) | task | * Create model for the documents with following columns: | mriss | mriss | 07/12/2017 |
-| [7](https://github.com/MRISS-Projects/dsh/issues/7) | task | * Create package structure | null | mriss | 07/12/2017 |
-| [3](https://github.com/MRISS-Projects/dsh/issues/3) | task | Create parent pom | mriss | mriss | 06/12/2017 |
-| [5](https://github.com/MRISS-Projects/dsh/issues/5) | task | Create a model module to have the model classes of keywords, sentences and documents. | mriss | mriss | 06/12/2017 |
-| [6](https://github.com/MRISS-Projects/dsh/issues/6) | task | Organize dependency management among modules. | mriss | mriss | 06/12/2017 |
-| [2](https://github.com/MRISS-Projects/dsh/issues/2) | task | Create project structure using spring boot | mriss | mriss | 06/12/2017 |
-| [4](https://github.com/MRISS-Projects/dsh/issues/4) | task | Complete project structure | mriss | mriss | 06/12/2017 |
-| [1](https://github.com/MRISS-Projects/dsh/issues/1) | task | Install RabbitMQ | mriss | mriss | 29/11/2017 |
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [32](https://github.com/MRISS-Projects/dsh/issues/32) | task | Configure DSH to use git as scm tool and proceed to release. | mriss | mriss | 3/15/19 |
+| [38](https://github.com/MRISS-Projects/dsh/issues/38) | task | Configure distribution management to local nexus and test snapshot deploy with deployment profile. | mriss | mriss | 3/1/19 |
+| [37](https://github.com/MRISS-Projects/dsh/issues/37) | task | Replace release notes and release history properties using deployment profile. | mriss | mriss | 10/14/18 |
+| [36](https://github.com/MRISS-Projects/dsh/issues/36) | task | Replace version property ad readme and commit using deployment profile | mriss | mriss | 2/19/18 |
+| [35](https://github.com/MRISS-Projects/dsh/issues/35) | task | Test maven site publication using github using deployment profile. | mriss | mriss | 2/15/18 |
+| [34](https://github.com/MRISS-Projects/dsh/issues/34) | task | Configure changes plugin and changes report to use github issues and test maven site generation. | mriss | mriss | 2/12/18 |
+| [33](https://github.com/MRISS-Projects/dsh/issues/33) | task | Configure maven scm to use git | mriss | mriss | 2/12/18 |
+| [10](https://github.com/MRISS-Projects/dsh/issues/10) | task | Test rest API module inside tomcat server inside eclipse as a war distribution. | mriss | mriss | 2/11/18 |
+| [30](https://github.com/MRISS-Projects/dsh/issues/30) | task | Configure Swagger | mriss | mriss | 2/4/18 |
+| [11](https://github.com/MRISS-Projects/dsh/issues/11) | task | Create and test rest service layer: | mriss | mriss | 1/16/18 |
+| [23](https://github.com/MRISS-Projects/dsh/issues/23) | task | Add message and error handling for RabbitMQ queue submission. | mriss | mriss | 1/9/18 |
+| [22](https://github.com/MRISS-Projects/dsh/issues/22) | task | Create document submission workflow  | mriss | mriss | 1/6/18 |
+| [28](https://github.com/MRISS-Projects/dsh/issues/28) | task | Create document status enumeration and define workflow transition and validation class. | mriss | mriss | 1/6/18 |
+| [27](https://github.com/MRISS-Projects/dsh/issues/27) | task | Add extra columns at the Document model class for status description and status message. | mriss | mriss | 1/6/18 |
+| [25](https://github.com/MRISS-Projects/dsh/issues/25) | task | Test message sending exception. | mriss | mriss | 1/4/18 |
+| [17](https://github.com/MRISS-Projects/dsh/issues/17) | task | Create web service logic to generate token and return it while starting the document storage at mongo asynchronously. | mriss | mriss | 1/3/18 |
+| [9](https://github.com/MRISS-Projects/dsh/issues/9) | task | Create services: | mriss | mriss | 12/19/17 |
+| [21](https://github.com/MRISS-Projects/dsh/issues/21) | task | Create mongodb storage service. | mriss | mriss | 12/19/17 |
+| [20](https://github.com/MRISS-Projects/dsh/issues/20) | task | Update documentation with RabbitMQ installation. | mriss | mriss | 12/19/17 |
+| [18](https://github.com/MRISS-Projects/dsh/issues/18) | task | Create logic to enqueue the mongo document id to RabbitMQ using Spring integration example app. | mriss | mriss | 12/18/17 |
+| [19](https://github.com/MRISS-Projects/dsh/issues/19) | task | Feature/mongo dao | mriss | mriss | 12/10/17 |
+| [15](https://github.com/MRISS-Projects/dsh/issues/15) | task | Create and test MongoDAO | null | mriss | 12/10/17 |
+| [16](https://github.com/MRISS-Projects/dsh/issues/16) | task | Test models | mriss | mriss | 12/9/17 |
+| [12](https://github.com/MRISS-Projects/dsh/issues/12) | task | Create dsh-test-dataset module having all PDF and HTML files used for testing. | mriss | mriss | 12/8/17 |
+| [8](https://github.com/MRISS-Projects/dsh/issues/8) | task | * Create model for the documents with following columns: | mriss | mriss | 12/7/17 |
+| [7](https://github.com/MRISS-Projects/dsh/issues/7) | task | * Create package structure | null | mriss | 12/7/17 |
+| [3](https://github.com/MRISS-Projects/dsh/issues/3) | task | Create parent pom | mriss | mriss | 12/7/17 |
+| [5](https://github.com/MRISS-Projects/dsh/issues/5) | task | Create a model module to have the model classes of keywords, sentences and documents. | mriss | mriss | 12/7/17 |
+| [6](https://github.com/MRISS-Projects/dsh/issues/6) | task | Organize dependency management among modules. | mriss | mriss | 12/7/17 |
+| [2](https://github.com/MRISS-Projects/dsh/issues/2) | task | Create project structure using spring boot | mriss | mriss | 12/7/17 |
+| [4](https://github.com/MRISS-Projects/dsh/issues/4) | task | Complete project structure | mriss | mriss | 12/7/17 |
+| [1](https://github.com/MRISS-Projects/dsh/issues/1) | task | Install RabbitMQ | mriss | mriss | 11/29/17 |
 
