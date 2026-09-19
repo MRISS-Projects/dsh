@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC10 - 20260919-200804
+0.3.0-SNAPSHOT - RC11 - 20260919-223217
 
 ## Introduction
 
