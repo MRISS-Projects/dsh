@@ -125,7 +125,7 @@ them rather than implementing against them. The third — that `update-readme` w
 `<inherited>false</inherited>`, which excludes every descendant POM, so README regeneration was
 unreachable from *every* consuming project and the `Update README.md on Master` step of the release
 and hotfix workflows was a no-op everywhere. That went upstream as `parent-poms#68`, now closed and
-deployed as a snapshot; DSH inherits a `readme-generation` profile and keeps no local replacement.
+released in **3.8.0**; DSH inherits a `readme-generation` profile and keeps no local replacement.
 The story also deleted five module `readme.md` site pages, because Maven's `<file><exists>` is
 case-insensitive on NTFS and those files made the new profile activate — and `maven-scm-plugin`
 fall through to `git commit -a` — in five modules that had no README to stage. The first README
@@ -188,8 +188,15 @@ finished until that repo's open milestones are cleared and released, and DSH is 
 
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
-| `3.8.0-SNAPSHOT` | `#13` | Clear, then release **3.8.0** |
+| `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
 | `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69`, `#70`, `#71` | Clear, then release **3.9.0** |
+
+**Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
+fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
+`mriss-parent-3.8.0`. The milestone was renamed from `3.8.0-SNAPSHOT` to `3.8.0` before the release
+rather than after, because `maven-changes-plugin:github-text-list` prints each milestone's title
+verbatim as a release-notes heading — every historical section carries the released name, and the
+released site and `README.pdf` snapshot whatever the heading said at release time.
 
 `parent-poms#67` was raised from this work: `maven-failsafe-plugin` is configured there in
 `<pluginManagement>` with the right includes, but never activated, so integration tests cannot run
@@ -202,8 +209,11 @@ coverage — while integration tests run on request, in CI. DSH `#46` is blocked
 `mvn -DprocessAllModules=true -DnewVersion=<v> versions:set`, and that command was measured against
 this reactor writing **only the root POM** — one of 13 — which would leave a hotfix branch whose
 twelve modules name a parent version that does not exist. It surfaced while choosing
-`set-version.sh`'s body, not by working on the release path, and it sits on `3.9.0-SNAPSHOT` so it
-does not add to what must be cleared before **3.8.0** is released.
+`set-version.sh`'s body, not by working on the release path, and it sat on `3.9.0-SNAPSHOT` so it
+did not add to what had to be cleared before **3.8.0** was released. The 3.8.0 release does **not**
+bear on it either way: `deploy.yml`'s own recursive release re-parented all twelve children
+correctly, but that is a different code path from the `versions:set` call in `project-release.yml`
+that `#69` describes, so `#69` is neither confirmed nor cleared by it.
 
 At the end of Wave 0 the root `pom.xml` should inherit from a **released `3.9.0`**, not a SNAPSHOT.
 That also retires the accepted risk in §6 — see there for why the SNAPSHOT pin stands until then.
@@ -242,16 +252,23 @@ as APT, which also made the issue's own file list true. Closing `#57` clears eve
 - `parent-poms#71` — `commit-readme-md` runs three times per staging run, and one of those commits
   carries an unresolved `${timestamp}` into the published `README.md`. A later execution repairs
   it, so a *successful* run ends correct; a run that fails inside that window leaves the consuming
-  repository holding a broken README, and nothing reports it. Reproduced twice, on two different
-  branches — including `staging-0.3.0-SNAPSHOT-RC` itself. It belongs upstream rather than here
+  repository holding a broken README, and nothing reports it. Reproduced four times now, across
+  three branches and both repositories — the two original DSH branches, then on 2026-09-19 in
+  parent-poms' own `3.9.0-SNAPSHOT` deploy and in a DSH staging run on
+  `staging-0.3.0-SNAPSHOT-RC`. All four show the same shape: three README commits, the middle one
+  corrupt, the final state clean. It belongs upstream rather than here
   because it is a defect in the inherited `readme-generation` profile, and it was not folded into
   `#70` because the two share nothing but the repository.
 
 **DSH `#87` no longer sits in this wave** — it moved to Wave 1 on 2026-09-17, for the reason
 recorded there — so the third pair no longer moves in step: parent-poms `#59` remains on that
 repo's `3.9.0-SNAPSHOT` milestone and is still part of the goal below, while its DSH twin waits for
-`0.4.0-SNAPSHOT`. Parent-poms `#13` (image links broken in the generated Maven site) is adjacent to
-DSH `#70` and `#90`; check whether those are symptoms of it before fixing them here.
+`0.4.0-SNAPSHOT`. Parent-poms `#13` (image links broken in the generated Maven site) is **closed**,
+fixed and released in 3.8.0. It was adjacent to DSH `#70` and `#90`, and that adjacency has now
+been tested for one of the two: a staging run on `staging-0.3.0-SNAPSHOT-RC` against the released
+`3.8.0` shows `#90` reproducing unchanged — root and every module still missing `index.html`, the
+live URL still 404 — so **`#90` is not a symptom of `#13`** and stands on its own diagnosis.
+`#70` was not exercised by that run and remains unverified.
 
 The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item
 **until the above completes** — see §6.
@@ -423,7 +440,7 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
 ## 6. Known risks / accepted decisions
 
 - **SNAPSHOT parent pin — accepted deliberately, not an oversight.** The root `pom.xml`
-  intentionally tracks `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT`. A SNAPSHOT parent
+  intentionally tracks `com.mriss.mriss-parent:products:3.9.0-SNAPSHOT`. A SNAPSHOT parent
   re-resolves as the parent moves, so the same commit can build differently from one run to the
   next — that is a real reproducibility cost. It is accepted because upcoming work on the
   `MRISS-Projects/parent-poms` project will change this repository's parent, and staying on the
@@ -431,10 +448,18 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   invocations in this repository's workflows pass `-U` (`#99`), which does not add that drift — it
   makes the drift the SNAPSHOT pin already carried consistent and visible, instead of dependent on
   the age of whatever `~/.m2` cache the runner restored. **Do not file this as a separate task.**
-  It is not a standing risk with no end date: Wave 0 now carries the parent-poms goal explicitly —
-  clear both open milestones there, release `3.8.0` and `3.9.0`, then re-pin this repo's root
-  `pom.xml` to the released `3.9.0`. **This risk closes when that completes**, and needs no owner
-  action before then.
+  It is not a standing risk with no end date: Wave 0 now carries the parent-poms goal explicitly,
+  and **half of it is done — `3.8.0` was released on 2026-09-19**. What remains is to clear
+  `3.9.0-SNAPSHOT`, release `3.9.0`, then re-pin this repo's root `pom.xml` to the released
+  `3.9.0`. **This risk closes when that completes**, and needs no owner action before then.
+
+  The pin moved from `3.8.0-SNAPSHOT` to `3.9.0-SNAPSHOT` on 2026-09-19, by way of a deliberate
+  detour through the released `3.8.0` to prove a real consumer builds against it. One operational
+  fact came out of that and is not recorded in any issue: **`deploy.yml`'s release path rolls
+  `master` to the next `-SNAPSHOT` but deploys only the release**, so `products:3.9.0-SNAPSHOT` did
+  not exist in GitHub Packages until a separate snapshot deploy published it. Re-pinning to the
+  next SNAPSHOT after a release requires that deploy first, or the consuming repository's CI breaks
+  on an unresolvable parent.
 - **The coverage badge is stale, and nothing regenerates it.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
   against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
