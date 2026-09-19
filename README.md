@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC4 - 20260918-134035
+0.3.0-SNAPSHOT - RC6 - 20260918-225016
 
 ## Introduction
 
@@ -70,9 +70,9 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 ### Pre-requisites
 
-* Java 1.8
+* Java 17 (Temurin)
 
-* Maven 3.3.9
+* Maven 3.9.9
 
 * MongoDB 3.4 (windows 10)
 
@@ -90,14 +90,13 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 ##### Download and Installation
 
- 1. Download a J2SE JDK 1.8 platform from [http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
-    1. **IMPORTANT NOTE**: Download and install **JDK, not a JRE**. Avoid 
-       downloading packages with J2EE and/or net beans. 
-       Search the download page for Java SE Development Kit (JDK) or 
-       JDK 8 Update XX.
+ 1. Download an Eclipse Temurin JDK 17 from [https://adoptium.net/temurin/releases/?version=17](https://adoptium.net/temurin/releases/?version=17).
+    1. **IMPORTANT NOTE**: Download and install a **JDK, not a JRE**. On the
+       download page select Version **17 (LTS)**, your operating system and
+       architecture, and the **JDK** package type.
              
  2. Windows
-    1. There should be a .exe windows installer. Just follow the
+    1. There should be a .msi windows installer. Just follow the
        instructions.
        
  3. Linux	
@@ -105,7 +104,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
     2. Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:
     
        ```
-       ln -s jdk1.8.0_XX java (where XX is the update number of your download)
+       ln -s jdk-17.0.20.1+1 java (use the directory name the archive extracted to)
        ```
 
 ##### Setting environment variables
@@ -117,7 +116,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
    `Ctrl+h`. Go to the end of the file and add:
        
     ```
-    export JAVA_HOME=/your/jdk/parent/folder
+    export JAVA_HOME=/your/jdk/parent/folder/java
    export PATH=$JAVA_HOME/bin:$PATH
    ```
 
@@ -145,30 +144,30 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 2. The result should be something like:
 
     ```
-   java version "1.8.0_45"
-   Java(TM) SE Runtime Environment (build 1.8.0_45-b14)
-   Java HotSpot(TM) 64-Bit Server VM (build 25.45-b02, mixed mode)
+   openjdk version "17.0.20.1" 2026-08-18
+   OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)
+   OpenJDK 64-Bit Server VM Temurin-17.0.20.1+1 (build 17.0.20.1+1, mixed mode, sharing)
    ```
 
 #### Maven
 
-1. Dowload maven **3.3.9** from [http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip](http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip)    
+1. Download maven **3.9.9** from [https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip](https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip)    
 2. Unzip it on a folder of your preference
 3. Set environment variables.
    1. Linux   
       1. Put it at your `$HOME/.profile` file
              
          ```
-         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
          export PATH=$M2_HOME/bin:$PATH
-         export MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'
+         export MAVEN_OPTS='-Xmx1024m'
          ```    
       2. If you already have java set up, your `.profile`, it 
          should look like this: 
 
          ```
          export JAVA_HOME=/your/jdk/parent/folder/java
-         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.3.9
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
          export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
          export MAVEN_OPTS='-Xmx1024m'
          ```
@@ -181,13 +180,11 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
       5. The result should be similar to:
              
          ```
-         Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
-         Apache Maven 3.3.1 (cab6659f9874fa96462afef40fcf6bc033d58c1c; 2015-03-13T17:10:27-03:00)
-         Maven home: /home/riss/apps/maven
-         Java version: 1.8.0_45, vendor: Oracle Corporation
-         Java home: /home/riss/apps/jdk1.8.0_45/jre
+         Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+         Maven home: /home/[YOUR_USER]/apps/apache-maven-3.9.9
+         Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: /home/[YOUR_USER]/apps/jdk-17.0.20.1+1
          Default locale: en_US, platform encoding: UTF-8
-         OS name: "linux", version: "3.13.0-55-generic", arch: "amd64", family: "unix"
+         OS name: "linux", version: "6.8.0-45-generic", arch: "amd64", family: "unix"
          ```
     2. Windows       
        1. Open Control Panel go to System, Advanced system settings, **Environment Variables** button.
@@ -207,12 +204,11 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
        7. The result should be similar to:
              
           ```
-          Apache Maven 3.3.9 (0728685237757ffbf44136acec0402957f723d9a; 2013-09-17 12:22:22-0300)
-          Maven home: C:\data\apache-maven-3.3.9
-          Java version: 1.8.0_45, vendor: Oracle Corporation
-          Java home: C:\Program Files\Java\jdk1.8.0_45\jre
+          Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+          Maven home: C:\data\apache-maven-3.9.9
+          Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.20.1+1
           Default locale: en_US, platform encoding: Cp1252
-          OS name: "windows 8.1", version: "6.3", arch: "amd64", family: "dos"
+          OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
           ```
 
 #### MongoDB
@@ -583,6 +579,8 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [86](https://github.com/MRISS-Projects/dsh/issues/86) | task | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven | null | mriss | 9/18/26 |
+| [97](https://github.com/MRISS-Projects/dsh/issues/97) | task | [STORY] Resolve the tooling orphaned by the Travis estate removal | null | mriss | 9/18/26 |
 | [101](https://github.com/MRISS-Projects/dsh/issues/101) | task | [STORY] Fail CI when the package token cannot authenticate, not just when it is absent | null | mriss | 9/18/26 |
 | [103](https://github.com/MRISS-Projects/dsh/issues/103) | task | Make PR review rounds repo-aware and authoritative | null | mriss | 9/17/26 |
 | [93](https://github.com/MRISS-Projects/dsh/issues/93) | task | Remove the redundant coverage ratchet - jacoco:check at 95% is already inherited | null | mriss | 9/17/26 |
