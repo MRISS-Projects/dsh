@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC6 - 20260918-225016
+0.3.0-SNAPSHOT - RC7 - 20260919-010658
 
 ## Introduction
 
@@ -104,7 +104,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
     2. Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:
     
        ```
-       ln -s jdk-17.0.20.1+1 java (use the directory name the archive extracted to)
+       # replace jdk-17.0.20.1+1 with the directory the archive extracted to
+       ln -s jdk-17.0.20.1+1 java
        ```
 
 ##### Setting environment variables
@@ -579,6 +580,7 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [85](https://github.com/MRISS-Projects/dsh/issues/85) | task | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 | null | mriss | 9/19/26 |
 | [86](https://github.com/MRISS-Projects/dsh/issues/86) | task | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven | null | mriss | 9/18/26 |
 | [97](https://github.com/MRISS-Projects/dsh/issues/97) | task | [STORY] Resolve the tooling orphaned by the Travis estate removal | null | mriss | 9/18/26 |
 | [101](https://github.com/MRISS-Projects/dsh/issues/101) | task | [STORY] Fail CI when the package token cannot authenticate, not just when it is absent | null | mriss | 9/18/26 |
