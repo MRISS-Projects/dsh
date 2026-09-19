@@ -34,9 +34,26 @@ spec said so at line 127: `README.md` and `src/site/markdown/README.md` "hold th
 `3.3.9` references in the tree — six lines each… That is `#85`'s scope, and splitting it across two
 stories would leave both half-done."
 
-That claim was re-checked at the head of this branch and holds. `git grep` over the tracked tree
-finds stale Maven or Java versions in those two files and nowhere else.
-`specs/architecture/system-design.md` already says Java 17; `#97` corrected it.
+That claim was re-checked at the head of this branch and holds **for installation documentation**,
+which is what `#86` meant by it — the sentence quoted above says "in the tree", and read literally
+that is not true of either spec.
+
+`git grep -nE '3\.3\.9|Java 11\+|Java 8'` over the tracked tree does return other hits, and they are
+all **quotations or historical record**, not instructions anyone follows:
+
+| Where | What it is |
+|---|---|
+| `specs/product/PRD.md:69` | The row carrying `#85`'s own GitHub title |
+| `specs/stories/86-pin-maven-3-9-9-in-workflows.md:127` | `#86`'s spec, deferring these files to `#85` |
+| This spec | §3's diagnosis quotes every defective line verbatim |
+| `docs/superpowers/plans/…`, `docs/superpowers/specs/…` | Planning notes recording that `system-design.md` *used to* claim `Java 11+` |
+
+`specs/architecture/system-design.md` itself already says Java 17; `#97` corrected it. So the
+two-file scope is a statement about **what a reader could act on**, not about what the string
+matcher returns — and §9.1's grep is scoped to the edited file for exactly that reason.
+
+*Reworded in Copilot round 1, finding 4051718136, which was right: the original sentence claimed
+`git grep` found them "in those two files and nowhere else", which one command disproves.*
 
 So the scope is two files — and, because one of them is generated, really one.
 
@@ -556,3 +573,77 @@ decided with that answer in hand.
 8. Push the task branch, dispatch `staging.yml` against it, and verify the regenerated `README.md`
    per §9.3.
 9. Steps 5 and 6 of the process — local review, then the pull request.
+
+## 12. Review rounds
+
+### 12.1 Local review (step 5)
+
+Run against `origin/staging-0.3.0-SNAPSHOT-RC` at `a48b5011`. **Six findings, all verified against
+the artefacts before acting, all correct**, all fixed in `3a3f4223`. None was stale and none was
+disputed, so §7 of the process had no adjudication to do this round.
+
+| # | Where | Verdict | What was actually wrong |
+|---|---|---|---|
+| 1 | `README.md` Windows step | valid | The vendor swap made a neighbouring, unchanged line wrong — it advertised a `.exe` installer. The Adoptium API lists only `.msi` and `.zip` for Windows x64 JDK 17 |
+| 2 | `README.md` `ln -s` example | valid | `jdk-17.0.X+Y` cannot express Temurin 17's naming. `api.adoptium.net/v3/info/release_names` returns both `jdk-17.0.20.1+1` and `jdk-17.0.20+8` |
+| 3 | `README.md` Linux `JAVA_HOME` | valid | Pre-existing: line 119 omitted the `java` symlink the step above creates, while line 169 included it. The verification step below could not pass |
+| 4 | AC004 | valid | Claimed all sample blocks verbatim. True of two; the Linux block is an illustration whose encoding and kernel lines no run produced |
+| 5 | AC003, §9.2 | valid | Still required `Java home:` lines that §3.3 had established do not exist in Maven 3.9.x output |
+| 6 | §9.4 anchor checker | valid | `grep -qx` treats the fragment as a regex; Doxia preserves `.` in ids, so a dead link can match a different live anchor and pass silently. Now `grep -qxF` |
+
+Findings 1 and 2 were **introduced by this story** — the hazard of a version sweep is the line next
+to the one you changed. Finding 6 had already propagated into `parent-poms#70`, which had inherited
+the recipe; the correction was posted there.
+
+### 12.2 CI, round 1
+
+PR [#109](https://github.com/MRISS-Projects/dsh/pull/109), at `3a3f4223`. **All four checks green
+on the first run**, no fixes required:
+
+| Check | Result |
+|---|---|
+| Build, Test and Coverage Gate | SUCCESS |
+| Validate OpenAPI Specification | SUCCESS |
+| Validate Markdown Files | SUCCESS |
+| Check Spec File References | SUCCESS |
+
+**`Check Spec File References` passing is information-free, and this PR is a live example of
+`#94`.** The tree still contains `/docs/wiki/<Page-Name>.md`, which is what §10.1 shows enforcement
+would fail on; the job reported SUCCESS anyway, because it cannot fail. Recorded on `#94`.
+
+### 12.3 Copilot review, round 1
+
+Ran against `7afcb9b8`, **automatically — no reviewer was requested**, so the effort level came from
+the repository or organization default and not from a per-PR choice. The review body states it:
+**`Review effort: Lite`**. Two findings, **both valid**, neither stale, one partially wrong in its
+reasoning.
+
+| ID | Where | Verdict | Outcome |
+|---|---|---|---|
+| `4051718116` | `src/site/markdown/README.md:107` | valid | Fixed in `47b7172f` |
+| `4051718136` | `specs/stories/85-…md:38` | valid on its main claim, **incorrect** on its propagation list | §2 reworded; the three extra locations left alone |
+
+**`4051718116` found what §12.1's six-finding local round missed.** The `ln -s` note sat inside the
+fenced block, so pasting the command produced `syntax error near unexpected token '('`. Local
+finding 2 had already made me rewrite that line — I corrected the placeholder's *content* and
+preserved its *form*. Reproduced with `bash -n` before fixing.
+
+**`4051718136` is the "right conclusion, wrong mechanism" case §2 of `dsh-pr-cycle` describes,
+pointed at this spec's own prose.** §2 claimed `git grep` found stale versions "in those two files
+and nowhere else", which one command disproves — `PRD.md:69`, `#86`'s spec, this spec's own §3, and
+two `docs/superpowers/` planning files all match. The conclusion held (those hits are quotations,
+not instructions); the sentence did not. Now scoped explicitly.
+
+Its follow-on claim that the same issue appears at **lines 121, 342 and 471 was checked and is
+wrong**: 121 is a table row describing the Linux block's edit, 342 states that block is an
+illustration rather than a capture, and 471 is `for p in java maven; do` inside the anchor checker.
+None carries the grep-scope claim, so none was changed — per §2's rule, code is not altered to
+satisfy a claim that does not hold.
+
+**On effort level.** This round is a second data point for what `#103` records. `#93` was reviewed
+on `Lite` and spent a round on a finding `CLAUDE.md` already contradicted; this round, also `Lite`,
+produced one genuine defect and one finding whose main claim was right while three of its four cited
+locations were not. `Balanced` is the level this PR wants — its substance is claims about external
+facts (Adoptium's artefact types, Temurin's release naming, `MaxPermSize` on 17) that reward
+verification over pattern-matching. Claude cannot select the level; it is a human action on the PR
+page or in repository settings.
