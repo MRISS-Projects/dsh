@@ -74,7 +74,7 @@ criteria.
 | `#90` | open | index.html missing from published site on gh-pages (root + all submodules) |
 | `#92` | **closed** — PR #96 | Remove the dead Travis build estate |
 | `#93` | **closed** — PR #102 | Remove the redundant coverage ratchet — `jacoco:check` at 95% is already inherited |
-| `#94` | open | Make `check-spec-references` enforcing, or remove it |
+| `#94` | **closed** — PR #110 | Make `check-spec-references` enforcing, or remove it |
 | `#95` | **closed** — PR #98 | Use a read-only token for CI package authentication |
 | `#97` | **closed** — PR #107 | Resolve the tooling orphaned by the Travis estate removal |
 | `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
