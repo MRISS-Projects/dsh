@@ -403,8 +403,19 @@ Moving the script out of the YAML and into `.github/scripts/` would mean that ed
 or its tests, no longer triggers the workflow that runs them. `- '.github/scripts/**'` is added to
 both lists.
 
-Only that entry. Adding `.github/workflows/**` would fire this documentation job on every
-unrelated edit to the release wrappers, which is noise rather than coverage.
+And the workflow file itself, `.github/workflows/spec-validation.yml`, raised in review on #110.
+Without it, a pull request that edits only this workflow does not run it — so the enforcing steps
+this story adds could be deleted, or quietly turned back into an advisory `echo`, and the gate would
+not fire on the change that disarmed it. That is the story's own failure mode applied to the story's
+own file.
+
+Those two entries, and no more. Adding `.github/workflows/**` would fire this documentation job on
+every unrelated edit to the release wrappers, which is noise rather than coverage; naming the one
+file closes the gap without buying the noise.
+
+What this cannot demonstrate is the entry working in isolation. GitHub evaluates a push against the
+whole diff, and any round that edits this workflow also edits `specs/**` — which already matches. A
+commit touching nothing but the workflow would isolate it; none is worth manufacturing.
 
 ### 7.4 `.github/copilot-instructions.md`
 
@@ -440,7 +451,8 @@ replaced with:
 > read, and when it extracts no references at all. Its logic is covered by
 > `.github/scripts/check-spec-references.test.sh`, which the same job runs first.
 
-The row's trigger column gains `.github/scripts/**`, to stay true to §7.3, and `.github/skills/**`,
+The row's trigger column gains `.github/scripts/**` and `.github/workflows/spec-validation.yml`, to
+stay true to §7.3, and `.github/skills/**`,
 which the workflow has had all along and this cell has always omitted. §11 lists that omission as
 pre-existing drift, out of scope — but this change rewrites the cell, and line 59 of the same file
 claims the table was checked node-for-node against the live YAML. Leaving a known-false entry in a
