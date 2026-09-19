@@ -81,6 +81,7 @@ criteria.
 | `#101` | **closed** — PR #106 | Fail CI when the package token cannot authenticate, not just when it is absent |
 | `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
 | `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
+| `#111` | open | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -189,7 +190,7 @@ finished until that repo's open milestones are cleared and released, and DSH is 
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69`, `#70`, `#71` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69`, `#70`, `#71`, `#72` | Clear, then release **3.9.0** |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
 fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
@@ -214,6 +215,26 @@ did not add to what had to be cleared before **3.8.0** was released. The 3.8.0 r
 bear on it either way: `deploy.yml`'s own recursive release re-parented all twelve children
 correctly, but that is a different code path from the `versions:set` call in `project-release.yml`
 that `#69` describes, so `#69` is neither confirmed nor cleared by it.
+
+`parent-poms#72` was raised from planning the order of this milestone, and it exists because two of
+its own issues could not otherwise be validated. `#65` requires validation "against a real
+repository (e.g. `dsh`) with at least one RC-branch-only fix", and `#69` is unobserved analysis that
+wants "a release dry run" to confirm it. Both need a real consuming release through
+`project-release.yml`. DSH's next release is `0.3.0`, which this wave gates, and this wave does not
+finish until **3.9.0** is released — so each was blocked on the release it is supposed to precede.
+`#72` breaks that by making the release workflows rehearsable. Its DSH twin `#111` passes the input
+through this repository's `release.yml` and `hotfix.yml` wrappers; like `#85`/`#57` and `#86`/`#58`,
+the pair needs no release to reach here, because the wrappers reference parent-poms at `@master` and
+neither change touches a POM. How the two issues are validated in the meantime is recorded in §6.
+
+One finding from scoping `#72` is worth recording here, because it narrows what the rehearsal can
+prove. Six of `project-release.yml`'s eight write points act on refs that `release:prepare` creates,
+so suppressing every write does not skip them — it makes them unreachable, `#69`'s `versions:set`
+among them. A rehearsal that proves anything about `#65` or `#69` therefore has to write real refs
+somewhere harmless rather than write nothing, and `#72` carries that as the design question it must
+settle. Confirmed by reading the workflows: `maven-release-plugin`'s own `-DdryRun=true` covers one
+of those eight points, and `dryRun` is at least reachable — unlike `developmentVersion`, it is not
+among the eight parameters root `pom.xml:361-373` pins in `<configuration>`.
 
 At the end of Wave 0 the root `pom.xml` should inherit from a **released `3.9.0`**, not a SNAPSHOT.
 That also retires the accepted risk in §6 — see there for why the SNAPSHOT pin stands until then.
@@ -460,6 +481,23 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   not exist in GitHub Packages until a separate snapshot deploy published it. Re-pinning to the
   next SNAPSHOT after a release requires that deploy first, or the consuming repository's CI breaks
   on an unresolvable parent.
+- **`parent-poms#65` and `parent-poms#69` ship on 3.9.0 proven by rehearsal, not by a real release —
+  accepted, with a named confirming run.** Both have acceptance criteria that can only be met by a
+  real consuming release, and the release they need is the one this wave exists to unblock. Rather
+  than move them to a later milestone and leave the release path carrying two known defects, or hold
+  **3.9.0** open indefinitely, they are validated by a rehearsal on a scratch branch — observed
+  through markers in the build log — and **DSH's real `0.3.0` release is the confirming run**.
+  Anything the rehearsal missed is fixed then, from the hotfix line if it has to be.
+
+  The cost is explicit: a rehearsal exercises the commands, not the full consequence of a release, so
+  `0.3.0` is the first time either fix is proven end to end. That is accepted because `0.3.0` is
+  DSH's first release through these workflows either way — there is no earlier real release to
+  validate against, and a rehearsal is strictly more evidence than the status quo, which is none.
+  `parent-poms#72` builds the rehearsal, and its own AC004 requires it to say so on both issues if it
+  turns out it cannot exercise them.
+
+  **This decision closes when `0.3.0` is released** and both fixes are confirmed or corrected
+  against that run. It needs no owner action before then beyond dispatching the rehearsal.
 - **The coverage badge is stale, and nothing regenerates it.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
   against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
