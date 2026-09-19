@@ -72,7 +72,7 @@ The `/docs/wiki/` directory contains Markdown copies of the [DSH GitHub Wiki](ht
 | Wiki Page | Location in repo |
 | ----------- | ----------------- |
 | Wiki index / Home | `/docs/wiki/Home.md` |
-| *(additional pages appear here after first sync)* | `/docs/wiki/<Page-Name>.md` |
+| *(additional pages appear here after first sync)* | `/docs/wiki/` plus the page name |
 
 > **Note:** Wiki files are auto-generated. Edit them only via the [GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki). Run **Actions → Wiki Sync → Run workflow** to pull the latest content immediately.
 
