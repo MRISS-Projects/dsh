@@ -82,6 +82,7 @@ criteria.
 | `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
 | `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
 | `#111` | open | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
+| `#112` | open | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -162,6 +163,17 @@ deliberately abandoned. A diagnosed defect with a known cause is work, not a ris
 issue. It was not folded into `#93` because that story removed a coverage *gate* and explicitly
 preserved the reporting path the badge belongs to — the two touch the same module and nothing else.
 
+`#112` was spun off while `parent-poms#67` was being specced, and it is `#46`'s missing half. `#67`
+settled what an integration test *is* for this estate — a test that starts a Spring context; a unit
+test uses Mockito and no context — and measuring DSH against that definition found eight of its
+twenty-five test classes already on the wrong side of it. The reclassification is not a rename:
+four worker modules have exactly one test class each and it *is* the `@SpringBootTest` smoke test,
+so moving it out of surefire leaves those modules producing no `jacoco.exec` at all and trips the
+inherited coverage-data guard on every ordinary build. The bill is paid with unit tests, never with
+a per-module exemption. It was kept out of `#46` because `#46` is about standing up an embedded
+server, while this is about where the tests that already exist belong; folding them together would
+have made a definition change ride on a new-capability story.
+
 **Two findings from the same review are deliberately *not* issues:**
 
 - **The markdown lint glob already covers `.claude/**`.** `.github/workflows/spec-validation.yml`'s
@@ -185,12 +197,15 @@ preserved the reporting path the badge belongs to — the two touch the same mod
 
 **Wave 0 also has a goal in another repository.** DSH inherits from
 `com.mriss.mriss-parent:products`, maintained in `MRISS-Projects/parent-poms`. Wave 0 is not
-finished until that repo's open milestones are cleared and released, and DSH is re-pinned:
+finished until `3.9.0-SNAPSHOT` is cleared, **3.9.0** is released, and DSH is re-pinned to it.
+`3.10.0-SNAPSHOT` exists to hold work deliberately deferred past that release, and is listed here
+so it is not mistaken for part of the goal:
 
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69`, `#70`, `#71`, `#72` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69`, `#70`, `#72` | Clear, then release **3.9.0** |
+| `3.10.0-SNAPSHOT` | `#74` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
 fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
@@ -201,9 +216,17 @@ released site and `README.pdf` snapshot whatever the heading said at release tim
 
 `parent-poms#67` was raised from this work: `maven-failsafe-plugin` is configured there in
 `<pluginManagement>` with the right includes, but never activated, so integration tests cannot run
-in any inheriting project. It adds a profile keyed on `-DintegrationTests`, so `mvn clean install`
-keeps running unit tests only — and the inherited 95% `jacoco:check` keeps measuring unit-test
-coverage — while integration tests run on request, in CI. DSH `#46` is blocked on it.
+in any inheriting project. Its spec landed on 2026-09-20 —
+`parent-poms/specs/67-activate-failsafe-integration-tests.md` — and settled three things the issue
+had left open. The profile is keyed on `-DintegrationTests`, so `mvn clean install` keeps running
+unit tests only. The inherited 95% `jacoco:check` keeps measuring unit-test coverage, but **not by
+default**: failsafe's `argLine` defaults to `${argLine}`, the property `jacoco:prepare-agent`
+writes, so the obvious activation would have appended integration coverage into the exec file the
+gate reads. A second JaCoCo agent writing `jacoco-it.exec` is what keeps the gate honest. And
+`project-staging.yml` passes the flag, so integration tests are mandatory on every staging build of
+every inheriting product rather than opt-in per project — parent-poms supplies the `-D` and nothing
+more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
+on it.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
@@ -279,7 +302,10 @@ as APT, which also made the issue's own file list true. Closing `#57` clears eve
   `staging-0.3.0-SNAPSHOT-RC`. All four show the same shape: three README commits, the middle one
   corrupt, the final state clean. It belongs upstream rather than here
   because it is a defect in the inherited `readme-generation` profile, and it was not folded into
-  `#70` because the two share nothing but the repository.
+  `#70` because the two share nothing but the repository. **Closed** — parent-poms PR #73 moved the
+  commit out of the Maven lifecycle into the `.github/actions/commit-readme` composite action, so a
+  replayed `process-resources` can regenerate the file but never commit it. It no longer counts
+  against clearing `3.9.0-SNAPSHOT`.
 
 **DSH `#87` no longer sits in this wave** — it moved to Wave 1 on 2026-09-17, for the reason
 recorded there — so the third pair no longer moves in step: parent-poms `#59` remains on that
