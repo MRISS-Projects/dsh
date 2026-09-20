@@ -1,3 +1,4 @@
 com.mriss.dsh.data
 com.mriss.dsh.data.document.dao.mongo
+com.mriss.dsh.data.integration
 com.mriss.dsh.data.models
