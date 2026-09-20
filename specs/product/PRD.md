@@ -83,6 +83,7 @@ criteria.
 | `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
 | `#111` | open | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
 | `#112` | open | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
+| `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -173,6 +174,20 @@ inherited coverage-data guard on every ordinary build. The bill is paid with uni
 a per-module exemption. It was kept out of `#46` because `#46` is about standing up an embedded
 server, while this is about where the tests that already exist belong; folding them together would
 have made a definition change ride on a new-capability story.
+
+`#46` was written up in the same session rather than retitled. It is the *other* half of `#112`,
+and the two are not the same shape: `#112` moves in-process Spring-context tests, while `#46` binds
+`spring-boot:start` and `spring-boot:stop` to `pre-integration-test` and `post-integration-test` so
+integration tests run against the packaged artifact over real HTTP. Its title was accurate all
+along; what it lacked was a body, which it had never had. Scoping it turned up that
+`api-testing.yml` is a green no-op — `specs/api/postman/` holds only a `README.md`, so the Postman
+step skips and the job passes after building the reactor and booting the application to assert
+nothing.
+
+`#113` came out of that same scoping and was deliberately not folded into `#46`. Two workflows
+trigger on pushes to a branch named `main`, which this repository has never had; a dead trigger has
+nothing to do with the integration-test lifecycle, and bundling them would have put a one-line
+cleanup behind a story with an open design question.
 
 **Two findings from the same review are deliberately *not* issues:**
 
