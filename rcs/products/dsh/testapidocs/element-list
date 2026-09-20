@@ -3,6 +3,7 @@ com.mriss.dsh.analyser.keywords
 com.mriss.dsh.analyser.topsentences
 com.mriss.dsh.data
 com.mriss.dsh.data.document.dao.mongo
+com.mriss.dsh.data.integration
 com.mriss.dsh.data.models
 com.mriss.dsh.docindexer
 com.mriss.dsh.restapi
