@@ -219,7 +219,7 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#67`, `#69`, `#70`, `#72` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#69`, `#70`, `#72` | Clear, then release **3.9.0** |
 | `3.10.0-SNAPSHOT` | `#74` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
@@ -229,19 +229,21 @@ rather than after, because `maven-changes-plugin:github-text-list` prints each m
 verbatim as a release-notes heading — every historical section carries the released name, and the
 released site and `README.pdf` snapshot whatever the heading said at release time.
 
-`parent-poms#67` was raised from this work: `maven-failsafe-plugin` is configured there in
-`<pluginManagement>` with the right includes, but never activated, so integration tests cannot run
-in any inheriting project. Its spec landed on 2026-09-20 —
-`parent-poms/specs/67-activate-failsafe-integration-tests.md` — and settled three things the issue
-had left open. The profile is keyed on `-DintegrationTests`, so `mvn clean install` keeps running
-unit tests only. The inherited 95% `jacoco:check` keeps measuring unit-test coverage, but **not by
+`parent-poms#67` was raised from this work: `maven-failsafe-plugin` was configured there in
+`<pluginManagement>` with the right includes, but never activated, so integration tests could not
+run in any inheriting project. **It is closed** — `parent-poms#75` merged on 2026-09-21, spec and
+evidence at `parent-poms/specs/67-activate-failsafe-integration-tests.md`. The profile is keyed on
+`-DintegrationTests`, so `mvn clean install` keeps running unit tests only.
+The inherited 95% `jacoco:check` keeps measuring unit-test coverage, but **not by
 default**: failsafe's `argLine` defaults to `${argLine}`, the property `jacoco:prepare-agent`
 writes, so the obvious activation would have appended integration coverage into the exec file the
 gate reads. A second JaCoCo agent writing `jacoco-it.exec` is what keeps the gate honest. And
 `project-staging.yml` passes the flag, so integration tests are mandatory on every staging build of
 every inheriting product rather than opt-in per project — parent-poms supplies the `-D` and nothing
 more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
-on it.
+on it and are now unblocked: this repository already names `3.9.0-SNAPSHOT`, so the flag works here
+today. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0 release** and
+the re-pin — that still waits on the five issues left on the milestone.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
