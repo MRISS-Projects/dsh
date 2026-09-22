@@ -84,6 +84,7 @@ criteria.
 | `#111` | open | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
 | `#112` | open | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
 | `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
+| `#114` | open | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -219,7 +220,7 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#69`, `#70`, `#72` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#69`, `#70`, `#76` | Clear, then release **3.9.0** |
 | `3.10.0-SNAPSHOT` | `#74` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
@@ -247,14 +248,28 @@ the re-pin — that still waits on the five issues left on the milestone.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
-`mvn -DprocessAllModules=true -DnewVersion=<v> versions:set`, and that command was measured against
-this reactor writing **only the root POM** — one of 13 — which would leave a hotfix branch whose
-twelve modules name a parent version that does not exist. It surfaced while choosing
-`set-version.sh`'s body, not by working on the release path, and it sat on `3.9.0-SNAPSHOT` so it
-did not add to what had to be cleared before **3.8.0** was released. The 3.8.0 release does **not**
-bear on it either way: `deploy.yml`'s own recursive release re-parented all twelve children
-correctly, but that is a different code path from the `versions:set` call in `project-release.yml`
-that `#69` describes, so `#69` is neither confirmed nor cleared by it.
+`mvn -DprocessAllModules=true -DnewVersion=<v> versions:set`, and that command was analysed as
+writing **only the root POM** — one of 13 — which would leave a hotfix branch whose twelve modules
+name a parent version that does not exist. It surfaced while choosing `set-version.sh`'s body, not
+by working on the release path, and it sat on `3.9.0-SNAPSHOT` so it did not add to what had to be
+cleared before **3.8.0** was released.
+
+**`#72`'s rehearsal has now measured it, and the analysis was right.** The first release rehearsal
+against the real 13-module reactor logged
+`REHEARSAL evidence for #69: versions:set modified 1 of 13 pom.xml file(s)` —
+[`dsh` run 35662168807](https://github.com/MRISS-Projects/dsh/actions/runs/35662168807). The
+consequence is worse than the issue's title suggests: the twelve modules left declaring
+`<parent><version>0.3.0</version>`, a version that now exists nowhere, make the **next** command in
+the workflow, `mvn scm:checkin`, unable to build the project model at all. So `#69` does not leave a
+merely inconsistent hotfix branch — it **fails `project-release.yml` outright**, at
+`Checkout Hotfix Branch and Set Initial Version`, after the tag has been pushed and the artifacts
+deployed. DSH `0.3.0` cannot be released until it is fixed.
+
+`#69` was briefly closed on 2026-09-22 and **reopened the same day**. The confirmation its body
+asked for — *"worth confirming against a release dry run before changing the workflow"* — is what
+the rehearsal delivered, but the fix it proposes was never applied, and `project-release.yml` on
+`master` still carries the unchanged `versions:set` call. It is back on `3.9.0-SNAPSHOT` so the
+milestone gates on it.
 
 `parent-poms#72` was raised from planning the order of this milestone, and it exists because two of
 its own issues could not otherwise be validated. `#65` requires validation "against a real
@@ -271,10 +286,28 @@ One finding from scoping `#72` is worth recording here, because it narrows what 
 prove. Six of `project-release.yml`'s eight write points act on refs that `release:prepare` creates,
 so suppressing every write does not skip them — it makes them unreachable, `#69`'s `versions:set`
 among them. A rehearsal that proves anything about `#65` or `#69` therefore has to write real refs
-somewhere harmless rather than write nothing, and `#72` carries that as the design question it must
-settle. Confirmed by reading the workflows: `maven-release-plugin`'s own `-DdryRun=true` covers one
-of those eight points, and `dryRun` is at least reachable — unlike `developmentVersion`, it is not
-among the eight parameters root `pom.xml:361-373` pins in `<configuration>`.
+somewhere harmless rather than write nothing, and `#72` carried that as the design question it had
+to settle.
+
+**It settled it, and `#72` is closed** (PR `#77`, merged 2026-09-22). The answer was a
+rehearsal-only bridge that rebuilds the release tag locally from the `pom.xml.tag` tree a dry-run
+`release:prepare` already writes to disk, so every later step stays reachable while nothing reaches
+a remote. `project-hotfix.yml`'s rehearsal is green end to end; `project-release.yml`'s stops at
+`#69`, which is the feature working rather than failing. Both runs proved against the live remote
+that they wrote nothing.
+
+Building it spun off two issues, a twin pair rather than one, and neither was folded into `#72`:
+
+- **`#114`** (this repository, above) and its twin
+  [`parent-poms#76`](https://github.com/MRISS-Projects/parent-poms/issues/76). The first rehearsal
+  died at `release:prepare` because neither release workflow defines the `mongo.*` properties
+  `ci.yml` supplies, so `mongo.properties` filters to a literal `${mongo.port}` and every
+  `dsh-rest-api` Spring context fails. That is a second, independent reason DSH `0.3.0` cannot be
+  released today. It is a pair rather than one issue because the fix has two halves that belong in
+  different repositories: parent-poms needs a *generic* way for any consumer to supply build
+  properties — naming `mongo` in shared infrastructure is the shape to stop repeating — and DSH
+  needs to decide whether its own POM should carry defaults at all. `#114` records the open
+  question that decides whether `#76` is even on the critical path.
 
 At the end of Wave 0 the root `pom.xml` should inherit from a **released `3.9.0`**, not a SNAPSHOT.
 That also retires the accepted risk in §6 — see there for why the SNAPSHOT pin stands until then.
@@ -536,8 +569,19 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   `0.3.0` is the first time either fix is proven end to end. That is accepted because `0.3.0` is
   DSH's first release through these workflows either way — there is no earlier real release to
   validate against, and a rehearsal is strictly more evidence than the status quo, which is none.
-  `parent-poms#72` builds the rehearsal, and its own AC004 requires it to say so on both issues if it
-  turns out it cannot exercise them.
+  `parent-poms#72` builds the rehearsal, and its own AC004 required it to say so on both issues if
+  it turned out it could not exercise them.
+
+  **The rehearsal exists, and AC004 was met rather than invoked.** `#72` closed on 2026-09-22 and
+  reported on both issues. `#69` was exercised and measured — 1 of 13, its analysis confirmed. `#65`
+  was not built by `#72`, so what it got instead is the mode to be validated in, the
+  `merge-to-develop` marker slot that `#72`'s set-equality check will force it to declare, and the
+  evidence line to copy. `project-hotfix.yml`'s rehearsal already reaches and exercises the
+  merge-to-master step, so `#65` can be validated there before `#69` is fixed.
+
+  One part of the accepted cost has already come due, and in the direction that favours this
+  decision: the rehearsal found *more* than the two known defects — see `#114` and `parent-poms#76`
+  in Wave 0 — and found them without pushing a tag, deploying an artifact or touching `gh-pages`.
 
   **This decision closes when `0.3.0` is released** and both fixes are confirmed or corrected
   against that run. It needs no owner action before then beyond dispatching the rehearsal.
