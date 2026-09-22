@@ -186,9 +186,11 @@ property name specific to any one consumer appears in this repository" — becom
 than aspirational, because `mongo_host`/`mongo_port`/`mongo_user`/`mongo_password` are exactly
 such names and they live in `project-staging.yml` today.
 
-The other three rows become a **new parent-poms issue**, raised by Task 2. They need a design
-(how does a consumer declare a service container to a job it does not own?), they have no DSH
-deadline, and folding them into `#76` would turn a one-input change into an open-ended redesign.
+The other three rows become
+[`parent-poms#78`](https://github.com/MRISS-Projects/parent-poms/issues/78), raised by Task 2.
+They need a design (how does a consumer declare a service container to a job it does not own?),
+they have no DSH deadline, and folding them into `#76` would turn a one-input change into an
+open-ended redesign.
 
 `mongo_database` and the user-creation step therefore stay exactly as they are, and DSH's
 `staging.yml` keeps passing `mongo_database` until that issue lands.
@@ -226,25 +228,27 @@ its own spec, branch, PR and milestone placement upstream.
 Tasks 1-6 happen in `MRISS-Projects/parent-poms`, not in this repository. They are listed here
 because this story is blocked on them and because the round trip is what the owner asked for.
 
-- **Task 1 — widen `#76`.** Edit the issue body: bring `project-staging.yml`'s four build
-  properties into scope, rewrite "Out of scope" to keep the service container and
-  `mongo_database` out, and add an AC for staging. Per §5.3.
-- **Task 2 — raise the follow-up issue.** New parent-poms issue for the `mongo:6` and
-  `rabbitmq:3-management` service containers, `mongo_database`, and the "Create MongoDB user and
-  database" step. Plain issue; INVEST framing is not required there. Cross-link it from `#76`'s
-  out-of-scope paragraph and from this spec's §13.
-- **Task 3 — milestone.** Confirm `3.9.0-SNAPSHOT` is open and both issues are on it.
-- **Task 4 — spec upstream.** Task branch `issue-76-consumer-supplied-maven-properties`, cut from
-  a freshly fetched `master` — the local clone was two commits behind `origin/master` when this
-  spec was written, and PR #77 is one of them. Spec at
-  `specs/76-consumer-supplied-maven-properties.md`, matching `specs/67-*` and `specs/72-*`.
-  `dsh-story-spec`'s refuse-`master` rule is DSH-scoped; upstream specs live on `master`.
-- **Task 5 — implement upstream, red first.** The renderer script and its `*.test.sh` under
-  `.github/actions/`, then the three workflows. Per §5.2.
-- **Task 6 — validate from here, then merge.** With this repository's wrappers temporarily
-  pointing at `@issue-76-consumer-supplied-maven-properties`, run the dispatches in §11. Record
-  the deviation in the PR, re-pin to `@master` after the upstream merge, and re-run at least the
-  staging dispatch against `@master`.
+- [x] **Task 1 — widen `#76`.** Done 2026-09-22. The issue body now brings
+      `project-staging.yml`'s four build properties into scope, keeps the service container and
+      `mongo_database` out with `#78` named, answers the POM-default question with §4's evidence
+      instead of deferring it, and adds AC005 for staging. Its title now names all three
+      workflows. Per §5.3.
+- [x] **Task 2 — raise the follow-up issue.** Done 2026-09-22 —
+      [`parent-poms#78`](https://github.com/MRISS-Projects/parent-poms/issues/78), covering the
+      `mongo:6` and `rabbitmq:3-management` service containers, `mongo_database`, and the "Create
+      MongoDB user and database" step. Plain `task` issue; INVEST framing is not required there.
+- [x] **Task 3 — milestone.** Done. `3.9.0-SNAPSHOT` is open and carries both `#76` and `#78`.
+- [ ] **Task 4 — spec upstream.** Task branch `issue-76-consumer-supplied-maven-properties`, cut from
+      a freshly fetched `master` — the local clone was two commits behind `origin/master` when this
+      spec was written, and PR #77 is one of them. Spec at
+      `specs/76-consumer-supplied-maven-properties.md`, matching `specs/67-*` and `specs/72-*`.
+      `dsh-story-spec`'s refuse-`master` rule is DSH-scoped; upstream specs live on `master`.
+- [ ] **Task 5 — implement upstream, red first.** The renderer script and its `*.test.sh` under
+      `.github/actions/`, then the three workflows. Per §5.2.
+- [ ] **Task 6 — validate from here, then merge.** With this repository's wrappers temporarily
+      pointing at `@issue-76-consumer-supplied-maven-properties`, run the dispatches in §11. Record
+      the deviation in the PR, re-pin to `@master` after the upstream merge, and re-run at least the
+      staging dispatch against `@master`.
 
 ## 7. Files to change in this repository
 
@@ -332,7 +336,7 @@ reconciliation is not mistaken for drift.
 | `.github/workflows/stage.yml` | Calls `project-stage.yml`, which runs `versions:set` and a commit — no `clean install`, so no filtered resource, so no property need. Confirmed by reading it, not assumed. |
 | Root `pom.xml` and every module POM | No defaults, per §4's decision. The parent stays `3.9.0-SNAPSHOT`, per §5.5. |
 | `dsh-data/src/main/resources/mongo.properties` | The four placeholders are correct. The defect is that one build path never defined them, not that the file is wrong. |
-| `project-staging.yml`'s `mongo_database`, user-creation step and service containers | Task 2's issue, upstream. §5.3. |
+| `project-staging.yml`'s `mongo_database`, user-creation step and service containers | `parent-poms#78`, upstream. §5.3. |
 | `.github/workflows/api-testing.yml` | Path-scoped to `dsh-rest-api/**` and `specs/api/**`, and invokes Maven directly rather than through a reusable workflow. This diff touches neither path. |
 
 ## 9. Implementation tasks, in this repository
@@ -470,13 +474,13 @@ Three issue bodies drift from this spec and are corrected when the PRs open:
 
 | Issue | Correction |
 |---|---|
-| `parent-poms#76` | Widened per §5.3 — staging's four build properties in, service container and `mongo_database` out, new AC for staging, cross-link to Task 2's issue. |
+| `parent-poms#76` | Widened per §5.3 — staging's four build properties in, service container and `mongo_database` out, new AC for staging, cross-link to `#78`. |
 | `dsh#114` | The open question in "Open question for the spec to settle" is answered: (a), with §4's evidence. The blocking-dependency note stays true. |
 | `dsh#111` | Note that it is built and closed under `#114`'s branch and PR, with the reason from §2.1. |
 
 ## 13. Out of scope
 
-- **Service containers and Mongo user creation in `project-staging.yml`.** Task 2's new upstream
+- **Service containers and Mongo user creation in `project-staging.yml`.** `parent-poms#78`, the new upstream
   issue. §5.3 says why a `name=value` input cannot reach them.
 - **Releasing parent-poms and re-pinning the root `pom.xml` to `3.9.0`.** §5.5. Wave 0's closing
   goal, tracked in `specs/product/PRD.md` §4.
