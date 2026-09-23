@@ -64,6 +64,11 @@ migration, plus gaps found while writing this PRD.
 (`dsh-reconcile-prd`); the issue itself remains the source of truth for rationale and acceptance
 criteria.
 
+The table starts at `#85`. Nine earlier issues carry this milestone — `#13`, `#14`, `#66`, `#67`,
+`#68`, `#71`, `#72`, `#83`, `#84` — and are deliberately absent: all nine closed before this PRD
+existed, and listing completed pre-PRD work would grow the table without informing anyone. A
+reconciliation that rediscovers them should leave them out.
+
 | Issue | Status | Title |
 |---|---|---|
 | `#85` | **closed** — PR #109 | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
@@ -81,10 +86,11 @@ criteria.
 | `#101` | **closed** — PR #106 | Fail CI when the package token cannot authenticate, not just when it is absent |
 | `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
 | `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
-| `#111` | open | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
+| `#111` | **closed** — PR #116 | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
 | `#112` | open | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
 | `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
-| `#114` | open | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
+| `#114` | **closed** — PR #116 | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
+| `#115` | open | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -220,7 +226,7 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#69`, `#70`, `#76` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#69`, `#70`, `#78` | Clear, then release **3.9.0** |
 | `3.10.0-SNAPSHOT` | `#74` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
@@ -282,6 +288,11 @@ through this repository's `release.yml` and `hotfix.yml` wrappers; like `#85`/`#
 the pair needs no release to reach here, because the wrappers reference parent-poms at `@master` and
 neither change touches a POM. How the two issues are validated in the meantime is recorded in §6.
 
+**`#111` is closed** (PR #116, merged 2026-09-23), built under `#114`'s branch rather than its own:
+the two stories edit the same two wrapper files for different inputs, and `#114` could not prove
+itself without `#111`, because `project-release.yml` is `workflow_call` only and the rehearsal was
+unreachable from here until a wrapper could request it. One dispatched rehearsal closed both.
+
 One finding from scoping `#72` is worth recording here, because it narrows what the rehearsal can
 prove. Six of `project-release.yml`'s eight write points act on refs that `release:prepare` creates,
 so suppressing every write does not skip them — it makes them unreachable, `#69`'s `versions:set`
@@ -302,12 +313,35 @@ Building it spun off two issues, a twin pair rather than one, and neither was fo
   [`parent-poms#76`](https://github.com/MRISS-Projects/parent-poms/issues/76). The first rehearsal
   died at `release:prepare` because neither release workflow defines the `mongo.*` properties
   `ci.yml` supplies, so `mongo.properties` filters to a literal `${mongo.port}` and every
-  `dsh-rest-api` Spring context fails. That is a second, independent reason DSH `0.3.0` cannot be
-  released today. It is a pair rather than one issue because the fix has two halves that belong in
+  `dsh-rest-api` Spring context fails. That was a second, independent reason DSH `0.3.0` could not
+  be released. It is a pair rather than one issue because the fix has two halves that belong in
   different repositories: parent-poms needs a *generic* way for any consumer to supply build
   properties — naming `mongo` in shared infrastructure is the shape to stop repeating — and DSH
-  needs to decide whether its own POM should carry defaults at all. `#114` records the open
-  question that decides whether `#76` is even on the critical path.
+  needs to decide whether its own POM should carry defaults at all.
+
+  **Both are closed** — `parent-poms#76` on 2026-09-23 (PR `parent-poms#79`) and `#114` the same day
+  (PR #116), as a full round trip. The open question resolved to *no POM defaults*: precedence was
+  measured on Maven 3.9.9 as command line > active settings profile > POM `<properties>`, so a
+  default was safe but would never have been the winning value in any real build, since every path
+  already supplies the four names. `#76` therefore stayed on the critical path — the release
+  wrappers have no other way to carry a build property. The pair was proved by two dispatched runs
+  from this repository: a rehearsal where `release:prepare`'s fork completes and writes nothing, and
+  a staging run where the build opens a real connection to the MongoDB service container.
+
+  Two issues came out of building it, neither folded into its parent:
+
+  - [`parent-poms#78`](https://github.com/MRISS-Projects/parent-poms/issues/78) — the rest of
+    `project-staging.yml`'s consumer-specific content: the `mongo:6` and `rabbitmq` service
+    containers, `mongo_database`, and the step that creates the Mongo user. A `name=value` input
+    cannot reach them, because a reusable workflow owns its own job and a consumer cannot declare a
+    service into it. That needs a design, and folding it into `#76` would have turned a one-input
+    change into an open-ended redesign. Until it lands, `staging.yml` names `dshuser` and `dshpass`
+    twice — once for the build, once for the setup step.
+  - **`#115`** (above) — `version.properties` ships `${jenkins.build.number}` unresolved in
+    `dsh-data` and `dsh-rest-api`. Found by `#114`'s placeholder sweep, which is the only reason
+    anyone looked: nothing defines that property, no Java reads the file, and there is no Jenkins.
+    It predates `#114` and has nothing to do with supplying `mongo.*`, so `#114`'s AC003 was
+    narrowed to `mongo.*` and `#115` carries the general form.
 
 At the end of Wave 0 the root `pom.xml` should inherit from a **released `3.9.0`**, not a SNAPSHOT.
 That also retires the accepted risk in §6 — see there for why the SNAPSHOT pin stands until then.
@@ -583,8 +617,16 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   decision: the rehearsal found *more* than the two known defects — see `#114` and `parent-poms#76`
   in Wave 0 — and found them without pushing a tag, deploying an artifact or touching `gh-pages`.
 
+  **The rehearsal has now been dispatched from this repository too**, on 2026-09-23 while validating
+  `#114`, and it re-measured `#69` against parent-poms `master` as it stands today: `versions:set`
+  modified 1 of 13 `pom.xml` files. So `#69` is confirmed twice, from both sides of the boundary,
+  and a real `0.3.0` would open a `0.3.x` hotfix branch whose twelve child modules name a parent
+  version that does not exist. That run also wrote nothing — 267 package versions before and after,
+  RC branch intact, no `v0.3.0` tag.
+
   **This decision closes when `0.3.0` is released** and both fixes are confirmed or corrected
-  against that run. It needs no owner action before then beyond dispatching the rehearsal.
+  against that run. `#69` is the one that must be fixed *before* that release rather than validated
+  by it.
 - **The coverage badge is stale, and nothing regenerates it.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
   against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
