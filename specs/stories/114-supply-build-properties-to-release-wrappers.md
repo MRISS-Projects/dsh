@@ -456,10 +456,14 @@ file of its own (§2.1).
 
 **Shared:**
 
-- [ ] **AC011** — CI is green on the pull request. No `.java` file appears in the diff, so the
-      coverage gate is unaffected.
-- [ ] **AC012** — Markdown lint passes over the changed documentation, using the command in
-      `CLAUDE.md`'s Commands table.
+- [x] **AC011** — CI is green on [PR #116](https://github.com/MRISS-Projects/dsh/pull/116):
+      `Build, Test and Coverage Gate` passed in 1m38s
+      ([run 35894337910](https://github.com/MRISS-Projects/dsh/actions/runs/35894337910)). No
+      `.java` file appears in the diff, so the coverage gate is unaffected.
+- [x] **AC012** — `Validate Markdown Files` and `Check Spec File References` both pass
+      ([run 35894337907](https://github.com/MRISS-Projects/dsh/actions/runs/35894337907)), and the
+      lint command from `CLAUDE.md`'s Commands table was run locally before each documentation
+      commit.
 
 ## 11. Verification runs
 
