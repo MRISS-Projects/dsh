@@ -6,6 +6,14 @@ on:
       branch_name:
         description: 'Hotfix branch (e.g. 0.3.x)'
         required: true
+      dry_run:
+        description: >-
+          Rehearse the hotfix release. No artifact deploy, no gh-pages publication, no push to
+          master, no deletion of the branch — every suppressed write is announced in the log.
+          Run one before any first release on a line.
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   hotfix:
@@ -13,5 +21,13 @@ jobs:
     with:
       git_project: dsh
       branch_name: ${{ inputs.branch_name }}
+      dry_run: ${{ inputs.dry_run }}
+      # #114: same as release.yml — release:prepare forks `clean install`, which filters
+      # dsh-data's mongo.properties. Nothing connects to Mongo on this path.
+      maven_properties: |
+        mongo.host=localhost
+        mongo.port=27017
+        mongo.user=dshuser
+        mongo.password=dshpass
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
