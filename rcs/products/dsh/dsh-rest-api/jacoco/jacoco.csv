@@ -13,7 +13,7 @@ DSH REST API,com.mriss.dsh.restapi.service,DocumentHandlingServiceImpl,0,50,0,10
 DSH REST API,com.mriss.dsh.restapi.service,DocumentQueueServiceImpl,0,31,0,0,0,8,0,3,0,3
 DSH REST API,com.mriss.dsh.restapi.service,DocumentEnqueueResponseMessageHandler,0,75,0,8,0,16,0,10,0,6
 DSH REST API,com.mriss.dsh.restapi.service,DocumentSubmissionException,0,34,0,0,0,14,0,7,0,7
-DSH REST API,com.mriss.dsh.restapi.service,DocumentSubmissionExceptionTest,0,122,0,0,0,33,0,7,0,7
 DSH REST API,com.mriss.dsh.restapi.service,DocumentSubmissionServiceImplTest,8,304,0,0,2,55,1,11,1,11
+DSH REST API,com.mriss.dsh.restapi.service,DocumentSubmissionExceptionTest,0,122,0,0,0,33,0,7,0,7
 DSH REST API,com.mriss.dsh.restapi.service,DocumentQueueServiceImplTest,0,43,0,0,0,11,0,4,0,4
 DSH REST API,com.mriss.dsh.restapi.service,DocumentEnqueueResponseMessageHandlerTest,0,151,0,0,0,28,0,7,0,7
