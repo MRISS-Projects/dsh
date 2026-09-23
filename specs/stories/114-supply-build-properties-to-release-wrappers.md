@@ -245,14 +245,14 @@ because this story is blocked on them and because the round trip is what the own
       `mongo:6` and `rabbitmq:3-management` service containers, `mongo_database`, and the "Create
       MongoDB user and database" step. Plain `task` issue; INVEST framing is not required there.
 - [x] **Task 3 — milestone.** Done. `3.9.0-SNAPSHOT` is open and carries both `#76` and `#78`.
-- [ ] **Task 4 — spec upstream.** Task branch `issue-76-consumer-supplied-maven-properties`, cut from
+- [x] **Task 4 — spec upstream.** Task branch `issue-76-consumer-supplied-maven-properties`, cut from
       a freshly fetched `master` — the local clone was two commits behind `origin/master` when this
       spec was written, and PR #77 is one of them. Spec at
       `specs/76-consumer-supplied-maven-properties.md`, matching `specs/67-*` and `specs/72-*`.
       `dsh-story-spec`'s refuse-`master` rule is DSH-scoped; upstream specs live on `master`.
-- [ ] **Task 5 — implement upstream, red first.** The renderer script and its `*.test.sh` under
+- [x] **Task 5 — implement upstream, red first.** The renderer script and its `*.test.sh` under
       `.github/actions/`, then the three workflows. Per §5.2.
-- [ ] **Task 6 — validate from here, then merge.** With this repository's wrappers temporarily
+- [x] **Task 6 — validate from here, then merge.** With this repository's wrappers temporarily
       pointing at `@issue-76-consumer-supplied-maven-properties`, run the dispatches in §11. Record
       the deviation in the PR, re-pin to `@master` after the upstream merge, and re-run at least the
       staging dispatch against `@master`.
@@ -359,7 +359,7 @@ this story, so there is no unit test and TDD's red-green cycle does not apply to
 the equivalent evidence is a reproduction that fails before the change and passes after, which
 Task 7 performs locally and Task 12 performs in CI.
 
-- [ ] **Task 7 — reproduce the failure locally, before changing anything.**
+- [x] **Task 7 — reproduce the failure locally, before changing anything.**
       **Run `clean install`, not `release:prepare`.** `<preparationGoals>` is `clean install`
       (`origin/master:pom.xml:371` upstream), so `clean install` *is* the command that died at
       phase 10 in run 35650261302 — and it reproduces the defect without `release:prepare`'s
@@ -395,24 +395,24 @@ Task 7 performs locally and Task 12 performs in CI.
       green. That pair is this story's red-green: the DSH half touches no Java, so there is no
       unit test to write.
 
-- [ ] **Task 8 — `release.yml`.** Add the `dry_run` dispatch input and the `maven_properties`
+- [x] **Task 8 — `release.yml`.** Add the `dry_run` dispatch input and the `maven_properties`
       `with:` block from §7.1. Commit.
 
-- [ ] **Task 9 — `hotfix.yml`.** The same two changes against `project-hotfix.yml` (§7.2).
+- [x] **Task 9 — `hotfix.yml`.** The same two changes against `project-hotfix.yml` (§7.2).
       Commit.
 
-- [ ] **Task 10 — `staging.yml`.** Add `maven_properties`, delete `mongo_host` and `mongo_port`,
+- [x] **Task 10 — `staging.yml`.** Add `maven_properties`, delete `mongo_host` and `mongo_port`,
       and keep `mongo_user`, `mongo_password` and `mongo_database` with the comment explaining why
       two of them are named twice (§7.3). Commit.
 
-- [ ] **Task 11 — documentation.** The three edits in `§7.4`. Run the markdown lint command from
+- [x] **Task 11 — documentation.** The three edits in `§7.4`. Run the markdown lint command from
       `CLAUDE.md`'s Commands table before committing.
 
-- [ ] **Task 12 — prove it.** The dispatched runs in §11, links pasted into both issues. This is
+- [x] **Task 12 — prove it.** The dispatched runs in §11, links pasted into both issues. This is
       the task that closes `#114` AC001 and `#111` AC004, and it cannot start before upstream
       Task 6.
 
-- [ ] **Task 13 — `#111` AC005's inputs diff.** Resolve the `with:` block of `release.yml` before
+- [x] **Task 13 — `#111` AC005's inputs diff.** Resolve the `with:` block of `release.yml` before
       and after, and show that a dispatch which leaves `dry_run` at its default sends the same
       values it sends today plus `maven_properties`. Checked by diffing the two resolved blocks,
       not by assertion.
@@ -424,34 +424,34 @@ file of its own (§2.1).
 
 **From `#114`:**
 
-- [ ] **AC001** — `mvn release:prepare` on DSH completes its `<preparationGoals>` fork with no
+- [x] **AC001** — `mvn release:prepare` on DSH completes its `<preparationGoals>` fork with no
       `mongo.*` property on the command line. Proven by the dispatched rehearsal in §11, not by
       a local run alone.
-- [ ] **AC002** — `ci.yml` and `staging.yml` still reach a live MongoDB with their own values.
+- [x] **AC002** — `ci.yml` and `staging.yml` still reach a live MongoDB with their own values.
       `ci.yml` is untouched; `staging.yml`'s dispatch in §11 must show its Mongo-dependent tests
       passing against the service container.
-- [ ] **AC003** — No unresolved `mongo.*` placeholder survives resource filtering in any module,
+- [x] **AC003** — No unresolved `mongo.*` placeholder survives resource filtering in any module,
       under either a plain `mvn install` or a release build. Checkable by sweeping
       `*/target/classes/**` for `${` after each run — **narrowed from "no unresolved `${...}`",
       see §11.1.**
-- [ ] **AC004** — The decision between (a), (b) and (c) is recorded with the evidence that
+- [x] **AC004** — The decision between (a), (b) and (c) is recorded with the evidence that
       settled it. §4, and it resolves to (a).
 
 **From `#111`:**
 
-- [ ] **AC005** — `release.yml` accepts a rehearsal input on `workflow_dispatch` and passes it to
+- [x] **AC005** — `release.yml` accepts a rehearsal input on `workflow_dispatch` and passes it to
       `project-release.yml`, defaulting to a real release.
-- [ ] **AC006** — `hotfix.yml` does the same for `project-hotfix.yml`.
-- [ ] **AC007** — The input renders in the Actions tab with a description naming at least: no
+- [x] **AC006** — `hotfix.yml` does the same for `project-hotfix.yml`.
+- [x] **AC007** — The input renders in the Actions tab with a description naming at least: no
       artifact deploy, no `gh-pages` publication, no push to `master`, no deletion of the RC
       branch.
-- [ ] **AC008** — Demonstrated by a dispatched rehearsal against this repository, its log linked
+- [x] **AC008** — Demonstrated by a dispatched rehearsal against this repository, its log linked
       from `#111`, showing the upstream marker lines and that `staging-0.3.0-SNAPSHOT-RC` still
       exists afterwards.
-- [ ] **AC009** — A real release dispatched without the rehearsal input produces the same
+- [x] **AC009** — A real release dispatched without the rehearsal input produces the same
       workflow inputs it does today, plus `maven_properties`. Checked by diffing the resolved
       `with:` block (Task 13).
-- [ ] **AC010** — `docs/devops/README.md` records that a rehearsal exists, how to dispatch one,
+- [x] **AC010** — `docs/devops/README.md` records that a rehearsal exists, how to dispatch one,
       and that it is the intended step before a first release on any line.
 
 **Shared:**
@@ -543,3 +543,64 @@ Three issue bodies drift from this spec and are corrected when the PRs open:
   the resource-filtering dependency altogether. A larger change, and one that ADR-001's Firestore
   migration may moot.
 - **Performing the `0.3.0` release.** The owner's call, and the end of Wave 0.
+
+---
+
+## 14. The dispatched runs
+
+Both ran from this task branch, against `parent-poms@master` after `#76` merged (PR
+`parent-poms#79`). They are the evidence no local run can produce.
+
+### 14.1 Release rehearsal — [run 35888661612](https://github.com/MRISS-Projects/dsh/actions/runs/35888661612)
+
+`release.yml` with `dry_run: true`, `branch_name: staging-0.3.0-SNAPSHOT-RC`, `0.3.0` /
+`0.4.0-SNAPSHOT` / `0.3.x` / `0.3.1-SNAPSHOT`. **Success.**
+
+```text
+render-properties: rendered 4 properties into /home/runner/.m2/settings.xml
+[INFO] BUILD SUCCESS          ← release:prepare's forked clean install
+```
+
+No `Circular placeholder reference` anywhere in the log. The command that died at phase 10 of 17
+in [run 35650261302](https://github.com/MRISS-Projects/parent-poms/actions/runs/35650261302) now
+completes. **AC001, AC008, and `parent-poms#76` AC004.**
+
+It wrote nothing, and that is verified rather than asserted:
+
+| Check | Result |
+|---|---|
+| Maven package versions in the org | 267 before, 267 after |
+| `staging-0.3.0-SNAPSHOT-RC` | still present, at `ccd5cb723` |
+| `v0.3.0` tag | does not exist |
+| Suppressed writes announced | all eight, `release-prepare` through `remove-rc-branch` |
+
+### 14.2 Staging — [run 35890680053](https://github.com/MRISS-Projects/dsh/actions/runs/35890680053)
+
+`staging.yml` against `staging-0.3.0-SNAPSHOT-RC`. **Success.** The same four properties rendered,
+the upstream step created the Mongo user from the three surviving inputs, and the build reached
+the service container for real:
+
+```text
+org.mongodb.driver.connection - Opened connection [connectionId{localValue:2, serverValue:15}] to localhost:27017
+```
+
+All tests green, artifacts deployed, and the generated `README.md` committed to the RC branch as
+`7e40ce6c5`. **AC002, and `parent-poms#76` AC005.**
+
+This is the stronger of the two proofs of the upstream renderer. On the release path a rendering
+failure would surface as a placeholder error; here it would surface as a Mongo connection failure,
+because the values are actually used to connect. Both paths pass.
+
+### 14.3 A finding that belongs to someone else
+
+The rehearsal re-confirmed [`parent-poms#69`](https://github.com/MRISS-Projects/parent-poms/issues/69)
+from a different repository than the one that found it:
+
+```text
+REHEARSAL evidence for #69: versions:set modified 1 of 13 pom.xml file(s).
+```
+
+A real `0.3.0` release would therefore open a `0.3.x` hotfix branch whose twelve child modules name
+a parent version that does not exist. **Not this story's to fix**, and not a blocker for it — but
+it is a blocker for the release this story unblocks, so it is linked from `#69` rather than left
+in a log nobody re-reads.
