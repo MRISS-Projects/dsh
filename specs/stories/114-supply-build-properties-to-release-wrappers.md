@@ -132,7 +132,7 @@ The gap a default would have covered — a fresh contributor whose `~/.m2/settin
 |---|---|---|
 | Local `mvn install` | the developer's own `~/.m2/settings.xml` | the developer's |
 | `ci.yml` | the settings profile it writes itself (`ci.yml:179-182`) | yes, service container |
-| `staging.yml` | **changes** — the new generic input, not five `mongo_*` inputs | yes, service container |
+| `staging.yml` | **changes** — the new generic input; two of the five `mongo_*` inputs go | yes, service container |
 | `release.yml` / `hotfix.yml` | **new** — the generic input; nothing supplies them today | no, never connects |
 
 `ci.yml` is untouched: it writes its own `settings.xml` and calls no reusable workflow.
@@ -175,25 +175,32 @@ Half of that is right. Split by what the generic input can actually carry:
 
 | What is DSH-shaped in `project-staging.yml` | Where | Generic input fixes it? |
 |---|---|---|
-| `mongo_host`, `mongo_port`, `mongo_user`, `mongo_password` → `MONGO_FLAGS` | inputs 29-48, build step 196-208 | **Yes** — it is a build property, which is the pipe `#76` builds |
+| `mongo_host`, `mongo_port` → `MONGO_FLAGS` | inputs 29-38, build step 196-208 | **Yes** — they configure the build and nothing else, which is the pipe `#76` builds |
+| `mongo_user`, `mongo_password` | inputs 39-48, `MONGO_FLAGS` **and** the setup step | **Partly** — see below |
 | `mongo_database` | input 49-53, used only by the setup step | No — an argument to a setup action, not a build property |
 | "Create MongoDB user and database" (`docker run … mongosh … createUser`) | step 172-182 | No — consumer-specific setup logic |
 | `services: mongodb: mongo:6` and `rabbitmq: rabbitmq:3-management`, hardcoded | job `services:` 68-76 | No — a reusable workflow owns the job, so a consumer cannot declare services into it |
 
-So `#76` is widened to the first row only, and its "Out of scope" paragraph is rewritten rather
-than deleted: staging's *properties* come in, staging's *services* stay out. `#76` AC003 — "no
-property name specific to any one consumer appears in this repository" — becomes true rather
-than aspirational, because `mongo_host`/`mongo_port`/`mongo_user`/`mongo_password` are exactly
-such names and they live in `project-staging.yml` today.
-
-The other three rows become
+So `#76` is widened to the build properties, and its "Out of scope" paragraph is rewritten rather
+than deleted: staging's *properties* come in, staging's *services* stay out. Rows 3-5 become
 [`parent-poms#78`](https://github.com/MRISS-Projects/parent-poms/issues/78), raised by Task 2.
 They need a design (how does a consumer declare a service container to a job it does not own?),
 they have no DSH deadline, and folding them into `#76` would turn a one-input change into an
 open-ended redesign.
 
-`mongo_database` and the user-creation step therefore stay exactly as they are, and DSH's
-`staging.yml` keeps passing `mongo_database` until that issue lands.
+**Row 2 is why `#76` removes two inputs and not four.** Found while writing the upstream spec,
+after `#76` had already been widened: `mongo_user` and `mongo_password` are read twice — once
+into `MONGO_FLAGS`, and once by the user-creation step and its `if: inputs.mongo_user != ''`
+guard. `#76` stops building `MONGO_FLAGS`, so their build use goes; their setup use cannot,
+because the step that reads them is `#78`'s. Removing the inputs while keeping the step would
+break the only consumer of it.
+
+`#76` therefore deletes `mongo_host` and `mongo_port` outright, and leaves `mongo_user`,
+`mongo_password` and `mongo_database` as arguments to setup logic rather than build
+configuration — which is how `#76` AC003 is reworded, per that spec's §4.3 and Task 12. DSH's
+`staging.yml` keeps passing all three until `#78` lands, so `dshuser` and `dshpass` are named
+twice in that wrapper: once in `maven_properties` for the build, once as inputs for the setup
+step. Visible, temporary, and cheaper than dragging `#78`'s redesign into this story.
 
 ### 5.4 No deprecation shim is needed
 
@@ -300,9 +307,15 @@ The same two changes, against `project-hotfix.yml`. `#111` AC002.
 
 ### 7.3 `.github/workflows/staging.yml`
 
-Lines 16-19 — `mongo_host`, `mongo_port`, `mongo_user`, `mongo_password` — are replaced by the
-same `maven_properties` block. **`mongo_database: dsh` stays** (§5.3): it feeds the user-creation
-step, not the build, and its removal belongs to the Task 2 issue.
+The same `maven_properties` block is added, carrying all four `mongo.*` values. Of the five
+`mongo_*` inputs, **two go and three stay** (§5.3): `mongo_host` and `mongo_port` (lines 16-17)
+are deleted, because `#76` deletes the upstream inputs they feed; `mongo_user`, `mongo_password`
+and `mongo_database` (lines 18-20) stay, because upstream they now feed only the user-creation
+step that `parent-poms#78` will remove.
+
+The wrapper therefore names `dshuser` and `dshpass` twice until `#78` lands — once in
+`maven_properties`, once as inputs. Deliberate, and explained in a comment at the call site so
+the next reader does not "fix" it by deleting one of them.
 
 No `dry_run` here. `project-staging.yml` has no rehearsal mode, and `#111` scopes itself to the
 release and hotfix wrappers.
@@ -310,7 +323,7 @@ release and hotfix wrappers.
 ### 7.4 `docs/devops/README.md`
 
 - **Workflow Reference table, lines 72-74** — the three rows gain the new inputs. `staging.yml`'s
-  row must no longer imply five `mongo_*` inputs.
+  row must no longer imply five `mongo_*` inputs; it now passes `maven_properties` plus three.
 - **New subsection under `## Workflow Reference`** — "Rehearsing a release". `#111` AC006: that a
   rehearsal exists, how to dispatch one from the Actions tab, and that it is the intended step
   before a first release on any line. It names what a rehearsal does not do, matching AC003's
@@ -388,8 +401,9 @@ Task 7 performs locally and Task 12 performs in CI.
 - [ ] **Task 9 — `hotfix.yml`.** The same two changes against `project-hotfix.yml` (§7.2).
       Commit.
 
-- [ ] **Task 10 — `staging.yml`.** Replace the four `mongo_*` inputs with `maven_properties`,
-      keep `mongo_database: dsh` (§7.3). Commit.
+- [ ] **Task 10 — `staging.yml`.** Add `maven_properties`, delete `mongo_host` and `mongo_port`,
+      and keep `mongo_user`, `mongo_password` and `mongo_database` with the comment explaining why
+      two of them are named twice (§7.3). Commit.
 
 - [ ] **Task 11 — documentation.** The three edits in `§7.4`. Run the markdown lint command from
       `CLAUDE.md`'s Commands table before committing.
@@ -474,7 +488,7 @@ Three issue bodies drift from this spec and are corrected when the PRs open:
 
 | Issue | Correction |
 |---|---|
-| `parent-poms#76` | Widened per §5.3 — staging's four build properties in, service container and `mongo_database` out, new AC for staging, cross-link to `#78`. |
+| `parent-poms#76` | Widened per §5.3 — staging's two build-only inputs out, service container and `mongo_database` out, new AC for staging, cross-link to `#78`. |
 | `dsh#114` | The open question in "Open question for the spec to settle" is answered: (a), with §4's evidence. The blocking-dependency note stays true. |
 | `dsh#111` | Note that it is built and closed under `#114`'s branch and PR, with the reason from §2.1. |
 
