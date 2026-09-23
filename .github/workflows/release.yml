@@ -18,6 +18,14 @@ on:
       initial_hotfix_version:
         description: 'Initial hotfix SNAPSHOT (e.g. 0.3.1-SNAPSHOT)'
         required: true
+      dry_run:
+        description: >-
+          Rehearse the release. No artifact deploy, no gh-pages publication, no push to master,
+          no deletion of the RC branch — every suppressed write is announced in the log. Run one
+          before any first release on a line.
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   release:
@@ -29,5 +37,16 @@ jobs:
       next_development_version: ${{ inputs.next_development_version }}
       hotfix_branch: ${{ inputs.hotfix_branch }}
       initial_hotfix_version: ${{ inputs.initial_hotfix_version }}
+      dry_run: ${{ inputs.dry_run }}
+      # #114: release:prepare forks `clean install`, which filters dsh-data's mongo.properties.
+      # Without these the placeholder survives and every dsh-rest-api Spring context fails with
+      # "Circular placeholder reference 'mongo.port'". Nothing connects to Mongo on this path —
+      # they exist to satisfy resource filtering, which is why they are constants here and not
+      # dispatch inputs an operator could retype. ci.yml carries the same four values.
+      maven_properties: |
+        mongo.host=localhost
+        mongo.port=27017
+        mongo.user=dshuser
+        mongo.password=dshpass
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

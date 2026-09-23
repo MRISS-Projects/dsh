@@ -13,8 +13,18 @@ jobs:
     with:
       git_project: dsh
       branch_name: ${{ inputs.branch_name }}
-      mongo_host: localhost
-      mongo_port: '27017'
+      # #114: the build's Mongo settings. parent-poms#76 replaced the mongo_host and mongo_port
+      # inputs with this generic block; a live MongoDB runs behind these values here, unlike on
+      # the release path.
+      maven_properties: |
+        mongo.host=localhost
+        mongo.port=27017
+        mongo.user=dshuser
+        mongo.password=dshpass
+      # These three are not duplicates to be tidied away: upstream they feed only the "Create
+      # MongoDB user and database" step, which creates the user the build above then connects
+      # as. parent-poms#78 removes that step and these inputs together — until then both halves
+      # are needed, and deleting either one breaks staging.
       mongo_user: dshuser
       mongo_password: dshpass
       mongo_database: dsh
