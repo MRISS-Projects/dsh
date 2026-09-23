@@ -430,9 +430,10 @@ file of its own (§2.1).
 - [ ] **AC002** — `ci.yml` and `staging.yml` still reach a live MongoDB with their own values.
       `ci.yml` is untouched; `staging.yml`'s dispatch in §11 must show its Mongo-dependent tests
       passing against the service container.
-- [ ] **AC003** — No unresolved `${...}` placeholder survives resource filtering in any module,
+- [ ] **AC003** — No unresolved `mongo.*` placeholder survives resource filtering in any module,
       under either a plain `mvn install` or a release build. Checkable by sweeping
-      `*/target/classes/**` for `${` after each run.
+      `*/target/classes/**` for `${` after each run — **narrowed from "no unresolved `${...}`",
+      see §11.1.**
 - [ ] **AC004** — The decision between (a), (b) and (c) is recorded with the evidence that
       settled it. §4, and it resolves to (a).
 
@@ -482,6 +483,41 @@ A `hotfix.yml` rehearsal needs a `0.3.x` branch, which does not exist until `0.3
 first real hotfix run is the confirming one. Stated here so the gap is a recorded decision rather
 than a missing run.
 
+### 11.1 What the local runs proved, and the one thing they found
+
+**Red, before any change.** `mvn -B -s <settings without the four names> clean install`:
+`BUILD FAILURE` at `dsh-rest-api`, 15 errors, 105 occurrences of
+`Circular placeholder reference 'mongo.port' in property definitions`. The reactor reached the
+module that fails and failed there, which is the defect in §3 reproduced exactly.
+
+**Green, after Task 10**, same command with the developer's own settings: `BUILD SUCCESS`,
+13/13 modules, zero occurrences, coverage gate included because it is bound to `verify`. The
+`mongo.*` placeholders resolve in `dsh-data/target/classes/mongo.properties`.
+
+**AC003 had to be narrowed.** The sweep for unresolved `${...}` found two files this story does
+not touch:
+
+```text
+dsh-data/target/classes/version.properties
+dsh-rest-api/target/classes/version.properties
+```
+
+Both carry `jenkins.build.number=${jenkins.build.number}`. Nothing in this repository or in
+`parent-poms` defines that property, no `.java` file reads `version.properties`, and there is no
+Jenkins — it is residue of a build system this project no longer has, shipped literally into
+`target/classes` on every build. It predates this story, is unrelated to supplying `mongo.*`, and
+is the same family as `#92` and `#97`.
+
+Raised as [`#115`](https://github.com/MRISS-Projects/dsh/issues/115), whose AC004 restores this
+story's AC003 to its general form once the placeholder is resolved or the file is removed. AC003
+here is narrowed to `mongo.*` so it states what this story actually controls — the alternative
+was either deleting two orphaned lines inside an unrelated PR, or leaving an AC that cannot pass.
+
+**One rule was broken while gathering this evidence,** and it is recorded because the spec is
+where a future reader looks for how the numbers were obtained: the filtered `mongo.properties`
+was printed in full, which put the developer's local Mongo password into the session transcript.
+Read property *names* when checking filtering — `grep -o '^[a-z.]*='` — never the resolved file.
+
 ## 12. Issue reconciliation
 
 Three issue bodies drift from this spec and are corrected when the PRs open:
@@ -491,6 +527,7 @@ Three issue bodies drift from this spec and are corrected when the PRs open:
 | `parent-poms#76` | Widened per §5.3 — staging's two build-only inputs out, service container and `mongo_database` out, new AC for staging, cross-link to `#78`. |
 | `dsh#114` | The open question in "Open question for the spec to settle" is answered: (a), with §4's evidence. The blocking-dependency note stays true. |
 | `dsh#111` | Note that it is built and closed under `#114`'s branch and PR, with the reason from §2.1. |
+| `dsh#114` AC003 | Narrowed to `mongo.*`, with `#115` raised for the `jenkins.build.number` residue the original sweep found — §11.1. |
 
 ## 13. Out of scope
 
