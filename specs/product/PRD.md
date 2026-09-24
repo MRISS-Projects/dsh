@@ -226,8 +226,8 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#69`, `#70`, `#78` | Clear, then release **3.9.0** |
-| `3.10.0-SNAPSHOT` | `#74` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
+| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#70`, `#78` | Clear, then release **3.9.0** |
+| `3.10.0-SNAPSHOT` | `#74`, `#81` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
 fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
@@ -260,22 +260,52 @@ name a parent version that does not exist. It surfaced while choosing `set-versi
 by working on the release path, and it sat on `3.9.0-SNAPSHOT` so it did not add to what had to be
 cleared before **3.8.0** was released.
 
-**`#72`'s rehearsal has now measured it, and the analysis was right.** The first release rehearsal
-against the real 13-module reactor logged
+**`#72`'s rehearsal measured it, and the count was right.** The first release rehearsal against the
+real 13-module reactor logged
 `REHEARSAL evidence for #69: versions:set modified 1 of 13 pom.xml file(s)` —
-[`dsh` run 35662168807](https://github.com/MRISS-Projects/dsh/actions/runs/35662168807). The
-consequence is worse than the issue's title suggests: the twelve modules left declaring
-`<parent><version>0.3.0</version>`, a version that now exists nowhere, make the **next** command in
-the workflow, `mvn scm:checkin`, unable to build the project model at all. So `#69` does not leave a
-merely inconsistent hotfix branch — it **fails `project-release.yml` outright**, at
-`Checkout Hotfix Branch and Set Initial Version`, after the tag has been pushed and the artifacts
-deployed. DSH `0.3.0` cannot be released until it is fixed.
+[`dsh` run 35662168807](https://github.com/MRISS-Projects/dsh/actions/runs/35662168807). `#69` was
+briefly closed on 2026-09-22 and reopened the same day, because its body asked for exactly that
+confirmation before the workflow was changed.
 
-`#69` was briefly closed on 2026-09-22 and **reopened the same day**. The confirmation its body
-asked for — *"worth confirming against a release dry run before changing the workflow"* — is what
-the rehearsal delivered, but the fix it proposes was never applied, and `project-release.yml` on
-`master` still carries the unchanged `versions:set` call. It is back on `3.9.0-SNAPSHOT` so the
-milestone gates on it.
+**`#69` is closed** — `parent-poms#80`, merged 2026-09-24, spec and evidence at
+`parent-poms/specs/69-set-hotfix-version-on-every-module.md`. Two things that were written here
+while it was open turned out to be wrong, and both were corrected by building it:
+
+- **The consequence was overstated.** This section previously said the stale parent made the next
+  command, `scm:checkin`, unable to build the project model, so `#69` failed `project-release.yml`
+  outright. It does not. `#72`'s own rehearsal bridge installs the release-version artifacts into
+  the runner's local repository, and a real release has just deployed them to the registry, so the
+  parent resolves in **both** modes and `scm:checkin` succeeds. The real failure is quieter and
+  worse: the `0.3.x` line is committed and pushed with twelve modules still naming the released
+  version, and nothing complains. That is why the fix is a *positive* assertion that every module
+  carries the hotfix version, rather than reliance on an error.
+- **The fix is not the one the issue proposed.** `release:update-versions` is driven through
+  `build.NEXT_DEVELOPMENT_VERSION`, which `pom.xml` binds `<developmentVersion>` to, so it becomes
+  the default for every project in the reactor. The first implementation used
+  `-Dproject.dev.<groupId>:<artifactId>`, which moves only the root — and it passed a full green
+  rehearsal, because the hotfix version under test, `0.3.1-SNAPSHOT`, is exactly what the release
+  plugin's default version policy produces from `0.3.0` unaided. Code review caught it; re-running
+  at `0.9.9-SNAPSHOT` separated the two mechanisms. The lesson is worth more than the fix: **to
+  validate a command that sets a value, choose a value the system would never have chosen itself.**
+
+A new composite action, `verify-reactor-version`, now runs in real releases and rehearsals alike
+and fails the step with the offending modules named. It has already earned its place by catching
+the wrong implementation above.
+
+[`parent-poms#81`](https://github.com/MRISS-Projects/parent-poms/issues/81) was spun off from
+`#69`'s review round and deliberately not folded into it. Reviewing the fix surfaced that
+`project-release.yml` interpolates `workflow_dispatch` inputs straight into `run:` bodies, where a
+`${{ }}` expression is substituted into the script text before the shell parses it. `#69` fixed the
+four uses in the two steps it owned; **twelve further steps** share the pattern, and `deploy.yml`,
+`project-hotfix.yml` and the staging workflows are unaudited. Folding that in would have turned a
+version-setting fix into a workflow-wide security pass, which is the wrong shape for one PR to
+carry and the wrong thing to hold `0.3.0` behind.
+
+It sits on `3.10.0-SNAPSHOT` rather than `3.9.0-SNAPSHOT`, so it does **not** gate this wave.
+Reaching the input requires write access to the consuming repository, so the exposure is defence in
+depth rather than an open door. The likelier practical failure is the quiet one: a value containing
+a `#` truncates the command, and the step goes green having done nothing — the same shape of silent
+success `#69` itself was about.
 
 `parent-poms#72` was raised from planning the order of this milestone, and it exists because two of
 its own issues could not otherwise be validated. `#65` requires validation "against a real
@@ -303,9 +333,10 @@ to settle.
 **It settled it, and `#72` is closed** (PR `#77`, merged 2026-09-22). The answer was a
 rehearsal-only bridge that rebuilds the release tag locally from the `pom.xml.tag` tree a dry-run
 `release:prepare` already writes to disk, so every later step stays reachable while nothing reaches
-a remote. `project-hotfix.yml`'s rehearsal is green end to end; `project-release.yml`'s stops at
-`#69`, which is the feature working rather than failing. Both runs proved against the live remote
-that they wrote nothing.
+a remote. `project-hotfix.yml`'s rehearsal was green end to end immediately; `project-release.yml`'s
+stopped at `#69` until that was fixed, and **now runs green to the end too** — all eight declared
+write points fire, the last four of them for the first time in any `project-release.yml` run. Every
+run proved against the live remote that it wrote nothing.
 
 Building it spun off two issues, a twin pair rather than one, and neither was folded into `#72`:
 
@@ -611,22 +642,27 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   was not built by `#72`, so what it got instead is the mode to be validated in, the
   `merge-to-develop` marker slot that `#72`'s set-equality check will force it to declare, and the
   evidence line to copy. `project-hotfix.yml`'s rehearsal already reaches and exercises the
-  merge-to-master step, so `#65` can be validated there before `#69` is fixed.
+  merge-to-master step, so `#65` could be validated there even before `#69` was fixed.
+
+  **`#69` is now fixed and merged, so this decision applies only to `#65`.** `#69` was not merely
+  validated by rehearsal — it was corrected by one. Its fix shipped with a permanent check that
+  fails the release if any module is left behind, which is stronger than the rehearsal evidence
+  this decision was prepared to accept.
 
   One part of the accepted cost has already come due, and in the direction that favours this
   decision: the rehearsal found *more* than the two known defects — see `#114` and `parent-poms#76`
   in Wave 0 — and found them without pushing a tag, deploying an artifact or touching `gh-pages`.
 
   **The rehearsal has now been dispatched from this repository too**, on 2026-09-23 while validating
-  `#114`, and it re-measured `#69` against parent-poms `master` as it stands today: `versions:set`
-  modified 1 of 13 `pom.xml` files. So `#69` is confirmed twice, from both sides of the boundary,
-  and a real `0.3.0` would open a `0.3.x` hotfix branch whose twelve child modules name a parent
-  version that does not exist. That run also wrote nothing — 267 package versions before and after,
-  RC branch intact, no `v0.3.0` tag.
+  `#114`, and it re-measured `#69` against parent-poms `master` as it stood then: `versions:set`
+  modified 1 of 13 `pom.xml` files. So `#69` was confirmed twice, from both sides of the boundary.
+  That run also wrote nothing — 267 package versions before and after, RC branch intact, no `v0.3.0`
+  tag.
 
-  **This decision closes when `0.3.0` is released** and both fixes are confirmed or corrected
-  against that run. `#69` is the one that must be fixed *before* that release rather than validated
-  by it.
+  **This decision closes when `0.3.0` is released** and `#65` is confirmed or corrected against that
+  run. `#69` no longer rides on it: it was the one that had to be fixed *before* the release rather
+  than validated by it, and it was — `parent-poms#80`, merged 2026-09-24, proved by a rehearsal at a
+  hotfix version the default version policy could not have produced.
 - **The coverage badge is stale, and nothing regenerates it.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
   against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
