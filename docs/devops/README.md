@@ -19,6 +19,8 @@ gitGraph
     merge issue-91-extract-repo
     branch staging-0.3.0-SNAPSHOT-RC
     commit id: "stabilise"
+    checkout DEVELOP
+    commit id: "0.4.0 work"
     checkout master
     merge staging-0.3.0-SNAPSHOT-RC tag: "v0.3.0"
     branch "0.3.x"
