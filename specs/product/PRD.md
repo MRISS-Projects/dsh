@@ -91,6 +91,7 @@ reconciliation that rediscovers them should leave them out.
 | `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
 | `#114` | **closed** — PR #116 | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
 | `#115` | open | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
+| `#117` | open | Pass `development_branch` to the release and hotfix wrappers |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -226,7 +227,7 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#65`, `#70`, `#78` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#70`, `#78` | Clear, then release **3.9.0** |
 | `3.10.0-SNAPSHOT` | `#74`, `#81` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
@@ -250,7 +251,7 @@ every inheriting product rather than opt-in per project — parent-poms supplies
 more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
 on it and are now unblocked: this repository already names `3.9.0-SNAPSHOT`, so the flag works here
 today. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0 release** and
-the re-pin — that still waits on the five issues left on the milestone.
+the re-pin. That still waits on the three issues left on the milestone: `#59`, `#70` and `#78`.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
@@ -291,6 +292,32 @@ while it was open turned out to be wrong, and both were corrected by building it
 A new composite action, `verify-reactor-version`, now runs in real releases and rehearsals alike
 and fails the step with the offending modules named. It has already earned its place by catching
 the wrong implementation above.
+
+**`parent-poms#65` is closed.** It was fixed by `parent-poms#82`, merged 2026-09-25, with spec and
+evidence at `parent-poms/specs/65-merge-release-back-into-develop.md`. Both release workflows now
+end by merging the release tag into the consumer's development branch, which keeps its own
+version. Without that, every fix made on an RC branch would have reached `master` and never
+`DEVELOP`, and for this repository that was the 152 commits of this wave that existed only on
+`staging-0.3.0-SNAPSHOT-RC`. Like `#69`, it was built against a corrected premise rather than the
+one the issue proposed:
+
+- `-X ours` would have silently discarded any RC fix that conflicted with `DEVELOP`.
+- Its `versions:set` safety net was the command `#69` measured writing 1 of 13 POMs.
+
+The fix instead aligns the tag to the development branch's version before a **plain** merge, so a
+real conflict stops the run rather than being resolved by picking a side. The review round added a
+retry for a development branch that advances mid-release. Rehearsals from this repository proved
+four things: the release path, the hotfix path, a deliberate conflict stopping the run with nothing
+pushed, and a missing branch failing before `release:prepare`. `DEVELOP` was read and kept at
+`0.4.0-SNAPSHOT` even with `next_development_version` set to `0.9.9-SNAPSHOT`.
+
+**`#117`** (above) is its consumer half, and could not be folded into it, because the two changes
+live in different repositories. `#65` names the branch through a new `development_branch` input,
+defaulting to `DEVELOPMENT`, and DSH's wrappers must pass `DEVELOP`. The order is forced: a caller
+passing an input the called workflow does not declare is a hard error, so `#117` could only merge
+after `#65`. Now that `#65` has merged, and until `#117` lands, both of this repository's
+`release.yml` and `hotfix.yml` fail at the new preflight in their first minute, before anything is
+written.
 
 [`parent-poms#81`](https://github.com/MRISS-Projects/parent-poms/issues/81) was spun off from
 `#69`'s review round and deliberately not folded into it. Reviewing the fix surfaced that
@@ -663,6 +690,11 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   run. `#69` no longer rides on it: it was the one that had to be fixed *before* the release rather
   than validated by it, and it was — `parent-poms#80`, merged 2026-09-24, proved by a rehearsal at a
   hotfix version the default version policy could not have produced.
+
+  **`#65` is now built and merged too** (`parent-poms#82`, 2026-09-25), so this decision is down to
+  its last clause: the real `0.3.0` release confirms, or corrects, what the rehearsals showed. It
+  can confirm only once `#117` has landed. Until then this repository's release wrapper does not
+  pass `development_branch`, and the release fails at the preflight.
 - **The coverage badge is stale, and nothing regenerates it.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
   against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
