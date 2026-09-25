@@ -23,6 +23,8 @@ gitGraph
     merge staging-0.3.0-SNAPSHOT-RC tag: "v0.3.0"
     branch "0.3.x"
     commit id: "hotfix line"
+    checkout DEVELOP
+    merge master id: "merge-back"
 ```
 
 - Feature work branches off `DEVELOP` (e.g. `issue-91-extract-repo`) and merges back into
@@ -32,6 +34,10 @@ gitGraph
   eventually merged into `master` with a version tag (e.g. `v0.3.0`).
 - Each release on `master` also opens a hotfix line branch named `<version>.x` (e.g. `0.3.x`) for
   patches against that release without pulling in unreleased `DEVELOP` work.
+- Every release and hotfix release ends by merging its tag back into `DEVELOP`, so the release's
+  fixes are never lost to the next line. The tag is first aligned to `DEVELOP`'s version, so
+  `DEVELOP` keeps its own version through the merge. A conflict stops the run with nothing pushed:
+  the release itself is complete, and a person finishes the merge from the tag.
 - The four release transitions above (stage, staging stabilisation, release-to-master, hotfix) are
   each driven by a manually dispatched workflow — see the Pipeline Map below.
 
@@ -70,8 +76,8 @@ table below) and matches it; no trigger shown here is invented.
 | `wiki-sync.yml` | `schedule` (`0 2 * * *`, daily 02:00 UTC); `workflow_dispatch` | Because the cron fires on the default branch (`master`), a `redispatch` job re-triggers the workflow on `DEVELOP` when it isn't already running there; the `sync-wiki` job then copies the GitHub wiki's Markdown pages into `docs/wiki/` via a pull request. |
 | `stage.yml` | `workflow_dispatch` only | Delegates to the reusable `project-stage.yml` workflow in `MRISS-Projects/parent-poms` to cut a `staging-<version>-SNAPSHOT-RC` branch from `DEVELOP`. |
 | `staging.yml` | `workflow_dispatch` only | Delegates to `project-staging.yml` in `parent-poms` to stabilise/build an existing RC branch. Passes this repository's build properties as `maven_properties`, plus three `mongo_*` inputs the upstream Mongo setup step still needs — see below. |
-| `release.yml` | `workflow_dispatch` only | Delegates to `project-release.yml` in `parent-poms` to promote an RC branch to a tagged release on `master` and open the next hotfix line. Takes a `dry_run` checkbox, and passes `maven_properties`. |
-| `hotfix.yml` | `workflow_dispatch` only | Delegates to `project-hotfix.yml` in `parent-poms` to build/release a patch from an existing `<version>.x` hotfix branch. Takes the same `dry_run` checkbox and `maven_properties`. |
+| `release.yml` | `workflow_dispatch` only | Delegates to `project-release.yml` in `parent-poms` to promote an RC branch to a tagged release on `master` and open the next hotfix line, then merge the release tag back into `DEVELOP`. Takes a `dry_run` checkbox, and passes `maven_properties` and `development_branch: DEVELOP`. |
+| `hotfix.yml` | `workflow_dispatch` only | Delegates to `project-hotfix.yml` in `parent-poms` to build/release a patch from an existing `<version>.x` hotfix branch. Ends by merging the release tag back into `DEVELOP`. Takes the same `dry_run` checkbox, `maven_properties` and `development_branch: DEVELOP`. |
 
 All four release workflows (`stage.yml`, `staging.yml`, `release.yml`, `hotfix.yml`) are thin
 wrappers: they take `workflow_dispatch` inputs and pass them straight through to a reusable
@@ -84,9 +90,14 @@ or PR.
 `release.yml` and `hotfix.yml` carry a **Rehearse** checkbox (`dry_run`). Tick it and the run does
 everything a real release does — `release:prepare`, `release:perform`, the version arithmetic, the
 site build — while writing nothing anyone else can see. Specifically, a rehearsal performs **no
-artifact deploy, no `gh-pages` publication, no push to `master`, and no deletion of the RC
-branch**. Every suppressed write announces itself in the log, and the run ends by proving against
-the live remote that it changed nothing.
+artifact deploy, no `gh-pages` publication, no push to `master`, no push to `DEVELOP`, and no
+deletion of the RC branch**. Every suppressed write announces itself in the log, and the run ends by
+proving against the live remote that it changed nothing.
+
+The merge back into `DEVELOP` is still computed and checked, only not pushed. Its log line
+`merge-to-develop: carried <n> path(s) from <tag> into DEVELOP; 0 lost` is the one worth reading
+before a first release: it says how much release-line work the merge brings home, and that the merge
+was a plain one, with no file settled by picking a side.
 
 **Run one before the first release on any line** — before `0.3.0`, and before the first `0.3.x`
 hotfix. A release touches `master`, tags, the hotfix branch and the package registry in one
