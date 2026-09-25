@@ -116,16 +116,16 @@ reviewer does not flag it as missed.
 No `.java` file changes, so the red/green cycle is on the workflow itself: the dispatched run that
 fails today is the failing test, and the same dispatch passing is green.
 
-- [ ] **Task 1 — red.** Dispatch `release.yml` from `staging-0.3.0-SNAPSHOT-RC` (the wrapper as it
+- [x] **Task 1 — red.** Dispatch `release.yml` from `staging-0.3.0-SNAPSHOT-RC` (the wrapper as it
       stands) with `dry_run: true` and the inputs in §7. Expect failure at
       `Check the development branch exists`, error naming `DEVELOPMENT`, and nothing written.
-      Record the run link.
-- [ ] **Task 2 — `release.yml`.** §5.1. Commit.
-- [ ] **Task 3 — `hotfix.yml`.** §5.2. Commit.
-- [ ] **Task 4 — green.** Push the branch; dispatch `release.yml` from it with the same inputs.
+      Record the run link. Run [36162065850](https://github.com/MRISS-Projects/dsh/actions/runs/36162065850).
+- [x] **Task 2 — `release.yml`.** §5.1. Commit.
+- [x] **Task 3 — `hotfix.yml`.** §5.2. Commit.
+- [x] **Task 4 — green.** Push the branch; dispatch `release.yml` from it with the same inputs.
       Checks in §7. Record the run link against AC002.
-- [ ] **Task 5 — `docs/devops/README.md`.** §5.3. Run the markdown lint from `CLAUDE.md`. Commit.
-- [ ] **Task 6 — tick the ACs** in §8 with the run links. Commit.
+- [x] **Task 5 — `docs/devops/README.md`.** §5.3. Run the markdown lint from `CLAUDE.md`. Commit.
+- [x] **Task 6 — tick the ACs** in §8 with the run links. Commit.
 
 ## 7. Verification
 
@@ -172,19 +172,27 @@ one-line diff identical to `release.yml`'s. The first real hotfix is the confirm
 
 From the issue:
 
-- [ ] **AC001** — `.github/workflows/release.yml` and `.github/workflows/hotfix.yml` pass
-      `development_branch: DEVELOP`.
-- [ ] **AC002** — a `dry_run` release rehearsal shows
+- [x] **AC001** — `.github/workflows/release.yml` and `.github/workflows/hotfix.yml` pass
+      `development_branch: DEVELOP`. Commits `3212b9c79`, `fc7902c6a`.
+- [x] **AC002** — a `dry_run` release rehearsal shows
       `merge-to-develop: carried <n> path(s) from v0.3.0 into DEVELOP; 0 lost` and the
-      `merge-to-develop` marker.
+      `merge-to-develop` marker. Run
+      [36162240349](https://github.com/MRISS-Projects/dsh/actions/runs/36162240349): preflight step 9 passed;
+      `DEVELOP is at 0.4.0-SNAPSHOT, <scm><tag> HEAD`; `carried 94 path(s) from v0.3.0 into DEVELOP;
+      0 lost`; `REHEARSAL merge-to-develop: would push the merge of v0.3.0 into DEVELOP`.
 
 Added by this spec:
 
-- [ ] **AC003** — The same rehearsal inputs against the unchanged wrapper fail at the preflight,
-      naming `DEVELOPMENT` (Task 1). Proves AC002's run passed because of this change.
-- [ ] **AC004** — The AC002 rehearsal writes nothing: `DEVELOP` and the RC unchanged on the remote,
-      no `v0.3.0` tag, `rehearsal-verify` green.
-- [ ] **AC005** — `docs/devops/README.md` describes the merge-back into `DEVELOP` in the branching
+- [x] **AC003** — The same rehearsal inputs against the unchanged wrapper fail at the preflight,
+      naming `DEVELOPMENT` (Task 1). Proves AC002's run passed because of this change. Run
+      [36162065850](https://github.com/MRISS-Projects/dsh/actions/runs/36162065850), step 9: `development branch
+      'DEVELOPMENT' does not exist on the remote. Pass development_branch from the calling workflow
+      (dsh: DEVELOP).`
+- [x] **AC004** — The AC002 rehearsal writes nothing: `DEVELOP` and the RC unchanged on the remote,
+      no `v0.3.0` tag, `rehearsal-verify` green. Same run: `all 9 declared write point(s) announced exactly
+      once`, `the remote is byte-for-byte as it was before the run`. After the run, `origin/DEVELOP`
+      `60c759cc7`, RC `6903a1ab3` (both as at spec time), no `v0.3.0` tag.
+- [x] **AC005** — `docs/devops/README.md` describes the merge-back into `DEVELOP` in the branching
       model, the Workflow Reference rows, and the rehearsal's list of suppressed writes.
 - [ ] **AC006** — CI green on the PR (`Build, Test and Coverage Gate`, `Validate Markdown Files`,
       `Check Spec File References`). No `.java` in the diff, so the coverage gate is unaffected.
