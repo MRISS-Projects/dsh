@@ -483,6 +483,17 @@ anything is deprecated today.
   ship as written — it did, in PR #108 — and lets the bump land once, later. `#87` now has to change
   the pin in both repositories: DSH `ci.yml` and `api-testing.yml`, and parent-poms' six workflows
   via its twin `#59`.
+- `#119` — Migrate every test to JUnit 5 and drop the vintage engine.
+- `#120` — Upgrade Spring Boot to a supported line, version chosen by analysis.
+
+  Like `#48` and `#87`, neither is an ADR-001 phase task. Both were raised on 2026-09-25, while
+  specifying `#112`, and they are ordered: `#119` lands first, because Spring Boot 3's
+  `spring-boot-starter-test` drops the vintage engine and JUnit 4 tests would stop running
+  without failing anything. `#120` belongs in this wave rather than later because Wave 2's
+  `spring-cloud-gcp-starter-*` release line is tied to the Spring Boot line, and choosing Boot after
+  the GCP code exists would mean migrating that code twice. Neither issue names a target version.
+  Both leave it to their spec's analysis, and for `#120` that includes whether the version moves in
+  parent-poms `products/pom.xml`, where it is managed today for every product.
 
 **Tasks (ADR-001 §4 Phase 1):**
 
