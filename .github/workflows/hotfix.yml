@@ -20,6 +20,8 @@ jobs:
     uses: MRISS-Projects/parent-poms/.github/workflows/project-hotfix.yml@master
     with:
       git_project: dsh
+      # #117: same as release.yml — the merge-back targets DEVELOP, not the DEVELOPMENT default.
+      development_branch: DEVELOP
       branch_name: ${{ inputs.branch_name }}
       dry_run: ${{ inputs.dry_run }}
       # #114: same as release.yml — release:prepare forks `clean install`, which filters
