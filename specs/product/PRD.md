@@ -91,7 +91,7 @@ reconciliation that rediscovers them should leave them out.
 | `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
 | `#114` | **closed** — PR #116 | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
 | `#115` | open | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
-| `#117` | open | Pass `development_branch` to the release and hotfix wrappers |
+| `#117` | **closed** — PR #118 | Pass `development_branch` to the release and hotfix wrappers |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -315,9 +315,11 @@ pushed, and a missing branch failing before `release:prepare`. `DEVELOP` was rea
 live in different repositories. `#65` names the branch through a new `development_branch` input,
 defaulting to `DEVELOPMENT`, and DSH's wrappers must pass `DEVELOP`. The order is forced: a caller
 passing an input the called workflow does not declare is a hard error, so `#117` could only merge
-after `#65`. Now that `#65` has merged, and until `#117` lands, both of this repository's
-`release.yml` and `hotfix.yml` fail at the new preflight in their first minute, before anything is
-written.
+after `#65`. Between the two merges, both of this repository's `release.yml` and `hotfix.yml`
+failed at the new preflight in their first minute, before anything was written. **`#117` is closed**
+(PR #118, merged 2026-09-25): a dry-run release from this repository merged `v0.3.0` back into
+`DEVELOP` and carried 94 paths with none lost. `hotfix.yml` is verified by inspection only, until a
+`0.3.x` branch exists to rehearse against.
 
 [`parent-poms#81`](https://github.com/MRISS-Projects/parent-poms/issues/81) was spun off from
 `#69`'s review round and deliberately not folded into it. Reviewing the fix surfaced that
@@ -692,9 +694,9 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   hotfix version the default version policy could not have produced.
 
   **`#65` is now built and merged too** (`parent-poms#82`, 2026-09-25), so this decision is down to
-  its last clause: the real `0.3.0` release confirms, or corrects, what the rehearsals showed. It
-  can confirm only once `#117` has landed. Until then this repository's release wrapper does not
-  pass `development_branch`, and the release fails at the preflight.
+  its last clause: the real `0.3.0` release confirms, or corrects, what the rehearsals showed.
+  `#117` removed the last blocker (PR #118, 2026-09-25): the release wrapper now passes
+  `development_branch`, and a rehearsal through it reached and verified the merge-back.
 - **The coverage badge is stale, and nothing regenerates it.** The committed badge
   `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
   against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
