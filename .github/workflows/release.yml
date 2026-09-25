@@ -32,6 +32,9 @@ jobs:
     uses: MRISS-Projects/parent-poms/.github/workflows/project-release.yml@master
     with:
       git_project: dsh
+      # #117: parent-poms#65 merges every release back into the development branch, and
+      # defaults its name to DEVELOPMENT. Ours is DEVELOP, as stage.yml already says.
+      development_branch: DEVELOP
       branch_name: ${{ inputs.branch_name }}
       current_version: ${{ inputs.current_version }}
       next_development_version: ${{ inputs.next_development_version }}
