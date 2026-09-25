@@ -194,5 +194,8 @@ Added by this spec:
       `60c759cc7`, RC `6903a1ab3` (both as at spec time), no `v0.3.0` tag.
 - [x] **AC005** — `docs/devops/README.md` describes the merge-back into `DEVELOP` in the branching
       model, the Workflow Reference rows, and the rehearsal's list of suppressed writes.
-- [ ] **AC006** — CI green on the PR (`Build, Test and Coverage Gate`, `Validate Markdown Files`,
-      `Check Spec File References`). No `.java` in the diff, so the coverage gate is unaffected.
+- [x] **AC006** — CI green on the PR (`Build, Test and Coverage Gate`, `Validate Markdown Files`,
+      `Check Spec File References`). No `.java` in the diff, so the coverage gate is unaffected. PR
+      [#118](https://github.com/MRISS-Projects/dsh/pull/118) at `adcca20b3`: all seven checks pass; the build
+      ([run 36193341855](https://github.com/MRISS-Projects/dsh/actions/runs/36193341855)) logs
+      `All coverage checks have been met` and `BUILD SUCCESS`. Copilot review (Lite): no findings.
