@@ -215,6 +215,15 @@ jobs:
             });
           '
 
+      # A unit test never starts a Spring context; one that does is an *IT in an
+      # integration package. Checked ahead of the build, test first, so a broken
+      # checker cannot pass vacuously. See testing-patterns.md, "Unit vs integration".
+      - name: Test the unit-test context checker
+        run: bash .github/scripts/check-unit-tests-context-free.test.sh
+
+      - name: Unit tests must not start a Spring context
+        run: bash .github/scripts/check-unit-tests-context-free.sh
+
       # -U, deliberately: the parent is a SNAPSHOT, and while it is, tracking the
       # current parent POM on every run is the intended contract - this repository
       # is the first consumer of parent-poms changes. Omitting -U never bought
