@@ -15,41 +15,58 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Unit tests for {@link Document}.
- * Uses @ContextConfiguration to load only the test bean definitions,
- * avoiding the full Spring Boot autoconfiguration (no MongoDB required).
+ * Fixtures are rebuilt before every test, so no test sees another's mutations.
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = DocumentTestConfiguration.class)
 public class DocumentTest {
 
     final static Logger logger = LoggerFactory.getLogger(DocumentTest.class);
 
-    @Autowired(required = true)
-    @Qualifier("docTitleConstructor")
+    private static final String TITLE = "Russia-Trump: FBI chief Wray defends agency";
+
+    private static final String BBC_PDF = "target/test-classes/pdf/bbc-news-1.pdf";
+
     private Document docTitleConstructor;
 
-    @Autowired(required = true)
-    @Qualifier("docTitleContentsConstructor")
     private Document docTitleContentsConstructor;
 
-    @Autowired(required = true)
-    @Qualifier("docTitleContentsFromStreamConstructor")
     private Document docTitleContentsFromStreamConstructor;
 
-    @Autowired(required = true)
-    @Qualifier("anotherDocument")
     private Document anotherDocument;
+
+    @Before
+    public void setUp() throws Exception {
+        docTitleConstructor = documentWithTitle();
+        docTitleContentsConstructor = documentWithTitleAndContents();
+        docTitleContentsFromStreamConstructor = documentWithTitleAndContentsFromStream();
+        anotherDocument = anotherDocument();
+    }
+
+    private static Document documentWithTitle() throws NoSuchAlgorithmException, IOException {
+        Document d = new Document(TITLE);
+        d.setOriginalFileContents(IOUtils.toByteArray(new FileInputStream(new File(BBC_PDF))));
+        return d;
+    }
+
+    private static Document documentWithTitleAndContents() throws Exception {
+        return new Document(IOUtils.toByteArray(new FileInputStream(new File(BBC_PDF))), TITLE);
+    }
+
+    private static Document documentWithTitleAndContentsFromStream() throws Exception {
+        return new Document(new FileInputStream(new File(BBC_PDF)), TITLE);
+    }
+
+    private static Document anotherDocument() throws Exception {
+        return new Document(new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf")),
+                "Emails show Trump Tower meeting follow-up");
+    }
 
     @Test
     public void testDocumentStatus() {

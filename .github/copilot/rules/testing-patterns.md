@@ -5,18 +5,45 @@
 Follow the classic testing pyramid:
 
 1. **Unit Tests** – Fast, isolated, no Spring context (majority of tests)
-2. **Integration Tests** – Slice tests or full Spring context with test containers
+2. **Integration Tests** – Slice tests or full Spring context, `*IT` in an `integration` package
 3. **API / E2E Tests** – Postman collections in `/specs/api/postman/`
 
 ## Frameworks & Libraries
 
-- **JUnit 5** (`@Test`, `@ParameterizedTest`, `@ExtendWith`)
-- **Mockito** for mocking dependencies (`@Mock`, `@InjectMocks`, `MockitoExtension`)
+- **JUnit 4** (`@Test`, `@Before`, `@RunWith`) — every test in the repository is JUnit 4; match the
+  module, and do not mix in JUnit 5. Migrating is a separate decision
+- **Mockito** for mocking dependencies (`@Mock`, `@InjectMocks`, `MockitoJUnitRunner`)
 - **AssertJ** for fluent assertions (`assertThat(...)`)
 - **Spring Boot Test** for slice and integration tests
-- **Testcontainers** for MongoDB/Solr integration tests
-- **MockMvc** for controller slice tests (`@WebMvcTest`)
-- **NEVER USE** PowerMock or similar tools that require bytecode manipulation
+- **MockMvc** for controller integration tests
+- **PowerMock is forbidden**, in any scope, directly or transitively — here and in every project
+  inheriting from parent-poms, enforced by its `ban-powermock` enforcer execution. **Mockito is the
+  sanctioned mocking tool, `mockStatic` included.** Static mocking is allowed but discouraged: use it
+  only where no seam can reasonably be designed in.
+
+## Unit vs integration
+
+> **A unit test never starts a Spring context.** A test that starts one — full, sliced, or
+> hand-built — is an integration test, named `*IT`, placed in an `integration` package.
+
+- The rule is about the context, not about Spring. A unit test may reference production types that
+  happen to be Spring classes (`SpringApplication` as a `mockStatic` target, `SpringApplicationBuilder`
+  as an argument), and may use context-free test helpers (`MockMultipartFile`,
+  `MockMvcBuilders.standaloneSetup`, `ReflectionTestUtils`).
+- The `integration` package is `<module base package>.integration`, e.g.
+  `com.mriss.dsh.restapi.integration`. `@SpringBootTest` there still finds the application by
+  searching upward.
+- The name is the selector: surefire runs `*Test`, failsafe runs `*IT` and `*IntegrationTest`. An
+  integration test never counts toward the 95% coverage gate — it writes `jacoco-it.exec`, and the
+  gate reads `jacoco.exec`.
+- A test that uses Spring without needing it is rewritten context-free and stays a unit test. Only a
+  test that genuinely exercises the context becomes an `*IT`.
+- CI enforces the rule with `.github/scripts/check-unit-tests-context-free.sh`. It exempts only an
+  `*IT` or `*IntegrationTest` inside an `integration` package, and fails any other test
+  referencing `org.springframework.test.context`,
+  `org.springframework.boot.test.context`, `org.springframework.boot.test.autoconfigure` (every
+  slice), `org.springframework.boot.test.mock.mockito` (`@MockBean`, `@SpyBean`),
+  `webAppContextSetup`, or a hand-built `new …ApplicationContext(`.
 
 ## Naming Conventions
 
@@ -30,7 +57,7 @@ Use the **Arrange / Act / Assert** (AAA) pattern:
 
 ```java
 @Test
-void analyzeDocument_whenValidInput_shouldReturnResult() {
+public void analyzeDocument_whenValidInput_shouldReturnResult() {
     // Arrange
     var input = DocumentFixture.validInput();
     when(repository.save(any())).thenReturn(DocumentFixture.savedDocument());
@@ -44,15 +71,25 @@ void analyzeDocument_whenValidInput_shouldReturnResult() {
 }
 ```
 
-## Controller Tests (`@WebMvcTest`)
+## Controller Tests
+
+A controller has two tests, one at each level.
+
+**Unit** — Mockito over the controller, no context, as `DocumentResourceTest` does: mock the
+services, `@InjectMocks` the controller, call its methods directly, assert on the returned DTOs.
+Cover every branch here; this is what the coverage gate counts.
+
+**Integration** — a `@WebMvcTest` slice (or `@SpringBootTest` with MockMvc) starts a context, so it
+is an `*IT` in the `integration` package, as `DocumentResourceIT` does:
 
 - Test only the web layer; mock all service dependencies
 - Verify HTTP status codes, response body structure, and headers
 - Test validation errors by sending invalid payloads
 
 ```java
+@RunWith(SpringRunner.class)
 @WebMvcTest(DocumentController.class)
-class DocumentControllerTest {
+public class DocumentControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,7 +98,7 @@ class DocumentControllerTest {
     private DocumentService documentService;
 
     @Test
-    void uploadDocument_whenValidFile_shouldReturn202() throws Exception {
+    public void uploadDocument_whenValidFile_shouldReturn202() throws Exception {
         mockMvc.perform(multipart("/api/v1/documents")
                 .file("file", "content".getBytes()))
             .andExpect(status().isAccepted())
@@ -72,10 +109,11 @@ class DocumentControllerTest {
 
 ## Integration Tests (`@SpringBootTest`)
 
+- Named `*IT`, in the module's `integration` package — the name is the selector, no tag is needed
+- An integration test is **mandatory** when a task touches the REST API; for other Spring beans it
+  is optional by design
 - Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for full-stack tests
-- Use Testcontainers for external dependencies (MongoDB, Solr)
-- Annotate with `@Tag("integration")` so they can be excluded from fast builds
-- Clean up test data in `@AfterEach`
+- Clean up test data in `@After`
 
 ## Test Data & Fixtures
 
@@ -106,10 +144,11 @@ class DocumentControllerTest {
 
 - Reference benchmark targets in `/specs/testing/performance-benchmarks/`
 - Use JMeter or Gatling for load tests; store scripts in `/specs/testing/performance-benchmarks/`
-- Annotate performance-sensitive tests with `@Tag("performance")`
+- Annotate performance-sensitive tests with a JUnit 4 `@Category(PerformanceTest.class)`
 
 ## Test Execution
 
-- Unit tests run on every build: `mvn test`
-- Integration tests run in CI: `mvn verify -P integration-tests`
+- Unit tests run on every build: `mvn -B install`
+- Integration tests run under `mvn -B install -DintegrationTests`; staging always passes the flag.
+  Profiles in this estate are activated by `-D` properties, never `-P`
 - Performance tests run on release: reference `.github/workflows/api-testing.yml`

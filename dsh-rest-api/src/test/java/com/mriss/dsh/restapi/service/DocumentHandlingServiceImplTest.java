@@ -15,13 +15,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
@@ -31,32 +29,25 @@ import com.mriss.dsh.data.models.Sentence;
 /**
  * Tests for {@link DocumentHandlingServiceImpl}.
  * <p>
- * MongoDB ({@link DocumentDao}) and RabbitMQ ({@link DocumentQueueService}) are
- * mocked because both infrastructures are deprecated for this project.
- * The real service logic is still exercised via the mocked DAO.
+ * MongoDB ({@link DocumentDao}) is mocked; the real service logic is exercised
+ * through the mocked DAO, with no Spring context.
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class DocumentHandlingServiceImplTest {
 
     final static Logger logger = LoggerFactory.getLogger(DocumentHandlingServiceImplTest.class);
 
     /** Mock MongoDB DAO – no real MongoDB instance required. */
-    @MockBean
+    @Mock
     private DocumentDao dao;
 
-    /** Mock RabbitMQ queue service – no broker required. */
-    @MockBean
-    private DocumentQueueService documentQueueService;
-
-    @Autowired
-    private DocumentHandlingService service;
+    @InjectMocks
+    private DocumentHandlingServiceImpl service;
 
     private Document docForTest1;
 
     @Before
     public void before() throws Exception {
-        Mockito.reset(dao);
         docForTest1 = new Document(
                 IOUtils.toByteArray(new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"))),
                 "Russia-Trump: FBI chief Wray defends agency");
