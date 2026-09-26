@@ -1,4 +1,6 @@
-package com.mriss.dsh.analyser.docprocessor;
+package com.mriss.dsh.analyser.docprocessor.integration;
+
+import com.mriss.dsh.analyser.docprocessor.DshDocProcessorWorkerApplication;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -11,9 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DshDocProcessorWorkerApplicationTest {
+public class DshDocProcessorWorkerApplicationIT {
 	
-	final static Logger logger = LoggerFactory.getLogger(DshDocProcessorWorkerApplicationTest.class);
+	final static Logger logger = LoggerFactory.getLogger(DshDocProcessorWorkerApplicationIT.class);
 
 	@BeforeClass
 	public static void setUp() throws Exception {
