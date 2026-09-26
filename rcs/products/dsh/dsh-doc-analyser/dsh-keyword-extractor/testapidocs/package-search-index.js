@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.mriss.dsh.analyser.keywords"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.mriss.dsh.analyser.keywords"},{"l":"com.mriss.dsh.analyser.keywords.integration"}];updateSearchResults();
