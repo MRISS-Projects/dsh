@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.mriss.dsh.docindexer","l":"DshDocIndexerApplicationTest"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.mriss.dsh.docindexer.integration","l":"DshDocIndexerApplicationIT"},{"p":"com.mriss.dsh.docindexer","l":"DshDocIndexerApplicationTest"}];updateSearchResults();

@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.mriss.dsh.docindexer"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.mriss.dsh.docindexer"},{"l":"com.mriss.dsh.docindexer.integration"}];updateSearchResults();
