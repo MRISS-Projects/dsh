@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.mriss.dsh.analyser.docprocessor"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.mriss.dsh.analyser.docprocessor"},{"l":"com.mriss.dsh.analyser.docprocessor.integration"}];updateSearchResults();
