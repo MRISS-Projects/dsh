@@ -158,10 +158,10 @@ required change has been made and re-reviewed until it is.
 `.github/workflows/ci.yml` enforces the quality gates defined in `CLAUDE.md` — all tests passing
 under `mvn -B install`, and 95% LINE and BRANCH coverage per module from the `jacoco:check`
 inherited from `parent-poms`, together with the `enforce-coverage-data-exists` guard that fails a
-module which produced no coverage data at all — on every PR. Everything currently runs under
-surefire; there is no
-failsafe configuration and no `*IT.java` test in the repo, so integration tests are not yet a gate
-CI enforces separately from unit tests. Implementing them is tracked as `#46` in PRD Wave 0.
+module which produced no coverage data at all — on every PR. `mvn -B install` runs unit tests only,
+under surefire. Integration tests are `*IT` in an `integration` package, run under
+`mvn -B install -DintegrationTests` and on every staging build, and are measured by `jacoco-it.exec`,
+never by the coverage gate. CI also fails any unit test that starts a Spring context.
 
 **Hard stop.** The owner approves the PR title, body and base branch **before** the push. `--base`
 is never `master`; if the story spec's front matter says `master`, something went wrong in step 3.

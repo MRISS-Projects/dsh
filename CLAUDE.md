@@ -92,9 +92,9 @@ back into the branch it came from. **Never branch from `master`. Never open a PR
 
 A story is not done until both pass:
 
-1. All tests pass under `mvn -B install` (surefire only — there is no failsafe configuration and
-   no `*IT.java` test in the repo today, so "integration tests" are not yet a separately enforced
-   gate; implementing them is tracked as `#46` in PRD Wave 0).
+1. All tests pass under `mvn -B install`. That runs unit tests only, under surefire. Integration
+   tests are `*IT` in an `integration` package, run under `mvn -B install -DintegrationTests` and on
+   every staging build, and are measured by `jacoco-it.exec` — never by the coverage gate below.
 2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
    by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
    module which produced no coverage data at all. **Both are inherited from
@@ -115,6 +115,11 @@ guard: that execution sets `<skip>` explicitly, and explicit configuration beats
 `enforce-lowercase-artifact-id` rule in the root `pom.xml`, which sets no `<skip>`. So reaching for
 it silently drops a check you wanted while leaving the one you were trying to bypass armed. Both
 halves verified by running it.
+
+**Hard rules.** PowerMock is forbidden here and in parent-poms, enforced by the `ban-powermock`
+enforcer execution inherited from parent-poms; Mockito, `mockStatic` included, is the sanctioned tool.
+A unit test never starts a Spring context, enforced by `.github/scripts/check-unit-tests-context-free.sh`
+in CI. Both are stated in full in `.github/copilot/rules/testing-patterns.md`.
 
 ## The development process
 
