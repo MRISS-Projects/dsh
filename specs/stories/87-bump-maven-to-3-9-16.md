@@ -500,3 +500,25 @@ the session's attribution lines.
 
 Hand over to `dsh-ship-story` (steps 5 and 6): local review, push, and the PR into
 `staging-0.3.0-SNAPSHOT-RC`, whose `ci.yml` run supplies the last guard line.
+
+## 12. Review rounds
+
+### 12.1 parent-poms PR #84, Copilot round 1
+
+Arrived automatically at `Lite` effort, pinned to `6bf0a368`, which was HEAD. `build` was already
+green, with the guard logging `Apache Maven 3.9.16 (2bdd9fdd...)` in
+[run 36275176614](https://github.com/MRISS-Projects/parent-poms/actions/runs/36275176614).
+
+One finding, [4112974254](https://github.com/MRISS-Projects/parent-poms/pull/84#discussion_r4112974254):
+specs `67`, `71` and `76` "still state that CI pins Maven 3.9.9", which it read as leaving the
+documentation contradictory and `#59`'s `specs/` scope unmet.
+
+**Incorrect, not changed.** The observation was accurate, and there were six such specs, not three
+(`65`, `67`, `69`, `71`, `72`, `76`). But all six belong to closed issues, and their "Tech stack"
+lines record the toolchain the work was verified on. Some tie it to measurements taken on 3.9.9
+(`72:35-37`, `65:359`), and one already scopes itself to this bump (`71:26-28`, "Moving CI to 3.9.16
+is `#59`, not this story"). Rewriting them would have them claim verification on a CI version that
+did not exist yet. This is the §6 decision, which AC001's grep makes mechanical. The repo owner
+confirmed it in the round: versions in closed specs stay as written. Replied
+([4112984634](https://github.com/MRISS-Projects/parent-poms/pull/84#discussion_r4112984634)) and
+resolved at the owner's instruction.
