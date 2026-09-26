@@ -94,6 +94,8 @@ reconciliation that rediscovers them should leave them out.
 | `#115` | open | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
 | `#117` | **closed** — PR #118 | Pass `development_branch` to the release and hotfix wrappers |
 | `#122` | open | Close the file streams that test fixtures leave open |
+| `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
+| `#124` | open | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -213,6 +215,22 @@ trigger on pushes to a branch named `main`, which this repository has never had;
 nothing to do with the integration-test lifecycle, and bundling them would have put a one-line
 cleanup behind a story with an open design question.
 
+`#123` is the consuming half of `parent-poms#78`, and it had to be a separate issue because the
+two changes live in different repositories. `parent-poms#78` removed the input names `#123` stopped
+passing, so `#123` had to merge first, the reverse of `#117`. It shipped in PR #125, and both
+halves were proven by one staging run against the upstream branch. The design it rests on is
+recorded under `parent-poms#78` below.
+
+`#124` was spun off from shipping `#123`, and has nothing to do with it. `#123`'s local
+`mvn -B install` failed `dsh-rest-api` at 0.50 line coverage with no Java or POM in its diff. Four
+modules unpack `dsh-test-dataset` with `maven-remote-resources-plugin` into
+`target/test-classes`, and leave the goal's `attachToMain` at its default, `true`. So every build
+copies the fixtures into `target/classes` and the production jars, and a build without `clean`
+copies the previous build's compiled test classes as well. The three `*IT` classes among them
+escape `jacoco:check`'s `*Test` excludes. CI never sees the gate failure, because it always starts
+from a fresh checkout. The issue requires investigating whether anything relies on the main-side
+attachment before it is turned off.
+
 **Two findings from the same review are deliberately *not* issues:**
 
 - **The markdown lint glob already covers `.claude/**`.** `.github/workflows/spec-validation.yml`'s
@@ -243,7 +261,7 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#70`, `#78` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#59`, `#70` | Clear, then release **3.9.0** |
 | `3.10.0-SNAPSHOT` | `#74`, `#81` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
@@ -267,7 +285,7 @@ every inheriting product rather than opt-in per project — parent-poms supplies
 more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
 on it: `#112` has since shipped on it, and `#46` is unblocked, since this repository already names
 `3.9.0-SNAPSHOT`. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0
-release** and the re-pin. That still waits on the three issues left on the milestone: `#59`, `#70` and `#78`.
+release** and the re-pin. That still waits on the two issues left on the milestone: `#59` and `#70`.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
@@ -411,8 +429,19 @@ Building it spun off two issues, a twin pair rather than one, and neither was fo
     containers, `mongo_database`, and the step that creates the Mongo user. A `name=value` input
     cannot reach them, because a reusable workflow owns its own job and a consumer cannot declare a
     service into it. That needs a design, and folding it into `#76` would have turned a one-input
-    change into an open-ended redesign. Until it lands, `staging.yml` names `dshuser` and `dshpass`
-    twice — once for the build, once for the setup step.
+    change into an open-ended redesign.
+
+    **It is closed, and the design question dissolved.** It was fixed by `parent-poms#83`, merged
+    2026-09-26. Before designing a replacement, its spec measured whether DSH needed the services
+    at all, and DSH does not. The full reactor with `-DintegrationTests` is green with nothing
+    listening on 27017 or 5672. The `dsh-rest-api` ITs mock the DAO and queue service, and the
+    worker contexts never connect. So the services, the user-creation step and all three `mongo_*`
+    inputs were deleted with no extension point in their place. A product whose integration tests
+    need live infrastructure starts it from those tests. A `build.yml` guard now fails any reusable
+    workflow that declares `services:`. The "real connection to the MongoDB service container" that
+    `#114`'s staging run observed, described above, was the Mongo driver's background monitor
+    thread, not a test dependency. `#123` is the consuming half, and `staging.yml` now passes only
+    `maven_properties`.
   - **`#115`** (above) — `version.properties` ships `${jenkins.build.number}` unresolved in
     `dsh-data` and `dsh-rest-api`. Found by `#114`'s placeholder sweep, which is the only reason
     anyone looked: nothing defines that property, no Java reads the file, and there is no Jenkins.
