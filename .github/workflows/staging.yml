@@ -9,24 +9,17 @@ on:
 
 jobs:
   staging:
-    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@master
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@issue-78-remove-consumer-services-from-staging
     with:
       git_project: dsh
       branch_name: ${{ inputs.branch_name }}
-      # #114: the build's Mongo settings. parent-poms#76 replaced the mongo_host and mongo_port
-      # inputs with this generic block; a live MongoDB runs behind these values here, unlike on
-      # the release path.
+      # #114: the build's Mongo settings, which dsh-data's mongo.properties is filtered from.
+      # Without them every dsh-rest-api context fails on an unresolved placeholder. No MongoDB
+      # runs behind them: parent-poms#78 removed the service containers, and no test connects.
       maven_properties: |
         mongo.host=localhost
         mongo.port=27017
         mongo.user=dshuser
         mongo.password=dshpass
-      # These three are not duplicates to be tidied away: upstream they feed only the "Create
-      # MongoDB user and database" step, which creates the user the build above then connects
-      # as. parent-poms#78 removes that step and these inputs together — until then both halves
-      # are needed, and deleting either one breaks staging.
-      mongo_user: dshuser
-      mongo_password: dshpass
-      mongo_database: dsh
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
