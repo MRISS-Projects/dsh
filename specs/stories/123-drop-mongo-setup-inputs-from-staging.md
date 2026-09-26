@@ -96,6 +96,14 @@ MongoDB, "yes, service container". Change that cell to "no — nothing connects 
 matching the `release.yml` row. It becomes true when parent-poms#78 merges. The pre-merge run in
 §7 is what proves it, since that run calls the branch where the containers are already gone.
 
+**Added in review round 1.** Two more places in the same file described the old contract, and this
+section originally missed them. The workflow table's `staging.yml` row (line 80) said it passed
+"three `mongo_*` inputs the upstream Mongo setup step still needs". The paragraph after the local
+`settings.xml` example (lines 151-153) called those inputs "the exception, and a temporary one".
+Both now describe `maven_properties` as the only project-specific input. The sweep that wrote this
+section searched for the three input names literally. Line 80 uses the shorthand `mongo_*`, and the
+paragraph names no input at all, so the sweep missed both.
+
 ## 6. Tasks
 
 - [x] **Task 1 — the wrapper, pointed at the upstream branch.** Apply §5.1, and temporarily change
