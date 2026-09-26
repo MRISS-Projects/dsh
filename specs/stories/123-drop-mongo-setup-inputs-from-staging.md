@@ -101,9 +101,9 @@ matching the `release.yml` row. It becomes true when parent-poms#78 merges. The 
 - [x] **Task 1 — the wrapper, pointed at the upstream branch.** Apply §5.1, and temporarily change
       `project-staging.yml@master` to `@issue-78-remove-consumer-services-from-staging`. Commit.
 - [x] **Task 2 — the docs.** Apply §5.2. Commit.
-- [ ] **Task 3 — dispatch staging against this branch.** Run §7. This run is also
+- [x] **Task 3 — dispatch staging against this branch.** Run §7. This run is also
       parent-poms#78's Task 6: record it in both specs and comment it on both issues.
-- [ ] **Task 4 — pin back to `@master`.** Revert the ref change from Task 1, then confirm with
+- [x] **Task 4 — pin back to `@master`.** Revert the ref change from Task 1, then confirm with
       `grep -n 'project-staging.yml@' .github/workflows/staging.yml`. Expected: exactly one line,
       ending `@master`. Commit. This is AC004, and it must land before the PR is merged.
 
@@ -145,7 +145,36 @@ the inputs it received.
 - [ ] **AC004** — At merge, `staging.yml` calls `project-staging.yml` at `@master`, not at a task
       branch.
 
-## 9. Merge order
+## 9. Build record
+
+**Task 3 — [run 36258785216](https://github.com/MRISS-Projects/dsh/actions/runs/36258785216),
+`success`**, dispatched on 2026-09-26 at `9945c108b`. The wrapper called `project-staging.yml`
+at `@issue-78-remove-consumer-services-from-staging`.
+
+- **No containers.** The job's steps are Set up job, Checkout, JDK, Maven, settings, properties,
+  Git, build, README verify, site, README commit. There is no "Initialize containers" and no Mongo
+  user step. `docker pull`, `mongo:6` and `rabbitmq:3` do not occur anywhere in the 25,677-line
+  log.
+- **All six ITs passed** under failsafe, 15 tests, no failures or errors:
+
+  ```text
+  Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in ….restapi.integration.DshRestApplicationIT
+  Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in ….restapi.integration.DocumentResourceIT
+  Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in ….docindexer.integration.DshDocIndexerApplicationIT
+  Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in ….keywords.integration.DshKeywordExtractorApplicationIT
+  Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in ….topsentences.integration.DshTopSentencesExtractorApplicationIT
+  Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in ….docprocessor.integration.DshDocProcessorWorkerApplicationIT
+  ```
+
+- **The coverage gate held.** `All coverage checks have been met.` appears 8 times, once per
+  code-bearing module, and `Rule violated` never appears.
+- **Same shape as the local measurement.** Six `MongoSocketOpenException` lines, one per context,
+  are the driver's background monitor, as in parent-poms#78 §1.2, and nothing fails on them.
+
+The run committed a regenerated `README.md` to this branch as `22ea8b4ea`, as §7 predicted. It was
+pulled before Task 4.
+
+## 10. Merge order
 
 1. This PR merges into `staging-0.3.0-SNAPSHOT-RC`, pinned to `@master` (AC004). Staging keeps
    working: `master` still declares the inputs, and the setup step skips.
