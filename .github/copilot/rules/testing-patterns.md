@@ -10,8 +10,9 @@ Follow the classic testing pyramid:
 
 ## Frameworks & Libraries
 
-- **JUnit 5** (`@Test`, `@ParameterizedTest`, `@ExtendWith`)
-- **Mockito** for mocking dependencies (`@Mock`, `@InjectMocks`, `MockitoExtension`)
+- **JUnit 4** (`@Test`, `@Before`, `@RunWith`) — every test in the repository is JUnit 4; match the
+  module, and do not mix in JUnit 5. Migrating is a separate decision
+- **Mockito** for mocking dependencies (`@Mock`, `@InjectMocks`, `MockitoJUnitRunner`)
 - **AssertJ** for fluent assertions (`assertThat(...)`)
 - **Spring Boot Test** for slice and integration tests
 - **MockMvc** for controller integration tests
@@ -55,7 +56,7 @@ Use the **Arrange / Act / Assert** (AAA) pattern:
 
 ```java
 @Test
-void analyzeDocument_whenValidInput_shouldReturnResult() {
+public void analyzeDocument_whenValidInput_shouldReturnResult() {
     // Arrange
     var input = DocumentFixture.validInput();
     when(repository.save(any())).thenReturn(DocumentFixture.savedDocument());
@@ -85,8 +86,9 @@ is an `*IT` in the `integration` package, as `DocumentResourceIT` does:
 - Test validation errors by sending invalid payloads
 
 ```java
+@RunWith(SpringRunner.class)
 @WebMvcTest(DocumentController.class)
-class DocumentControllerIT {
+public class DocumentControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -95,7 +97,7 @@ class DocumentControllerIT {
     private DocumentService documentService;
 
     @Test
-    void uploadDocument_whenValidFile_shouldReturn202() throws Exception {
+    public void uploadDocument_whenValidFile_shouldReturn202() throws Exception {
         mockMvc.perform(multipart("/api/v1/documents")
                 .file("file", "content".getBytes()))
             .andExpect(status().isAccepted())
@@ -110,7 +112,7 @@ class DocumentControllerIT {
 - An integration test is **mandatory** when a task touches the REST API; for other Spring beans it
   is optional by design
 - Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for full-stack tests
-- Clean up test data in `@AfterEach`
+- Clean up test data in `@After`
 
 ## Test Data & Fixtures
 
@@ -141,7 +143,7 @@ class DocumentControllerIT {
 
 - Reference benchmark targets in `/specs/testing/performance-benchmarks/`
 - Use JMeter or Gatling for load tests; store scripts in `/specs/testing/performance-benchmarks/`
-- Annotate performance-sensitive tests with `@Tag("performance")`
+- Annotate performance-sensitive tests with a JUnit 4 `@Category(PerformanceTest.class)`
 
 ## Test Execution
 

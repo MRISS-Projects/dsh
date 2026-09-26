@@ -7,7 +7,7 @@ Use these prompt templates with GitHub Copilot Chat to generate consistent tests
 ## Unit Test for Service
 
 ```text
-As a Backend Developer (see /.github/roles.md), generate JUnit 5 unit tests for
+As a Backend Developer (see /.github/roles.md), generate JUnit 4 unit tests for
 [ServiceName] in the DSH project.
 
 Requirements:
@@ -74,7 +74,7 @@ Requirements:
 - Test class name: [FeatureName]IT, in the module's integration package
   (e.g. com.mriss.dsh.restapi.integration); the name is the selector, no tag is needed
 - Test the full flow: [describe end-to-end scenario]
-- Clean up test data in @AfterEach
+- Clean up test data in @After
 - Reference acceptance criteria in /specs/requirements/acceptance-criteria/[feature].md
 - Use @SpringBootTest(webEnvironment = RANDOM_PORT)
 ```
@@ -96,7 +96,7 @@ Requirements:
   - Custom query method: [method name] with [scenario]
   - Edge case: [describe edge case]
 - Use AssertJ assertions
-- Include @AfterEach cleanup
+- Include @After cleanup
 ```
 
 ---
@@ -108,8 +108,8 @@ As a Backend Developer (see /.github/roles.md), generate a performance test for
 [OperationName] in the DSH project.
 
 Requirements:
-- Tag with @Tag("performance")
-- Measure execution time using [JUnit 5 @Timeout / Micrometer]
+- Mark with a JUnit 4 @Category(PerformanceTest.class)
+- Measure execution time using [JUnit 4 @Test(timeout = ...) / Micrometer]
 - Target: complete [operation] within [X] ms for [input size]
 - Test with dataset from /dsh-test-dataset/
 - Reference benchmark targets in /specs/testing/performance-benchmarks/
