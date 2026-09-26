@@ -1,4 +1,6 @@
-package com.mriss.dsh.analyser.topsentences;
+package com.mriss.dsh.analyser.topsentences.integration;
+
+import com.mriss.dsh.analyser.topsentences.DshTopSentencesExtractorApplication;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -11,9 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DshTopSentencesExtractorApplicationTest {
+public class DshTopSentencesExtractorApplicationIT {
 	
-	final static Logger logger = LoggerFactory.getLogger(DshTopSentencesExtractorApplicationTest.class);
+	final static Logger logger = LoggerFactory.getLogger(DshTopSentencesExtractorApplicationIT.class);
 
 	@BeforeClass
 	public static void setUp() throws Exception {
