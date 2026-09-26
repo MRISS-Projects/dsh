@@ -98,9 +98,9 @@ matching the `release.yml` row. It becomes true when parent-poms#78 merges. The 
 
 ## 6. Tasks
 
-- [ ] **Task 1 — the wrapper, pointed at the upstream branch.** Apply §5.1, and temporarily change
+- [x] **Task 1 — the wrapper, pointed at the upstream branch.** Apply §5.1, and temporarily change
       `project-staging.yml@master` to `@issue-78-remove-consumer-services-from-staging`. Commit.
-- [ ] **Task 2 — the docs.** Apply §5.2. Commit.
+- [x] **Task 2 — the docs.** Apply §5.2. Commit.
 - [ ] **Task 3 — dispatch staging against this branch.** Run §7. This run is also
       parent-poms#78's Task 6: record it in both specs and comment it on both issues.
 - [ ] **Task 4 — pin back to `@master`.** Revert the ref change from Task 1, then confirm with

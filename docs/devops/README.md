@@ -124,7 +124,7 @@ Each build path supplies them its own way:
 | --- | --- | --- |
 | Local `mvn install` | **your own `~/.m2/settings.xml`** — see below | yours, if you run one |
 | `ci.yml` | the `github-packages` profile of the `settings.xml` it writes | yes, service container |
-| `staging.yml` | `maven_properties`, rendered upstream into the generated `settings.xml` | yes, service container |
+| `staging.yml` | `maven_properties`, rendered upstream into the generated `settings.xml` | no — nothing connects on this path (`#123`, parent-poms#78) |
 | `release.yml`, `hotfix.yml` | the same `maven_properties` block | no — nothing connects on this path |
 
 Precedence is **command line > active settings profile > POM `<properties>`**, measured on Maven
