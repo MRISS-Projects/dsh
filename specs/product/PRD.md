@@ -87,11 +87,12 @@ reconciliation that rediscovers them should leave them out.
 | `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
 | `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
 | `#111` | **closed** — PR #116 | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
-| `#112` | open | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
+| `#112` | **closed** — PR #121 | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
 | `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
 | `#114` | **closed** — PR #116 | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
 | `#115` | open | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
 | `#117` | **closed** — PR #118 | Pass `development_branch` to the release and hotfix wrappers |
+| `#122` | open | Close the file streams that test fixtures leave open |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -183,6 +184,20 @@ a per-module exemption. It was kept out of `#46` because `#46` is about standing
 server, while this is about where the tests that already exist belong; folding them together would
 have made a definition change ride on a new-capability story.
 
+Shipped in PR #121. The eight were sorted rather than blanket-renamed: a test that used Spring
+without needing it was rewritten context-free and stayed a unit test, and only the six that
+exercise the context became `*IT`. A CI check now keeps the rule, and PowerMock was banned
+estate-wide during specification. Both upstream changes went to parent-poms by the light round
+trip and are referenced on `#112`: the `ban-powermock` enforcer execution, and a failsafe
+`classesDirectory` fix that the story's own integration build proved necessary — after
+`repackage`, `dsh-rest-api`'s ITs could not load the module's classes.
+
+`#122` was spun off from `#112`'s local review and was deliberately not folded into it. Test
+fixtures open `FileInputStream`s that nothing closes. `#112` made this more frequent: its
+context-free `DocumentTest` rebuilds the fixtures before every test instead of once per context.
+But `#112`'s spec required the fixture bodies to be carried over unchanged, and three of the six
+affected test files lie outside that story's scope.
+
 `#46` was written up in the same session rather than retitled. It is the *other* half of `#112`,
 and the two are not the same shape: `#112` moves in-process Spring-context tests, while `#46` binds
 `spring-boot:start` and `spring-boot:stop` to `pre-integration-test` and `post-integration-test` so
@@ -249,9 +264,9 @@ gate reads. A second JaCoCo agent writing `jacoco-it.exec` is what keeps the gat
 `project-staging.yml` passes the flag, so integration tests are mandatory on every staging build of
 every inheriting product rather than opt-in per project — parent-poms supplies the `-D` and nothing
 more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
-on it and are now unblocked: this repository already names `3.9.0-SNAPSHOT`, so the flag works here
-today. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0 release** and
-the re-pin. That still waits on the three issues left on the milestone: `#59`, `#70` and `#78`.
+on it: `#112` has since shipped on it, and `#46` is unblocked, since this repository already names
+`3.9.0-SNAPSHOT`. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0
+release** and the re-pin. That still waits on the three issues left on the milestone: `#59`, `#70` and `#78`.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
