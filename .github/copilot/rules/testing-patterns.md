@@ -38,8 +38,9 @@ Follow the classic testing pyramid:
   gate reads `jacoco.exec`.
 - A test that uses Spring without needing it is rewritten context-free and stays a unit test. Only a
   test that genuinely exercises the context becomes an `*IT`.
-- CI enforces the rule with `.github/scripts/check-unit-tests-context-free.sh`, which fails any
-  non-`*IT` test referencing `org.springframework.test.context`,
+- CI enforces the rule with `.github/scripts/check-unit-tests-context-free.sh`. It exempts only an
+  `*IT` or `*IntegrationTest` inside an `integration` package, and fails any other test
+  referencing `org.springframework.test.context`,
   `org.springframework.boot.test.context`, `org.springframework.boot.test.autoconfigure` (every
   slice), `org.springframework.boot.test.mock.mockito` (`@MockBean`, `@SpyBean`),
   `webAppContextSetup`, or a hand-built `new …ApplicationContext(`.

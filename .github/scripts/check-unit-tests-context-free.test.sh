@@ -38,6 +38,13 @@ write() {
   cat > "$1/mod/src/test/java/com/example/$2"
 }
 
+# write_integration ROOT FILE_NAME -> writes stdin to the fixture module's
+# integration package, the only place an *IT is exempt.
+write_integration() {
+  mkdir -p "$1/mod/src/test/java/com/example/integration"
+  cat > "$1/mod/src/test/java/com/example/integration/$2"
+}
+
 # add_clean_unit_test ROOT -> gives the fixture one context-free unit test, so
 # a case about what is excluded still has something to check: a tree with no
 # unit test at all is its own failure.
@@ -105,19 +112,26 @@ printf '%s\n' "$SPRING_RUNNER_TEST" | write "$d" FooTest.java
 run_checker "$d"
 check "SpringRunner in a unit test is a violation" 1 "FooTest.java"
 
-# --- 3. the same content in a *IT is allowed ----------------------------------
+# --- 3. the same content in a *IT in an integration package is allowed --------
+d="$(new_case)"
+printf '%s\n' "$SPRING_RUNNER_TEST" | write_integration "$d" FooIT.java
+add_clean_unit_test "$d"
+run_checker "$d"
+check "SpringRunner in an integration *IT is allowed" 0
+
+# --- 4. ... and in a *IntegrationTest in an integration package ---------------
+d="$(new_case)"
+printf '%s\n' "$SPRING_RUNNER_TEST" | write_integration "$d" FooIntegrationTest.java
+add_clean_unit_test "$d"
+run_checker "$d"
+check "SpringRunner in an integration *IntegrationTest is allowed" 0
+
+# --- 4b. a *IT outside an integration package is not exempt -------------------
+# The rule is name *and* package: a misplaced *IT that starts a context is flagged.
 d="$(new_case)"
 printf '%s\n' "$SPRING_RUNNER_TEST" | write "$d" FooIT.java
-add_clean_unit_test "$d"
 run_checker "$d"
-check "SpringRunner in a *IT is allowed" 0
-
-# --- 4. the same content in a *IntegrationTest is allowed ---------------------
-d="$(new_case)"
-printf '%s\n' "$SPRING_RUNNER_TEST" | write "$d" FooIntegrationTest.java
-add_clean_unit_test "$d"
-run_checker "$d"
-check "SpringRunner in a *IntegrationTest is allowed" 0
+check "SpringRunner in a *IT outside an integration package is a violation" 1 "FooIT.java"
 
 # --- 5. a @MockBean import alone is a violation -------------------------------
 d="$(new_case)"

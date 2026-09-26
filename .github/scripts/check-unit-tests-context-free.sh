@@ -8,8 +8,10 @@
 # integration package, where surefire does not run it and the coverage gate does
 # not count it.
 #
-# Scope: every *.java under a src/test/java directory, except *IT.java and
-# *IntegrationTest.java, outside target/.
+# Scope: every *.java under a src/test/java directory, outside target/, except
+# an *IT.java or *IntegrationTest.java inside an integration package. The rule is
+# name and package together, so an *IT placed anywhere else is checked like a
+# unit test, and flagged if it starts a context.
 #
 # Signal: a reference to a package whose purpose is to build, bootstrap or
 # populate a test context --
@@ -51,7 +53,8 @@ LIST="$(mktemp)"
 trap 'rm -f "$LIST"' EXIT
 
 if ! find "$ROOT" -path '*/target' -prune -o -path '*/src/test/java/*' -name '*.java' \
-    ! -name '*IT.java' ! -name '*IntegrationTest.java' -print0 > "$LIST"; then
+    ! \( -path '*/integration/*' \( -name '*IT.java' -o -name '*IntegrationTest.java' \) \) \
+    -print0 > "$LIST"; then
   echo "ERROR: listing the test sources failed; nothing was checked."
   exit 2
 fi
