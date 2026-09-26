@@ -1,3 +1,5 @@
 com.mriss.dsh.restapi
+com.mriss.dsh.restapi.config
+com.mriss.dsh.restapi.integration
 com.mriss.dsh.restapi.rest
 com.mriss.dsh.restapi.service
