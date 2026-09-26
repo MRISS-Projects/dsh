@@ -177,6 +177,13 @@ compatible with `maven-release-plugin` 3.1.1, which needs Maven 3.6.3+; and the 
 reproducibility, so it moves by a deliberate change in both repositories, never by the runner image.
 No claim that it is "the latest" goes in — that is the sentence that rotted.
 
+**Found while building — no step 4 was added.** The table above planned "then a step 4 naming the
+version assertion" in each of the four workflow sections. Those sections number their steps, and
+the file's Implementation Notes cite them as "§6.3 steps 9 & 10", "§6.4 step 9" and so on, so a new
+step 4 would have renumbered four sections and silently broken those references. Step 3 became
+**"Set up Maven 3.9.16, then assert it"** instead, and it points at the §5 setup snippet rather than
+repeating it — one copy of the guard in the file, not five that can drift. `parent-poms@6bf0a368`.
+
 ## 5. Files to change in DSH (`#87`)
 
 ### 5.1 `.github/workflows/ci.yml` and `.github/workflows/api-testing.yml`
@@ -421,20 +428,22 @@ the session's attribution lines.
 
 ### Task 1 — parent-poms: workflows (`#59`)
 
-- [ ] In parent-poms: `git checkout master && git pull && git checkout -b issue-59-bump-maven-to-3-9-16`
-- [ ] Run §8 AC001's parent-poms grep; record the 39-line baseline.
-- [ ] Edit `build.yml` and `deploy.yml` per §4.1.
-- [ ] Edit the four `project-*.yml` per §4.2: pin moved, guard inserted directly after it.
-- [ ] Run §9.1 (harness plus the real local `mvn -version`), §9.2 (`js-yaml`) and §9.3 (`diff`,
+- [x] In parent-poms: `git checkout master && git pull && git checkout -b issue-59-bump-maven-to-3-9-16`
+- [x] Run §8 AC001's parent-poms grep; record the 39-line baseline.
+- [x] Edit `build.yml` and `deploy.yml` per §4.1.
+- [x] Edit the four `project-*.yml` per §4.2: pin moved, guard inserted directly after it.
+- [x] Run §9.1 (harness plus the real local `mvn -version`), §9.2 (`js-yaml`) and §9.3 (`diff`,
       all five `identical`).
-- [ ] Commit: `ci(#59): pin Maven 3.9.16 and assert it in every workflow`.
+- [x] Commit: `ci(#59): pin Maven 3.9.16 and assert it in every workflow`. — `fd1054a5`. Red first:
+      39 AC001 lines, 18 structural failures, four guards missing; then all green.
 
 ### Task 2 — parent-poms: documentation (`#59`)
 
-- [ ] Edit `infrastructure/src/site/markdown/maven.md` per §4.3, `CLAUDE.md:128` per §4.4, and
+- [x] Edit `infrastructure/src/site/markdown/maven.md` per §4.3, `CLAUDE.md:128` per §4.4, and
       `specs/github-actions-reusable-workflows.md` per §4.5, including the rewritten rationale.
-- [ ] Run the AC001 parent-poms grep; it must print nothing.
-- [ ] Commit: `docs(#59): move the Maven 3.9.16 pin into the docs and the workflow spec`.
+- [x] Run the AC001 parent-poms grep; it must print nothing.
+- [x] Commit: `docs(#59): move the Maven 3.9.16 pin into the docs and the workflow spec`. —
+      `6bf0a368`. See the §4.5 note on step 3.
 
 ### Task 3 — parent-poms: PR, merge, deploy
 
@@ -448,20 +457,30 @@ the session's attribution lines.
 
 ### Task 4 — DSH: workflows
 
-- [ ] On `issue-87-bump-maven-to-3-9-16`: record the 29-line AC001 baseline.
-- [ ] Edit `ci.yml` and `api-testing.yml` per §5.1, including the `3.9.160` comment.
-- [ ] Run §9.1, §9.2 and the DSH half of §9.3.
-- [ ] Commit: `ci(#87): pin Maven 3.9.16 in ci.yml and api-testing.yml`.
+- [x] On `issue-87-bump-maven-to-3-9-16`: record the 29-line AC001 baseline.
+- [x] Edit `ci.yml` and `api-testing.yml` per §5.1, including the `3.9.160` comment.
+- [x] Run §9.1, §9.2 and the DSH half of §9.3.
+- [x] Commit: `ci(#87): pin Maven 3.9.16 in ci.yml and api-testing.yml`. — `4dca2a8b`. Red first:
+      29 AC001 lines, 6 structural failures.
 
 ### Task 5 — DSH: documentation and the re-measurement
 
-- [ ] Edit `src/site/markdown/README.md` per §5.2.
-- [ ] Re-run `#114`'s precedence probe on 3.9.16 in the scratchpad. Expect `FROM_SETTINGS`,
-      `POM_DEFAULT`, `FROM_CLI`; **stop and report** on any other result (§5.4).
-- [ ] Edit `docs/devops/README.md` lines 130-131, 158 and 168-170 per §5.4.
-- [ ] Run markdownlint per `CLAUDE.md`.
-- [ ] `mvn -B install`, logged to `.logs/mvn-install.log` with the exit code reported, per `CLAUDE.md`.
-- [ ] Commit: `docs(#87): move the Maven 3.9.16 pin into the docs`.
+- [x] Edit `src/site/markdown/README.md` per §5.2.
+- [x] Re-run `#114`'s precedence probe on 3.9.16 in the scratchpad. Expect `FROM_SETTINGS`,
+      `POM_DEFAULT`, `FROM_CLI`; **stop and report** on any other result (§5.4). — Got exactly
+      those three, on `Apache Maven 3.9.16 (2bdd9fdd...)`. The devops sentence names 3.9.16 and
+      points at `#114` for the earlier measurement, so it carries no literal `3.9.9` for AC001 to
+      flag.
+- [x] Edit `docs/devops/README.md` lines 130-131, 158 and 168-170 per §5.4.
+- [x] Run markdownlint per `CLAUDE.md`.
+- [x] `mvn -B install`, logged to `.logs/mvn-install.log` with the exit code reported, per `CLAUDE.md`.
+      — **First run failed**, `jacoco:check` on `dsh-rest-api`: lines 0.48, branches 0.92. Not
+      this change. Opening the repository in VS Code at 18:21 let its Java extension auto-build,
+      and it wrote **test** classes into `target/classes` — ten in `dsh-rest-api`, eight in
+      `dsh-data` — where JaCoCo counts them as uncovered production code. A build without `clean`
+      keeps them. `mvn -B clean install` (`.logs/mvn-clean-install.log`): exit 0, BUILD SUCCESS,
+      8 of 8 coverage checks met, 127 unit tests.
+- [x] Commit: `docs(#87): move the Maven 3.9.16 pin into the docs`.
 
 ### Task 6 — DSH: runs that need `#59` on `master`
 
