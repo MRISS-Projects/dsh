@@ -383,7 +383,7 @@ Extract each guard block — from `- name: Set up Maven` to the closing `}` — 
 indentation, and `diff` every upstream block against `build.yml`'s:
 
 ```bash
-S="$SCRATCH"   # the session scratchpad
+S=$(mktemp -d)
 for f in build deploy project-stage project-staging project-release project-hotfix; do
   awk '/- name: Set up Maven/{p=1} p{print} p && /^ *}$/{exit}' ".github/workflows/$f.yml" \
     | sed 's/^ *//' > "$S/$f.block"
