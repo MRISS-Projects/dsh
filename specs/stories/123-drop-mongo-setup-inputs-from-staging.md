@@ -143,15 +143,18 @@ the inputs it received.
 
 ## 8. Acceptance criteria
 
-- [ ] **AC001** — `.github/workflows/staging.yml` passes no `mongo_user`, `mongo_password` or
-      `mongo_database` input.
-- [ ] **AC002** — `staging.yml` still passes `maven_properties` with `mongo.host`, `mongo.port`,
+- [x] **AC001** — `.github/workflows/staging.yml` passes no `mongo_user`, `mongo_password` or
+      `mongo_database` input. *`grep -nE 'mongo_(user|password|database)'` on the file: no match.*
+- [x] **AC002** — `staging.yml` still passes `maven_properties` with `mongo.host`, `mongo.port`,
       `mongo.user` and `mongo.password`. No comment in the file claims a live MongoDB or describes
-      the removed inputs.
-- [ ] **AC003** — The §7 run, calling `project-staging.yml` at parent-poms#78's branch, concludes
+      the removed inputs. *Lines 20-23 carry the four values, and
+      `grep -niE 'live MongoDB|mongo_'` finds nothing.*
+- [x] **AC003** — The §7 run, calling `project-staging.yml` at parent-poms#78's branch, concludes
       `success`: all six ITs pass, and the job log has no "Initialize containers" section.
-- [ ] **AC004** — At merge, `staging.yml` calls `project-staging.yml` at `@master`, not at a task
-      branch.
+      *Run 36258785216, recorded in §9.*
+- [x] **AC004** — At merge, `staging.yml` calls `project-staging.yml` at `@master`, not at a task
+      branch. *`grep -n 'project-staging.yml@'` returns exactly line 12, ending `@master`
+      (`847f4833d`).*
 
 ## 9. Build record
 
