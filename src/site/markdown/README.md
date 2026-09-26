@@ -72,7 +72,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 * Java 17 (Temurin)
 
-* Maven 3.9.9
+* Maven 3.9.16
 
 * MongoDB 3.4 (windows 10)
 
@@ -152,14 +152,14 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 #### Maven
 
-1. Download maven **3.9.9** from [https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip](https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip)    
+1. Download maven **3.9.16** from [https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip](https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip)    
 2. Unzip it on a folder of your preference
 3. Set environment variables.
    1. Linux   
       1. Put it at your `$HOME/.profile` file
              
          ```
-         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
          export PATH=$M2_HOME/bin:$PATH
          export MAVEN_OPTS='-Xmx1024m'
          ```    
@@ -168,7 +168,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
          ```
          export JAVA_HOME=/your/jdk/parent/folder/java
-         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
          export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
          export MAVEN_OPTS='-Xmx1024m'
          ```
@@ -181,8 +181,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
       5. The result should be similar to:
              
          ```
-         Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
-         Maven home: /home/[YOUR_USER]/apps/apache-maven-3.9.9
+         Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+         Maven home: /home/[YOUR_USER]/apps/apache-maven-3.9.16
          Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: /home/[YOUR_USER]/apps/jdk-17.0.20.1+1
          Default locale: en_US, platform encoding: UTF-8
          OS name: "linux", version: "6.8.0-45-generic", arch: "amd64", family: "unix"
@@ -205,8 +205,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
        7. The result should be similar to:
              
           ```
-          Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
-          Maven home: C:\data\apache-maven-3.9.9
+          Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+          Maven home: C:\data\apache-maven-3.9.16
           Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.20.1+1
           Default locale: en_US, platform encoding: Cp1252
           OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"

@@ -128,9 +128,9 @@ Each build path supplies them its own way:
 | `release.yml`, `hotfix.yml` | the same `maven_properties` block | no — nothing connects on this path |
 
 Precedence is **command line > active settings profile > POM `<properties>`**, measured on Maven
-3.9.9. Nothing in this repository's POMs defines these four: a default there could never win over
-a settings profile, so its only effect would be to hide a missing configuration behind a
-fabricated `localhost:27017`.
+3.9.16 (`#87`), as it had been on the previous pin (`#114`). Nothing in this repository's POMs
+defines these four: a default there could never win over a settings profile, so its only effect
+would be to hide a missing configuration behind a fabricated `localhost:27017`.
 
 **If you build locally**, your `~/.m2/settings.xml` needs the four names in an active profile:
 
@@ -155,7 +155,7 @@ the Mongo user, and the three `mongo_*` inputs that fed it, which `staging.yml` 
 ### The Maven toolchain is pinned, in both repositories
 
 `ci.yml` and `api-testing.yml` — the only two workflows here that invoke `mvn` — provision Java 17
-(Temurin) with `actions/setup-java@v4` and Maven **3.9.9** with `stCarolas/setup-maven@v5`, in that
+(Temurin) with `actions/setup-java@v4` and Maven **3.9.16** with `stCarolas/setup-maven@v5`, in that
 order, because the Maven action needs `JAVA_HOME` already set. Neither relies on the Maven bundled
 with the `ubuntu-latest` runner image, which GitHub changes without notice when the image is
 rebuilt.
@@ -167,10 +167,11 @@ run instead — the same present-versus-working distinction the credential check
 section below.
 
 The four release wrappers run no Maven of their own. The reusable workflows they call in
-`parent-poms` pin the same 3.9.9, as do that repository's own `build.yml` and `deploy.yml`. **The
-version is bumped in both repositories or neither** — `deploy.yml` upstream is what publishes the
-parent SNAPSHOT this repository resolves on every `-U` build, so a pin that holds only on one side
-leaves the artifact and the build that consumes it on different Maven versions.
+`parent-poms` pin the same 3.9.16 and assert it the same way (`parent-poms#59`), as do that
+repository's own `build.yml` and `deploy.yml`. **The version is bumped in both repositories or
+neither** — `deploy.yml` upstream is what publishes the parent SNAPSHOT this repository resolves on
+every `-U` build, so a pin that holds only on one side leaves the artifact and the build that
+consumes it on different Maven versions.
 
 ## README.md is a Generated File
 

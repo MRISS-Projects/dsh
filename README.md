@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC17 - 20260926-205130
+0.3.0-SNAPSHOT - RC18 - 20260926-222309
 
 ## Introduction
 
@@ -72,7 +72,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 * Java 17 (Temurin)
 
-* Maven 3.9.9
+* Maven 3.9.16
 
 * MongoDB 3.4 (windows 10)
 
@@ -152,14 +152,14 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 #### Maven
 
-1. Download maven **3.9.9** from [https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip](https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip)    
+1. Download maven **3.9.16** from [https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip](https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip)    
 2. Unzip it on a folder of your preference
 3. Set environment variables.
    1. Linux   
       1. Put it at your `$HOME/.profile` file
              
          ```
-         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
          export PATH=$M2_HOME/bin:$PATH
          export MAVEN_OPTS='-Xmx1024m'
          ```    
@@ -168,7 +168,7 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
          ```
          export JAVA_HOME=/your/jdk/parent/folder/java
-         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
+         export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
          export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
          export MAVEN_OPTS='-Xmx1024m'
          ```
@@ -181,8 +181,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
       5. The result should be similar to:
              
          ```
-         Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
-         Maven home: /home/[YOUR_USER]/apps/apache-maven-3.9.9
+         Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+         Maven home: /home/[YOUR_USER]/apps/apache-maven-3.9.16
          Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: /home/[YOUR_USER]/apps/jdk-17.0.20.1+1
          Default locale: en_US, platform encoding: UTF-8
          OS name: "linux", version: "6.8.0-45-generic", arch: "amd64", family: "unix"
@@ -205,8 +205,8 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
        7. The result should be similar to:
              
           ```
-          Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
-          Maven home: C:\data\apache-maven-3.9.9
+          Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+          Maven home: C:\data\apache-maven-3.9.16
           Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.20.1+1
           Default locale: en_US, platform encoding: Cp1252
           OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
@@ -580,6 +580,7 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [123](https://github.com/MRISS-Projects/dsh/issues/123) | task | [STORY] Stop passing the Mongo setup inputs to project-staging.yml | null | mriss | 9/26/26 |
 | [112](https://github.com/MRISS-Projects/dsh/issues/112) | task | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill | null | mriss | 9/26/26 |
 | [117](https://github.com/MRISS-Projects/dsh/issues/117) | task | Pass development_branch to the release and hotfix wrappers | null | mriss | 9/25/26 |
 | [111](https://github.com/MRISS-Projects/dsh/issues/111) | task | [STORY] Let release.yml and hotfix.yml dispatch a release rehearsal | null | mriss | 9/23/26 |
