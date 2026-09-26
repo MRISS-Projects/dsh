@@ -77,7 +77,7 @@ table below) and matches it; no trigger shown here is invented.
 | `documentation-sync.yml` | `push` to `DEVELOP`/`main`, scoped to paths `specs/api/openapi/**`, `specs/architecture/**`, `specs/features/**`, `docs/wiki/**`; `workflow_dispatch` | Two jobs: regenerates HTML API docs from the OpenAPI spec into `docs/api/`, and refreshes the table of contents in `specs/features/*.md` and `specs/architecture/*.md`. Both auto-commit with `[skip ci]`. |
 | `wiki-sync.yml` | `schedule` (`0 2 * * *`, daily 02:00 UTC); `workflow_dispatch` | Because the cron fires on the default branch (`master`), a `redispatch` job re-triggers the workflow on `DEVELOP` when it isn't already running there; the `sync-wiki` job then copies the GitHub wiki's Markdown pages into `docs/wiki/` via a pull request. |
 | `stage.yml` | `workflow_dispatch` only | Delegates to the reusable `project-stage.yml` workflow in `MRISS-Projects/parent-poms` to cut a `staging-<version>-SNAPSHOT-RC` branch from `DEVELOP`. |
-| `staging.yml` | `workflow_dispatch` only | Delegates to `project-staging.yml` in `parent-poms` to stabilise/build an existing RC branch. Passes this repository's build properties as `maven_properties`, plus three `mongo_*` inputs the upstream Mongo setup step still needs — see below. |
+| `staging.yml` | `workflow_dispatch` only | Delegates to `project-staging.yml` in `parent-poms` to stabilise/build an existing RC branch. Passes this repository's build properties as `maven_properties` and nothing else project-specific; no MongoDB runs behind them — see below. |
 | `release.yml` | `workflow_dispatch` only | Delegates to `project-release.yml` in `parent-poms` to promote an RC branch to a tagged release on `master` and open the next hotfix line, then merge the release tag back into `DEVELOP`. Takes a `dry_run` checkbox, and passes `maven_properties` and `development_branch: DEVELOP`. |
 | `hotfix.yml` | `workflow_dispatch` only | Delegates to `project-hotfix.yml` in `parent-poms` to build/release a patch from an existing `<version>.x` hotfix branch. Ends by merging the release tag back into `DEVELOP`. Takes the same `dry_run` checkbox, `maven_properties` and `development_branch: DEVELOP`. |
 
@@ -124,7 +124,7 @@ Each build path supplies them its own way:
 | --- | --- | --- |
 | Local `mvn install` | **your own `~/.m2/settings.xml`** — see below | yours, if you run one |
 | `ci.yml` | the `github-packages` profile of the `settings.xml` it writes | yes, service container |
-| `staging.yml` | `maven_properties`, rendered upstream into the generated `settings.xml` | yes, service container |
+| `staging.yml` | `maven_properties`, rendered upstream into the generated `settings.xml` | no — nothing connects on this path (`#123`, parent-poms#78) |
 | `release.yml`, `hotfix.yml` | the same `maven_properties` block | no — nothing connects on this path |
 
 Precedence is **command line > active settings profile > POM `<properties>`**, measured on Maven
@@ -147,10 +147,10 @@ Without them a plain `mvn install` fails in `dsh-rest-api` with the placeholder 
 reads like a Spring problem and is not one.
 
 `parent-poms` supplies the mechanism and never the values: `maven_properties` is a generic
-`name=value` block, and no property name belonging to this project exists upstream (`#76`). The
-three `mongo_*` inputs `staging.yml` still passes are the exception, and a temporary one — they
-feed the upstream step that creates the Mongo user, which `parent-poms#78` removes along with
-them.
+`name=value` block, and no property name belonging to this project exists upstream (`#76`).
+`parent-poms#78` removed the last exception: the Mongo service containers, the step that created
+the Mongo user, and the three `mongo_*` inputs that fed it, which `staging.yml` no longer passes
+(`#123`).
 
 ### The Maven toolchain is pinned, in both repositories
 
