@@ -73,7 +73,7 @@ reconciliation that rediscovers them should leave them out.
 |---|---|---|
 | `#85` | **closed** — PR #109 | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
 | `#86` | **closed** — PR #108 | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
-| `#87` | open | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions |
+| `#87` | **closed** — PR #126 | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions |
 | `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
 | `#46` | open | Implement integration tests using embedded tomcat server |
 | `#70` | open | Project link not working at maven generated site |
@@ -261,7 +261,7 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#59`, `#70` | Clear, then release **3.9.0** |
+| `3.9.0-SNAPSHOT` | `#70` | Clear, then release **3.9.0** |
 | `3.10.0-SNAPSHOT` | `#74`, `#81` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
@@ -285,7 +285,8 @@ every inheriting product rather than opt-in per project — parent-poms supplies
 more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
 on it: `#112` has since shipped on it, and `#46` is unblocked, since this repository already names
 `3.9.0-SNAPSHOT`. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0
-release** and the re-pin. That still waits on the two issues left on the milestone: `#59` and `#70`.
+release** and the re-pin. That still waits on the one issue left on the milestone, `#70`, since `#59`
+closed with DSH `#87` — see the third pair below.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
@@ -506,6 +507,13 @@ Shipping `#59` alone would make DSH's releases build on 3.9.16 while `ci.yml` an
 stayed on 3.9.9 until `0.4.0-SNAPSHOT` — the same CI-versus-release drift `#99` was built to remove.
 Moving `#59` to `3.10.0-SNAPSHOT` instead was considered and rejected; the pair is delivered as one
 cycle, like `#85`/`#57` and `#86`/`#58`, and for the same reason it needs no release to reach here.
+
+**The third pair is done, and the pattern held a third time.** DSH `#87` and parent-poms `#59` both
+closed on 2026-09-26, delivered as one cycle: parent-poms PR #84 merged first, then DSH PR #126,
+because DSH's staging and release evidence could only run once `#59` was on `master`. `#59` went one
+step beyond its issue: the four `project-*.yml` reusable workflows pinned Maven but never asserted
+it, so they gained the same `Verify Maven version` guard as `build.yml`. A staging or release run
+now proves which Maven it ran. With `#59` closed, `#70` is the only issue left gating **3.9.0**.
 Parent-poms `#13` (image links broken in the generated Maven site) is **closed**,
 fixed and released in 3.8.0. It was adjacent to DSH `#70` and `#90`, and that adjacency has now
 been tested for one of the two: a staging run on `staging-0.3.0-SNAPSHOT-RC` against the released
