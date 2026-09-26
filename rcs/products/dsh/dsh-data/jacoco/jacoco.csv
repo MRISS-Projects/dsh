@@ -5,7 +5,6 @@ dsh-data,com.mriss.dsh.data.document.dao.mongo,MongoDocumentDaoTest,0,276,0,6,0,
 dsh-data,com.mriss.dsh.data.models,KeywordSorter,0,29,0,6,0,7,0,6,0,3
 dsh-data,com.mriss.dsh.data.models,SentenceSorterTest,2,79,2,2,0,17,2,5,0,5
 dsh-data,com.mriss.dsh.data.models,SentenceSorter,0,29,0,6,0,7,0,6,0,3
-dsh-data,com.mriss.dsh.data.models,DocumentTestConfiguration,0,57,0,0,0,7,0,5,0,5
 dsh-data,com.mriss.dsh.data.models,Keyword,0,82,0,14,0,25,0,14,0,7
 dsh-data,com.mriss.dsh.data.models,TransitionType,0,21,0,0,0,4,0,1,0,1
 dsh-data,com.mriss.dsh.data.models,Sentence,0,104,0,16,0,30,0,16,0,8
@@ -13,7 +12,7 @@ dsh-data,com.mriss.dsh.data.models,SentenceTest,2,267,2,2,0,52,2,9,0,9
 dsh-data,com.mriss.dsh.data.models,Document,6,268,0,16,2,77,0,33,0,25
 dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
 dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
-dsh-data,com.mriss.dsh.data.models,DocumentTest,0,563,0,4,0,131,0,22,0,20
+dsh-data,com.mriss.dsh.data.models,DocumentTest,0,630,0,4,0,142,0,27,0,25
 dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
 dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
 dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
