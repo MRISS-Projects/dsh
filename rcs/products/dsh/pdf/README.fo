@@ -27,7 +27,7 @@ Document Smart Highlights
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - RC17 - 20260926-204707</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.3.0-SNAPSHOT - RC18 - 20260926-221514</fo:block>
 </fo:block>
 
 
@@ -245,7 +245,7 @@ status querying and document processing results (keywords and relevant sentences
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Maven 3.9.9</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Maven 3.9.16</fo:block>
 
 </fo:block>
 </fo:list-item-body>
@@ -655,9 +655,9 @@ OpenJDK&#160;64-Bit&#160;Server&#160;VM&#160;Temurin-17.0.20.1+1&#160;(build&#16
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
 <fo:block>Download maven 
-<fo:inline font-weight="bold">3.9.9</fo:inline> from 
-<fo:basic-link external-destination="https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip">
-<fo:inline color="green">https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip</fo:inline></fo:basic-link></fo:block>
+<fo:inline font-weight="bold">3.9.16</fo:inline> from 
+<fo:basic-link external-destination="https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip">
+<fo:inline color="green">https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip</fo:inline></fo:basic-link></fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -704,7 +704,7 @@ OpenJDK&#160;64-Bit&#160;Server&#160;VM&#160;Temurin-17.0.20.1+1&#160;(build&#16
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
+<fo:inline font-family="monospace" font-size="10pt">export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
 <fo:block/>
 export&#160;PATH=$M2_HOME/bin:$PATH
 <fo:block/>
@@ -732,7 +732,7 @@ should look like this:</fo:block>
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
 <fo:inline font-family="monospace" font-size="10pt">export&#160;JAVA_HOME=/your/jdk/parent/folder/java
 <fo:block/>
-export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.9
+export&#160;M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
 <fo:block/>
 export&#160;PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
 <fo:block/>
@@ -790,9 +790,9 @@ export&#160;MAVEN_OPTS='-Xmx1024m'
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">Apache&#160;Maven&#160;3.9.9&#160;(8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+<fo:inline font-family="monospace" font-size="10pt">Apache&#160;Maven&#160;3.9.16&#160;(2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
 <fo:block/>
-Maven&#160;home:&#160;/home/[YOUR_USER]/apps/apache-maven-3.9.9
+Maven&#160;home:&#160;/home/[YOUR_USER]/apps/apache-maven-3.9.16
 <fo:block/>
 Java&#160;version:&#160;17.0.20.1,&#160;vendor:&#160;Eclipse&#160;Adoptium,&#160;runtime:&#160;/home/[YOUR_USER]/apps/jdk-17.0.20.1+1
 <fo:block/>
@@ -934,9 +934,9 @@ OS&#160;name:&#160;"linux",&#160;version:&#160;"6.8.0-45-generic",&#160;arch:&#1
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">Apache&#160;Maven&#160;3.9.9&#160;(8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+<fo:inline font-family="monospace" font-size="10pt">Apache&#160;Maven&#160;3.9.16&#160;(2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
 <fo:block/>
-Maven&#160;home:&#160;C:\data\apache-maven-3.9.9
+Maven&#160;home:&#160;C:\data\apache-maven-3.9.16
 <fo:block/>
 Java&#160;version:&#160;17.0.20.1,&#160;vendor:&#160;Eclipse&#160;Adoptium,&#160;runtime:&#160;C:\Program&#160;Files\Eclipse&#160;Adoptium\jdk-17.0.20.1+1
 <fo:block/>
@@ -2223,6 +2223,34 @@ Updated</fo:block>
 </fo:table-row>
 
 
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/123">
+<fo:inline color="green">123</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+[STORY] Stop passing the Mongo setup inputs to project-staging.yml</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+9/26/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
 
 <fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
 <fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
