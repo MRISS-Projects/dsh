@@ -285,7 +285,7 @@ The issue's four criteria are AC001-AC004, with AC001 made mechanical. AC005-AC0
 spec. parent-poms `#59`'s own criteria are covered by AC001, AC003, AC006 and AC007 run in that
 repository.
 
-- [ ] **AC001** — No file references Maven `3.9.9` as the *target* pinned version. The issue's
+- [x] **AC001** — No file references Maven `3.9.9` as the *target* pinned version. The issue's
   wording ("no file references 3.9.9") would require rewriting historical records (§6), so the
   criterion is defined by these two commands, each of which must print nothing:
 
@@ -300,27 +300,55 @@ repository.
 
   Before this story they print 29 lines in DSH and 39 in parent-poms — exactly the change surface of
   §4 and §5, and nothing historical. That was checked on 2026-09-26 while writing this spec.
-- [ ] **AC002** — Every document that tells a reader which Maven to install shows **3.9.16**:
+- [x] **AC002** — Every document that tells a reader which Maven to install shows **3.9.16**:
   `src/site/markdown/README.md`, root `README.md` after regeneration, and parent-poms
   `infrastructure/src/site/markdown/maven.md`. Both sample-block banners read
   `Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)`.
-- [ ] **AC003** — Every workflow in either repository that invokes `mvn` pins
+- [x] **AC003** — Every workflow in either repository that invokes `mvn` pins
   `maven-version: '3.9.16'` via `stCarolas/setup-maven@v5`, after `actions/setup-java@v4`. Verified
   by sweep: the set of workflow files containing `mvn` and the set containing `maven-version: '3.9.16'`
   are identical, in each repository.
 - [ ] **AC004** — All existing workflow jobs pass after the change — per §9.4, by execution, not
   inspection, wherever a run is possible.
-- [ ] **AC005** — Every workflow that pins Maven also asserts it: eight `Verify Maven version`
+- [x] **AC005** — Every workflow that pins Maven also asserts it: eight `Verify Maven version`
   steps, two in DSH and six in parent-poms.
-- [ ] **AC006** — The guard rejects a wrong version. Demonstrated by §9.1, including `3.9.160`.
-- [ ] **AC007** — The six upstream guard blocks are identical, and the two DSH blocks are identical
+- [x] **AC006** — The guard rejects a wrong version. Demonstrated by §9.1, including `3.9.160`.
+- [x] **AC007** — The six upstream guard blocks are identical, and the two DSH blocks are identical
   to each other. Verified by §9.3's `diff`, not by eye.
-- [ ] **AC008** — `docs/devops/README.md`'s precedence statement is re-measured on 3.9.16 and names
+- [x] **AC008** — `docs/devops/README.md`'s precedence statement is re-measured on 3.9.16 and names
   the version it was measured on (§5.4).
-- [ ] **AC009** — `specs/github-actions-reusable-workflows.md` states 3.9.16 throughout, quotes every
+- [x] **AC009** — `specs/github-actions-reusable-workflows.md` states 3.9.16 throughout, quotes every
   `maven-version`, shows the assertion step, and its rationale no longer claims "latest" (§4.5).
-- [ ] **AC010** — `#59` is merged to parent-poms `master`, `deploy.yml` is dispatched with
+- [x] **AC010** — `#59` is merged to parent-poms `master`, `deploy.yml` is dispatched with
   `release_type: snapshots` and green, and the SHA is commented on `#87` (§7.3).
+
+**AC004 stays open until this story's own PR runs `ci.yml`.** That is the last workflow without a
+run on 3.9.16. Every other criterion is met, with this evidence, gathered from runs rather than
+from the diff. Every run named here logged
+`Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)` from its guard:
+
+| AC | Evidence |
+|---|---|
+| AC001 | Both §8 greps print nothing: parent-poms at `c8e75441`, and DSH after `e95a4615` (the regenerated root `README.md`). Baselines were 39 and 29 lines. |
+| AC002 | `src/site/markdown/README.md`, root `README.md` (`e95a4615`, `RC18`) and parent-poms `maven.md` show 3.9.16 and the real banner. |
+| AC003, AC005 | `js-yaml` sweep (`wf-check.js`): each of the eight jobs that runs `mvn` pins the string `"3.9.16"` after `setup-java`, with `Verify Maven version` directly after it and before any other `mvn`. |
+| AC004 | parent-poms `build.yml` [36275176614](https://github.com/MRISS-Projects/parent-poms/actions/runs/36275176614) and `deploy.yml` [36275529491](https://github.com/MRISS-Projects/parent-poms/actions/runs/36275529491); `project-staging.yml` via DSH `staging.yml` [36275531416](https://github.com/MRISS-Projects/dsh/actions/runs/36275531416); DSH `api-testing.yml` [36275533305](https://github.com/MRISS-Projects/dsh/actions/runs/36275533305); `project-release.yml` via the rehearsal [36275535387](https://github.com/MRISS-Projects/dsh/actions/runs/36275535387). All success. **Pending:** `ci.yml` on the PR. |
+| AC006 | §9.1 harness: 3.9.16 accepted; 3.9.9 and 3.9.160 rejected. The real local banner is accepted. |
+| AC007 | §9.3: five upstream blocks `identical` to `build.yml`'s, and `api-testing.yml`'s identical to `ci.yml`'s. |
+| AC008 | `#114`'s probe on 3.9.16: `FROM_SETTINGS`, `POM_DEFAULT`, `FROM_CLI`, unchanged. |
+| AC009 | `parent-poms@6bf0a368`; see the §4.5 note on step 3. |
+| AC010 | `c8e75441` merged; `deploy.yml` snapshots green; [comment on `#87`](https://github.com/MRISS-Projects/dsh/issues/87#issuecomment-5850561061). |
+
+**The release rehearsal went green end to end**, not just through the guard. It announced all nine
+suppressed writes (`release-prepare`, `release-perform-deploy`, `scm-branch`,
+`scm-checkin-hotfix-version`, `merge-to-master`, `merge-to-develop`, `site-deploy`,
+`commit-readme`, `remove-rc-branch`). Its only real pushes went to `file:///home/runner/work/dsh/dsh`,
+the runner's own workspace (`#72`'s bridge). `git ls-remote --heads --tags origin` before and after
+differs in one ref only: `gh-pages`, `2353cdea` → `184611fe`. **That is the staging run, not the
+rehearsal.** The staging log has the `git push … refs/heads/gh-pages` and the new commits read
+"Publishing … site 0.3.0-SNAPSHOT"; publishing the site is what a staging run does. The DSH task
+branch was excluded from the comparison, because staging legitimately pushes its README commit
+there.
 
 ## 9. Testing approach
 
@@ -447,13 +475,13 @@ the session's attribution lines.
 
 ### Task 3 — parent-poms: PR, merge, deploy
 
-- [ ] Push, open the PR against `master` with content approved by the repo owner first. Body links
+- [x] Push, open the PR against `master` with content approved by the repo owner first. Body links
       DSH `#87`.
-- [ ] Record the `build.yml` guard line from the PR run.
-- [ ] **Repo owner merges.** Claude does not.
-- [ ] Dispatch `deploy.yml` with `release_type: snapshots` on `master`; record the guard line and
+- [x] Record the `build.yml` guard line from the PR run.
+- [x] **Repo owner merges.** Claude does not.
+- [x] Dispatch `deploy.yml` with `release_type: snapshots` on `master`; record the guard line and
       the run URL.
-- [ ] Comment the merge SHA on DSH `#87`.
+- [x] Comment the merge SHA on DSH `#87`.
 
 ### Task 4 — DSH: workflows
 
@@ -489,12 +517,12 @@ the session's attribution lines.
 
 ### Task 6 — DSH: runs that need `#59` on `master`
 
-- [ ] Dispatch `staging.yml` on the task branch; record the `project-staging.yml` guard line; pull
+- [x] Dispatch `staging.yml` on the task branch; record the `project-staging.yml` guard line; pull
       the `Auto-generated README.md` commit; run the DSH AC001 grep — it must now print nothing.
-- [ ] Dispatch `api-testing.yml` on the task branch; record the guard line.
-- [ ] Dispatch the §9.4 release rehearsal; record the guard line, the run's outcome, and the
+- [x] Dispatch `api-testing.yml` on the task branch; record the guard line.
+- [x] Dispatch the §9.4 release rehearsal; record the guard line, the run's outcome, and the
       before/after `ls-remote` comparison.
-- [ ] Fill §8's checkboxes with the evidence, in the style of `#86` §8's evidence table.
+- [x] Fill §8's checkboxes with the evidence, in the style of `#86` §8's evidence table.
 
 ### Task 7 — ship
 
