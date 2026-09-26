@@ -73,6 +73,7 @@ reconciliation that rediscovers them should leave them out.
 |---|---|---|
 | `#85` | **closed** — PR #109 | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
 | `#86` | **closed** — PR #108 | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
+| `#87` | open | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions |
 | `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
 | `#46` | open | Implement integration tests using embedded tomcat server |
 | `#70` | open | Project link not working at maven generated site |
@@ -466,10 +467,17 @@ as APT, which also made the issue's own file list true. Closing `#57` clears eve
   replayed `process-resources` can regenerate the file but never commit it. It no longer counts
   against clearing `3.9.0-SNAPSHOT`.
 
-**DSH `#87` no longer sits in this wave** — it moved to Wave 1 on 2026-09-17, for the reason
-recorded there — so the third pair no longer moves in step: parent-poms `#59` remains on that
-repo's `3.9.0-SNAPSHOT` milestone and is still part of the goal below, while its DSH twin waits for
-`0.4.0-SNAPSHOT`. Parent-poms `#13` (image links broken in the generated Maven site) is **closed**,
+**DSH `#87` is back in this wave, so the third pair moves in step again.** It left for Wave 1 on
+2026-09-17 because `#86` and `#87` contradicted each other inside one wave: `#86` pinned 3.9.9 in
+the workflows and `#87` replaced that same pin with 3.9.16, so building both here meant writing a
+version and immediately rewriting it. That reason expired when `#86` shipped in PR #108. It returned
+on 2026-09-25 because the deferral had split the pair across a release boundary: parent-poms `#59`
+still gates **3.9.0**, and DSH's release wrappers call parent-poms' reusable workflows at `@master`.
+Shipping `#59` alone would make DSH's releases build on 3.9.16 while `ci.yml` and `api-testing.yml`
+stayed on 3.9.9 until `0.4.0-SNAPSHOT` — the same CI-versus-release drift `#99` was built to remove.
+Moving `#59` to `3.10.0-SNAPSHOT` instead was considered and rejected; the pair is delivered as one
+cycle, like `#85`/`#57` and `#86`/`#58`, and for the same reason it needs no release to reach here.
+Parent-poms `#13` (image links broken in the generated Maven site) is **closed**,
 fixed and released in 3.8.0. It was adjacent to DSH `#70` and `#90`, and that adjacency has now
 been tested for one of the two: a staging run on `staging-0.3.0-SNAPSHOT-RC` against the released
 `3.8.0` shows `#90` reproducing unchanged — root and every module still missing `index.html`, the
@@ -490,18 +498,10 @@ anything is deprecated today.
 
 - `#48` — Investigate how to use profiles (dev, staging, production) with Spring and Maven. This
   underpins the `@Profile`-based selection ADR-001 Phase 1 calls for throughout.
-- `#87` — Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions.
-  Not an ADR-001 phase task, and so not in the task list below; it sits here the way `#48` does.
-  **Moved out of Wave 0 on 2026-09-17** because `#86` and `#87` contradicted each other inside one
-  wave: `#86` pins 3.9.9 in the workflows and `#87` replaces that same pin with 3.9.16, so building
-  both in Wave 0 meant writing a version and immediately rewriting it. Deferring `#87` let `#86`
-  ship as written — it did, in PR #108 — and lets the bump land once, later. `#87` now has to change
-  the pin in both repositories: DSH `ci.yml` and `api-testing.yml`, and parent-poms' six workflows
-  via its twin `#59`.
 - `#119` — Migrate every test to JUnit 5 and drop the vintage engine.
 - `#120` — Upgrade Spring Boot to a supported line, version chosen by analysis.
 
-  Like `#48` and `#87`, neither is an ADR-001 phase task. Both were raised on 2026-09-25, while
+  Like `#48`, neither is an ADR-001 phase task. Both were raised on 2026-09-25, while
   specifying `#112`, and they are ordered: `#119` lands first, because Spring Boot 3's
   `spring-boot-starter-test` drops the vintage engine and JUnit 4 tests would stop running
   without failing anything. `#120` belongs in this wave rather than later because Wave 2's
