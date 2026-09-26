@@ -1,21 +1,24 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.config,SwaggerConfig,0,49,0,2,0,15,0,6,0,5
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.rest,DocumentResourceTest,3,542,1,1,0,127,1,14,0,14
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.rest,DocumentResourceTestTestConfiguration,0,13,0,0,0,3,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.config,SwaggerConfigTest,0,60,0,0,0,12,0,2,0,2
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.integration,DocumentResourceITConfiguration,0,13,0,0,0,3,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.integration,DocumentResourceIT,3,542,1,1,0,127,1,14,0,14
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.integration,DshRestApplicationIT,0,24,0,0,0,8,0,4,0,4
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.rest,DocumentResourceTest,0,210,0,0,0,37,0,7,0,7
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.rest,DocumentResource,0,80,0,6,0,17,0,8,0,5
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi,DshRestApplicationTest,0,122,0,0,0,37,0,10,0,10
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi,DshRestApplication,8,16,0,0,3,3,1,3,1,3
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi,DshRestApplication,0,24,0,0,0,6,0,4,0,4
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi,DshRestApplicationTest,0,116,0,0,0,31,0,7,0,7
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.dto,TokenDto,0,26,0,0,0,12,0,6,0,6
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.dto,DocumentStatusDto,0,26,0,0,0,12,0,6,0,6
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionServiceImpl,11,125,1,9,3,31,1,9,0,5
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentHandlingServiceImplTest,0,219,0,0,0,38,0,6,0,6
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentHandlingServiceImpl,0,50,0,10,0,11,0,9,0,4
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentQueueServiceImpl,0,31,0,0,0,8,0,3,0,3
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentEnqueueResponseMessageHandler,0,75,0,8,0,16,0,10,0,6
-DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionException,0,34,0,0,0,14,0,7,0,7
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionServiceImplTest,8,304,0,0,2,55,1,11,1,11
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionExceptionTest,0,122,0,0,0,33,0,7,0,7
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentQueueServiceImplTest,0,43,0,0,0,11,0,4,0,4
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionServiceImpl,11,125,1,9,3,31,1,9,0,5
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentHandlingServiceImplTest,0,211,0,0,0,37,0,6,0,6
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentQueueServiceImpl,0,31,0,0,0,8,0,3,0,3
+DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentSubmissionException,0,34,0,0,0,14,0,7,0,7
 DSH Coverage Report Aggregation Module/dsh-rest-api,com.mriss.dsh.restapi.service,DocumentEnqueueResponseMessageHandlerTest,0,151,0,0,0,28,0,7,0,7
 DSH Coverage Report Aggregation Module/dsh-doc-indexer-worker,com.mriss.dsh.docindexer,DshDocIndexerApplication,0,15,0,0,0,5,0,3,0,3
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.index.dao.solr,SOLRIndexedDocument,3,0,0,0,1,0,1,0,1,0
@@ -24,7 +27,6 @@ DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.document.dao.
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,KeywordSorter,0,29,0,6,0,7,0,6,0,3
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,SentenceSorterTest,2,79,2,2,0,17,2,5,0,5
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,SentenceSorter,0,29,0,6,0,7,0,6,0,3
-DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentTestConfiguration,0,57,0,0,0,7,0,5,0,5
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,Keyword,0,82,0,14,0,25,0,14,0,7
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,TransitionType,0,21,0,0,0,4,0,1,0,1
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,Sentence,0,104,0,16,0,30,0,16,0,8
@@ -32,7 +34,7 @@ DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,Senten
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,Document,6,268,0,16,2,77,0,33,0,25
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
-DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentTest,0,563,0,4,0,131,0,22,0,20
+DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentTest,0,630,0,4,0,142,0,27,0,25
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,9,0,0,0,2,0,2,0,2
 DSH Coverage Report Aggregation Module/dsh-data,com.mriss.dsh.data.models,DocumentStatus.new DocumentStatus() {...},0,19,0,4,0,4,0,4,0,2
