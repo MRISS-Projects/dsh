@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC15 - 20260923-164418
+0.3.0-SNAPSHOT - RC16 - 20260926-172441
 
 ## Introduction
 
@@ -580,6 +580,9 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [112](https://github.com/MRISS-Projects/dsh/issues/112) | task | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill | null | mriss | 9/26/26 |
+| [117](https://github.com/MRISS-Projects/dsh/issues/117) | task | Pass development_branch to the release and hotfix wrappers | null | mriss | 9/25/26 |
+| [111](https://github.com/MRISS-Projects/dsh/issues/111) | task | [STORY] Let release.yml and hotfix.yml dispatch a release rehearsal | null | mriss | 9/23/26 |
 | [94](https://github.com/MRISS-Projects/dsh/issues/94) | task | Make check-spec-references enforcing, or remove it | null | mriss | 9/19/26 |
 | [85](https://github.com/MRISS-Projects/dsh/issues/85) | task | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 | null | mriss | 9/19/26 |
 | [86](https://github.com/MRISS-Projects/dsh/issues/86) | task | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven | null | mriss | 9/18/26 |

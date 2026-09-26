@@ -1,11 +1,17 @@
 com.mriss.dsh.analyser.docprocessor
+com.mriss.dsh.analyser.docprocessor.integration
 com.mriss.dsh.analyser.keywords
+com.mriss.dsh.analyser.keywords.integration
 com.mriss.dsh.analyser.topsentences
+com.mriss.dsh.analyser.topsentences.integration
 com.mriss.dsh.data
 com.mriss.dsh.data.document.dao.mongo
 com.mriss.dsh.data.models
 com.mriss.dsh.docindexer
+com.mriss.dsh.docindexer.integration
 com.mriss.dsh.restapi
+com.mriss.dsh.restapi.config
+com.mriss.dsh.restapi.integration
 com.mriss.dsh.restapi.rest
 com.mriss.dsh.restapi.service
 com.mriss.dsh.solr.numberfilter
