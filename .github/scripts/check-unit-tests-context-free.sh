@@ -24,12 +24,19 @@
 # builders, org.springframework.test.util -- build nothing and are allowed.
 #
 # This is a proxy: it detects the code that starts a context, not a context
-# actually starting. Anything subtler is for review.
+# actually starting. Anything subtler is for review. Known gaps a reviewer should
+# look for, because no token can tell them from legitimate code:
+#   - an unmocked SpringApplication.run(...) -- the worker unit tests contain the
+#     same call inside Mockito.mockStatic(SpringApplication.class), where it
+#     starts nothing;
+#   - new SpringApplicationBuilder(...).run(...) -- a unit test may build one as
+#     an argument without running it.
 #
 # Usage: check-unit-tests-context-free.sh [ROOT]
 #
-# ROOT defaults to the repository root. Exits 1 naming each offending file, line
-# and matched token; exits 0 when every unit test is context-free.
+# ROOT defaults to the repository root. Exits 0 when every unit test is
+# context-free; 1 naming each offending file, line and matched token, or when no
+# unit test source is found at all; 2 when the search itself fails.
 
 set -euo pipefail
 
@@ -38,12 +45,23 @@ ROOT="$(cd "${1:-${SCRIPT_DIR}/../..}" && pwd)"
 
 PATTERN='org\.springframework\.test\.context|org\.springframework\.boot\.test\.(context|autoconfigure|mock\.mockito)|webAppContextSetup|new [A-Za-z]*ApplicationContext\('
 
-mapfile -d '' FILES < <(find "$ROOT" -path '*/target' -prune -o -path '*/src/test/java/*' -name '*.java' \
-    ! -name '*IT.java' ! -name '*IntegrationTest.java' -print0)
+# The list goes through a file, not a process substitution, so that find failing
+# (an unreadable directory, say) is seen rather than yielding a partial list.
+LIST="$(mktemp)"
+trap 'rm -f "$LIST"' EXIT
 
+if ! find "$ROOT" -path '*/target' -prune -o -path '*/src/test/java/*' -name '*.java' \
+    ! -name '*IT.java' ! -name '*IntegrationTest.java' -print0 > "$LIST"; then
+  echo "ERROR: listing the test sources failed; nothing was checked."
+  exit 2
+fi
+mapfile -d '' FILES < "$LIST"
+
+# A run that checked nothing is a failure, not a pass: a layout change that stops
+# the search matching would otherwise leave this gate green and vacuous.
 if [ "${#FILES[@]}" -eq 0 ]; then
-  echo "No unit test sources found under ${ROOT}."
-  exit 0
+  echo "ERROR: No unit test sources found under ${ROOT}; nothing was checked."
+  exit 1
 fi
 
 # grep is called directly, not through xargs: xargs folds grep's "no match" (1)

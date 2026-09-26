@@ -21,6 +21,7 @@ trap 'rm -rf "$WORK"' EXIT
 
 cases=0
 failures=0
+skipped=0
 OUT=""
 STATUS=0
 
@@ -35,6 +36,20 @@ new_case() {
 # write ROOT FILE_NAME -> writes stdin to the fixture module's test package.
 write() {
   cat > "$1/mod/src/test/java/com/example/$2"
+}
+
+# add_clean_unit_test ROOT -> gives the fixture one context-free unit test, so
+# a case about what is excluded still has something to check: a tree with no
+# unit test at all is its own failure.
+add_clean_unit_test() {
+  printf 'public class CleanTest {\n}\n' | write "$1" CleanTest.java
+}
+
+# skip NAME REASON -- for a case whose precondition the platform will not honour.
+skip() {
+  skipped=$((skipped + 1))
+  echo "SKIP: $1"
+  echo "      $2"
 }
 
 # run_checker ROOT -> captures combined output in OUT and status in STATUS.
@@ -93,12 +108,14 @@ check "SpringRunner in a unit test is a violation" 1 "FooTest.java"
 # --- 3. the same content in a *IT is allowed ----------------------------------
 d="$(new_case)"
 printf '%s\n' "$SPRING_RUNNER_TEST" | write "$d" FooIT.java
+add_clean_unit_test "$d"
 run_checker "$d"
 check "SpringRunner in a *IT is allowed" 0
 
 # --- 4. the same content in a *IntegrationTest is allowed ---------------------
 d="$(new_case)"
 printf '%s\n' "$SPRING_RUNNER_TEST" | write "$d" FooIntegrationTest.java
+add_clean_unit_test "$d"
 run_checker "$d"
 check "SpringRunner in a *IntegrationTest is allowed" 0
 
@@ -158,8 +175,32 @@ check "MockMultipartFile and ReflectionTestUtils are allowed" 0
 d="$(new_case)"
 mkdir -p "${d}/mod/target/src/test/java/com/example"
 printf '%s\n' "$SPRING_RUNNER_TEST" > "${d}/mod/target/src/test/java/com/example/FooTest.java"
+add_clean_unit_test "$d"
 run_checker "$d"
 check "a violation under target/ is ignored" 0
+
+# --- 10. a tree with no unit test is a failure --------------------------------
+# A layout change that stops the search matching would otherwise leave CI green
+# while checking nothing.
+d="$(new_case)"
+run_checker "$d"
+check "a tree with no unit test is a failure" 1 "No unit test sources found"
+
+# --- 11. a search that fails is a failure, not a pass -------------------------
+# Skipped where chmod does not actually revoke read access (Git Bash on Windows,
+# or running as root); the guard is exercised on the Linux runner.
+d="$(new_case)"
+add_clean_unit_test "$d"
+unreadable="${d}/mod/src/test/java/com/example/UnreadableTest.java"
+printf 'public class UnreadableTest {\n}\n' > "$unreadable"
+chmod 000 "$unreadable"
+if [ -r "$unreadable" ]; then
+  skip "a search that fails is a failure" "chmod does not revoke read access here"
+else
+  run_checker "$d"
+  check "a search that fails is a failure" 2 "the search failed"
+fi
+chmod 644 "$unreadable"
 
 # --- summary ------------------------------------------------------------------
 echo
@@ -168,4 +209,8 @@ if [ "$failures" -gt 0 ]; then
   exit 1
 fi
 
-echo "All ${cases} case(s) passed."
+if [ "$skipped" -gt 0 ]; then
+  echo "All ${cases} case(s) passed; ${skipped} skipped."
+else
+  echo "All ${cases} case(s) passed."
+fi
