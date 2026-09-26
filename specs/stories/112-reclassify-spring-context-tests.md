@@ -451,7 +451,7 @@ For each of `dsh-doc-indexer-worker` (`com.mriss.dsh.docindexer`, `DshDocIndexer
 
 ### Task 10 — The issue
 
-- [ ] After the spec is approved: update `#112`'s body — AC001 amended per §4.1, AC008–AC010 added —
+- [x] After the spec is approved: update `#112`'s body — AC001 amended per §4.1, AC008–AC010 added —
   with the owner's approval of the edited text.
 
 ## 7. Verification
