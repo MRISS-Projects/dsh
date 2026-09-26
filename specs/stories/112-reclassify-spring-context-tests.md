@@ -484,7 +484,14 @@ for that reason; every red and green run from then on used `clean install`.
 
 ### 7.2 Context checker (Task 2)
 
-Test script: 10 cases (the nine of Task 2, case 6 as two), all pass. Against the tree before Tasks
+Test script at Task 2: 10 checks (the nine cases of Task 2, case 6 as two), all pass. Review rounds
+added three more, for 13 in CI (the grep-failure check is skipped on Windows, where `chmod` does
+not revoke read access):
+
+- the local review: an empty tree fails, and a failing search fails;
+- PR #121, Copilot: an `*IT` outside an `integration` package is not exempt.
+
+Against the tree before Tasks
 3–6 the checker exited 1 naming exactly the eight classes of §3; `DocumentTestConfiguration` did not
 appear. After Task 6: `Every unit test is free of a Spring context.`, exit 0.
 
