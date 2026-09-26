@@ -9,7 +9,7 @@ on:
 
 jobs:
   staging:
-    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@issue-78-remove-consumer-services-from-staging
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@master
     with:
       git_project: dsh
       branch_name: ${{ inputs.branch_name }}
