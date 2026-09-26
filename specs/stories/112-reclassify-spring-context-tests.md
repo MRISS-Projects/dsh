@@ -245,15 +245,15 @@ the exit code.
 
 ### Task 1 — Baseline
 
-- [ ] `mvn -B install > .logs/mvn-install-baseline.log 2>&1` — expect green.
-- [ ] Record per-module LINE and BRANCH from each module's `target/site/jacoco/jacoco.csv` into §7.
-- [ ] Record `Tests run:` totals per module.
+- [x] `mvn -B install > .logs/mvn-install-baseline.log 2>&1` — expect green.
+- [x] Record per-module LINE and BRANCH from each module's `target/site/jacoco/jacoco.csv` into §7.
+- [x] Record `Tests run:` totals per module.
 
 ### Task 2 — The context checker, red against today's tree
 
 **Files:** `.github/scripts/check-unit-tests-context-free.sh`, `…test.sh`, `.github/workflows/ci.yml`
 
-- [ ] Write `check-unit-tests-context-free.test.sh` first, with cases:
+- [x] Write `check-unit-tests-context-free.test.sh` first, with cases:
   1. Clean unit test using `MockitoJUnitRunner` → exit 0.
   2. `@RunWith(SpringRunner.class)` in `FooTest.java` → exit 1, output names the file.
   3. Same content in `FooIT.java` → exit 0.
@@ -263,8 +263,8 @@ the exit code.
   7. `new AnnotationConfigApplicationContext(` → exit 1.
   8. `MockMultipartFile` and `ReflectionTestUtils` imports → exit 0.
   9. A file under `target/` with a violation → ignored, exit 0.
-- [ ] Run it — fails, the checker does not exist.
-- [ ] Write the checker. Interface: `check-unit-tests-context-free.sh [ROOT]`, `ROOT` defaulting to
+- [x] Run it — fails, the checker does not exist.
+- [x] Write the checker. Interface: `check-unit-tests-context-free.sh [ROOT]`, `ROOT` defaulting to
   the repository root. Pattern:
 
   ```bash
@@ -276,11 +276,11 @@ the exit code.
 
   Exit 1 with a header line (`Unit tests must not start a Spring context. Rename to *IT and move to
   an integration package, or remove the context:`) when grep matched anything.
-- [ ] Test script green.
-- [ ] Run the checker on the repository — **red, naming exactly the eight classes in §3** (plus
+- [x] Test script green.
+- [x] Run the checker on the repository — **red, naming exactly the eight classes in §3** (plus
   `DocumentTestConfiguration`, which is `@Configuration` but imports nothing from the banned
   packages, so it should *not* appear — confirm).
-- [ ] Add to `ci.yml` before `Build and test all modules`:
+- [x] Add to `ci.yml` before `Build and test all modules`:
 
   ```yaml
       - name: Test the unit-test context checker
@@ -290,20 +290,20 @@ the exit code.
         run: bash .github/scripts/check-unit-tests-context-free.sh
   ```
 
-- [ ] Commit: `test(#112): check that unit tests never start a Spring context`. CI will be red on
+- [x] Commit: `test(#112): check that unit tests never start a Spring context`. CI will be red on
   this commit until Task 6; the branch is not pushed until the end, so that is acceptable locally.
 
 ### Task 3 — `dsh-data`: `DocumentTest` context-free
 
-- [ ] Replace the four `@Autowired @Qualifier` fields with fields assigned in `@Before`, from private
+- [x] Replace the four `@Autowired @Qualifier` fields with fields assigned in `@Before`, from private
   static factory methods carrying the bodies of `DocumentTestConfiguration`'s four `@Bean` methods
   (same file paths, same titles). Drop `@RunWith(SpringRunner.class)` and
   `@ContextConfiguration`, and the Spring imports. Every test method stays as it is.
-- [ ] Delete `DocumentTestConfiguration.java`.
-- [ ] `mvn -B -pl dsh-data -am install > .logs/mvn-install-dsh-data.log 2>&1` — green, same test
+- [x] Delete `DocumentTestConfiguration.java`.
+- [x] `mvn -B -pl dsh-data -am install > .logs/mvn-install-dsh-data.log 2>&1` — green, same test
   count as the baseline, coverage not lower than baseline.
-- [ ] Checker no longer names `DocumentTest`.
-- [ ] Commit: `test(#112): build Document fixtures without a Spring context`.
+- [x] Checker no longer names `DocumentTest`.
+- [x] Commit: `test(#112): build Document fixtures without a Spring context`.
 
 Note: fixtures now rebuild per test instead of being context singletons shared across methods.
 `testGetKeyWords` and `testGetRelevantSentences` mutate `docTitleConstructor`; with fresh fixtures
@@ -311,7 +311,7 @@ they no longer leak into each other, which is strictly safer.
 
 ### Task 4 — `dsh-rest-api`: `DocumentHandlingServiceImplTest` on Mockito
 
-- [ ] Replace the header with:
+- [x] Replace the header with:
 
   ```java
   @RunWith(MockitoJUnitRunner.class)
@@ -326,17 +326,17 @@ they no longer leak into each other, which is strictly safer.
 
   Drop the `DocumentQueueService` mock (the service does not use it), `Mockito.reset(dao)` (a fresh
   mock per test under the runner), and the Spring imports. Test bodies unchanged.
-- [ ] If `MockitoJUnitRunner` (strict stubs) flags the re-stubbing in `testGetDocumentByHash` as
+- [x] If `MockitoJUnitRunner` (strict stubs) flags the re-stubbing in `testGetDocumentByHash` as
   unnecessary, split that method into one test per branch rather than switching to a lenient runner.
-- [ ] Module build green; checker no longer names it. Commit:
+- [x] Module build green; checker no longer names it. Commit:
   `test(#112): test DocumentHandlingServiceImpl without a Spring context`.
 
 ### Task 5 — `dsh-rest-api`: split `DshRestApplicationTest`, move `DocumentResourceTest`, unit-test the controller
 
-- [ ] Create `integration/DshRestApplicationIT.java` holding `contextLoads` and the two `@MockBean`s,
+- [x] Create `integration/DshRestApplicationIT.java` holding `contextLoads` and the two `@MockBean`s,
   with `@RunWith(SpringRunner.class) @SpringBootTest`. No explicit `classes`: `@SpringBootTest`
   searches upward from the test's package, and `integration` is a child of the application's package.
-- [ ] Rewrite `DshRestApplicationTest` context-free: keep `testDocumentStatusDto`, `testTokenDto`,
+- [x] Rewrite `DshRestApplicationTest` context-free: keep `testDocumentStatusDto`, `testTokenDto`,
   `testSwaggerConfig`; `testConfigure` uses `new DshRestApplication().configure(new
   SpringApplicationBuilder())` (protected, same package); add:
 
@@ -351,12 +351,12 @@ they no longer leak into each other, which is strictly safer.
   }
   ```
 
-- [ ] `git mv` `rest/DocumentResourceTest.java` → `integration/DocumentResourceIT.java`; rename the
+- [x] `git mv` `rest/DocumentResourceTest.java` → `integration/DocumentResourceIT.java`; rename the
   class and logger, change the package. `@ContextConfiguration` already names
   `DshRestApplication.class` and an absolute `classpath:/` resource, so nothing else moves.
-- [ ] Run the module build **before** writing the new controller test — coverage for
+- [x] Run the module build **before** writing the new controller test — coverage for
   `DocumentResource` drops to zero and `jacoco:check` fails. That is the red.
-- [ ] Write a new `rest/DocumentResourceTest.java` — `MockitoJUnitRunner`, `@Mock
+- [x] Write a new `rest/DocumentResourceTest.java` — `MockitoJUnitRunner`, `@Mock
   DocumentSubmissionService`, `@Mock DocumentHandlingService`, `@InjectMocks DocumentResource`,
   `MockMultipartFile` for contents, `null` for the unused `HttpServletRequest`:
   - `submitDocument_whenValid_returnsToken` — stub `getTokenFromDocument` → `"tok"`; expect
@@ -369,9 +369,9 @@ they no longer leak into each other, which is strictly safer.
     `TOKEN_NOT_FOUND_MESSAGE + token`.
   - `getStatus_whenDocumentFound_returnsItsStatus` — status description and message from a
     `new Document("t")`.
-- [ ] Module build green at ≥ 95% LINE and BRANCH. If short, the shortfall names the class; add unit
+- [x] Module build green at ≥ 95% LINE and BRANCH. If short, the shortfall names the class; add unit
   tests for it. Never an exemption.
-- [ ] Checker clean for `dsh-rest-api`. Commit:
+- [x] Checker clean for `dsh-rest-api`. Commit:
   `test(#112): move the rest-api context tests to integration and unit-test the controller`.
 
 ### Task 6 — The four workers
@@ -382,11 +382,11 @@ For each of `dsh-doc-indexer-worker` (`com.mriss.dsh.docindexer`, `DshDocIndexer
 `DshTopSentencesExtractorApplication`), `dsh-doc-processor-worker`
 (`com.mriss.dsh.analyser.docprocessor`, `DshDocProcessorWorkerApplication`):
 
-- [ ] `git mv` the smoke test to `integration/<X>ApplicationIT.java`; rename the class and change the
+- [x] `git mv` the smoke test to `integration/<X>ApplicationIT.java`; rename the class and change the
   package. `@SpringBootTest` still finds the application by searching upward.
-- [ ] Module build — **red**: no `jacoco.exec`, `enforce-coverage-data-exists` fails. Record the
+- [x] Module build — **red**: no `jacoco.exec`, `enforce-coverage-data-exists` fails. Record the
   message once in §7.
-- [ ] Write `<X>ApplicationTest.java`:
+- [x] Write `<X>ApplicationTest.java`:
 
   ```java
   public class DshDocIndexerApplicationTest {
@@ -407,47 +407,47 @@ For each of `dsh-doc-indexer-worker` (`com.mriss.dsh.docindexer`, `DshDocIndexer
   }
   ```
 
-- [ ] Module build green at ≥ 95%. The first module also confirms `mockStatic` works on the mixed
+- [x] Module build green at ≥ 95%. The first module also confirms `mockStatic` works on the mixed
   Mockito classpath (§4.6); if it does not, stop and bring it back — do not reach for a seam or a
   version bump without agreement.
-- [ ] One commit per module: `test(#112): unit-test <module> main without a Spring context`.
-- [ ] After the fourth, the checker is **green on the whole repository**.
+- [x] One commit per module: `test(#112): unit-test <module> main without a Spring context`.
+- [x] After the fourth, the checker is **green on the whole repository**.
 
 ### Task 7 — Full build, integration build, failsafe measurement
 
-- [ ] `mvn -B install > .logs/mvn-install.log 2>&1` — green; no IT ran under surefire
+- [x] `mvn -B install > .logs/mvn-install.log 2>&1` — green; no IT ran under surefire
   (no `TEST-*IT.xml` in any `target/surefire-reports`).
-- [ ] `mvn -B install -DintegrationTests > .logs/mvn-install-it.log 2>&1`. Expect 6 IT classes
+- [x] `mvn -B install -DintegrationTests > .logs/mvn-install-it.log 2>&1`. Expect 6 IT classes
   (`DshRestApplicationIT`, `DocumentResourceIT`, four worker ITs) under failsafe.
-- [ ] If `dsh-rest-api`'s ITs fail to load classes because of `repackage`: §4.5's parent-poms
+- [x] If `dsh-rest-api`'s ITs fail to load classes because of `repackage`: §4.5's parent-poms
   commit, light round trip, SHA commented on `#112`; rerun with `-U` until green. Otherwise record
   the passing run.
-- [ ] Confirm `jacoco-it.exec` exists and `jacoco.exec` totals are unchanged by the IT run.
+- [x] Confirm `jacoco-it.exec` exists and `jacoco.exec` totals are unchanged by the IT run.
 
 ### Task 8 — Ban PowerMock in parent-poms
 
-- [ ] In parent-poms on `master` (pulled): add §4.4's execution; one line in its `CLAUDE.md`.
-- [ ] Probe, red: in a scratch copy of a consuming module (or in DSH with the dependency added
+- [x] In parent-poms on `master` (pulled): add §4.4's execution; one line in its `CLAUDE.md`.
+- [x] Probe, red: in a scratch copy of a consuming module (or in DSH with the dependency added
   locally, never committed), add `org.powermock:powermock-api-mockito2:2.0.9` in `test` scope and run
   `mvn -B validate` against the locally installed parent — expect failure naming the ban. Then with
   `-Denforcer.skip=true` — expect the same failure.
-- [ ] Without the dependency, DSH `mvn -B validate` is green.
-- [ ] Commit on parent-poms `master`, `mvn -B install`, dispatch `deploy.yml` with
+- [x] Without the dependency, DSH `mvn -B validate` is green.
+- [x] Commit on parent-poms `master`, `mvn -B install`, dispatch `deploy.yml` with
   `release_type: snapshots`, comment the SHA on `#112` stating what it does and why.
 
 ### Task 9 — Documentation
 
-- [ ] `CLAUDE.md`: under "Quality gates", replace the "integration tests are not yet a separately
+- [x] `CLAUDE.md`: under "Quality gates", replace the "integration tests are not yet a separately
   enforced gate" parenthesis with: integration tests are `*IT` in an `integration` package, run under
   `-DintegrationTests` and on every staging build, measured by `jacoco-it.exec`, never by the gate. Add
   a **Hard rules** line: *PowerMock is forbidden here and in parent-poms, enforced by the
   `ban-powermock` enforcer execution; a unit test never starts a Spring context, enforced by
   `check-unit-tests-context-free.sh` in CI.* Coding standards stay in `.github/` — `CLAUDE.md` states
   the rule and points to `testing-patterns.md`.
-- [ ] `testing-patterns.md` per §5.1; `java-conventions.md:60`; `test-generation.md`;
+- [x] `testing-patterns.md` per §5.1; `java-conventions.md:60`; `test-generation.md`;
   `docs/process/ai-driven-development.md:163`.
-- [ ] Markdown lint (the command in `CLAUDE.md`) clean.
-- [ ] Commit: `docs(#112): state the unit/integration rule and the PowerMock ban`.
+- [x] Markdown lint (the command in `CLAUDE.md`) clean.
+- [x] Commit: `docs(#112): state the unit/integration rule and the PowerMock ban`.
 
 ### Task 10 — The issue
 
@@ -458,6 +458,83 @@ For each of `dsh-doc-indexer-worker` (`com.mriss.dsh.docindexer`, `DshDocIndexer
 
 Filled in while building: baseline figures (Task 1), the red messages (Tasks 5 and 6), the failsafe
 measurement (Task 7), the PowerMock probe (Task 8), the parent-poms SHAs.
+
+### 7.1 Baseline and result (Task 1, Task 7)
+
+Figures from `dsh-coverage-report`'s aggregate `jacoco.csv` — the modules produce no per-module CSV.
+"After" is `mvn -B clean install`, unit tests only.
+
+| Module | Tests before | Tests after | LINE before | LINE after | BRANCH before | BRANCH after |
+|---|---|---|---|---|---|---|
+| `dsh-data` | 51 | 51 | 235/242 97.11% | 235/242 97.11% | 81/82 98.78% | 81/82 98.78% |
+| `dsh-rest-api` | 36 | 36 | 139/145 95.86% | 142/145 97.93% | 35/36 97.22% | 35/36 97.22% |
+| `dsh-doc-indexer-worker` | 1 | 2 | 5/5 | 5/5 | — | — |
+| `dsh-keyword-extractor` | 2 | 2 | 5/5 | 5/5 | — | — |
+| `dsh-top-sentences-extractor` | 2 | 2 | 5/5 | 5/5 | — | — |
+| `dsh-doc-processor-worker` | 2 | 2 | 5/5 | 5/5 | — | — |
+| `solr-terms-vector-order` | 22 | 22 | 88/88 | 88/88 | 30/30 | 30/30 |
+| `solr-advanced-numbers-filter` | 10 | 10 | 24/24 | 24/24 | 14/14 | 14/14 |
+
+"Before" rest-api and worker figures included context-started tests; "after" is unit tests alone.
+No `TEST-*IT.xml` in any `target/surefire-reports`.
+
+**A trap met on the way.** JaCoCo's agent appends to `target/jacoco.exec`, so a module build
+without `clean` measures the previous run's data too. The first red run for Task 5 passed the gate
+for that reason; every red and green run from then on used `clean install`.
+
+### 7.2 Context checker (Task 2)
+
+Test script: 10 cases (the nine of Task 2, case 6 as two), all pass. Against the tree before Tasks
+3–6 the checker exited 1 naming exactly the eight classes of §3; `DocumentTestConfiguration` did not
+appear. After Task 6: `Every unit test is free of a Spring context.`, exit 0.
+
+The draft pipeline through `xargs` was replaced by a direct `grep` over a `find -print0` array:
+`xargs` folds grep's "no match" (1) and "error" (2) into the same 123, which made every clean case fail.
+
+### 7.3 Red messages (Tasks 5, 6)
+
+- `dsh-rest-api` with `DocumentResourceTest` moved and no controller unit test:
+  `lines covered ratio is 0.83` and `branches covered ratio is 0.75, but expected minimum is 0.95`.
+  With the controller test written, branches were still `0.91`: `SwaggerConfig.webMvcRequestHandlerProvider`
+  had only ever been reached by context startup. `SwaggerConfigTest` covers its PathPatternParser
+  filter with no context.
+- Each worker with its smoke test moved: `enforce-coverage-data-exists` failed — *"This module has
+  production sources … but produced no coverage data (no jacoco.exec in its build directory)"*.
+- `mockStatic(SpringApplication.class)` works on the mixed Mockito classpath (§4.6); no seam, no
+  version change.
+
+### 7.4 Failsafe measurement (Task 7)
+
+`mvn -B clean install -DintegrationTests` against the parent as it stood: both `dsh-rest-api` ITs
+errored with `NoClassDefFoundError: com/mriss/dsh/restapi/service/DocumentQueueService` — §4.5's
+`repackage` case. Fixed in parent-poms by `classesDirectory` =
+`${project.build.outputDirectory}` on failsafe (light round trip, `6a60713c`). Rerun green: 6 IT
+classes, 15 tests — `DocumentResourceIT` 6, `DshRestApplicationIT` 2, `DshDocIndexerApplicationIT` 1,
+the three analyser ITs 2 each. `jacoco-it.exec` written in the five modules holding ITs. The aggregate
+unit `jacoco.csv` is byte-identical before and after the IT run.
+
+### 7.5 PowerMock probe (Task 8)
+
+`org.powermock:powermock-api-mockito2:2.0.9`, test scope, added to `dsh-data` locally (never
+committed):
+
+- Before the ban: `mvn -B -pl dsh-data validate` → BUILD SUCCESS (the red).
+- With the ban installed: exit 1, `enforce (ban-powermock) … PowerMock is forbidden in every MRISS
+  project … org.powermock:powermock-api-mockito2:jar:2.0.9 <--- banned via the exclude/include list`.
+- With `-Denforcer.skip=true`: the same failure.
+- Dependency removed: DSH `mvn -B validate` green, `ban-powermock` ran in all 13 modules.
+
+parent-poms commit: `d39ccae4`.
+
+### 7.6 parent-poms round trip
+
+Both commits (`6a60713c` failsafe `classesDirectory`, `d39ccae4` `ban-powermock`) pushed to
+parent-poms `master` and deployed as `3.9.0-SNAPSHOT` by `deploy.yml`, `release_type: snapshots`:
+[run 36203811843](https://github.com/MRISS-Projects/parent-poms/actions/runs/36203811843), success.
+SHAs commented on `#112`:
+[issuecomment-5841463833](https://github.com/MRISS-Projects/dsh/issues/112#issuecomment-5841463833).
+Final `mvn -B clean install` against that parent: green, 8 coverage checks met, `ban-powermock` ran
+in all 13 modules.
 
 ## 8. Acceptance criteria
 
