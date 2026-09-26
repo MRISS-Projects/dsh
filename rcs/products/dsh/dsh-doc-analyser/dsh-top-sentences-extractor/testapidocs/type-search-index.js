@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.mriss.dsh.analyser.topsentences","l":"DshTopSentencesExtractorApplicationTest"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.mriss.dsh.analyser.topsentences.integration","l":"DshTopSentencesExtractorApplicationIT"},{"p":"com.mriss.dsh.analyser.topsentences","l":"DshTopSentencesExtractorApplicationTest"}];updateSearchResults();
