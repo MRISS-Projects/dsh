@@ -475,11 +475,16 @@ the session's attribution lines.
 - [x] Run markdownlint per `CLAUDE.md`.
 - [x] `mvn -B install`, logged to `.logs/mvn-install.log` with the exit code reported, per `CLAUDE.md`.
       — **First run failed**, `jacoco:check` on `dsh-rest-api`: lines 0.48, branches 0.92. Not
-      this change. Opening the repository in VS Code at 18:21 let its Java extension auto-build,
-      and it wrote **test** classes into `target/classes` — ten in `dsh-rest-api`, eight in
-      `dsh-data` — where JaCoCo counts them as uncovered production code. A build without `clean`
-      keeps them. `mvn -B clean install` (`.logs/mvn-clean-install.log`): exit 0, BUILD SUCCESS,
-      8 of 8 coverage checks met, 127 unit tests.
+      this change: it is **`#124`**, reproduced exactly as that issue's run B. The log shows
+      `Copying 14 resources from target\test-classes to target\classes` in `dsh-data` and
+      `Copying 20` in `dsh-rest-api`, and 13 classes analysed where a clean build has 10 — the three
+      `*IT` classes that `jacoco:check`'s `*Test` excludes do not match. The copy comes from
+      `maven-remote-resources-plugin`'s default `attachToMain=true` pointed at `target/test-classes`,
+      so any `install` without `clean` after an earlier build does this. **Corrected:** this note
+      first blamed VS Code's Java extension, from a stray class timestamped just after the
+      repository was opened in it; the log's copy line, not checked at the time, shows Maven put
+      the classes there. `mvn -B clean install` (`.logs/mvn-clean-install.log`): exit 0, BUILD
+      SUCCESS, 8 of 8 coverage checks met, 127 unit tests — the workaround until `#124` lands.
 - [x] Commit: `docs(#87): move the Maven 3.9.16 pin into the docs`.
 
 ### Task 6 — DSH: runs that need `#59` on `master`
