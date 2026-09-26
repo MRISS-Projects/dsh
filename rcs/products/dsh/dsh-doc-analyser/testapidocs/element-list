@@ -1,3 +1,6 @@
 com.mriss.dsh.analyser.docprocessor
+com.mriss.dsh.analyser.docprocessor.integration
 com.mriss.dsh.analyser.keywords
+com.mriss.dsh.analyser.keywords.integration
 com.mriss.dsh.analyser.topsentences
+com.mriss.dsh.analyser.topsentences.integration
