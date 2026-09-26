@@ -548,8 +548,8 @@ in all 13 modules.
 - [ ] AC001 (amended): each of the eight classes in §3 is either rewritten so it starts no Spring
   context, or renamed `*IT` and moved to an `integration` package under its module's
   `src/test/java`. No class outside `*IT`/`*IntegrationTest` starts a Spring context.
-- [ ] AC002: `mvn -B install` is green across all modules, and `coverage.data.check.skip` appears
-  nowhere in the repository.
+- [ ] AC002: `mvn -B install` is green across all modules, and no module or build configuration
+  sets `coverage.data.check.skip`.
 - [ ] AC003: each of the four worker modules runs at least one surefire unit test and produces
   `target/jacoco.exec`.
 - [ ] AC004: `dsh-rest-api` and `dsh-data` hold ≥ 95% LINE and BRANCH from unit tests alone.
