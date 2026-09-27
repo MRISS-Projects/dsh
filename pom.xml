@@ -189,6 +189,13 @@
                 <configuration>
                     <!-- DSH-specific: site descriptor lives in src/site-desc -->
                     <siteDirectory>src/site-desc</siteDirectory>
+                    <!-- DSH-specific: the markdown and FAQ pages are rendered from target/generated-site,
+                         where the <resources> blocks copy src/site filtered. parent-poms' 'deployment' profile
+                         (products/pom.xml, 2b342fba, parent-poms#55) redirects generatedSiteDirectory away from
+                         it, which is right for a product rendering from src/site but left every DSH module
+                         without index.html under -Ddeployment (MRISS-Projects/dsh#90). siteDirectory above holds
+                         only site.xml, so pointing back here cannot produce the clash #55 fixed. -->
+                    <generatedSiteDirectory>${project.build.directory}/generated-site</generatedSiteDirectory>
                 </configuration>
             </plugin>
             <!-- FR003/FR004: release plugin config – scmCommentPrefix is DSH-specific; other defaults come from parent -->
