@@ -56,7 +56,7 @@ promise something it does not deliver, and the label alone is what a reader sees
 
 The issue has no criteria of its own. All of these come from this spec.
 
-- [ ] **AC001** — No published DSH page links `github.com/orgs/MRISS-Projects/projects`. After the
+- [x] **AC001** — No published DSH page links `github.com/orgs/MRISS-Projects/projects`. After the
   staging run, this prints `0`:
 
   ```bash
@@ -65,11 +65,24 @@ The issue has no criteria of its own. All of these come from this spec.
     | grep -vE '/(apidocs|testapidocs|xref|xref-test|jacoco|jacoco-aggregate)/' | wc -l
   ```
 
-- [ ] **AC002** — The home page of every one of the 13 sites has a top-bar "Milestones" link to
+  *Evidence:* staging run
+  [`36335688376`](https://github.com/MRISS-Projects/dsh/actions/runs/36335688376) published
+  `gh-pages` commit `0ca98e688`, and the command printed `0`. As a check that the grep can match,
+  the same command with the new URL finds 254 pages carrying the `Milestones` link.
+- [x] **AC002** — The home page of every one of the 13 sites has a top-bar "Milestones" link to
   `https://github.com/MRISS-Projects/dsh/milestones`, and that URL returns HTTP 200.
+  *Evidence:* once Pages reported `0ca98e688` `built`, the live `index.html` of the root and each of
+  the 12 modules contained
+  `href="https://github.com/MRISS-Projects/dsh/milestones" class="externalLink">Milestones`: 13 of
+  13. The milestones URL returned `200`.
 - [ ] **AC003** — `#70` gets a comment that summarises §2 and §3 and links this spec. The issue has
   never had a body, and the comment is where its diagnosis lives.
-- [ ] **AC004** — `mvn -B clean install` passes with both quality gates, per `CLAUDE.md`.
+- [x] **AC004** — `mvn -B clean install` passes with both quality gates, per `CLAUDE.md`.
+  *Evidence:* on commit `d15df4d20`, `maven exit=0`, `BUILD SUCCESS`, and
+  `All coverage checks have been met.` in each of the 8 code-bearing modules.
+
+**Red/green**, per §5: before the change the local site build gave `13` home pages with the old link
+and `0` with the new one. After it, `0` and `13`. Both builds printed `BUILD SUCCESS`.
 
 ## 5. Testing approach
 
@@ -131,20 +144,20 @@ session's attribution lines.
 
 **Files:** Modify `src/site-desc/site.xml:13`.
 
-- [ ] Run §5's build and both counts. Expect `13` and `0`. Restore `README.md`.
-- [ ] Replace the `Project` item with the `Milestones` item, exactly as in §3.
-- [ ] Re-run the build and counts. Expect `0` and `13`. Restore `README.md`.
-- [ ] Run `mvn -B clean install` logged to `.logs/mvn-clean-install.log`, and report the exit code
+- [x] Run §5's build and both counts. Expect `13` and `0`. Restore `README.md`.
+- [x] Replace the `Project` item with the `Milestones` item, exactly as in §3.
+- [x] Re-run the build and counts. Expect `0` and `13`. Restore `README.md`.
+- [x] Run `mvn -B clean install` logged to `.logs/mvn-clean-install.log`, and report the exit code
       (AC004).
-- [ ] Commit: `build(#70): point the site's top-bar link at the milestones page`.
+- [x] Commit: `build(#70): point the site's top-bar link at the milestones page`.
 
 ### Task 2 — publish and verify
 
-- [ ] Push the branch and dispatch `staging.yml` with `branch_name=issue-70-fix-project-nav-link`.
+- [x] Push the branch and dispatch `staging.yml` with `branch_name=issue-70-fix-project-nav-link`.
       Record the run URL, then `git pull` for the README commit.
-- [ ] Run AC001 and AC002, and record the output.
-- [ ] Fill §4's checkboxes with the evidence.
-- [ ] Commit: `docs(#70): record the staging evidence in the story spec`.
+- [x] Run AC001 and AC002, and record the output.
+- [x] Fill §4's checkboxes with the evidence.
+- [x] Commit: `docs(#70): record the staging evidence in the story spec`.
 
 ### Task 3 — document and ship
 
