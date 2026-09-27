@@ -106,9 +106,13 @@ tests — never weaken the gate.
 
 **The gate always includes `clean`.** CI builds from a fresh checkout, and a local `target/` does
 not. Stale output skews coverage in either direction, and nothing warns you. On 2026-09-27 a plain
-`mvn -B install` failed `dsh-rest-api` at 0.50 line coverage: an IDE build had left test classes in
+`mvn -B install` failed `dsh-rest-api` at 0.50 line coverage: test classes had reached
 `target/classes`, and `jacoco:check` analysed them as untested production code. The same tree
-passed under `clean install`. A local result without `clean` is not evidence about CI.
+passed under `clean install`. The cause was not an IDE. `maven-remote-resources-plugin` registered
+`target/test-classes` as a main resource directory, so any build after tests had been compiled, a
+`site` run included, copied them over. `#104` fixed that with `attachToMain=false`. The rule stays:
+stale output can skew coverage in other ways, and a local result without `clean` is not evidence
+about CI.
 
 `-DskipTests`, `-Dmaven.test.skip=true`, `-Dmaven.test.skip.exec=true` and `-Djacoco.skip=true`
 disarm the data guard along with the thing they skip, so the documented fast build stays green.

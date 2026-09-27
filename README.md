@@ -1,10 +1,10 @@
 # Document Smart Highlights
 
-![Jacoco](dsh-coverage-report/badges/jacoco.svg)
+![Coverage](https://mriss-projects.github.io/dsh/rcs/products/dsh/dsh-coverage-report/badges/jacoco.svg)
 
 ## Version
 
-0.3.0-SNAPSHOT - RC22 - 20260927-171422
+0.3.0-SNAPSHOT - RC23 - 20260927-213752
 
 ## Introduction
 
@@ -580,6 +580,7 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [70](https://github.com/MRISS-Projects/dsh/issues/70) | bug | Project link not working at maven generated site. | mriss | mriss | 9/27/26 |
 | [90](https://github.com/MRISS-Projects/dsh/issues/90) | bug | index.html missing from published site on gh-pages (root + all submodules) | null | mriss | 9/27/26 |
 | [114](https://github.com/MRISS-Projects/dsh/issues/114) | task | Release and hotfix wrappers do not supply the build properties DSH's reactor needs | null | mriss | 9/27/26 |
 | [87](https://github.com/MRISS-Projects/dsh/issues/87) | task | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions | null | mriss | 9/26/26 |

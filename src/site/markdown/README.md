@@ -1,6 +1,6 @@
 # Document Smart Highlights
 
-![Jacoco](dsh-coverage-report/badges/jacoco.svg)
+![Coverage](https://mriss-projects.github.io/dsh/${release.type}/products/dsh/dsh-coverage-report/badges/jacoco.svg)
 
 ## Version
 

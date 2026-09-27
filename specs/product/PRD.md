@@ -837,36 +837,3 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   its last clause: the real `0.3.0` release confirms, or corrects, what the rehearsals showed.
   `#117` removed the last blocker (PR #118, 2026-09-25): the release wrapper now passes
   `development_branch`, and a rehearsal through it reached and verified the merge-back.
-- **The coverage badge is stale, and nothing regenerates it.** The committed badge
-  `dsh-coverage-report/badges/jacoco.svg` reads 92%, while CI's JaCoCo aggregate computes 98.13%
-  against a 2,028-instruction denominator, which is the whole codebase, not a partial one — see
-  Wave 0's note on aggregate scope.
-
-  Earlier drafts of this risk left open whether the two measure different scopes or the badge had
-  simply gone stale. **It is staleness, and that is now settled.** The badge is configured with
-  `<metric>instruction</metric>` against `jacoco-aggregate/jacoco.csv` in
-  `dsh-coverage-report/pom.xml` — the same counter and the same file the aggregate figure comes
-  from, so the two cannot legitimately disagree. The file's only commit is the April 2026
-  directory-casing rename, so its content is older than that.
-
-  The cause is not an infrequent pipeline run. The `process-badges` profile is
-  `activeByDefault=false` with no property activation, so it is reachable only with
-  `-P process-badges` — and no workflow in this repository passes `-P` at all, nor does any
-  reusable workflow in `parent-poms`. The only occurrences in the tracked tree are historical
-  planning documents. So the profile was orphaned by the estate's deliberate move away from `-P`
-  (see `parent-poms`' CLAUDE.md: "never reintroduce `-P`"), not by scheduling. Running
-  `staging.yml` more often would not fix it.
-
-  Whoever picks this up should also expect the profile's `maven-scm-plugin` `checkin` execution,
-  which commits the badge back to the repository from inside the build — a git write needing
-  credentials, and one that interacts with the `[skip ci]` conventions.
-
-  **`#93` closing does not close this.** That story removed the second coverage *gate* and
-  deliberately left the `dsh-coverage-report` aggregation, the badge and CI's uploaded artifact
-  untouched — the reporting path is exactly what this risk concerns.
-
-  **Now tracked by `#104` in Wave 0**, which carries the full diagnosis and the two side-findings
-  that came with it: the badge's `<passing>70</passing>` threshold contradicts the real 95% gate,
-  and `maven-scm-plugin` is pinned locally to `1.9.5` against `parent-poms`' managed `2.1.0`. This
-  entry should be deleted when `#104` ships — `#104`'s AC005 requires that — since a diagnosed
-  defect with an owner is work in a wave, not a standing risk.
