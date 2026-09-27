@@ -51,8 +51,8 @@ Four modules unpack the `dsh-test-dataset` resource bundle into their test outpu
 | `solr-terms-vector-order` | `dsh-solr/solr-terms-vector-order/pom.xml:76` |
 
 Each configures `maven-remote-resources-plugin:process` with
-`<outputDirectory>${project.build.directory}/test-classes</outputDirectory>` and
-`<attached>false</attached>`. The plugin is at 3.3.0, and **3.x has no `attached` parameter.**
+`<outputDirectory>${project.build.directory}/test-classes</outputDirectory>`. Three of them
+also set `<attached>false</attached>`; `dsh-rest-api` sets nothing more. The plugin is at 3.3.0, and **3.x has no `attached` parameter.**
 `mvn help:describe -Dplugin=org.apache.maven.plugins:maven-remote-resources-plugin:3.3.0 -Dgoal=process -Ddetail`
 lists `attachToMain` and `attachToTest`, both defaulting to `true`. Maven ignores the unknown
 `attached` silently, so `attachToMain=true` registers `target/test-classes` as a **main** resource
@@ -87,8 +87,8 @@ parent-poms configures no `remote-resources`.
 
 ### 3.1 Stop test output leaking into production classes
 
-In each of the four POMs in §2.1, replace `<attached>false</attached>` with
-`<attachToMain>false</attachToMain>`. `attachToTest` keeps its default: the output is already in
+In each of the four POMs in §2.1, set `<attachToMain>false</attachToMain>`, replacing
+`<attached>false</attached>` where it is present. `attachToTest` keeps its default: the output is already in
 `target/test-classes`, where the tests read it.
 
 ### 3.2 Generate the badge in the build, publish it with the site

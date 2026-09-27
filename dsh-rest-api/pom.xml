@@ -172,6 +172,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<attachToMain>false</attachToMain>
 						</configuration>
 					</execution>
 				</executions>
