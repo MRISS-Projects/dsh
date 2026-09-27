@@ -123,9 +123,6 @@ The issue's three criteria are AC001-AC003. AC004 and AC005 are added by this sp
   `200`. The same check while Pages was still `building` printed `404`, so wait for the build.
 - [x] **AC002** — Every module's `index.html` is published under its path. This command, after the
   staging run, prints 13 lines: the root and the 12 modules listed in §6.
-  *Evidence:* 13 lines after run `36289784377`: `index.html` under the root, `dsh-coverage-report`,
-  `dsh-data`, `dsh-doc-analyser` and its three sub-modules, `dsh-doc-indexer-worker`, `dsh-rest-api`,
-  `dsh-solr` and its two sub-modules, and `dsh-test-dataset`.
 
   ```bash
   git fetch origin gh-pages
@@ -134,19 +131,34 @@ The issue's three criteria are AC001-AC003. AC004 and AC005 are added by this sp
     | grep -vE '/(apidocs|testapidocs|xref|xref-test|jacoco|jacoco-aggregate)/'
   ```
 
+  *Evidence:* 13 lines after run `36289784377`: `index.html` under the root, `dsh-coverage-report`,
+  `dsh-data`, `dsh-doc-analyser` and its three sub-modules, `dsh-doc-indexer-worker`, `dsh-rest-api`,
+  `dsh-solr` and its two sub-modules, and `dsh-test-dataset`.
+
 - [x] **AC003** — The root cause is documented: §2 of this spec, the comment in §3, and a comment on
   `#90` that summarises §2 and links this spec.
   *Evidence:* §2, the comment in the root `pom.xml`, and
   [the comment on `#90`](https://github.com/MRISS-Projects/dsh/issues/90#issuecomment-5852233188).
 - [x] **AC004** — The §4 link check, re-run against the published tree, reports no broken link except
   the out-of-scope and by-design rows of §4's table.
+  *Amended after the staging run.* The criterion first read "the two out-of-scope rows". The run
+  rendered the root `README.html` for the first time, which exposed its two images, so the by-design
+  row was added to §4 with its reason in §7.
   *Evidence:* the checker resolves every relative `href`/`src` against the tree extracted by
-  `git archive origin/gh-pages rcs/products/dsh`, skipping the generated trees listed in §4. Before
-  the change: 213 pages checked, 81 broken targets. After run `36289784377`: 254 pages, 42 broken
-  targets. The 41 new pages are exactly what the fix renders: `index.html`, `faq.html` and
-  `dev-FAQ.html` in each of the 13 modules, plus the root `README.html` and `releases-history.html`.
-  No page was removed. All 42 remaining targets fall in §4's last three rows: 13 each of `LICENSE.txt`, `EHCACHE-CORE-LICENSE.txt` and
-  `jquery.org/license`, one "Products" `../index.html`, and the two `README.html` images.
+  `git archive origin/gh-pages rcs/products/dsh`, skipping the generated trees listed in §4. It
+  reports each distinct pair of missing file and `href` once, so a module whose pages link its own
+  `index.html` as `index.html`, `./<module>/index.html` and `<module>/index.html` counts three
+  times.
+  - **Before the change:** 213 pages, 81 broken pairs. 40 are the module `index.html` links,
+    1 is `releases-history.html`, 39 are the licenses rows (13 each of `LICENSE.txt`,
+    `EHCACHE-CORE-LICENSE.txt` and `jquery.org/license`), and 1 is the "Products" `../index.html`.
+    No page linked `faq.html`, `dev-FAQ.html` or `README.html`, so they were missing but not counted.
+  - **After run `36289784377`:** 254 pages, 42 broken pairs. That is the same 39 licenses pairs and
+    the "Products" link, plus the two `README.html` images. Nothing is left outside §4's last three
+    rows.
+  - **The 41 new pages** are exactly what the fix renders: `index.html`, `faq.html` and
+    `dev-FAQ.html` in each of the 13 modules, plus the root `README.html` and
+    `releases-history.html`. No page was removed.
 - [x] **AC005** — `mvn -B clean install` passes with both quality gates, per `CLAUDE.md`.
   *Evidence:* on commit `089c7fbb2`, `maven exit=0`, `All coverage checks have been met.`,
   `BUILD SUCCESS`.
@@ -202,8 +214,8 @@ the release run is its evidence.
 - The two images in the site's root `README.html` (§4). This is deliberate, not a defect, and
   should not be raised as one. `src/site/markdown/README.md` is filtered both into the repository's
   root `README.md` and into the site. GitHub and Doxia resolve relative paths from different roots,
-  so no single path works in both. parent-poms settled that trade-off in `#13` (commit `46467306`):
-  one home per document, no build-time rewriting. `README.md`'s home is GitHub, where it is the
+  so no single path works in both. parent-poms made the same trade-off in `#13` (commit `46467306`)
+  for `eclipse.md`: one canonical home, no build-time rewriting. `README.md`'s home is GitHub, where it is the
   repository front page, so its images resolve there and the site copy accepts two broken images.
   `eclipse.md` in parent-poms is the same trade-off made in the site's favour.
 - The 2020 site still served at `snapshots/dsh` — `#127`.
