@@ -185,7 +185,7 @@ Three placeholders are filled during generation:
 | --- | --- |
 | `${project.build.version}` | the `deployment` profile, as `<version> - <build number> - <timestamp>`; `project-staging.yml` passes `-Dbuild.number=RC<n>`, so an RC build renders `0.3.0-SNAPSHOT - RC7 - 20260918-002853`. `release-deployment` resets the property to the bare version, so a released README carries neither build number nor timestamp |
 | `${issues.text.list}` | `maven-changes-plugin:github-text-list`, which reads each milestone's closed issues from GitHub using the `github.com` server id |
-| `${release.type}` | the site path segment of the coverage badge's URL: `rcs` from `project-staging.yml`'s `-Drelease.type=rcs`, `releases` from the release profile, `snapshots` by default. See "Coverage badge" below |
+| `${release.type}` | the site path segment of the coverage badge's URL: `rcs` from `project-staging.yml`'s `-Drelease.type=rcs`, `releases` from the `release-deployment` profile, `snapshots` by default. See "Coverage badge" below |
 
 The runs that regenerate it are `staging.yml` (during `project-staging.yml`'s `clean deploy`) and
 `release.yml` / `hotfix.yml` (in their `Update README.md on Master` step). The generated file is
