@@ -101,6 +101,7 @@ A link check of the 213 non-generated pages published under `rcs/products/dsh` (
 | `failsafe.html` | working | unchanged |
 | Root *Parent* menu, "Products" → `../index.html` | broken, also broken in 0.2.4 | out of scope (§7) |
 | `LICENSE.txt`, `src/assemble/EHCACHE-CORE-LICENSE.txt`, `jquery.org/license` on the licenses pages | broken | out of scope (§7) |
+| Root `README.html` images: `dsh-coverage-report/badges/jacoco.svg`, `/src/site/resources/images/swagger-ui.jpg` | not yet visible: the page was not rendered | broken by design, also in 0.2.4 (§7) |
 
 Compared with the 0.2.4 release site (`releases/dsh`), four pages look missing and are not:
 newer `maven-project-info-reports-plugin` versions renamed `project-summary.html`, `team-list.html`,
@@ -115,10 +116,16 @@ to it too. It can only be observed on the release run itself.
 
 The issue's three criteria are AC001-AC003. AC004 and AC005 are added by this spec.
 
-- [ ] **AC001** — The root module's `index.html` is published to `gh-pages` and
+- [x] **AC001** — The root module's `index.html` is published to `gh-pages` and
   `https://mriss-projects.github.io/dsh/rcs/products/dsh/index.html` returns HTTP 200.
-- [ ] **AC002** — Every module's `index.html` is published under its path. This command, after the
+  *Evidence:* staging run [`36289784377`](https://github.com/MRISS-Projects/dsh/actions/runs/36289784377)
+  published `gh-pages` commit `51b1bca3`. Once Pages reported that commit `built`, the `curl` printed
+  `200`. The same check while Pages was still `building` printed `404`, so wait for the build.
+- [x] **AC002** — Every module's `index.html` is published under its path. This command, after the
   staging run, prints 13 lines: the root and the 12 modules listed in §6.
+  *Evidence:* 13 lines after run `36289784377`: `index.html` under the root, `dsh-coverage-report`,
+  `dsh-data`, `dsh-doc-analyser` and its three sub-modules, `dsh-doc-indexer-worker`, `dsh-rest-api`,
+  `dsh-solr` and its two sub-modules, and `dsh-test-dataset`.
 
   ```bash
   git fetch origin gh-pages
@@ -129,9 +136,18 @@ The issue's three criteria are AC001-AC003. AC004 and AC005 are added by this sp
 
 - [ ] **AC003** — The root cause is documented: §2 of this spec, the comment in §3, and a comment on
   `#90` that summarises §2 and links this spec.
-- [ ] **AC004** — The §4 link check, re-run against the published tree, reports no broken link except
-  the two out-of-scope rows of §4's table.
-- [ ] **AC005** — `mvn -B clean install` passes with both quality gates, per `CLAUDE.md`.
+- [x] **AC004** — The §4 link check, re-run against the published tree, reports no broken link except
+  the out-of-scope and by-design rows of §4's table.
+  *Evidence:* the checker resolves every relative `href`/`src` against the tree extracted by
+  `git archive origin/gh-pages rcs/products/dsh`, skipping the generated trees listed in §4. Before
+  the change: 213 pages checked, 81 broken targets. After run `36289784377`: 254 pages, 42 broken
+  targets. The 41 new pages are exactly what the fix renders: `index.html`, `faq.html` and
+  `dev-FAQ.html` in each of the 13 modules, plus the root `README.html` and `releases-history.html`.
+  No page was removed. All 42 remaining targets fall in §4's last three rows: 13 each of `LICENSE.txt`, `EHCACHE-CORE-LICENSE.txt` and
+  `jquery.org/license`, one "Products" `../index.html`, and the two `README.html` images.
+- [x] **AC005** — `mvn -B clean install` passes with both quality gates, per `CLAUDE.md`.
+  *Evidence:* on commit `089c7fbb2`, `maven exit=0`, `All coverage checks have been met.`,
+  `BUILD SUCCESS`.
 
 ## 6. Testing approach
 
@@ -181,6 +197,13 @@ the release run is its evidence.
 
 - The root's "Products" parent link and the licenses pages' `LICENSE.txt` links. Both are broken in
   0.2.4 as well, and neither is a *Documentation*, *Code Reports* or *Modules* link.
+- The two images in the site's root `README.html` (§4). This is deliberate, not a defect, and
+  should not be raised as one. `src/site/markdown/README.md` is filtered both into the repository's
+  root `README.md` and into the site. GitHub and Doxia resolve relative paths from different roots,
+  so no single path works in both. parent-poms settled that trade-off in `#13` (commit `46467306`):
+  one home per document, no build-time rewriting. `README.md`'s home is GitHub, where it is the
+  repository front page, so its images resolve there and the site copy accepts two broken images.
+  `eclipse.md` in parent-poms is the same trade-off made in the site's favour.
 - The 2020 site still served at `snapshots/dsh` — `#127`.
 - The wiki's release link — `#128`, which will find `#90` closed.
 - A workflow guard that fails a publication when `index.html` is missing: raised as
@@ -197,25 +220,25 @@ attribution lines.
 
 **Files:** Modify `pom.xml:186-193`.
 
-- [ ] Run §6's red build and the 13-directory check. Expect 13 `MISSING`, and no
+- [x] Run §6's red build and the 13-directory check. Expect 13 `MISSING`, and no
       `generated Doxia documents` line in the log. Restore `README.md`.
-- [ ] Add the `generatedSiteDirectory` element and its comment exactly as in §3.
-- [ ] Re-run the same build and check. Expect 13 `ok`, `releases-history.html` present, and 13
+- [x] Add the `generatedSiteDirectory` element and its comment exactly as in §3.
+- [x] Re-run the same build and check. Expect 13 `ok`, `releases-history.html` present, and 13
       `generated Doxia documents` lines. Also run `grep -c "clashes with existing" .logs/mvn-site-deployment.log`,
       which must print 0. Restore `README.md`.
-- [ ] Run `mvn -B clean install` logged to `.logs/mvn-clean-install.log`, with the exit code reported
+- [x] Run `mvn -B clean install` logged to `.logs/mvn-clean-install.log`, with the exit code reported
       (AC005).
-- [ ] Commit: `build(#90): render DSH site pages from generated-site under -Ddeployment`.
+- [x] Commit: `build(#90): render DSH site pages from generated-site under -Ddeployment`.
 
 ### Task 2 — publish and verify
 
-- [ ] Push the branch and dispatch `staging.yml` with `branch_name=issue-90-publish-site-index-html`.
+- [x] Push the branch and dispatch `staging.yml` with `branch_name=issue-90-publish-site-index-html`.
       Record the run URL. Then `git pull` for the README commit.
-- [ ] Run AC001 (`curl -s -o /dev/null -w '%{http_code}'` on the URL) and AC002. Record the output.
-- [ ] Re-run the §4 link check against `git archive origin/gh-pages rcs/products/dsh`, and record
-      that only the out-of-scope rows remain (AC004).
-- [ ] Fill §5's checkboxes with the evidence.
-- [ ] Commit: `docs(#90): record the staging evidence in the story spec`.
+- [x] Run AC001 (`curl -s -o /dev/null -w '%{http_code}'` on the URL) and AC002. Record the output.
+- [x] Re-run the §4 link check against `git archive origin/gh-pages rcs/products/dsh`, and record
+      that only the out-of-scope and by-design rows remain (AC004).
+- [x] Fill §5's checkboxes with the evidence.
+- [x] Commit: `docs(#90): record the staging evidence in the story spec`.
 
 ### Task 3 — document and ship
 
