@@ -261,10 +261,17 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | none | **Cleared 2026-09-27** by `#70`. Release **3.9.0** next |
+| `3.9.0` | none | **Released 2026-09-27** — cleared by `#70`, tagged `mriss-parent-3.9.0` |
 | `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
-**Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
+**This goal is met.** `3.9.0-SNAPSHOT` was renamed to `3.9.0` before the release, as `3.8.0` was,
+released on 2026-09-27 and closed. DSH's root `pom.xml` names the released `3.9.0`, and a staging
+run against it on `staging-0.3.0-SNAPSHOT-RC` passed, with the README complete and every coverage
+report regenerated. **From here no parent-poms issue is picked up until DSH 0.3.0 is released and
+work is back on `DEVELOP`.** That includes `3.10.0-SNAPSHOT` and the unmilestoned
+`parent-poms#85`. What is left of Wave 0 is DSH's own `0.3.0-SNAPSHOT` issues.
+
+**The first half is the history below.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
 fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
 `mriss-parent-3.8.0`. The milestone was renamed from `3.8.0-SNAPSHOT` to `3.8.0` before the release
 rather than after, because `maven-changes-plugin:github-text-list` prints each milestone's title
@@ -544,8 +551,8 @@ been tested for one of the two: a staging run on `staging-0.3.0-SNAPSHOT-RC` aga
 live URL still 404 — so **`#90` is not a symptom of `#13`** and stands on its own diagnosis.
 `#70` was not exercised by that run and remains unverified.
 
-The root `pom.xml`'s SNAPSHOT parent pin is a related, but deliberately *not* actionable, item
-**until the above completes** — see §6.
+The root `pom.xml`'s SNAPSHOT parent pin was a related item, deliberately *not* actionable until
+the above completed. It has: the pin is the released `3.9.0` since 2026-09-27 — see §6.
 
 ### Wave 1 — ADR-001 Phase 1: interface extraction and deprecation
 
@@ -569,6 +576,15 @@ anything is deprecated today.
   the GCP code exists would mean migrating that code twice. Neither issue names a target version.
   Both leave it to their spec's analysis, and for `#120` that includes whether the version moves in
   parent-poms `products/pom.xml`, where it is managed today for every product.
+- `#127` — Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does.
+- `#128` — Point the wiki's release link at releases/products/dsh once 0.3.0 is released.
+
+  Neither is an ADR-001 phase task either. Both came from reworking the wiki's
+  [Code Based Site and Reports](https://github.com/MRISS-Projects/dsh/wiki/Code-Based-Site-and-Reports)
+  page on 2026-09-27. `snapshots/dsh` still serves a site from 2020, and `group.id.path`
+  (`products/dsh`) will send 0.3.0's site to `releases/products/dsh`, leaving the wiki's release link
+  on 0.2.x. `#128` can only start once 0.3.0 is out, and it has to account for `#90` if that is
+  still open.
 
 **Tasks (ADR-001 §4 Phase 1):**
 
@@ -716,8 +732,15 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
 
 ## 6. Known risks / accepted decisions
 
-- **SNAPSHOT parent pin — accepted deliberately, not an oversight.** The root `pom.xml`
-  intentionally tracks `com.mriss.mriss-parent:products:3.9.0-SNAPSHOT`. A SNAPSHOT parent
+- **SNAPSHOT parent pin — closed on 2026-09-27.** The root `pom.xml` now names the released
+  `com.mriss.mriss-parent:products:3.9.0`, and it stays there: no parent-poms work is picked up
+  before DSH 0.3.0 ships, so there is no newer SNAPSHOT to track. The first local build on the new
+  pin failed `dsh-rest-api`'s coverage gate at 0.50 lines, from stale IDE output in
+  `target/classes`. `clean install` passed, and the local gate is now `mvn -B clean install`
+  (`CLAUDE.md`). The decision as it stood until then:
+
+  The root `pom.xml` intentionally tracked `com.mriss.mriss-parent:products:3.9.0-SNAPSHOT`. A
+  SNAPSHOT parent
   re-resolves as the parent moves, so the same commit can build differently from one run to the
   next — that is a real reproducibility cost. It is accepted because upcoming work on the
   `MRISS-Projects/parent-poms` project will change this repository's parent, and staying on the
