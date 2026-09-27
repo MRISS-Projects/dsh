@@ -77,7 +77,7 @@ reconciliation that rediscovers them should leave them out.
 | `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
 | `#46` | open | Implement integration tests using embedded tomcat server |
 | `#70` | open | Project link not working at maven generated site |
-| `#90` | open | index.html missing from published site on gh-pages (root + all submodules) |
+| `#90` | **closed** — PR #129 | index.html missing from published site on gh-pages (root + all submodules) |
 | `#92` | **closed** — PR #96 | Remove the dead Travis build estate |
 | `#93` | **closed** — PR #102 | Remove the redundant coverage ratchet — `jacoco:check` at 95% is already inherited |
 | `#94` | **closed** — PR #110 | Make `check-spec-references` enforcing, or remove it |
@@ -549,6 +549,9 @@ fixed and released in 3.8.0. It was adjacent to DSH `#70` and `#90`, and that ad
 been tested for one of the two: a staging run on `staging-0.3.0-SNAPSHOT-RC` against the released
 `3.8.0` shows `#90` reproducing unchanged — root and every module still missing `index.html`, the
 live URL still 404 — so **`#90` is not a symptom of `#13`** and stands on its own diagnosis.
+That diagnosis held: `#90` closed on 2026-09-27 with PR #129. The redirect that parent-poms `#55`
+added to its `deployment` profile sends `generatedSiteDirectory` away from `target/generated-site`,
+where DSH's filtered markdown lives, and DSH's root `pom.xml` now points it back.
 `#70` was not exercised by that run and remains unverified.
 
 The root `pom.xml`'s SNAPSHOT parent pin was a related item, deliberately *not* actionable until
@@ -583,8 +586,8 @@ anything is deprecated today.
   [Code Based Site and Reports](https://github.com/MRISS-Projects/dsh/wiki/Code-Based-Site-and-Reports)
   page on 2026-09-27. `snapshots/dsh` still serves a site from 2020, and `group.id.path`
   (`products/dsh`) will send 0.3.0's site to `releases/products/dsh`, leaving the wiki's release link
-  on 0.2.x. `#128` can only start once 0.3.0 is out, and it has to account for `#90` if that is
-  still open.
+  on 0.2.x. `#128` can only start once 0.3.0 is out. `#90` is closed, so the release site should carry
+  every module's `index.html`; the 0.3.0 release run is the first evidence of that.
 
 **Tasks (ADR-001 §4 Phase 1):**
 
@@ -760,6 +763,25 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
   not exist in GitHub Packages until a separate snapshot deploy published it. Re-pinning to the
   next SNAPSHOT after a release requires that deploy first, or the consuming repository's CI breaks
   on an unresolvable parent.
+- **A wave that needs upstream work pins a parent-poms hotfix `-SNAPSHOT` — accepted, proposed on
+  2026-09-26 and adopted on 2026-09-27.** When a story finds that the fix it needs belongs in
+  parent-poms, that story opens the upstream issues and fixes them. It does not park them for a
+  later parent-poms release. The fixes go on parent-poms' hotfix line, and DSH's root `pom.xml` is
+  pinned to that hotfix `-SNAPSHOT`, for example `3.9.1-SNAPSHOT`.
+  - **The pin stays until the end of the wave.** Once opened, the hotfix `-SNAPSHOT` remains DSH's
+    parent for the rest of the wave. Any further upstream fix the wave needs lands on the same
+    hotfix line.
+  - **Released upstream, then re-pinned here, just before DSH releases.** maven-release-plugin
+    refuses a SNAPSHOT parent. So before any DSH release, parent-poms releases the hotfix and DSH's
+    root `pom.xml` is re-pinned to that released version. The reproducibility cost of a SNAPSHOT
+    parent is the one described in the entry above, and it ends at that re-pin.
+  - **A patch version carries fixes only.** A wave that needs new upstream behaviour, rather than a
+    fix, uses the full round trip in `CLAUDE.md` against parent-poms' next minor version.
+  - **The snapshot must be deployed before it is pinned.** As the entry above records, a hotfix
+    `-SNAPSHOT` is not in GitHub Packages until a snapshot deploy publishes it.
+
+  This applies from the first wave after DSH 0.3.0 ships. Until then, no parent-poms work is picked
+  up at all (entry above).
 - **`parent-poms#65` and `parent-poms#69` ship on 3.9.0 proven by rehearsal, not by a real release —
   accepted, with a named confirming run.** Both have acceptance criteria that can only be met by a
   real consuming release, and the release they need is the one this wave exists to unblock. Rather

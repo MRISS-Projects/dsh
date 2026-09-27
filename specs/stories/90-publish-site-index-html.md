@@ -257,9 +257,9 @@ attribution lines.
 ### Task 3 — document and ship
 
 - [x] Post the AC003 comment on `#90`, after the user approves its text.
-- [ ] Hand over to `dsh-ship-story`: local review, push, and the PR into
+- [x] Hand over to `dsh-ship-story`: local review, push, and the PR into
       `staging-0.3.0-SNAPSHOT-RC`.
-- [ ] At the end of the story, offer the PRD rule the user proposed on 2026-09-26: a parent-poms
+- [x] At the end of the story, offer the PRD rule the user proposed on 2026-09-26: a parent-poms
       hotfix `-SNAPSHOT` may be pinned when a wave needs upstream work, and the upstream issues are
       opened and fixed within the same story. It carries two caveats. maven-release-plugin refuses a
       SNAPSHOT parent, so the hotfix is released and re-pinned before any DSH release. And a patch
