@@ -16,9 +16,9 @@ milestone: 0.3.0-SNAPSHOT
 
 ## 2. Root cause
 
-The issue was opened on 2020-02-22 with a title and no body. Its only comment, from 2026-09-16,
-suspected parent-poms `#13`. That suspicion does not hold: `#13` was about image links in `.md`
-pages, and this link is declared in DSH itself.
+The issue was opened on 2020-02-22 with a title and no body. Its only comment before this story,
+from 2026-09-16, suspected parent-poms `#13`. That suspicion does not hold: `#13` was about image
+links in `.md` pages, and this link is declared in DSH itself.
 
 - DSH's root `src/site-desc/site.xml:13` declares a top-bar link,
   `<item name="Project" href="https://github.com/orgs/MRISS-Projects/projects/1" />`.
