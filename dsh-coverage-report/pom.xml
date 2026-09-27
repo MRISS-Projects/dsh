@@ -146,9 +146,14 @@
     <!-- <distributionManagement>...</distributionManagement> -->
     <profiles>
         <profile>
-            <id>process-badges</id>
+            <!-- #104: the coverage badge is published with the site, next to the report it is computed
+                 from, and never committed. Activated by -Ddeployment, which the staging and release
+                 builds already pass; the estate activates profiles by property, never by -P. -->
+            <id>coverage-badge</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>deployment</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -158,42 +163,21 @@
                         <executions>
                             <execution>
                                 <id>generate-jacoco-badge</id>
-                                <phase>process-resources</phase>
+                                <phase>verify</phase>
                                 <goals>
-                                    <goal>badge</goal> 
+                                    <goal>badge</goal>
                                 </goals>
                                 <configuration>
-                                    <passing>70</passing>
+                                    <passing>95</passing>
                                     <metric>instruction</metric>
-                                    <badgeFile>badges/jacoco.svg</badgeFile>
                                     <reportFile>${project.reporting.outputDirectory}/jacoco-aggregate/jacoco.csv</reportFile>
+                                    <badgeFile>${project.reporting.outputDirectory}/badges/jacoco.svg</badgeFile>
                                 </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <version>1.9.5</version>
-                        <executions>
-                            <execution>
-                                <id>commit-badges</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>checkin</goal>
-                                </goals>
-                                <configuration>
-                                    <basedir>badges</basedir>
-                                    <includes>*.*</includes>
-                                    <message>badges commit</message>
-                                    <developerConnectionUrl>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnectionUrl>
-                                </configuration>
-                                <inherited>false</inherited>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
-        </profile>   
+        </profile>
     </profiles>
 </project>
