@@ -4,7 +4,7 @@
 
 ## Version
 
-0.3.0-SNAPSHOT - RC21 - 20260927-025432
+0.3.0-SNAPSHOT - RC22 - 20260927-170812
 
 ## Introduction
 
@@ -580,6 +580,7 @@ inform its title. In case of `status`, you just needs to enter the the token ret
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [90](https://github.com/MRISS-Projects/dsh/issues/90) | bug | index.html missing from published site on gh-pages (root + all submodules) | null | mriss | 9/27/26 |
 | [114](https://github.com/MRISS-Projects/dsh/issues/114) | task | Release and hotfix wrappers do not supply the build properties DSH's reactor needs | null | mriss | 9/27/26 |
 | [87](https://github.com/MRISS-Projects/dsh/issues/87) | task | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions | null | mriss | 9/26/26 |
 | [123](https://github.com/MRISS-Projects/dsh/issues/123) | task | [STORY] Stop passing the Mongo setup inputs to project-staging.yml | null | mriss | 9/26/26 |
