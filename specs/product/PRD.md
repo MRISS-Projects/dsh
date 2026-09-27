@@ -261,8 +261,8 @@ so it is not mistaken for part of the goal:
 | parent-poms milestone | Open issues | Outcome |
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
-| `3.9.0-SNAPSHOT` | `#70` | Clear, then release **3.9.0** |
-| `3.10.0-SNAPSHOT` | `#74`, `#81` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
+| `3.9.0-SNAPSHOT` | none | **Cleared 2026-09-27** by `#70`. Release **3.9.0** next |
+| `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
 
 **Half of this goal is done.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
 fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
@@ -285,8 +285,8 @@ every inheriting product rather than opt-in per project — parent-poms supplies
 more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
 on it: `#112` has since shipped on it, and `#46` is unblocked, since this repository already names
 `3.9.0-SNAPSHOT`. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0
-release** and the re-pin. That still waits on the one issue left on the milestone, `#70`, since `#59`
-closed with DSH `#87` — see the third pair below.
+release** and the re-pin. That no longer waits on any issue: `#59` closed with DSH `#87` (see the
+third pair below), and `#70`, the last one on the milestone, closed on 2026-09-27.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
 `project-release.yml` re-versions a newly cut hotfix branch with
@@ -476,13 +476,23 @@ as APT, which also made the issue's own file list true. Closing `#57` clears eve
 
 **Two parent-poms issues were spun off from `#85`, both onto `3.9.0-SNAPSHOT`.**
 
-- `parent-poms#70` — convert the remaining 15 APT site pages to Markdown. `#85`'s two pages were
-  the pilot; this finishes the format migration, with `doxia-module-apt` leaving
-  `maven-site-plugin`'s dependency list as the completion criterion. It was not folded into `#57`
+- `parent-poms#70` — convert the remaining APT site pages to Markdown. `#85`'s two pages were
+  the pilot, and this finishes the format migration. It was not folded into `#57`
   because a 15-file migration on `3.8.0-SNAPSHOT` would push the 3.8.0 release further out, which
   is the opposite of why `#85` was picked up first. The 39 APT files under
   `src/main/resources/archetype-resources/` are deliberately excluded — they are template content
-  shipped into new projects, so converting them is a separate decision.
+  shipped into new projects, so converting them is a separate decision. **Closed** 2026-09-27 by
+  parent-poms PR #87, clearing `3.9.0-SNAPSHOT`. Its completion criterion, dropping
+  `doxia-module-apt` from `maven-site-plugin`, turned out unable to fail: the plugin already
+  bundles that module at the same version. The dependency went anyway, as a no-op, and the real
+  check became "no `.apt` left under any `src/site/` outside `archetype-resources/`". So a
+  consumer's APT pages still render.
+
+  The conversion kept every page's content unchanged on purpose, and it spun off
+  [`parent-poms#85`](https://github.com/MRISS-Projects/parent-poms/issues/85) — not DSH `#85` — for
+  the content question: five images never committed, empty link targets, and pages about
+  Subversion, Tomcat 8 and the retired APT format, for both consuming projects and parent-poms
+  contributors. It has **no milestone**, so it does not gate 3.9.0.
 - `parent-poms#71` — `commit-readme-md` runs three times per staging run, and one of those commits
   carries an unresolved `${timestamp}` into the published `README.md`. A later execution repairs
   it, so a *successful* run ends correct; a run that fails inside that window leaves the consuming
@@ -496,6 +506,18 @@ as APT, which also made the issue's own file list true. Closing `#57` clears eve
   commit out of the Maven lifecycle into the `.github/actions/commit-readme` composite action, so a
   replayed `process-resources` can regenerate the file but never commit it. It no longer counts
   against clearing `3.9.0-SNAPSHOT`.
+
+**`parent-poms#86` was found while `#70` was in review, and it sits on `3.10.0-SNAPSHOT`.** Every
+generated `README.md`'s release notes silently dropped closed issues that had no label: 3 of
+`3.9.0-SNAPSHOT`'s 8, for example. The cause is in the forked `maven-changes-plugin`, whose
+`github-text-list` takes an issue's type from its first label and skips an issue with none. The fix
+belongs in the fork, as
+[`MRISS-Projects/maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36)
+on its milestone `2.12.10-SNAPSHOT`. `parent-poms#86` is the consuming half: bump
+`changes.plugin.version` to the released `2.12.10` and verify a README generated with it. It is not
+DSH `#86`, below. In the meantime the six affected issues were labelled, DSH `#114` among them, so
+the current READMEs correct themselves on their next generation. That is why `parent-poms#86` does
+not gate 3.9.0.
 
 **DSH `#87` is back in this wave, so the third pair moves in step again.** It left for Wave 1 on
 2026-09-17 because `#86` and `#87` contradicted each other inside one wave: `#86` pinned 3.9.9 in
@@ -513,7 +535,8 @@ closed on 2026-09-26, delivered as one cycle: parent-poms PR #84 merged first, t
 because DSH's staging and release evidence could only run once `#59` was on `master`. `#59` went one
 step beyond its issue: the four `project-*.yml` reusable workflows pinned Maven but never asserted
 it, so they gained the same `Verify Maven version` guard as `build.yml`. A staging or release run
-now proves which Maven it ran. With `#59` closed, `#70` is the only issue left gating **3.9.0**.
+now proves which Maven it ran. With `#59` closed, `#70` was the only issue left gating **3.9.0**,
+and it closed on 2026-09-27.
 Parent-poms `#13` (image links broken in the generated Maven site) is **closed**,
 fixed and released in 3.8.0. It was adjacent to DSH `#70` and `#90`, and that adjacency has now
 been tested for one of the two: a staging run on `staging-0.3.0-SNAPSHOT-RC` against the released
