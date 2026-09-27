@@ -76,7 +76,7 @@ reconciliation that rediscovers them should leave them out.
 | `#87` | **closed** — PR #126 | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions |
 | `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
 | `#46` | open | Implement integration tests using embedded tomcat server |
-| `#70` | open | Project link not working at maven generated site |
+| `#70` | **closed** — PR #130 | Project link not working at maven generated site |
 | `#90` | **closed** — PR #129 | index.html missing from published site on gh-pages (root + all submodules) |
 | `#92` | **closed** — PR #96 | Remove the dead Travis build estate |
 | `#93` | **closed** — PR #102 | Remove the redundant coverage ratchet — `jacoco:check` at 95% is already inherited |
@@ -526,6 +526,13 @@ DSH `#86`, below. In the meantime the six affected issues were labelled, DSH `#1
 the current READMEs correct themselves on their next generation. That is why `parent-poms#86` does
 not gate 3.9.0.
 
+**`parent-poms#89` was spun off from `#70`, and it has no milestone.** Scoping `#70` found a second
+dead navigation link: the "Products" entry in the site's parent menu resolves to
+`dsh/rcs/products/index.html`, which 404s. The link is computed from `<url>` values defined in
+parent-poms, so the fix belongs there rather than in an override in DSH's `site.xml`. It was not
+folded into `#70`, because it lives in another repository and is subject to the rule that no
+parent-poms work is picked up before DSH 0.3.0 ships.
+
 **DSH `#87` is back in this wave, so the third pair moves in step again.** It left for Wave 1 on
 2026-09-17 because `#86` and `#87` contradicted each other inside one wave: `#86` pinned 3.9.9 in
 the workflows and `#87` replaced that same pin with 3.9.16, so building both here meant writing a
@@ -552,7 +559,9 @@ live URL still 404 — so **`#90` is not a symptom of `#13`** and stands on its 
 That diagnosis held: `#90` closed on 2026-09-27 with PR #129. The redirect that parent-poms `#55`
 added to its `deployment` profile sends `generatedSiteDirectory` away from `target/generated-site`,
 where DSH's filtered markdown lives, and DSH's root `pom.xml` now points it back.
-`#70` was not exercised by that run and remains unverified.
+`#70` turned out to be unrelated to both: the dead link was DSH's own top-bar "Project" item,
+pointing at a retired classic GitHub Projects board. It closed on 2026-09-27 with PR #130, which
+points it at the milestones page instead.
 
 The root `pom.xml`'s SNAPSHOT parent pin was a related item, deliberately *not* actionable until
 the above completed. It has: the pin is the released `3.9.0` since 2026-09-27 — see §6.
