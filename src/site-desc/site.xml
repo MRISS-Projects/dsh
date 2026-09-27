@@ -10,7 +10,7 @@
     <body>
         <links>
             <item name="Wiki" href="https://github.com/MRISS-Projects/dsh/wiki" />
-            <item name="Project" href="https://github.com/orgs/MRISS-Projects/projects/1" />
+            <item name="Milestones" href="https://github.com/MRISS-Projects/dsh/milestones" />
         </links>
         <breadcrumbs>
             <item name="DSH at GitHub" href="https://github.com/MRISS-Projects/dsh" />
