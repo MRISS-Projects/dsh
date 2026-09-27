@@ -44,7 +44,7 @@ The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages v
 
 | Task | Command |
 |---|---|
-| Full build with tests | `mvn -B install` |
+| Full build with tests | `mvn -B clean install` |
 | Fast build, no tests | `mvn -B -DskipTests install` |
 | Single module | `mvn -B -pl dsh-data -am install` |
 | Markdown lint | `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' 'CLAUDE.md' '.claude/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
@@ -57,13 +57,13 @@ watchable:
 
 ```bash
 mkdir -p .logs
-mvn -B install > .logs/mvn-install.log 2>&1 &
+mvn -B clean install > .logs/mvn-clean-install.log 2>&1 &
 MVN_PID=$!
-echo "Monitor with:  tail -f .logs/mvn-install.log"
+echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
 wait $MVN_PID; echo "maven exit=$?"
 ```
 
-Name the log after the command (`.logs/mvn-install.log`, `.logs/mvn-validate.log`). Report the
+Name the log after the command (`.logs/mvn-clean-install.log`, `.logs/mvn-validate.log`). Report the
 exit code explicitly — a backgrounded `mvn` without `wait` reports success no matter what.
 Never pipe `mvn` directly into `tail`; you lose the diagnostics and `$?` becomes the pipe's
 status. `.logs/` is gitignored; never commit a build log. In `ci.yml` do **not** redirect —
@@ -92,17 +92,23 @@ back into the branch it came from. **Never branch from `master`. Never open a PR
 
 A story is not done until both pass:
 
-1. All tests pass under `mvn -B install`. That runs unit tests only, under surefire. Integration
-   tests are `*IT` in an `integration` package, run under `mvn -B install -DintegrationTests` and on
+1. All tests pass under `mvn -B clean install`. That runs unit tests only, under surefire. Integration
+   tests are `*IT` in an `integration` package, run under `mvn -B clean install -DintegrationTests` and on
    every staging build, and are measured by `jacoco-it.exec` — never by the coverage gate below.
 2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
    by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
    module which produced no coverage data at all. **Both are inherited from
    `MRISS-Projects/parent-poms`, not declared here — grepping this repository will not find them.**
 
-`.github/workflows/ci.yml` enforces both gates on every PR. `mvn -B install` runs them itself,
+`.github/workflows/ci.yml` enforces both gates on every PR. `mvn -B clean install` runs them itself,
 because they are bound to `verify`; there is no second command to run. If coverage fails, add
 tests — never weaken the gate.
+
+**The gate always includes `clean`.** CI builds from a fresh checkout, and a local `target/` does
+not. Stale output skews coverage in either direction, and nothing warns you. On 2026-09-27 a plain
+`mvn -B install` failed `dsh-rest-api` at 0.50 line coverage: an IDE build had left test classes in
+`target/classes`, and `jacoco:check` analysed them as untested production code. The same tree
+passed under `clean install`. A local result without `clean` is not evidence about CI.
 
 `-DskipTests`, `-Dmaven.test.skip=true`, `-Dmaven.test.skip.exec=true` and `-Djacoco.skip=true`
 disarm the data guard along with the thing they skip, so the documented fast build stays green.

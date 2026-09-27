@@ -21,9 +21,9 @@ follow on the open pull request are step 7 — see `dsh-pr-cycle`.
 Invoke `superpowers:verification-before-completion` first. Evidence before assertions:
 
     mkdir -p .logs
-    mvn -B install > .logs/mvn-install.log 2>&1 &
+    mvn -B clean install > .logs/mvn-clean-install.log 2>&1 &
     MVN_PID=$!
-    echo "Monitor with:  tail -f .logs/mvn-install.log"
+    echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
 That one command is the whole gate. `jacoco:check` enforces 95% LINE and BRANCH per module and

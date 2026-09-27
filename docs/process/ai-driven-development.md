@@ -130,11 +130,11 @@ assertion — before it is made to pass. A red test that fails for the wrong rea
 red; the loop stays at step 4 until it is (`K -->|no| J` in the diagram).
 
 **Done looks like.** Every item in the spec has a red-then-green cycle behind it, and
-`mvn -B install` passes locally — the increment is ready for review.
+`mvn -B clean install` passes locally — the increment is ready for review.
 
 ## Step 5: Local code review
 
-**Input.** The completed implementation on the task branch, `mvn -B install` green locally.
+**Input.** The completed implementation on the task branch, `mvn -B clean install` green locally.
 
 **Skill.** `dsh-ship-story` (shared with step 6, see below), which hands off to `/code-review` and
 `superpowers:receiving-code-review`.
@@ -156,11 +156,11 @@ required change has been made and re-reviewed until it is.
 
 **Artifact.** A pushed branch and an open pull request, with the first CI run started.
 `.github/workflows/ci.yml` enforces the quality gates defined in `CLAUDE.md` — all tests passing
-under `mvn -B install`, and 95% LINE and BRANCH coverage per module from the `jacoco:check`
+under `mvn -B clean install`, and 95% LINE and BRANCH coverage per module from the `jacoco:check`
 inherited from `parent-poms`, together with the `enforce-coverage-data-exists` guard that fails a
-module which produced no coverage data at all — on every PR. `mvn -B install` runs unit tests only,
+module which produced no coverage data at all — on every PR. `mvn -B clean install` runs unit tests only,
 under surefire. Integration tests are `*IT` in an `integration` package, run under
-`mvn -B install -DintegrationTests` and on every staging build, and are measured by `jacoco-it.exec`,
+`mvn -B clean install -DintegrationTests` and on every staging build, and are measured by `jacoco-it.exec`,
 never by the coverage gate. CI also fails any unit test that starts a Spring context.
 
 **Hard stop.** The owner approves the PR title, body and base branch **before** the push. `--base`

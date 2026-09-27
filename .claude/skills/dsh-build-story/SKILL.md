@@ -27,9 +27,9 @@ Log the build and give the human something to watch - see "Always log local Mave
 `CLAUDE.md`:
 
     mkdir -p .logs
-    mvn -B install > .logs/mvn-install.log 2>&1 &
+    mvn -B clean install > .logs/mvn-clean-install.log 2>&1 &
     MVN_PID=$!
-    echo "Monitor with:  tail -f .logs/mvn-install.log"
+    echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
 That one command is the whole gate. Every module with production sources holds at least 95% LINE
