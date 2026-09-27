@@ -86,7 +86,7 @@ reconciliation that rediscovers them should leave them out.
 | `#99` | **closed** — PR #100 | Standardise Maven builds on `-U` while the parent is a SNAPSHOT |
 | `#101` | **closed** — PR #106 | Fail CI when the package token cannot authenticate, not just when it is absent |
 | `#103` | **closed** — PR #105 | Make PR review rounds repo-aware and authoritative |
-| `#104` | open | Regenerate the coverage badge, or stop publishing a stale one |
+| `#104` | **closed** — PR #131 | Regenerate the coverage badge, or stop publishing a stale one |
 | `#111` | **closed** — PR #116 | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
 | `#112` | **closed** — PR #121 | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
 | `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
@@ -174,7 +174,9 @@ scopes or the badge is stale". Checking it answered the question: the badge read
 stale because the `process-badges` profile can only be activated with `-P`, which this estate
 deliberately abandoned. A diagnosed defect with a known cause is work, not a risk, so it became an
 issue. It was not folded into `#93` because that story removed a coverage *gate* and explicitly
-preserved the reporting path the badge belongs to — the two touch the same module and nothing else.
+preserved the reporting path the badge belongs to — the two touch the same module and nothing else. It
+shipped in PR #131: `-Ddeployment` builds now generate the badge and publish it with the site, and
+nothing commits it back.
 
 `#112` was spun off while `parent-poms#67` was being specced, and it is `#46`'s missing half. `#67`
 settled what an integration test *is* for this estate — a test that starts a Spring context; a unit
@@ -230,6 +232,12 @@ copies the previous build's compiled test classes as well. The three `*IT` class
 escape `jacoco:check`'s `*Test` excludes. CI never sees the gate failure, because it always starts
 from a fresh checkout. The issue requires investigating whether anything relies on the main-side
 attachment before it is turned off.
+
+**`#104` has since shipped `#124`'s configuration change.** Its badge could not match the aggregate
+while test classes leaked into it, so PR #131 set `attachToMain=false` in all four modules. That
+removes the leak `#124` describes. It does not do `#124`'s investigation of whether anything relied on
+the main-side attachment, and `#104`'s spec does not mention `#124` at all: the overlap went unnoticed
+until this reconciliation. `#124` stays open until that is settled.
 
 **Two findings from the same review are deliberately *not* issues:**
 
