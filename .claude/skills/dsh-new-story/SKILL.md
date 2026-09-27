@@ -29,6 +29,12 @@ into two stories, not written anyway.
 
 Set the milestone to match the wave, per the mapping in `specs/product/PRD.md`.
 
+**Every issue gets at least one label** — `bug`, `enhancement` or `task`, the first one being the
+type. Until `MRISS-Projects/parent-poms#86` ships, the release notes in every generated `README.md`
+silently omit an issue with no label (`MRISS-Projects/maven-changes-plugin#36`). An empty
+`--label` below is a defect, not a default. Drop this paragraph once `#86` is closed and DSH is
+pinned to a parent-poms release that includes it.
+
 ## Hard stop
 
 Show the full issue body and wait for approval. **Then** run:

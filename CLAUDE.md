@@ -153,6 +153,11 @@ invocable on its own.
 **Two things Claude never does:** close a GitHub issue, or merge a pull request. Both are
 yours. Claude creates issues and PRs only after you approve the content.
 
+**Every new issue carries a label** (`bug`, `enhancement` or `task`), however it is raised. Until
+`MRISS-Projects/parent-poms#86` ships, `README.md`'s release notes silently drop unlabelled issues
+— the defect is `MRISS-Projects/maven-changes-plugin#36`. Remove this rule, and its twin in
+`dsh-new-story`, once DSH is pinned to a parent-poms release that includes `#86`.
+
 ## Shared build infrastructure lives in another repo
 
 DSH inherits from `com.mriss.mriss-parent:products`, maintained in
