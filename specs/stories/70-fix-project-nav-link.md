@@ -22,9 +22,10 @@ pages, and this link is declared in DSH itself.
 
 - DSH's root `src/site-desc/site.xml:13` declares a top-bar link,
   `<item name="Project" href="https://github.com/orgs/MRISS-Projects/projects/1" />`.
-- None of the 12 module `site.xml` files declares `<links>`, so every module inherits it. All 13
-  published sites carry it. Checked live on the root, `dsh-data`, `dsh-solr` and
-  `dsh-doc-analyser/dsh-keyword-extractor`.
+- None of the 12 module `site.xml` files declares an active `<links>`. Each has one, but only inside
+  a commented-out block, so a search for `<links` finds 12 matches that do nothing. Every module
+  inherits the root's link, and all 13 published sites carry it. Checked live on the root,
+  `dsh-data`, `dsh-solr` and `dsh-doc-analyser/dsh-keyword-extractor`.
 - The target returns **404**. The link was written for an organisation board of GitHub's "classic"
   Projects, and GitHub has retired those. The board is gone, not just moved.
 
@@ -120,8 +121,8 @@ its evidence.
 
 ## 6. Documentation
 
-Nothing else links the old board: `grep -rn "projects/1"` outside `target/` and `docs/wiki/` finds
-only `site.xml:13`. The wiki's "Code Based Site and Reports" page lists site URLs, not the top bar,
+Nothing else links the old board. Before the change, `grep -rn "projects/1"` outside `target/` and
+`docs/wiki/` found only `site.xml:13`. After it, the search finds only this spec. The wiki's "Code Based Site and Reports" page lists site URLs, not the top bar,
 so it does not change.
 
 ## 7. Out of scope
