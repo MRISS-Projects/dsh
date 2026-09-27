@@ -75,8 +75,9 @@ The issue has no criteria of its own. All of these come from this spec.
   the 12 modules contained
   `href="https://github.com/MRISS-Projects/dsh/milestones" class="externalLink">Milestones`: 13 of
   13. The milestones URL returned `200`.
-- [ ] **AC003** — `#70` gets a comment that summarises §2 and §3 and links this spec. The issue has
+- [x] **AC003** — `#70` gets a comment that summarises §2 and §3 and links this spec. The issue has
   never had a body, and the comment is where its diagnosis lives.
+  *Evidence:* [the comment on `#70`](https://github.com/MRISS-Projects/dsh/issues/70#issuecomment-5858094796).
 - [x] **AC004** — `mvn -B clean install` passes with both quality gates, per `CLAUDE.md`.
   *Evidence:* on commit `d15df4d20`, `maven exit=0`, `BUILD SUCCESS`, and
   `All coverage checks have been met.` in each of the 8 code-bearing modules.
@@ -161,6 +162,6 @@ session's attribution lines.
 
 ### Task 3 — document and ship
 
-- [ ] Post the AC003 comment on `#70`, after the user approves its text.
+- [x] Post the AC003 comment on `#70`, after the user approves its text.
 - [ ] Hand over to `dsh-ship-story`: local review, push, and the PR into
       `staging-0.3.0-SNAPSHOT-RC`.
