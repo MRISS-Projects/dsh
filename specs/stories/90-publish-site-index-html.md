@@ -134,8 +134,10 @@ The issue's three criteria are AC001-AC003. AC004 and AC005 are added by this sp
     | grep -vE '/(apidocs|testapidocs|xref|xref-test|jacoco|jacoco-aggregate)/'
   ```
 
-- [ ] **AC003** — The root cause is documented: §2 of this spec, the comment in §3, and a comment on
+- [x] **AC003** — The root cause is documented: §2 of this spec, the comment in §3, and a comment on
   `#90` that summarises §2 and links this spec.
+  *Evidence:* §2, the comment in the root `pom.xml`, and
+  [the comment on `#90`](https://github.com/MRISS-Projects/dsh/issues/90#issuecomment-5852233188).
 - [x] **AC004** — The §4 link check, re-run against the published tree, reports no broken link except
   the out-of-scope and by-design rows of §4's table.
   *Evidence:* the checker resolves every relative `href`/`src` against the tree extracted by
@@ -242,7 +244,7 @@ attribution lines.
 
 ### Task 3 — document and ship
 
-- [ ] Post the AC003 comment on `#90`, after the user approves its text.
+- [x] Post the AC003 comment on `#90`, after the user approves its text.
 - [ ] Hand over to `dsh-ship-story`: local review, push, and the PR into
       `staging-0.3.0-SNAPSHOT-RC`.
 - [ ] At the end of the story, offer the PRD rule the user proposed on 2026-09-26: a parent-poms
