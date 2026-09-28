@@ -114,6 +114,9 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<!-- #124: must stay false. The default, true, makes target/test-classes a main
+							     resource root, and the fixture PDFs and every compiled test class then
+							     reach target/classes and the jar. Tests read the fixtures by path. -->
 							<attachToMain>false</attachToMain>
 						</configuration>
 					</execution>
