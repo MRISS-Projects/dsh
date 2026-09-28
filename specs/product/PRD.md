@@ -95,7 +95,7 @@ reconciliation that rediscovers them should leave them out.
 | `#117` | **closed** — PR #118 | Pass `development_branch` to the release and hotfix wrappers |
 | `#122` | open | Close the file streams that test fixtures leave open |
 | `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
-| `#124` | open | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
+| `#124` | **closed** — PR #133 | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -225,19 +225,21 @@ recorded under `parent-poms#78` below.
 
 `#124` was spun off from shipping `#123`, and has nothing to do with it. `#123`'s local
 `mvn -B install` failed `dsh-rest-api` at 0.50 line coverage with no Java or POM in its diff. Four
-modules unpack `dsh-test-dataset` with `maven-remote-resources-plugin` into
-`target/test-classes`, and leave the goal's `attachToMain` at its default, `true`. So every build
-copies the fixtures into `target/classes` and the production jars, and a build without `clean`
-copies the previous build's compiled test classes as well. The three `*IT` classes among them
-escape `jacoco:check`'s `*Test` excludes. CI never sees the gate failure, because it always starts
-from a fresh checkout. The issue requires investigating whether anything relies on the main-side
-attachment before it is turned off.
+modules unpacked `dsh-test-dataset` with `maven-remote-resources-plugin` into
+`target/test-classes`, and left the goal's `attachToMain` at its default, `true`. So every build
+copied the fixtures into `target/classes` and the production jars, and a build without `clean`
+copied the previous build's compiled test classes as well. The three `*IT` classes among them
+escaped `jacoco:check`'s `*Test` excludes. CI never saw the gate failure, because it always starts
+from a fresh checkout. The issue required investigating whether anything relied on the main-side
+attachment before it was turned off.
 
-**`#104` has since shipped `#124`'s configuration change.** Its badge could not match the aggregate
-while test classes leaked into it, so PR #131 set `attachToMain=false` in all four modules. That
-removes the leak `#124` describes. It does not do `#124`'s investigation of whether anything relied on
-the main-side attachment, and `#104`'s spec does not mention `#124` at all: the overlap went unnoticed
-until this reconciliation. `#124` stays open until that is settled.
+**`#104` shipped `#124`'s configuration change first.** Its badge could not match the aggregate
+while test classes leaked into it, so PR #131 set `attachToMain=false` in all four modules. `#104`'s
+spec did not mention `#124`, and the overlap went unnoticed until a reconciliation of this document.
+`#124` then shipped the rest in PR #133. The investigation found nothing that relied on the
+main-side attachment. The two Solr modules, which never read a fixture, lost their unpack, and the
+setting now carries a comment saying why it must stay `false`. What the dataset lacks for the
+ADR-001 waves is recorded under Wave 2.
 
 **Two findings from the same review are deliberately *not* issues:**
 
