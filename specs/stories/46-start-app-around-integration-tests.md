@@ -279,6 +279,7 @@ one.
 | `.github/copilot/rules/testing-patterns.md` | an "Over the wire" subsection (Task 7), then restructured around the four test layers (Task 8) |
 | `.github/copilot/rules/java-conventions.md` | its unit-test line points at the layers (Task 8) |
 | `.github/copilot/prompts/test-generation.md` | templates aligned with layers 1 and 2 (Task 8) |
+| `.github/copilot-instructions.md` | its testing bullets point at the layers; Postman is layer 4, not in force (Task 8, Step 5) |
 | `CLAUDE.md` | *Quality gates*: `-DintegrationTests` needs Docker (Task 7), a pointer to the layers and the local integration gate (Task 8) |
 | `.claude/skills/dsh-ship-story/SKILL.md` | runs the conditional, per-module integration gate in step 5 (Task 8) |
 
@@ -540,7 +541,7 @@ Nothing here is committed except §7.
 
 ### Task 7 — Documentation
 
-- [ ] **Step 1.** `testing-patterns.md`, after *Integration Tests (`@SpringBootTest`)*, add
+- [x] **Step 1.** `testing-patterns.md`, after *Integration Tests (`@SpringBootTest`)*, add
       *Over the wire*:
   - what distinguishes it from `RANDOM_PORT`/MockMvc ITs: a separate process, real MongoDB and
     RabbitMQ, no Spring context in the test JVM;
@@ -549,11 +550,11 @@ Nothing here is committed except §7.
   - the leaked-container cleanup command from §4.4.
 
   Update the `RANDOM_PORT` bullet so the two are not confused.
-- [ ] **Step 2.** `CLAUDE.md`, *Quality gates* item 1: after "run under `mvn -B clean install
+- [x] **Step 2.** `CLAUDE.md`, *Quality gates* item 1: after "run under `mvn -B clean install
       -DintegrationTests`", add that this now starts MongoDB and RabbitMQ in Docker for
       `dsh-rest-api` and needs a running Docker daemon.
-- [ ] **Step 3.** The markdown-lint command from CLAUDE.md passes.
-- [ ] **Step 4.** Commit: `docs(#46): document over-the-wire integration tests`.
+- [x] **Step 3.** The markdown-lint command from CLAUDE.md passes.
+- [x] **Step 4.** Commit: `docs(#46): document over-the-wire integration tests`.
 
 ### Task 8 — The test layers
 
@@ -561,7 +562,7 @@ Documentation only; the content is §3.5. `testing-patterns.md` is the single so
 CLAUDE.md is a router and does not restate standards, so it gets a pointer and the gate, not the
 table.
 
-- [ ] **Step 1.** `testing-patterns.md`:
+- [x] **Step 1.** `testing-patterns.md`:
   - replace the three-item list at the top (`:7-9`) with §3.5's table and its bullets;
   - the *API / E2E* entry becomes layer 4, owned by `#137`;
   - rename *Integration Tests (`@SpringBootTest`)* to *Layer 2: Spring context*;
@@ -570,14 +571,14 @@ table.
   - add *Layer 4: external client*: the contract-only vantage point, not yet in force, `#137`;
   - add *Where integration tests run*: staging, deploy (future), local gate, never on pull
     requests.
-- [ ] **Step 2.** `java-conventions.md:60`: keep the one-line unit rule and add "see the test layers
+- [x] **Step 2.** `java-conventions.md:60`: keep the one-line unit rule and add "see the test layers
       in `testing-patterns.md`". Do not copy the table.
-- [ ] **Step 3.** `.github/copilot/prompts/test-generation.md`:
+- [x] **Step 3.** `.github/copilot/prompts/test-generation.md`:
   - the unit template states that REST entry points get a Mockito unit test (layer 1), with
     `MockMvcBuilders.standaloneSetup` and no context;
   - the *Controller Slice Test* template is labelled layer 2 and names the class `*IT` in the
     `integration` package.
-- [ ] **Step 4.** `CLAUDE.md`, *Quality gates*:
+- [x] **Step 4.** `CLAUDE.md`, *Quality gates*:
   - add a third, conditional gate, worded as in §3.5:
     - when it applies: code touching an external system or a REST API entry point;
     - what runs: `mvn -B clean verify -DintegrationTests -pl <affected modules>`, after the root
@@ -587,10 +588,10 @@ table.
     the process runs it rather than only documenting it;
   - add one sentence pointing at `testing-patterns.md` for the four layers;
   - keep the section's existing statement that `jacoco-it.exec` is never read by the coverage gate.
-- [ ] **Step 5.** Grep the touched files for `optional by design` and `Postman collections in` and
+- [x] **Step 5.** Grep the touched files for `optional by design` and `Postman collections in` and
       confirm no stale statement survives outside layer 4's description. Run the markdown-lint
       command from CLAUDE.md.
-- [ ] **Step 6.** Comment on `#137` that it delivers layer 4 of the rule in `testing-patterns.md`,
+- [x] **Step 6.** Comment on `#137` that it delivers layer 4 of the rule in `testing-patterns.md`,
       linking the commit. Commit: `docs(#46): state the four test layers and where they run`.
 
 ### 6.1 The profile, final form
@@ -902,6 +903,6 @@ Created on 2026-09-28 at spec approval, before the spec was committed.
   §4.1, §4.2.
 - [x] AC007: `api-testing.yml` deliberately left alone — §3.1, follow-up `#137`.
 - [x] AC008: the coverage gate is unaffected — §7.1.
-- [ ] AC009 (added at spec review, 2026-09-28): `testing-patterns.md` states the four test
+- [x] AC009 (added at spec review, 2026-09-28): `testing-patterns.md` states the four test
   layers, when each is required, and where integration tests run; CLAUDE.md points at them and
   carries the conditional, per-module `-DintegrationTests` gate, which `dsh-ship-story` runs — §3.5, Task 8.

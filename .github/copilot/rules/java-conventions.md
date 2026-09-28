@@ -58,7 +58,8 @@
 - See `/.github/copilot/rules/testing-patterns.md` for full testing conventions
 - Every public service method should have unit test coverage
 - A unit test never starts a Spring context. `@SpringBootTest` and every slice, `@WebMvcTest`
-  included, start one, so a test using them is an integration test: `*IT`, in an `integration` package
+  included, start one, so a test using them is an integration test: `*IT`, in an `integration` package.
+  See the test layers in `testing-patterns.md`
 
 ## JavaDoc
 

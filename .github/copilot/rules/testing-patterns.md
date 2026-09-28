@@ -1,12 +1,36 @@
 # Testing Patterns for DSH
 
-## Testing Pyramid
+## Test layers
 
-Follow the classic testing pyramid:
+Four layers, most tests in the first. Each has a trigger that makes it required.
 
-1. **Unit Tests** – Fast, isolated, no Spring context (majority of tests)
-2. **Integration Tests** – Slice tests or full Spring context, `*IT` in an `integration` package
-3. **API / E2E Tests** – Postman collections in `/specs/api/postman/`
+| Layer | What | Required when | Runs |
+|---|---|---|---|
+| 1. Unit | Mockito, no Spring context, REST entry points included | always; the 95% gate counts only this layer | everywhere, `mvn -B clean install` |
+| 2. Spring context | `*IT`, full or sliced context, `@MockBean` for every external service, MockMvc or Spring's test framework for REST entry points | a story creates or changes a Spring bean class, REST entry points included | staging, deploy, local gate |
+| 3. Over the wire | `*HttpIT`, the application forked by Maven, real ports, real external services in Docker | a story adds a REST endpoint or changes one's contract | staging, deploy, local gate |
+| 4. External client | Postman collections run by newman: a consumer that sees only the API contract, not the internals | when collections exist, `#137` | staging, deploy, local gate |
+
+- **Layers 2 and 3 share a vantage point.** We write both the client and the provider. Layer 4 is
+  the only one that tests as an outsider, which is why it is needed at all.
+- **Going forward only.** The layer-2 and layer-3 requirements are enforced at review, not
+  mechanically. Existing beans and endpoints are not retrofitted.
+
+## Where integration tests run
+
+Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does not pass
+`-DintegrationTests`, and `api-testing.yml` builds with `-DskipTests`.
+
+- **Staging:** every staging build passes `-DintegrationTests`.
+- **Deploy:** a deploy workflow from `DEVELOP`. It does not exist yet.
+- **The local gate**, in addition to the unit gate:
+  - **When it applies:** a story changes code that touches an external system (MongoDB, RabbitMQ,
+    Solr, or any other service outside the JVM) or a REST API entry point.
+  - **What runs:** after the root `mvn -B clean install` passes,
+    `mvn -B clean verify -DintegrationTests -pl <affected modules>`. The affected modules are the
+    ones whose code changed.
+  - **No `-am`, deliberately.** The root build has already installed every upstream module, and
+    `-am` would run their integration tests too.
 
 ## Frameworks & Libraries
 
@@ -73,13 +97,14 @@ public void analyzeDocument_whenValidInput_shouldReturnResult() {
 
 ## Controller Tests
 
-A controller has two tests, one at each level.
+A controller has two tests, one at each of layers 1 and 2. An endpoint added or changed in its
+contract also gets a layer-3 test.
 
-**Unit** — Mockito over the controller, no context, as `DocumentResourceTest` does: mock the
+**Unit (layer 1)** — Mockito over the controller, no context, as `DocumentResourceTest` does: mock the
 services, `@InjectMocks` the controller, call its methods directly, assert on the returned DTOs.
 Cover every branch here; this is what the coverage gate counts.
 
-**Integration** — a `@WebMvcTest` slice (or `@SpringBootTest` with MockMvc) starts a context, so it
+**Spring context (layer 2)** — a `@WebMvcTest` slice (or `@SpringBootTest` with MockMvc) starts a context, so it
 is an `*IT` in the `integration` package, as `DocumentResourceIT` does:
 
 - Test only the web layer; mock all service dependencies
@@ -107,17 +132,19 @@ public class DocumentControllerIT {
 }
 ```
 
-## Integration Tests (`@SpringBootTest`)
+## Layer 2: Spring context
 
 - Named `*IT`, in the module's `integration` package — the name is the selector, no tag is needed
-- An integration test is **mandatory** when a task touches the REST API; for other Spring beans it
-  is optional by design
+- **Required when a story creates or changes a Spring bean class**, REST entry points included
+- Every external service is a `@MockBean`; nothing leaves the JVM
 - Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for a full context in the test JVM. That is
-  still in-process, with `@MockBean`s standing in for MongoDB and RabbitMQ; it is not the
-  over-the-wire test below
+  still in-process, with `@MockBean`s standing in for MongoDB and RabbitMQ; it is not layer 3
 - Clean up test data in `@After`
 
-## Over the wire
+## Layer 3: over the wire
+
+- Named `*HttpIT`, in the module's `integration` package. Failsafe selects it as an `*IT`
+- **Required when a story adds a REST endpoint or changes one's contract**
 
 `dsh-rest-api`'s `http-integration-tests` profile, active under `-DintegrationTests`, runs the
 application as a **separate process** and runs **real MongoDB and RabbitMQ** in Docker around the
@@ -134,6 +161,12 @@ integration-test phase. `DocumentResourceHttpIT` is the example.
   `post-integration-test`, which stops the application and then the containers. A failure in
   `spring-boot:start` does not, so the containers survive. Remove them with
   `docker rm -f $(docker ps -aq --filter name=dsh-it-)`
+
+## Layer 4: external client
+
+Postman collections, run by newman against a lifecycle-managed server, test as a consumer that
+sees only the API contract. **Not yet in force:** no collections exist, and wiring newman into the
+lifecycle is `#137`. Until then no story is required to add one.
 
 ## Test Data & Fixtures
 
@@ -169,6 +202,6 @@ integration-test phase. `DocumentResourceHttpIT` is the example.
 ## Test Execution
 
 - Unit tests run on every build: `mvn -B install`
-- Integration tests run under `mvn -B install -DintegrationTests`; staging always passes the flag.
-  Profiles in this estate are activated by `-D` properties, never `-P`
+- Integration tests run under `mvn -B install -DintegrationTests`; where and when is "Where
+  integration tests run" above. Profiles in this estate are activated by `-D` properties, never `-P`
 - Performance tests run on release: reference `.github/workflows/api-testing.yml`
