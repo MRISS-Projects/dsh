@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - DEVELOP
-      - main
     paths:
       - 'specs/api/openapi/**'
       - 'specs/architecture/**'

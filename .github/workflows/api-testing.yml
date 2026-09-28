@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - DEVELOP
-      - main
     paths:
       - 'dsh-rest-api/**'
       - 'specs/api/**'
