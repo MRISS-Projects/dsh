@@ -112,8 +112,28 @@ public class DocumentControllerIT {
 - Named `*IT`, in the module's `integration` package — the name is the selector, no tag is needed
 - An integration test is **mandatory** when a task touches the REST API; for other Spring beans it
   is optional by design
-- Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for full-stack tests
+- Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for a full context in the test JVM. That is
+  still in-process, with `@MockBean`s standing in for MongoDB and RabbitMQ; it is not the
+  over-the-wire test below
 - Clean up test data in `@After`
+
+## Over the wire
+
+`dsh-rest-api`'s `http-integration-tests` profile, active under `-DintegrationTests`, runs the
+application as a **separate process** and runs **real MongoDB and RabbitMQ** in Docker around the
+integration-test phase. `DocumentResourceHttpIT` is the example.
+
+- **No Spring context in the test JVM.** The test is a plain HTTP client (`RestTemplate`) against
+  the forked server. Nothing is mocked; a request goes through Mongo and the broker for real
+- **The URL comes from `dsh.it.baseUrl`**, which failsafe sets from a port reserved at build time.
+  Never hardcode a port, and never fall back to `localhost:8080`: run outside the lifecycle, the
+  test must fail and say why
+- **Docker is a prerequisite** of `-DintegrationTests`. The plain `mvn -B clean install` gate does
+  not need it
+- **Containers leak only if startup fails.** A failing *test* still reaches
+  `post-integration-test`, which stops the application and then the containers. A failure in
+  `spring-boot:start` does not, so the containers survive. Remove them with
+  `docker rm -f $(docker ps -aq --filter name=dsh-it-)`
 
 ## Test Data & Fixtures
 

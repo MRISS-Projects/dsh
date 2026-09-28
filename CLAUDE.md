@@ -95,6 +95,8 @@ A story is not done until both pass:
 1. All tests pass under `mvn -B clean install`. That runs unit tests only, under surefire. Integration
    tests are `*IT` in an `integration` package, run under `mvn -B clean install -DintegrationTests` and on
    every staging build, and are measured by `jacoco-it.exec` — never by the coverage gate below.
+   For `dsh-rest-api`, `-DintegrationTests` also starts MongoDB and RabbitMQ in Docker, so it needs a
+   running Docker daemon.
 2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
    by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
    module which produced no coverage data at all. **Both are inherited from
