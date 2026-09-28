@@ -220,9 +220,11 @@
 	<profiles>
 		<!-- #46: keyed on the same property as parent-poms' failsafe profile, so nothing here is bound by
 		     a plain `mvn install`. Port reservation and containers bind to `package`, not
-		     `pre-integration-test`: spring-boot-maven-plugin is declared in the main build and would
-		     otherwise start the application before its databases. Declaration order also makes
-		     spring-boot:stop run before docker:stop. -->
+		     `pre-integration-test`, because within a phase executions run in plugin order and
+		     spring-boot-maven-plugin precedes docker-maven-plugin. That order comes from this profile,
+		     not the main build: Maven inserts a profile's new plugins ahead of the first plugin the
+		     profile shares with the main build, so spring-boot-maven-plugin must stay declared before
+		     docker-maven-plugin here, or docker:stop runs before spring-boot:stop. -->
 		<profile>
 			<id>http-integration-tests</id>
 			<activation>
@@ -266,6 +268,12 @@
 									<maxAttempts>120</maxAttempts>
 									<arguments>
 										<argument>--server.port=${dsh.it.http.port}</argument>
+										<argument>--mongo.host=localhost</argument>
+										<argument>--mongo.port=${dsh.it.mongo.port}</argument>
+										<argument>--mongo.user=dshuser</argument>
+										<argument>--mongo.password=dshpass</argument>
+										<argument>--spring.rabbitmq.host=localhost</argument>
+										<argument>--spring.rabbitmq.port=${dsh.it.rabbitmq.port}</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -278,6 +286,65 @@
 								<configuration>
 									<jmxPort>${dsh.it.jmx.port}</jmxPort>
 								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<!-- Not yet managed by parent-poms; see parent-poms#90. -->
+						<version>0.49.0</version>
+						<configuration>
+							<containerNamePattern>dsh-it-%a-%t</containerNamePattern>
+							<images>
+								<image>
+									<alias>mongo</alias>
+									<name>mongo:6</name>
+									<run>
+										<ports>
+											<port>dsh.it.mongo.port:27017</port>
+										</ports>
+										<volumes>
+											<bind>
+												<volume>${project.basedir}/src/test/docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro</volume>
+											</bind>
+										</volumes>
+										<wait>
+											<!-- The init scripts run on a temporary mongod that also logs this line. -->
+											<log>(?s)init process complete.*Waiting for connections</log>
+											<time>90000</time>
+										</wait>
+									</run>
+								</image>
+								<image>
+									<alias>rabbitmq</alias>
+									<name>rabbitmq:3</name>
+									<run>
+										<ports>
+											<port>dsh.it.rabbitmq.port:5672</port>
+										</ports>
+										<wait>
+											<log>Server startup complete</log>
+											<time>90000</time>
+										</wait>
+									</run>
+								</image>
+							</images>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start-it-infrastructure</id>
+								<phase>package</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>stop-it-infrastructure</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
 							</execution>
 						</executions>
 					</plugin>
