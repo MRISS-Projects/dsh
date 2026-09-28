@@ -167,7 +167,7 @@ This is a test-code refactor that must not change behaviour, so there is no new 
 failing check is the §3.5 invariant: **Task 1** records it failing on the RC, and later tasks turn
 it green without changing any other measurement.
 
-- [ ] **Task 1 — baseline on the RC plus this spec.** Before any edit:
+- [x] **Task 1 — baseline on the RC plus this spec.** Before any edit:
       1. Run the §2.2 grep. Expected: 20 lines. Run the §3.5 pipeline. Expected: 20 lines. Record
          both in §7.
       2. `mvn -B clean install > .logs/mvn-clean-install-baseline.log 2>&1`. Expected: exit 0.
@@ -181,17 +181,17 @@ it green without changing any other measurement.
       4. `mvn -B clean install -DintegrationTests > .logs/mvn-clean-install-it-baseline.log 2>&1`.
          Expected: exit 0. Record `DocumentResourceIT`'s `Tests run:` line.
       5. Commit nothing.
-- [ ] **Task 2 — `dsh-data`.** Apply Rules A and C to `DocumentTest` and Rule A to
+- [x] **Task 2 — `dsh-data`.** Apply Rules A and C to `DocumentTest` and Rule A to
       `MongoDocumentDaoTest`, with §3.4's imports.
       `mvn -B -pl dsh-data -am clean install > .logs/mvn-clean-install-dsh-data.log 2>&1`.
       Expected: exit 0, the same `dsh-data` test count as Task 1, and `All coverage checks have been met.`
       Commit: `test(#122): close the fixture streams in dsh-data's tests`.
-- [ ] **Task 3 — `dsh-rest-api`.** Apply §3 to the four `dsh-rest-api` files, with §3.4's imports.
+- [x] **Task 3 — `dsh-rest-api`.** Apply §3 to the four `dsh-rest-api` files, with §3.4's imports.
       `mvn -B -pl dsh-rest-api -am clean install -DintegrationTests > .logs/mvn-clean-install-rest-api-it.log 2>&1`.
       Expected: exit 0, the same `dsh-rest-api` unit and IT counts as Task 1, and
       `All coverage checks have been met.` Commit:
       `test(#122): close the fixture streams in dsh-rest-api's tests`.
-- [ ] **Task 4 — verify on the full reactor.** Run §6 in order, record every result in §7, tick the
+- [x] **Task 4 — verify on the full reactor.** Run §6 in order, record every result in §7, tick the
       ACs in §8, commit: `docs(#122): record the verification`.
 
 ## 6. Verification
@@ -216,14 +216,55 @@ Run one after another, each logging to its own file in `.logs/`.
 
 ## 7. Build record
 
-Filled in by `dsh-build-story`.
+Filled in by `dsh-build-story` on 2026-09-28. Every Maven run below exited 0.
+
+### 7.1 Baseline — Task 1, at `a0d17a462`
+
+| Measurement | Result |
+|---|---|
+| §2.2 grep | 20 lines |
+| §3.5 pipeline | 20 lines |
+| `mvn -B clean install` | exit 0; `All coverage checks have been met.` ×8; `Rule violated` ×0 |
+| Coverage | `jacoco.csv` present, copied to `.logs/jacoco-aggregate-baseline.csv` |
+| `mvn -B clean install -DintegrationTests` | exit 0; `DocumentResourceIT`: `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0` |
+
+Last `Tests run:` summary per module, unit build:
+
+| Module | Tests run |
+|---|---|
+| `dsh-data` | 51 |
+| `dsh-rest-api` | 36 |
+| `solr-terms-vector-order` | 22 |
+| `solr-advanced-numbers-filter` | 10 |
+| `dsh-doc-indexer-worker` | 2 |
+| `dsh-keyword-extractor` | 2 |
+| `dsh-top-sentences-extractor` | 2 |
+| `dsh-doc-processor-worker` | 2 |
+
+All with 0 failures, 0 errors, 0 skipped.
+
+### 7.2 Per-module builds
+
+| Task | Commit | Command | Result |
+|---|---|---|---|
+| 2 | `d3247a981` | `mvn -B -pl dsh-data -am clean install` | exit 0; `dsh-data` 51 tests; coverage met |
+| 3 | `9dcacb412` | `mvn -B -pl dsh-rest-api -am clean install -DintegrationTests` | exit 0; `dsh-rest-api` 36 unit, 8 IT (`DocumentResourceIT` 6); coverage met |
+
+### 7.3 Verification — §6, at `9dcacb412`
+
+| Run | Result |
+|---|---|
+| 1 | §3.5 pipeline prints nothing. §2.2 grep prints 6 lines. |
+| 2 | No path under `src/main`. The branch diff is the six §4 test files plus this spec. |
+| 3 | exit 0. Every `Tests run:` summary identical to the baseline (`diff` empty). `All coverage checks have been met.` ×8, `Rule violated` ×0. `diff` of `jacoco.csv` against the baseline prints nothing. |
+| 4 | exit 0. `DocumentResourceIT`: `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`. Every `Tests run:` summary identical to the IT baseline. |
 
 ## 8. Acceptance criteria
 
-- [ ] **AC001** — no test opens a `FileInputStream` without closing it. Byte arrays come from
+- [x] **AC001** — no test opens a `FileInputStream` without closing it. Byte arrays come from
       `FileUtils.readFileToByteArray`, and the stream constructor is called inside
       try-with-resources. *§3, §6 run 1.*
-- [ ] **AC002** — no production code changes. *§6 run 2.*
-- [ ] **AC003** — `mvn -B clean install` is green, with test counts and coverage unchanged. The AC
+- [x] **AC002** — no production code changes. *§6 run 2.*
+- [x] **AC003** — `mvn -B clean install` is green, with test counts and coverage unchanged. The AC
       says `mvn -B install`. `clean` is added because `CLAUDE.md` requires it for any result about the
       gate. *§6 runs 3 and 4.*
