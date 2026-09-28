@@ -89,7 +89,7 @@ reconciliation that rediscovers them should leave them out.
 | `#104` | **closed** — PR #131 | Regenerate the coverage badge, or stop publishing a stale one |
 | `#111` | **closed** — PR #116 | Let `release.yml` and `hotfix.yml` dispatch a release rehearsal |
 | `#112` | **closed** — PR #121 | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
-| `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
+| `#113` | **closed** — PR #136 | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
 | `#114` | **closed** — PR #116 | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
 | `#115` | **closed** — PR #135 | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
 | `#117` | **closed** — PR #118 | Pass `development_branch` to the release and hotfix wrappers |
@@ -215,9 +215,10 @@ step skips and the job passes after building the reactor and booting the applica
 nothing.
 
 `#113` came out of that same scoping and was deliberately not folded into `#46`. Two workflows
-trigger on pushes to a branch named `main`, which this repository has never had; a dead trigger has
+listed `main`, a branch this repository has never had, as a push trigger; a dead trigger has
 nothing to do with the integration-test lifecycle, and bundling them would have put a one-line
-cleanup behind a story with an open design question.
+cleanup behind a story with an open design question. Shipped in PR #136, which also corrected four
+docs that restated the trigger, three of them with a lowercase `develop`.
 
 `#123` is the consuming half of `parent-poms#78`, and it had to be a separate issue because the
 two changes live in different repositories. `parent-poms#78` removed the input names `#123` stopped
