@@ -74,7 +74,7 @@ reconciliation that rediscovers them should leave them out.
 | `#85` | **closed** — PR #109 | Update documentation: replace Maven 3.3.9 with 3.9.9 and standardise Java version to 17 |
 | `#86` | **closed** — PR #108 | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
 | `#87` | **closed** — PR #126 | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions |
-| `#43` | open | Configure surefire, jacoco and other useful reports for the maven generated docs |
+| `#43` | **closed** — no PR; already met by parent-poms `3.9.0` | Configure surefire, jacoco and other useful reports for the maven generated docs |
 | `#46` | open | Implement integration tests using embedded tomcat server |
 | `#70` | **closed** — PR #130 | Project link not working at maven generated site |
 | `#90` | **closed** — PR #129 | index.html missing from published site on gh-pages (root + all submodules) |
@@ -605,6 +605,12 @@ anything is deprecated today.
   (`products/dsh`) will send 0.3.0's site to `releases/products/dsh`, leaving the wiki's release link
   on 0.2.x. `#128` can only start once 0.3.0 is out. `#90` is closed, so the release site should carry
   every module's `index.html`; the 0.3.0 release run is the first evidence of that.
+- `#132` — Enforce SpotBugs and Checkstyle in the build and publish their reports.
+
+  Not an ADR-001 phase task. It came from triaging Wave 0's `#43` on 2026-09-27. `#43` asked for
+  site reports that parent-poms `3.9.0` already ships, so it closed as met instead of being
+  repurposed. The analysers it did not cover became this new issue. Their configuration belongs
+  in parent-poms, which is why it waits for 0.3.0.
 
 **Tasks (ADR-001 §4 Phase 1):**
 
