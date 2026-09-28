@@ -70,8 +70,7 @@ public class DocumentSubmissionServiceImplTest {
      */
     @Test
     public void testGetTokenFromDocumentNoCaching() throws Exception {
-        InputStream is = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"));
-        String token = service.getTokenFromDocument(is, "Russia-Trump: FBI chief Wray defends agency", false);
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", false);
         assertNotNull("Token must not be null", token);
         verify(messageHandler).setDocument(any(Document.class));
     }
@@ -82,8 +81,7 @@ public class DocumentSubmissionServiceImplTest {
     @Test
     public void testGetTokenFromDocumentCacheMiss() throws Exception {
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(null);
-        InputStream is = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"));
-        String token = service.getTokenFromDocument(is, "Russia-Trump: FBI chief Wray defends agency", true);
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", true);
         assertNotNull(token);
     }
 
@@ -93,13 +91,11 @@ public class DocumentSubmissionServiceImplTest {
     @Test
     public void testGetTokenFromDocumentCacheHit() throws Exception {
         // Prime the DAO mock with a document that already has a token
-        InputStream is1 = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"));
         // Build the expected cached document (same hash as what the service will compute)
-        Document cached = new Document(is1, "Russia-Trump: FBI chief Wray defends agency");
+        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency");
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(cached);
 
-        InputStream is2 = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"));
-        String token = service.getTokenFromDocument(is2, "Russia-Trump: FBI chief Wray defends agency", true);
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", true);
         assertEquals("Should return cached document token", cached.getToken(), token);
     }
 
@@ -126,8 +122,7 @@ public class DocumentSubmissionServiceImplTest {
             return null;
         }).when(docQueueService).enqueueDocumentId(org.mockito.ArgumentMatchers.nullable(String.class), any());
 
-        InputStream is = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"));
-        service.getTokenFromDocument(is, "Russia-Trump: FBI chief Wray defends agency", false);
+        tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", false);
         service.storeDocumentAndQueueForProcessing();
 
         verify(docHandlingService).storeDocument(any(Document.class));
@@ -155,12 +150,10 @@ public class DocumentSubmissionServiceImplTest {
      */
     @Test
     public void testStoreDocumentAndQueueForProcessingCacheHitSkipsStorage() throws Exception {
-        InputStream is1 = new java.io.FileInputStream(new java.io.File("target/test-classes/pdf/bbc-news-1.pdf"));
-        com.mriss.dsh.data.models.Document cached = new com.mriss.dsh.data.models.Document(is1, "Russia-Trump: FBI chief Wray defends agency");
+        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency");
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(cached);
 
-        InputStream is2 = new java.io.FileInputStream(new java.io.File("target/test-classes/pdf/bbc-news-1.pdf"));
-        service.getTokenFromDocument(is2, "Russia-Trump: FBI chief Wray defends agency", true);
+        tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", true);
         service.storeDocumentAndQueueForProcessing();
 
         verify(docHandlingService, org.mockito.Mockito.never())
@@ -177,12 +170,27 @@ public class DocumentSubmissionServiceImplTest {
         doAnswer(inv -> { throw new RuntimeException("Broker unavailable"); })
                 .when(docQueueService).enqueueDocumentId(org.mockito.ArgumentMatchers.nullable(String.class), any());
 
-        InputStream is = new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf"));
-        service.getTokenFromDocument(is, "Emails show Trump Tower meeting follow-up", false);
+        tokenFor("target/test-classes/pdf/edition.cnn.com-1.pdf", "Emails show Trump Tower meeting follow-up", false);
         service.storeDocumentAndQueueForProcessing();
 
         // Error branch: storeDocument is called twice (before and after error)
         verify(docHandlingService, org.mockito.Mockito.times(2))
                 .storeDocument(any(Document.class));
+    }
+
+    // -------------------------------------------------------------------------
+    // helpers
+    // -------------------------------------------------------------------------
+
+    private String tokenFor(String path, String title, boolean useCache) throws Exception {
+        try (InputStream is = new FileInputStream(new File(path))) {
+            return service.getTokenFromDocument(is, title, useCache);
+        }
+    }
+
+    private static Document documentFrom(String path, String title) throws Exception {
+        try (InputStream is = new FileInputStream(new File(path))) {
+            return new Document(is, title);
+        }
     }
 }
