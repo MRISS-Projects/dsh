@@ -108,12 +108,16 @@ which makes AC002 structural rather than a runtime skip.
 | `post-integration-test` | `spring-boot:stop`, then `docker:stop` | teardown, reached on a red test because `failsafe:integration-test` does not fail the build |
 
 **Why `package` and not `pre-integration-test`.** Within one phase Maven runs executions in plugin
-declaration order. `spring-boot-maven-plugin` is declared in the main `<build>` for `repackage`, and
-a profile's plugins merge in after it, so everything bound to `pre-integration-test` would run
-`spring-boot:start` before the containers exist. Binding the port reservation and `docker:start` to
-`package` puts them first without moving `repackage`. The same declaration order makes
-`spring-boot:stop` run before `docker:stop` in `post-integration-test`, which is the teardown order
-wanted. Task 3 and Task 6 prove the order from the build log instead of trusting this paragraph.
+declaration order. `spring-boot-maven-plugin` is declared in the main `<build>` for `repackage`, so
+the profile names a plugin the main build already has. Maven merges such a profile by inserting its
+*new* plugins ahead of the first plugin it shares with the main build. *Corrected during the build:*
+this spec first said the profile's plugins merge in after, and with `docker-maven-plugin` declared
+first, Task 4's log showed `docker:stop` before `spring-boot:stop`. So inside the profile
+`spring-boot-maven-plugin` is declared **before** `docker-maven-plugin`, which puts it first in every
+phase. Everything bound to `pre-integration-test` would then run `spring-boot:start` before the
+containers exist. Binding the port reservation and `docker:start` to `package` puts them first
+without moving `repackage`, and `spring-boot:stop` runs before `docker:stop`, the teardown order
+wanted. §7.4 proves the order from the build log.
 
 **What `spring-boot:start` runs.** It forks a JVM on `target/classes` plus the runtime classpath.
 It does not launch the repackaged jar. The code is the same, but the jar's launcher is not
@@ -130,22 +134,29 @@ spec says so rather than overclaim.
 - **RabbitMQ.** It waits on `Server startup complete`.
 - **Both** time out at 90 s, and a timeout fails the build.
 
-**The Mongo user.** `dsh-data`'s `dshApplicationContext.xml` authenticates as
-`${mongo.user}:${mongo.password}@dsh`. The `@dsh` is literal, so the user must exist in the `dsh`
-database. `dsh-rest-api/src/test/docker/mongo-init.js` creates `dshuser`/`dshpass` with `readWrite`
+**The Mongo user.** After §4.2.2, `dsh-data`'s `dshApplicationContext.xml` authenticates as
+`${mongo.user}:${mongo.password}` against the `dsh` database, so the user must exist there. (This
+spec first assumed it already authenticated. It did not; see §4.2.2.)
+`dsh-rest-api/src/test/docker/mongo-init.js` creates `dshuser`/`dshpass` with `readWrite`
 on `dsh`, bind-mounted read-only into `/docker-entrypoint-initdb.d`. The entrypoint runs init scripts
 whenever that directory is non-empty, so no root user is needed.
 
 **Arguments to the application.** `mongo.properties` is filtered at `dsh-data`'s build time, but
 `context:property-placeholder` gives the `Environment` precedence over the file, so command-line
-arguments win. `api-testing.yml` already relies on this. The arguments are `--server.port`,
+arguments win once §4.2.2 stops the context XML itself being filtered. `api-testing.yml` never proved
+this: it passes the same values the build baked in. The arguments are `--server.port`,
 `--mongo.host`, `--mongo.port`, `--mongo.user`, `--mongo.password`, `--spring.rabbitmq.host` and
 `--spring.rabbitmq.port`.
 
 **Container names** follow `dsh-it-%a-%t` (alias, timestamp), so AC005's leak check can filter on
 `name=dsh-it-`, and two concurrent builds on one box do not collide.
 
-### 4.2 The one production change: the RabbitMQ port
+### 4.2 The production changes
+
+The spec was approved with one, the RabbitMQ port. The build found the second, the MongoDB
+connection, when the containers first ran (§7.3); it was added with the human's approval.
+
+#### 4.2.1 The RabbitMQ port
 
 `dsh-rest-api/src/main/resources/enqueue-docId-context.xml` declares
 `<rabbit:connection-factory … host="localhost" …/>` and no port, so it always dials 5672. With the
@@ -161,6 +172,41 @@ The defaults reproduce today's behaviour byte for byte. Placeholders in an `@Imp
 resolved from the Boot `Environment`. The property names are Boot's own, so the familiar
 `spring.rabbitmq.*` keys now reach this factory. The dequeue side lives in other modules and is out
 of scope.
+
+`dsh-rest-api` filters `src/main/resources`, but Maven reads `spring.rabbitmq.host:localhost` as
+one property name, which is never defined, so the placeholders reach `target/classes` intact
+(checked there).
+
+#### 4.2.2 The MongoDB connection
+
+With both containers up, the forked application still dialled `localhost:27017`. Two defects in
+`dsh-data`, both older than this story:
+
+- **The context XML was filtered at build time.** `dsh-data/pom.xml` excludes the Spring context
+  from filtering by name, and the name was `applicationContext.xml`, a file that no longer exists.
+  So `dshApplicationContext.xml` was filtered, and `${mongo.host}`, `${mongo.port}` and the
+  credentials were baked in as literals. No runtime argument could change them. Shown by the
+  packaged jar's copy (`host="localhost" port="27017"`), and by a probe with `--mongo.port=11111`
+  that still dialled 27017.
+- **The credentials were never used.** The element carried `credentials="user:password@dsh"`.
+  spring-data-mongodb 3.4.18's `MongoClientParser` reads `port`, `host`, `credential`, `replica-set`
+  and `connection-string` (from its bytecode). It does not read `credentials`, so the client
+  connected unauthenticated. The pinned `spring-mongo-2.0.xsd` still declared the old attribute, so
+  nothing failed.
+
+The change:
+
+- `dsh-data/pom.xml` names `dshApplicationContext.xml` in both the filtered resource's exclude and
+  the unfiltered resource's include;
+- the context uses `connection-string="mongodb://${mongo.user}:${mongo.password}@${mongo.host}:${mongo.port}/dsh"`,
+  and its schema location becomes the versionless `spring-mongo.xsd` (3.3 in this jar), because the
+  2.0 schema rejects `connection-string`.
+
+The probe with `--mongo.port=11111` then dialled `localhost:11111`. Every consumer of `dsh-data`
+now authenticates. That matters wherever MongoDB runs without the user: `api-testing.yml` creates
+`dshuser`, and `mongo.properties`'s values come from each environment's Maven settings. A password
+containing `@`, `:` or `/` would need percent-encoding in the connection string. The defect is
+recorded as its own bug issue (§8).
 
 ### 4.3 The IT
 
@@ -226,7 +272,9 @@ one.
 |---|---|
 | `dsh-rest-api/pom.xml` | the `http-integration-tests` profile (§4.1) |
 | `dsh-rest-api/src/test/docker/mongo-init.js` | new: creates `dshuser` in `dsh` |
-| `dsh-rest-api/src/main/resources/enqueue-docId-context.xml` | host and port placeholders (§4.2) |
+| `dsh-rest-api/src/main/resources/enqueue-docId-context.xml` | host and port placeholders (§4.2.1) |
+| `dsh-data/pom.xml` | the context XML excluded from filtering by its real name (§4.2.2) |
+| `dsh-data/src/main/resources/dshApplicationContext.xml` | a connection string, the versionless schema (§4.2.2) |
 | `dsh-rest-api/src/test/java/com/mriss/dsh/restapi/integration/DocumentResourceHttpIT.java` | new (§4.3) |
 | `.github/copilot/rules/testing-patterns.md` | an "Over the wire" subsection (Task 7), then restructured around the four test layers (Task 8) |
 | `.github/copilot/rules/java-conventions.md` | its unit-test line points at the layers (Task 8) |
@@ -243,9 +291,9 @@ code. Every gate run includes `clean`.
 
 ### Task 1 — Baseline
 
-- [ ] **Step 1.** `docker ps -a --filter name=dsh-it- --format '{{.Names}}'` prints nothing.
-- [ ] **Step 2.** `mvn -B clean install > .logs/mvn-clean-install-baseline.log 2>&1`, exit `0`.
-- [ ] **Step 3.** Record `dsh-rest-api`'s LINE and BRANCH from
+- [x] **Step 1.** `docker ps -a --filter name=dsh-it- --format '{{.Names}}'` prints nothing.
+- [x] **Step 2.** `mvn -B clean install > .logs/mvn-clean-install-baseline.log 2>&1`, exit `0`.
+- [x] **Step 3.** Record `dsh-rest-api`'s LINE and BRANCH from
       `dsh-rest-api/target/site/jacoco/jacoco.csv` (sum `LINE_MISSED`/`LINE_COVERED` and
       `BRANCH_MISSED`/`BRANCH_COVERED` over all rows) into §7.1.
 
@@ -253,7 +301,7 @@ code. Every gate run includes `clean`.
 
 **Files:** create `DocumentResourceHttpIT.java`.
 
-- [ ] **Step 1.** Write the class:
+- [x] **Step 1.** Write the class:
 
 ```java
 package com.mriss.dsh.restapi.integration;
@@ -401,23 +449,23 @@ public class DocumentResourceHttpIT {
 }
 ```
 
-- [ ] **Step 2.** `mvn -B clean install -DintegrationTests -pl dsh-rest-api -am -Dit.test=DocumentResourceHttpIT -Dit.failIfNoSpecifiedTests=false`
+- [x] **Step 2.** `mvn -B clean install -DintegrationTests -pl dsh-rest-api -am -Dit.test=DocumentResourceHttpIT -Dit.failIfNoSpecifiedTests=false`
       to `.logs/mvn-clean-install-it-task2.log`. Expected: exit non-zero, all four tests failing
       with `dsh.it.baseUrl is not set`. Record in §7.2.
-- [ ] **Step 3.** Commit: `test(#46): add the over-the-wire IT, red without a server`.
+- [x] **Step 3.** Commit: `test(#46): add the over-the-wire IT, red without a server`.
 
 ### Task 3 — Start and stop the application, no containers yet
 
 **Files:** `dsh-rest-api/pom.xml`.
 
-- [ ] **Step 1.** Add the profile with the `build-helper`, `spring-boot` and `failsafe` parts of
+- [x] **Step 1.** Add the profile with the `build-helper`, `spring-boot` and `failsafe` parts of
       §6.1's final XML, leaving the `docker-maven-plugin` block and the Mongo/Rabbit arguments out.
-- [ ] **Step 2.** Same command as Task 2, log `.logs/mvn-clean-install-it-task3.log`. Expected:
+- [x] **Step 2.** Same command as Task 2, log `.logs/mvn-clean-install-it-task3.log`. Expected:
       `submit_whenTitleBlank…` and `submit_whenContentsMissing…` **green** over real HTTP.
       `status_whenTokenUnknown…` is **red** with `500` after ~30 s, and `submit_whenValidPdf…` is
       **red**; there is no infrastructure. The log shows `spring-boot:stop` after the red tests.
       Record in §7.2.
-- [ ] **Step 3.** Commit: `build(#46): start and stop the application around integration tests`.
+- [x] **Step 3.** Commit: `build(#46): start and stop the application around integration tests`.
 
 ### Task 4 — The containers
 
@@ -433,7 +481,7 @@ db.getSiblingDB('dsh').createUser({
 });
 ```
 
-- [ ] **Step 1.** Add the `docker-maven-plugin` block and the Mongo/Rabbit arguments, completing
+- [x] **Step 1.** Add the `docker-maven-plugin` block and the Mongo/Rabbit arguments, completing
       §6.1's XML. **The bind mount is the one untested piece on Windows.** If `docker:start` rejects
       the `C:\…` host path, or the user is missing afterwards, drop the `<volumes>` block and
       bake the script into an image instead: add `dsh-rest-api/src/test/docker/mongo/Dockerfile`
@@ -442,53 +490,53 @@ db.getSiblingDB('dsh').createUser({
       `<build><contextDir>${project.basedir}/src/test/docker/mongo</contextDir></build>` with
       `<name>dsh-it-mongo:${project.version}</name>`. `docker:start` builds it on demand. Record
       which form shipped, and why, in §7.3.
-- [ ] **Step 2.** Same command, log `.logs/mvn-clean-install-it-task4.log`. Expected:
+- [x] **Step 2.** Same command, log `.logs/mvn-clean-install-it-task4.log`. Expected:
       `status_whenTokenUnknown…` **green**, a real Mongo miss. `submit_whenValidPdf…` is **red** at
       `QUEUED_FOR_INDEXING_ERROR`, because the application still dials RabbitMQ on 5672 and the
       broker sits on a random port. If something already listens on 5672 locally, stop it for this
       run; otherwise this red turns falsely green. Record in §7.3.
-- [ ] **Step 3.** Commit: `build(#46): run MongoDB and RabbitMQ containers around integration tests`.
+- [x] **Step 3.** Commit: `build(#46): run MongoDB and RabbitMQ containers around integration tests`.
 
 ### Task 5 — The RabbitMQ port, green
 
-**Files:** `enqueue-docId-context.xml` (§4.2).
+**Files:** `enqueue-docId-context.xml` (§4.2.1).
 
-- [ ] **Step 1.** Apply §4.2.
-- [ ] **Step 2.** Same command, log `.logs/mvn-clean-install-it-task5.log`: all four **green**.
-- [ ] **Step 3.** `mvn -B clean install > .logs/mvn-clean-install.log 2>&1`, exit `0`. The
+- [x] **Step 1.** Apply §4.2.1.
+- [x] **Step 2.** Same command, log `.logs/mvn-clean-install-it-task5.log`: all four **green**.
+- [x] **Step 3.** `mvn -B clean install > .logs/mvn-clean-install.log 2>&1`, exit `0`. The
       placeholder defaults keep the six Spring-context ITs and every unit test unchanged.
-- [ ] **Step 4.** Commit: `fix(#46): let the RabbitMQ host and port be configured`.
+- [x] **Step 4.** Commit: `fix(#46): let the RabbitMQ host and port be configured`.
 
 ### Task 6 — Acceptance evidence
 
 Nothing here is committed except §7.
 
-- [ ] **AC002.** In `.logs/mvn-clean-install.log` from Task 5, `grep -c
+- [x] **AC002.** In `.logs/mvn-clean-install.log` from Task 5, `grep -c
       'spring-boot-maven-plugin:.*:start\|docker-maven-plugin\|reserve-network-port'` is `0`, and
       `docker ps -a --filter name=dsh-it-` is empty.
-- [ ] **AC001 / AC003.** `mvn -B clean install -DintegrationTests > .logs/mvn-clean-install-it.log`
+- [x] **AC001 / AC003.** `mvn -B clean install -DintegrationTests > .logs/mvn-clean-install-it.log`
       for the whole reactor, exit `0`. Record the ordered `grep -n` of `reserve-network-port`,
       `docker-maven-plugin.*start`, `spring-boot-maven-plugin.*start`, `maven-failsafe-plugin`,
       `spring-boot-maven-plugin.*stop` and `docker-maven-plugin.*stop`.
-- [ ] **AC004.** Two mutations, each run with `-Dit.test=DocumentResourceHttpIT`, each reverted and
+- [x] **AC004.** Two mutations, each run with `-Dit.test=DocumentResourceHttpIT`, each reverted and
       the revert confirmed by `git diff --exit-code`:
   - In `DocumentResource.validateParameters`, replace `StringUtils.isBlank(title)` with `false`.
     Expected: `submit_whenTitleBlank…` red.
   - In `DocumentResource.getStatus`, replace `d == null` with `false`. Expected:
     `status_whenTokenUnknown…` red, `500`.
-- [ ] **AC005.** Change `submit_whenTitleBlank…`'s expected token to `"NOT-ERROR"`, run the whole
+- [x] **AC005.** Change `submit_whenTitleBlank…`'s expected token to `"NOT-ERROR"`, run the whole
       reactor with `-DintegrationTests`. Expected: exit non-zero from `failsafe:verify`, with
       `spring-boot:stop` and `docker:stop` both in the log before it. Then:
       - `jps -l` lists no `com.mriss.dsh.restapi.DshRestApplication`;
       - `netstat -ano | grep ":<dsh.it.http.port> "` is empty, with the port read from the log;
       - `docker ps -a --filter name=dsh-it-` is empty.
       Revert and confirm with `git diff --exit-code`.
-- [ ] **AC006.** `git diff staging-0.3.0-SNAPSHOT-RC -- dsh-rest-api | grep -nE '8080|27017|5672'`
+- [x] **AC006.** `git diff staging-0.3.0-SNAPSHOT-RC -- dsh-rest-api | grep -nE '8080|27017|5672'`
       matches only the container-side ports in `<port>…:27017</port>` / `<port>…:5672</port>`, and
       the `:5672` fallback in `enqueue-docId-context.xml`. None of them is a port the host binds.
-- [ ] **AC007.** `git diff --stat staging-0.3.0-SNAPSHOT-RC -- .github/workflows` is empty; the
+- [x] **AC007.** `git diff --stat staging-0.3.0-SNAPSHOT-RC -- .github/workflows` is empty; the
       reason is §3.1.
-- [ ] **AC008.** Task 5's `jacoco.csv` gives the same LINE and BRANCH for `dsh-rest-api` as Task 1.
+- [x] **AC008.** Task 5's `jacoco.csv` gives the same LINE and BRANCH for `dsh-rest-api` as Task 1.
 
 ### Task 7 — Documentation
 
@@ -554,9 +602,11 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
 <profiles>
     <!-- #46: keyed on the same property as parent-poms' failsafe profile, so nothing here is bound by
          a plain `mvn install`. Port reservation and containers bind to `package`, not
-         `pre-integration-test`: spring-boot-maven-plugin is declared in the main build and would
-         otherwise start the application before its databases. Declaration order also makes
-         spring-boot:stop run before docker:stop. -->
+         `pre-integration-test`, because within a phase executions run in plugin order and
+         spring-boot-maven-plugin precedes docker-maven-plugin. That order comes from this profile,
+         not the main build: Maven inserts a profile's new plugins ahead of the first plugin the
+         profile shares with the main build, so spring-boot-maven-plugin must stay declared before
+         docker-maven-plugin here, or docker:stop runs before spring-boot:stop. -->
     <profile>
         <id>http-integration-tests</id>
         <activation>
@@ -586,9 +636,45 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                     </executions>
                 </plugin>
                 <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>start-application</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                            <configuration>
+                                <jmxPort>${dsh.it.jmx.port}</jmxPort>
+                                <maxAttempts>120</maxAttempts>
+                                <arguments>
+                                    <argument>--server.port=${dsh.it.http.port}</argument>
+                                    <argument>--mongo.host=localhost</argument>
+                                    <argument>--mongo.port=${dsh.it.mongo.port}</argument>
+                                    <argument>--mongo.user=dshuser</argument>
+                                    <argument>--mongo.password=dshpass</argument>
+                                    <argument>--spring.rabbitmq.host=localhost</argument>
+                                    <argument>--spring.rabbitmq.port=${dsh.it.rabbitmq.port}</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>stop-application</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                            <configuration>
+                                <jmxPort>${dsh.it.jmx.port}</jmxPort>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <!-- §4.5: not yet managed by parent-poms; see parent-poms#90. -->
+                    <!-- Not yet managed by parent-poms; see parent-poms#90. -->
                     <version>0.49.0</version>
                     <configuration>
                         <containerNamePattern>dsh-it-%a-%t</containerNamePattern>
@@ -645,42 +731,6 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>start-application</id>
-                            <phase>pre-integration-test</phase>
-                            <goals>
-                                <goal>start</goal>
-                            </goals>
-                            <configuration>
-                                <jmxPort>${dsh.it.jmx.port}</jmxPort>
-                                <maxAttempts>120</maxAttempts>
-                                <arguments>
-                                    <argument>--server.port=${dsh.it.http.port}</argument>
-                                    <argument>--mongo.host=localhost</argument>
-                                    <argument>--mongo.port=${dsh.it.mongo.port}</argument>
-                                    <argument>--mongo.user=dshuser</argument>
-                                    <argument>--mongo.password=dshpass</argument>
-                                    <argument>--spring.rabbitmq.host=localhost</argument>
-                                    <argument>--spring.rabbitmq.port=${dsh.it.rabbitmq.port}</argument>
-                                </arguments>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>stop-application</id>
-                            <phase>post-integration-test</phase>
-                            <goals>
-                                <goal>stop</goal>
-                            </goals>
-                            <configuration>
-                                <jmxPort>${dsh.it.jmx.port}</jmxPort>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <configuration>
@@ -700,19 +750,131 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
 
 ## 7. Verification
 
-Filled in during the build step (`dsh-build-story`).
+Filled in during the build step (`dsh-build-story`) on 2026-09-28. All runs are on Windows 11 with
+Docker Desktop (engine 29.8.0, Linux containers).
 
 ### 7.1 Baseline and result (Tasks 1, 5, 6: AC008)
 
+`mvn -B clean install` does not write `dsh-rest-api/target/site/jacoco/jacoco.csv`; nothing binds
+`jacoco:report` there. Both figures come from `mvn -B -pl <module> jacoco:report` run straight after
+the gate, on the same `jacoco.exec` that `jacoco:check` had just read.
+
+| Module | Task 1, baseline at `26e056e3d` | Task 5, after `3fc8c05b8` |
+|---|---|---|
+| `dsh-rest-api` | LINE 142/145, BRANCH 35/36 | LINE 142/145, BRANCH 35/36 |
+| `dsh-data` | not recorded | LINE 235/242, BRANCH 81/82 |
+
+`dsh-rest-api` is identical. `dsh-data` joined the story after the baseline (§4.2.2), so it has no
+Task 1 figure; its change is XML and POM only, no Java, and it passes the gate. Both gate runs exited
+`0`. AC008 holds.
+
 ### 7.2 Red, then partly green (Tasks 2, 3)
+
+- **Task 2.** Exit `1`. All four tests failed in `setUp` with `dsh.it.baseUrl is not set`.
+- **Task 3.** Exit `1`. `spring-boot:start` booted the application in 6.2 s.
+  - `submit_whenTitleBlank…` and `submit_whenContentsMissing…` were green over real HTTP.
+  - `status_whenTokenUnknown…` was red with `500` after 30.03 s.
+  - `submit_whenValidPdf…` was red with `500` after 30.24 s. The submit returned `200`, and the
+    first status poll hit the Mongo timeout.
+  - `spring-boot:stop` ran after the red tests.
+- **Pre-existing, not changed here:** `spring-boot:repackage` runs twice in `dsh-rest-api`, as
+  `repackage` from parent-poms' `pluginManagement` and `default` from this module. The baseline log
+  shows it too.
 
 ### 7.3 Containers (Task 4)
 
+- **The first attempt** failed pulling `mongo:6` with `short read: expected 246738406 bytes but got
+  240294146: unexpected EOF`. That was a network truncation. A manual `docker pull` of both images
+  cleared it. A cold staging runner pulls on every build and can meet the same failure.
+- **The bind mount works on Windows**, so the `<volumes>` form shipped, not the baked image.
+  - Mongo was ready in 4.1 s to 7.2 s, and RabbitMQ in about 11.3 s, across runs.
+  - The init regex matched the second `Waiting for connections`.
+- **Run 2 was red for a reason this spec had not foreseen.** `status_whenTokenUnknown…` was still
+  `500` after 30 s, and the log showed the driver dialling `localhost:27017`. The cause is §4.2.2:
+  `dsh-data`'s context XML was filtered at build time.
+  - An actuator probe of the running jar with `--mongo.port=11111` found the `mongoClient` bean
+    defined by the XML. `Environment` resolved `mongo.port=11111` from `commandLineArgs`, and the
+    driver still tried `localhost:27017`.
+  - **The human chose to fix it in this story.** That became commit `4e1c8c0c2`, and the same probe
+    then dialled `localhost:11111`.
+- **Run 2 also showed a teardown-order defect.** `docker:stop` ran before `spring-boot:stop`, the
+  declaration-order error corrected in §4.1.
+- **Run 3** matched this task's expectation:
+  - `status_whenTokenUnknown…` green, a real Mongo miss;
+  - `submit_whenValidPdf…` red at `QUEUED_FOR_INDEXING_ERROR`, because the broker was not on 5672;
+  - `spring-boot:stop`, then `docker:stop`.
+
 ### 7.4 Lifecycle order (Task 6: AC001, AC002, AC003)
+
+**AC002.** In Task 5's `.logs/mvn-clean-install.log`, a plain `mvn -B clean install`, the count of
+`spring-boot:…:start`, `docker:…:` and `reserve-network-port` lines is `0`.
+`docker ps -a --filter name=dsh-it-` is empty.
+
+**AC001 and AC003.** `mvn -B clean install -DintegrationTests` on the whole reactor exited `0`. The
+lifecycle lines of `.logs/mvn-clean-install-it.log`, in order:
+
+| Line | Execution |
+|---|---|
+| 593 | `build-helper:3.6.1:reserve-network-port (reserve-it-ports)` |
+| 603 | `docker:0.49.0:start (start-it-infrastructure)` |
+| 614 | `spring-boot:2.7.18:start (start-application)` |
+| 691 | `failsafe:3.5.5:integration-test (integration-tests)` |
+| 1174 | `spring-boot:2.7.18:stop (stop-application)` |
+| 1247 | `docker:0.49.0:stop (stop-it-infrastructure)` |
+| 1259 | `failsafe:3.5.5:verify (integration-tests)` |
+
+`DocumentResourceHttpIT` ran 4 tests, all green. The Spring-context ITs of every module were green
+beside it: `DocumentResourceIT` 6, `DshRestApplicationIT` 2, and one IT class in each worker module.
 
 ### 7.5 Mutations (Task 6: AC004)
 
+The mutation runs are `mvn -B clean verify -DintegrationTests -pl dsh-rest-api
+-Dit.test=DocumentResourceHttpIT`, with `-Dtest=NoSuchTest -Dsurefire.failIfNoSpecifiedTests=false`.
+Without those two flags, the unit tests fail on the same mutation and the build stops before the ITs.
+Both mutations exited `1`, and each was reverted with `git diff --exit-code` clean.
+
+| Mutation | Expected red | Also red |
+|---|---|---|
+| `validateParameters`: `StringUtils.isBlank(title)` → `false` | `submit_whenTitleBlank…` | `submit_whenValidPdf…` |
+| `getStatus`: `d == null` → `false` | `status_whenTokenUnknown…`, `500` | `submit_whenValidPdf…` |
+
+Both collateral reds are caused by the mutation, not by flakiness:
+
+- **Mutation 1** lets the blank-title request enqueue the same PDF a second time. The extra broker
+  ack advanced the stored document past `QUEUED_FOR_INDEXING_SUCCESS` to `DEQUEUED_FOR_INDEXING`
+  before the next poll.
+- **Mutation 2:** the first status poll arrives before the async store finishes, so it reaches the
+  mutated null path too.
+
+Unmutated, `submit_whenValidPdf…` was green in every run from Task 5 onwards.
+
 ### 7.6 Teardown on red (Task 6: AC005)
+
+`submit_whenTitleBlank…`'s expected token was changed to `"NOT-ERROR"`, and the whole reactor was
+run with `-DintegrationTests` into `.logs/mvn-clean-install-it-ac005.log`. It exited `1`, from
+`failsafe:3.5.5:verify` on `dsh-rest-api` (line 1322).
+
+- **Teardown ran first:** `spring-boot:stop` at line 1237, and `docker:stop` at line 1310, which
+  logged `Stop and removed container` for both.
+- **No process is left:** `jps -l` lists no `DshRestApplication`.
+- **No listener is left.** The reserved HTTP port was 54500, and `netstat -ano | grep ":54500 "`
+  shows no `LISTENING` socket. It showed one `TIME_WAIT` line, `127.0.0.1:54500 ↔ 127.0.0.1:54512`:
+  the kernel's remnant of a closed client connection, not a server. The spec's "empty" was too
+  strict, and this is recorded rather than waited out.
+- **No container is left:** `docker ps -a --filter name=dsh-it-` is empty.
+
+The test was reverted, with `git diff --exit-code` clean.
+
+**AC006.** `git diff staging-0.3.0-SNAPSHOT-RC -- dsh-rest-api dsh-data`, grepped for
+`8080|27017|5672` on added lines, matches three:
+
+- `dsh.it.mongo.port:27017`;
+- `dsh.it.rabbitmq.port:5672`;
+- the `:5672` fallback in `enqueue-docId-context.xml`.
+
+The first two are container-side ports. No host port is hardcoded.
+
+**AC007.** `git diff --stat staging-0.3.0-SNAPSHOT-RC -- .github/workflows` is empty.
 
 ## 8. Follow-up issues
 
@@ -727,19 +889,19 @@ Created on 2026-09-28 at spec approval, before the spec was committed.
 
 ## 9. Acceptance criteria
 
-- [ ] AC001: `dsh-rest-api` binds `spring-boot:start` to `pre-integration-test` and `spring-boot:stop`
+- [x] AC001: `dsh-rest-api` binds `spring-boot:start` to `pre-integration-test` and `spring-boot:stop`
   to `post-integration-test` — §6.1, evidence §7.4.
-- [ ] AC002: `mvn -B install` does not start the application — the profile is not active, §7.4.
-- [ ] AC003: `mvn -B install -DintegrationTests` starts it before the integration tests and stops it
+- [x] AC002: `mvn -B install` does not start the application — the profile is not active, §7.4.
+- [x] AC003: `mvn -B install -DintegrationTests` starts it before the integration tests and stops it
   after — §7.4.
-- [ ] AC004: `DocumentResourceHttpIT` calls the REST API over HTTP against the started server, and
+- [x] AC004: `DocumentResourceHttpIT` calls the REST API over HTTP against the started server, and
   fails when the endpoint is broken — §4.3, §7.5.
-- [ ] AC005: the application **and the containers** are stopped even when an integration test fails
+- [x] AC005: the application **and the containers** are stopped even when an integration test fails
   — §7.6.
-- [ ] AC006: no hardcoded port; every host port is reserved or mapped at build time and handed on —
+- [x] AC006: no hardcoded port; every host port is reserved or mapped at build time and handed on —
   §4.1, §4.2.
-- [ ] AC007: `api-testing.yml` deliberately left alone — §3.1, follow-up `#137`.
-- [ ] AC008: the coverage gate is unaffected — §7.1.
+- [x] AC007: `api-testing.yml` deliberately left alone — §3.1, follow-up `#137`.
+- [x] AC008: the coverage gate is unaffected — §7.1.
 - [ ] AC009 (added at spec review, 2026-09-28): `testing-patterns.md` states the four test
   layers, when each is required, and where integration tests run; CLAUDE.md points at them and
   carries the conditional, per-module `-DintegrationTests` gate, which `dsh-ship-story` runs — §3.5, Task 8.
