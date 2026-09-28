@@ -70,7 +70,8 @@ public class DocumentSubmissionServiceImplTest {
      */
     @Test
     public void testGetTokenFromDocumentNoCaching() throws Exception {
-        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", false);
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", false);
         assertNotNull("Token must not be null", token);
         verify(messageHandler).setDocument(any(Document.class));
     }
@@ -81,7 +82,8 @@ public class DocumentSubmissionServiceImplTest {
     @Test
     public void testGetTokenFromDocumentCacheMiss() throws Exception {
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(null);
-        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", true);
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", true);
         assertNotNull(token);
     }
 
@@ -90,12 +92,13 @@ public class DocumentSubmissionServiceImplTest {
      */
     @Test
     public void testGetTokenFromDocumentCacheHit() throws Exception {
-        // Prime the DAO mock with a document that already has a token
         // Build the expected cached document (same hash as what the service will compute)
-        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency");
+        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency");
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(cached);
 
-        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", true);
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", true);
         assertEquals("Should return cached document token", cached.getToken(), token);
     }
 
@@ -122,7 +125,8 @@ public class DocumentSubmissionServiceImplTest {
             return null;
         }).when(docQueueService).enqueueDocumentId(org.mockito.ArgumentMatchers.nullable(String.class), any());
 
-        tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", false);
+        tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", false);
         service.storeDocumentAndQueueForProcessing();
 
         verify(docHandlingService).storeDocument(any(Document.class));
@@ -150,10 +154,12 @@ public class DocumentSubmissionServiceImplTest {
      */
     @Test
     public void testStoreDocumentAndQueueForProcessingCacheHitSkipsStorage() throws Exception {
-        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency");
+        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency");
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(cached);
 
-        tokenFor("target/test-classes/pdf/bbc-news-1.pdf", "Russia-Trump: FBI chief Wray defends agency", true);
+        tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", true);
         service.storeDocumentAndQueueForProcessing();
 
         verify(docHandlingService, org.mockito.Mockito.never())
