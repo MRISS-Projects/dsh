@@ -259,6 +259,14 @@ All with 0 failures, 0 errors, 0 skipped.
 | 3 | exit 0. Every `Tests run:` summary identical to the baseline (`diff` empty). `All coverage checks have been met.` ×8, `Rule violated` ×0. `diff` of `jacoco.csv` against the baseline prints nothing. |
 | 4 | exit 0. `DocumentResourceIT`: `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`. Every `Tests run:` summary identical to the IT baseline. |
 
+### 7.4 After local review — at `60ee66438`
+
+The local review found five added lines over the 120-column limit and one comment orphaned by the
+rewrite, all in `DocumentSubmissionServiceImplTest`. `60ee66438` wraps the helper calls and drops
+the comment. Rerun: the §3.5 pipeline prints nothing, no added line exceeds 120 columns, and
+`mvn -B clean install` exits 0 with every `Tests run:` summary, both coverage counts and `jacoco.csv`
+identical to the baseline.
+
 ## 8. Acceptance criteria
 
 - [x] **AC001** — no test opens a `FileInputStream` without closing it. Byte arrays come from
