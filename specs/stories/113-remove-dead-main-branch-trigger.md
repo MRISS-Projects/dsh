@@ -159,18 +159,18 @@ grep -rnE '`(main|develop)`' docs specs .github CLAUDE.md \
 it quotes the old text, and `PRD.md` because its two hits (lines 92 and 218) name this issue,
 not a trigger.
 
-- [ ] **Task 1 — baseline on the task branch.** Before any edit:
+- [x] **Task 1 — baseline on the task branch.** Before any edit:
       1. Run §2.1's grep. Expected: exactly `api-testing.yml:6` and `documentation-sync.yml:6`.
       2. Run the doc grep. Expected: exactly the five lines in §2.2's table.
       3. Record both outputs in §7. Commit nothing.
-- [ ] **Task 2 — remove the dead triggers.**
+- [x] **Task 2 — remove the dead triggers.**
       1. Delete the `- main` line from both workflows.
       2. Run §2.1's grep. Expected: no output, exit 1.
       3. Read back each file's `on:` block (`sed -n 1,15p`). Expected: `push.branches` holds only
          `- DEVELOP`; `paths`, `pull_request` and `workflow_dispatch` unchanged.
       4. `git diff --stat`. Expected: two files, one deletion each.
       5. Commit: `fix(#113): remove the dead main branch trigger from two workflows`.
-- [ ] **Task 3 — correct the docs.**
+- [x] **Task 3 — correct the docs.**
       1. Apply §3.2's five edits.
       2. Run the doc grep. Expected: no output, exit 1.
       3. Run the `CLAUDE.md` markdownlint command, with
@@ -211,13 +211,56 @@ To be posted on `#113` in Task 4, after approval:
 
 ## 7. Build record
 
-Filled in during Tasks 1–4.
+Built on `issue-113-remove-dead-main-branch-trigger`, from `5d74827e2` (the spec commit).
+
+### 7.1 Task 1 — baseline, red
+
+§2.1's grep, exit 0:
+
+```text
+.github/workflows/api-testing.yml:6:      - main
+.github/workflows/documentation-sync.yml:6:      - main
+```
+
+The doc grep, exit 0, exactly the five lines of §2.2:
+
+```text
+docs/api/README.md:17
+docs/architecture/README.md:17
+docs/devops/README.md:76
+docs/devops/README.md:77
+specs/devops/deploy-release-profiles-reorganization.md:300
+```
+
+### 7.2 Task 2 — workflows, green
+
+- `2551ee91a` `fix(#113): remove the dead main branch trigger from two workflows`
+- §2.1's grep: no output, exit 1.
+- Both `on:` blocks read back: `push.branches` holds only `- DEVELOP`; `paths`, `pull_request`
+  (`api-testing.yml`) and `workflow_dispatch` unchanged.
+- `git diff --stat`: two files, one deletion each. `cat -A` on the diff shows LF endings kept.
+
+### 7.3 Task 3 — docs, green
+
+- `14815a83c` `docs(#113): state the DEVELOP-only trigger in the workflow docs`
+- The doc grep: no output, exit 1.
+- Diff: four files, five lines changed, each only in the trigger wording of §3.2.
+- markdownlint: no findings.
+
+### 7.4 Task 4 — AC003
+
+Rechecked after the change: `grep -A6 'branches:' .github/workflows/*.yml` finds branch filters
+only in `api-testing.yml`, `documentation-sync.yml` and `ci.yml`, with the entries of §3.3.
+`git ls-remote --heads origin`, task branches aside, lists `DEVELOP`, `gh-pages`, `master` and
+`staging-0.3.0-SNAPSHOT-RC`. §3.3's table holds; nothing further to report.
+
+Issue comment: pending approval.
 
 ## 8. Acceptance criteria
 
-- [ ] AC001: `main` is removed from the `push.branches` list in `api-testing.yml` and
+- [x] AC001: `main` is removed from the `push.branches` list in `api-testing.yml` and
   `documentation-sync.yml`. — Task 2
-- [ ] AC002: `grep -rn "main" .github/workflows/` returns no branch-trigger match. — Task 2,
+- [x] AC002: `grep -rn "main" .github/workflows/` returns no branch-trigger match. — Task 2,
   §2.1's exact grep
 - [ ] AC003: Each workflow's remaining trigger list is checked against `CLAUDE.md`'s branch rules,
   and any other branch named there that this repository does not have is reported on this issue.
