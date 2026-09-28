@@ -217,6 +217,81 @@
 	<!-- <repositories>...</repositories> -->
 	<!-- <pluginRepositories>...</pluginRepositories> -->
 	<!-- <distributionManagement>...</distributionManagement> -->
-	<!-- <profiles> -->
-	<!-- </profiles> -->
+	<profiles>
+		<!-- #46: keyed on the same property as parent-poms' failsafe profile, so nothing here is bound by
+		     a plain `mvn install`. Port reservation and containers bind to `package`, not
+		     `pre-integration-test`: spring-boot-maven-plugin is declared in the main build and would
+		     otherwise start the application before its databases. Declaration order also makes
+		     spring-boot:stop run before docker:stop. -->
+		<profile>
+			<id>http-integration-tests</id>
+			<activation>
+				<property>
+					<name>integrationTests</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>reserve-it-ports</id>
+								<phase>package</phase>
+								<goals>
+									<goal>reserve-network-port</goal>
+								</goals>
+								<configuration>
+									<portNames>
+										<portName>dsh.it.http.port</portName>
+										<portName>dsh.it.jmx.port</portName>
+									</portNames>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>start-application</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<jmxPort>${dsh.it.jmx.port}</jmxPort>
+									<maxAttempts>120</maxAttempts>
+									<arguments>
+										<argument>--server.port=${dsh.it.http.port}</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stop-application</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+								<configuration>
+									<jmxPort>${dsh.it.jmx.port}</jmxPort>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<systemPropertyVariables>
+								<dsh.it.baseUrl>http://localhost:${dsh.it.http.port}</dsh.it.baseUrl>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
