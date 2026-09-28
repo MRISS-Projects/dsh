@@ -176,7 +176,7 @@ RC, and Task 2 turns it green without changing any other measurement.
       - Task 1's `jar tf` checks print nothing.
 
       Commit: `fix(#115): delete the orphaned version.properties from dsh-data and dsh-rest-api`.
-- [ ] **Task 3 — record the decision.**
+- [x] **Task 3 — record the decision.**
       1. Append §3.3's line to `#114`'s spec §11.1.
       2. Fill in §7, tick §8, and run the `CLAUDE.md` markdownlint command. Expected: no findings.
       3. Commit: `docs(#115): record the decision and the verification`.
@@ -250,17 +250,20 @@ Each module's last surefire `Tests run:` summary was identical in both runs, all
 | `dsh-top-sentences-extractor` | 2 |
 | `dsh-doc-processor-worker` | 2 |
 
-Commits: `a99f2ad82` (the deletion, Task 2) and the `docs(#115)` commit that records this (Task 3).
-Issue comments (Task 3.4): pending the user's approval of §6's text.
+Commits: `a99f2ad82` (the deletion, Task 2) and `5598913d2` (this record, Task 3).
+Issue comments (Task 3.4), posted as written in §6 after the user approved them:
+
+- `#115`: <https://github.com/MRISS-Projects/dsh/issues/115#issuecomment-5877062373>
+- `#114`: <https://github.com/MRISS-Projects/dsh/issues/114#issuecomment-5877060247>
 
 ## 8. Acceptance criteria
 
 - [x] **AC001** — No built resource under any module's `target/classes` contains an unresolved
       `${...}` placeholder after `mvn -B install`. The run uses `clean install`, because
       `CLAUDE.md` requires `clean` for any result about the build. *§3.2, Task 2.*
-- [ ] **AC002** — The decision is recorded on this issue, with its evidence: delete both files.
+- [x] **AC002** — The decision is recorded on this issue, with its evidence: delete both files.
       *§3.1, §6.*
 - [x] **AC003** — Discharged: `version.properties` does not survive. The reader history is recorded
       anyway. *§2.1, §6.*
-- [ ] **AC004** — `#115` records why `#114`'s AC003 is not restored, and `#114` points forward.
+- [x] **AC004** — `#115` records why `#114`'s AC003 is not restored, and `#114` points forward.
       *§3.3, §6.*
