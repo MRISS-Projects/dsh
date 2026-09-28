@@ -198,19 +198,20 @@ the `tail -f` command, `wait`, and report the exit code.
 This is build configuration, so there is no red–green unit test. The failing check is **Task 1**:
 it establishes, on the RC as it stands, what each AC measures, so Task 4 compares the same things.
 
-- [ ] **Task 1 — baseline on the RC as merged.** Before any edit, run
+- [x] **Task 1 — baseline on the RC as merged.** Before any edit, run
       `mvn -B clean install > .logs/mvn-clean-install.log 2>&1`, then record for §8:
       1. `grep -nE "Copying [0-9]+ resources? from target.test-classes to target.classes" .logs/mvn-clean-install.log`.
          Expected: no match. `#131` already fixed this, and a match means the premise of §2.1 is
          wrong, so stop and report.
-      2. `grep -cE "maven-remote-resources-plugin:[^:]+:process" .logs/mvn-clean-install.log`.
-         Expected: `4`, one per unpacking module. Task 4 expects `2`.
+      2. `grep -cE "remote-resources:[^:]+:process" .logs/mvn-clean-install.log`.
+         Expected: `4`, one per unpacking module. Task 4 expects `2`. Maven 3.9 logs the goal
+         prefix, `remote-resources:3.3.0:process`, not the artifactId (§8, Task 1).
       3. Commit nothing.
-- [ ] **Task 2 — the POMs.** Apply §4.1 to both Solr POMs and §4.2 to `dsh-data` and
+- [x] **Task 2 — the POMs.** Apply §4.1 to both Solr POMs and §4.2 to `dsh-data` and
       `dsh-rest-api`. Then `mvn -B -pl dsh-solr/solr-advanced-numbers-filter,dsh-solr/solr-terms-vector-order,dsh-data,dsh-rest-api -am clean install > .logs/mvn-clean-install-four.log 2>&1`.
       Expected: exit 0, all four report `All coverage checks have been met.` Commit:
       `build(#124): drop the unused fixture unpack from the Solr modules, explain attachToMain`.
-- [ ] **Task 3 — the PRD note.**
+- [x] **Task 3 — the PRD note.**
       1. Measure the fixtures: `ls -l dsh-test-dataset/src/test/resources/pdf/`. If the largest is
          under 1 MiB (1,048,576 bytes), `<SIZE-FINDING>` becomes "The largest fixture is N KB, so
          none reaches it: add one above 1 MB with the story that implements `GcsFileStorageService`."
@@ -218,7 +219,7 @@ it establishes, on the RC as it stands, what each AC measures, so Task 4 compare
       2. Insert §4.3's paragraph with the finding filled in.
       3. Run the markdown lint command from `CLAUDE.md`. Expected: exit 0.
       4. Commit: `docs(#124): record the fixture gaps for the ADR-001 waves`.
-- [ ] **Task 4 — verify AC002–AC004 on the full reactor.** §7, in order. Record every result in §8,
+- [x] **Task 4 — verify AC002–AC004 on the full reactor.** §7, in order. Record every result in §8,
       tick the ACs, commit: `docs(#124): record the verification`.
 
 ## 7. Verification
@@ -231,7 +232,7 @@ Run from a clean state, one after another. Each run logs to its own file in `.lo
    - For each production jar, `dsh-data/target/dsh-data-*.jar`,
      `dsh-rest-api/target/dsh-rest-api-*.jar` and the two Solr jars:
      `unzip -l <jar> | grep -ciE '\.pdf$'`: `0` for each.
-   - `grep -cE "maven-remote-resources-plugin:[^:]+:process" .logs/mvn-clean-install.log`: `2`,
+   - `grep -cE "remote-resources:[^:]+:process" .logs/mvn-clean-install.log`: `2`,
      down from Task 1's `4`, and `ls dsh-solr/*/target/test-classes/pdf 2>&1` reports "No such
      file or directory" for both Solr modules. Together they show §4.1 took effect.
 2. **AC003, second build without clean.** `mvn -B install > .logs/mvn-install-no-clean.log 2>&1`,
@@ -247,17 +248,79 @@ Run from a clean state, one after another. Each run logs to its own file in `.lo
 
 ## 8. Build record
 
-*Filled in by Tasks 1–4.*
+Built on 2026-09-28 with Maven 3.9.16 and JDK 17.0.20.1.
+
+### Task 1 — baseline at `3ba637116` (the RC plus this spec)
+
+`mvn -B clean install`: exit 0.
+
+1. `Copying … from target\test-classes to target\classes`: **no match.** `#131`'s fix is in place, as
+   §2.1 says.
+2. Process executions: **4**, in `dsh-data`, `dsh-rest-api`, `solr-terms-vector-order` and
+   `solr-advanced-numbers-filter`. The pattern as first written,
+   `maven-remote-resources-plugin:[^:]+:process`, counted **0**. Maven 3.9 logs the goal prefix
+   (`--- remote-resources:3.3.0:process (default) @ dsh-data ---`), not the artifactId. The pattern
+   was wrong, not the premise, so the build went ahead and §6 and §7 now use
+   `remote-resources:[^:]+:process`.
+3. Coverage: 8 `All coverage checks have been met.`, 0 `Rule violated`.
+
+### Task 2 — the POMs, commit `a0eed58b9`
+
+Four-module `clean install`: exit 0. `dsh-data`, `dsh-rest-api`, `solr-terms-vector-order` and
+`solr-advanced-numbers-filter` each report `All coverage checks have been met.` Only `dsh-data` and
+`dsh-rest-api` still log a `process` execution.
+
+### Task 3 — the PRD note, commit `6cedfd9da`
+
+| Fixture | Bytes |
+|---|---|
+| `The-Categories.pdf` | 268,696 |
+| `bbc-news-1.pdf` | 105,412 |
+| `edition.cnn.com-1.pdf` | 35,454 |
+| `edition.cnn.com-2.pdf` | 39,031 |
+
+The largest is 262 KB, under 1 MiB, so the "none reaches it" finding went in. Markdown lint: exit 0.
+
+### Task 4 — §7
+
+**Run 1, `mvn -B clean install`: exit 0.**
+
+- `Copying … from target\test-classes to target\classes`: no match.
+- `.pdf` entries: `dsh-data-0.3.0-SNAPSHOT.jar` 0, `dsh-rest-api-0.3.0-SNAPSHOT.jar` 0,
+  `solr-advanced-numbers-filter-0.3.0-SNAPSHOT.jar` 0, `solr-terms-vector-order-0.3.0-SNAPSHOT.jar` 0.
+- Process executions: **2**, down from 4. `ls dsh-solr/*/target/test-classes/pdf`: "No such file or
+  directory".
+- Coverage: 8 met, 0 `Rule violated`.
+- Fixture readers, all passing: `MongoDocumentDaoTest` 5, `DocumentTest` 18,
+  `DocumentEnqueueResponseMessageHandlerTest` 5, `DocumentHandlingServiceImplTest` 3,
+  `DocumentSubmissionServiceImplTest` 8. `dsh-data/target/test-classes/pdf/` and
+  `dsh-rest-api/target/test-classes/pdf/` each hold all four PDFs.
+
+**Run 2, `mvn -B install` straight after: exit 0.**
+
+- Coverage: 8 met, as in run 1, and 0 `Rule violated`.
+- `*Test`/`*IT`/`*ITConfiguration` classes: 0 in each of the nine jars other than
+  `dsh-test-dataset`'s: `dsh-coverage-report`, `dsh-data`, `dsh-doc-processor-worker`,
+  `dsh-keyword-extractor`, `dsh-top-sentences-extractor`, `dsh-doc-indexer-worker`, `dsh-rest-api`
+  and the two Solr jars.
+- The log shows `Copying 14 resources from target\test-classes to target\test-classes`
+  (`dsh-data`) and `Copying 20 …` (`dsh-rest-api`). That is the bundle's test-side attachment,
+  `attachToTest`, which defaults to `true`: `testResources` re-copies the directory onto itself. It
+  never reaches `target/classes`, and AC002's pattern does not match it. It is harmless, so it stays
+  as it is.
+
+**Run 3, `mvn -B clean install -DintegrationTests`: exit 0.** `DocumentResourceIT`: `Tests run: 6,
+Failures: 0, Errors: 0, Skipped: 0`. The five other ITs in the reactor pass too.
 
 ## 9. Acceptance criteria
 
-- [ ] **AC001** — the spec records the investigation for each of the four modules, with the
+- [x] **AC001** — the spec records the investigation for each of the four modules, with the
       evidence behind each answer. *§3.*
-- [ ] **AC002** — a clean `mvn -B install` logs no copy from `target\test-classes` to
+- [x] **AC002** — a clean `mvn -B install` logs no copy from `target\test-classes` to
       `target\classes` in any module, and no production jar contains the fixture PDFs. §3 found no
       consumer that needs them. *§7 run 1.*
-- [ ] **AC003** — after a `mvn -B install`, a second `mvn -B install` without `clean` passes
+- [x] **AC003** — after a `mvn -B install`, a second `mvn -B install` without `clean` passes
       `jacoco:check` in every module, and no production jar contains a `*Test` or `*IT` class.
       *§7 run 2.*
-- [ ] **AC004** — every test that reads a fixture still passes, unit and integration, and the
+- [x] **AC004** — every test that reads a fixture still passes, unit and integration, and the
       fixtures remain on the test classpath. *§7 runs 1 and 3.*
