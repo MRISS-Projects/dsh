@@ -14,7 +14,7 @@ Architecture documentation is generated from and maintained in sync with the spe
 
 ## Auto-generation
 
-The `/.github/workflows/documentation-sync.yml` workflow synchronises documentation from specs on every push to `develop` or `main`.
+The `/.github/workflows/documentation-sync.yml` workflow synchronises documentation from specs on every push to `DEVELOP`.
 
 ## References
 
