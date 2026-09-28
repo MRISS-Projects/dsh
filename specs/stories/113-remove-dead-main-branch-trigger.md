@@ -176,7 +176,7 @@ not a trigger.
       3. Run the `CLAUDE.md` markdownlint command, with
          `export PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH"`. Expected: no findings.
       4. Commit: `docs(#113): state the DEVELOP-only trigger in the workflow docs`.
-- [ ] **Task 4 — record and report.**
+- [x] **Task 4 — record and report.**
       1. Fill in §7, tick §8, rerun markdownlint. Expected: no findings.
       2. Commit: `docs(#113): record the verification`.
       3. After the user approves the text, post §6 on `#113` and record the comment URL in §7.
@@ -254,7 +254,8 @@ only in `api-testing.yml`, `documentation-sync.yml` and `ci.yml`, with the entri
 `git ls-remote --heads origin`, task branches aside, lists `DEVELOP`, `gh-pages`, `master` and
 `staging-0.3.0-SNAPSHOT-RC`. §3.3's table holds; nothing further to report.
 
-Issue comment: pending approval.
+Issue comment, posted after approval:
+<https://github.com/MRISS-Projects/dsh/issues/113#issuecomment-5877498123>
 
 ## 8. Acceptance criteria
 
@@ -262,6 +263,6 @@ Issue comment: pending approval.
   `documentation-sync.yml`. — Task 2
 - [x] AC002: `grep -rn "main" .github/workflows/` returns no branch-trigger match. — Task 2,
   §2.1's exact grep
-- [ ] AC003: Each workflow's remaining trigger list is checked against `CLAUDE.md`'s branch rules,
+- [x] AC003: Each workflow's remaining trigger list is checked against `CLAUDE.md`'s branch rules,
   and any other branch named there that this repository does not have is reported on this issue.
   — §3.3, comment §6
