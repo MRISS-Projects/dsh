@@ -91,7 +91,7 @@ reconciliation that rediscovers them should leave them out.
 | `#112` | **closed** — PR #121 | Reclassify the Spring-context tests as integration tests and pay the unit-coverage bill |
 | `#113` | open | Remove the dead `main` branch trigger from `api-testing.yml` and `documentation-sync.yml` |
 | `#114` | **closed** — PR #116 | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
-| `#115` | open | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
+| `#115` | **closed** — PR #135 | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
 | `#117` | **closed** — PR #118 | Pass `development_branch` to the release and hotfix wrappers |
 | `#122` | **closed** — PR #134 | Close the file streams that test fixtures leave open |
 | `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
@@ -466,7 +466,10 @@ Building it spun off two issues, a twin pair rather than one, and neither was fo
     `dsh-data` and `dsh-rest-api`. Found by `#114`'s placeholder sweep, which is the only reason
     anyone looked: nothing defines that property, no Java reads the file, and there is no Jenkins.
     It predates `#114` and has nothing to do with supplying `mongo.*`, so `#114`'s AC003 was
-    narrowed to `mongo.*` and `#115` carries the general form.
+    narrowed to `mongo.*` and `#115` carries the general form. Shipped in PR #135 by deleting
+    both files rather than resolving the line: git history shows nothing has read them since
+    2017. `#114`'s AC003 stays narrowed, since it is ticked on a closed issue; `#115`'s AC001 now
+    carries the general placeholder check.
 
 At the end of Wave 0 the root `pom.xml` should inherit from a **released `3.9.0`**, not a SNAPSHOT.
 That also retires the accepted risk in §6 — see there for why the SNAPSHOT pin stands until then.
