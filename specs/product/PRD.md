@@ -639,6 +639,18 @@ anything is deprecated today.
 Milestone: `0.4.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 2 — GCP Implementation:
 Firestore + GCS (MongoDB Replacement)". No existing GitHub issue was triaged into this wave.
 
+**Test fixtures for Waves 2–4.** `dsh-test-dataset` holds four PDFs and nothing else (`#124` §3).
+A module unpacks them with a `maven-remote-resources-plugin:process` execution into
+`target/test-classes`, with `attachToMain=false` — copy the block from `dsh-data/pom.xml`. The
+dataset has three gaps these waves will meet, each for the story that first needs it:
+
+1. **No HTML fixtures**, although `#12` and `README.md` promise PDF and HTML.
+2. **No expected outputs.** No reference keywords or top sentences exist to assert against, which
+   Wave 4 needs to compare Vertex AI Search's results with Solr's.
+3. **Sizes against the 1 MB Firestore limit.** ADR-001 moves file bytes to GCS because Firestore
+   caps a document at 1 MB. The largest fixture, `The-Categories.pdf`, is 262 KB (268,696 bytes),
+   so none reaches it: add one above 1 MB with the story that implements `GcsFileStorageService`.
+
 **Tasks (ADR-001 §4 Phase 2):**
 
 1. `dsh-data` — Add `spring-cloud-gcp-starter-data-firestore` and
