@@ -93,7 +93,7 @@ reconciliation that rediscovers them should leave them out.
 | `#114` | **closed** — PR #116 | Release and hotfix wrappers do not supply the build properties DSH's reactor needs |
 | `#115` | open | `version.properties` ships an unresolved `${jenkins.build.number}` in two modules |
 | `#117` | **closed** — PR #118 | Pass `development_branch` to the release and hotfix wrappers |
-| `#122` | open | Close the file streams that test fixtures leave open |
+| `#122` | **closed** — PR #134 | Close the file streams that test fixtures leave open |
 | `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
 | `#124` | **closed** — PR #133 | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
 
@@ -201,7 +201,9 @@ trip and are referenced on `#112`: the `ban-powermock` enforcer execution, and a
 fixtures open `FileInputStream`s that nothing closes. `#112` made this more frequent: its
 context-free `DocumentTest` rebuilds the fixtures before every test instead of once per context.
 But `#112`'s spec required the fixture bodies to be carried over unchanged, and three of the six
-affected test files lie outside that story's scope.
+affected test files lie outside that story's scope. Shipped in PR #134, as a test-only change: none
+of the consumers the streams were handed to closes them, so the fix belonged to the tests that
+opened them. It found 20 sites, not the issue's 18, because two spelled the class fully qualified.
 
 `#46` was written up in the same session rather than retitled. It is the *other* half of `#112`,
 and the two are not the same shape: `#112` moves in-process Spring-context tests, while `#46` binds
