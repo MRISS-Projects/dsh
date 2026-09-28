@@ -42,7 +42,8 @@
 	<!-- Infrastructure -->
 
 	<rabbit:connection-factory id="connectionFactory"
-		host="localhost" confirm-type="CORRELATED" publisher-returns="true" />
+		host="${spring.rabbitmq.host:localhost}" port="${spring.rabbitmq.port:5672}"
+		confirm-type="CORRELATED" publisher-returns="true" />
 
 	<rabbit:template id="amqpTemplate" connection-factory="connectionFactory"
 		mandatory="true" /> <!-- for nacks -->
