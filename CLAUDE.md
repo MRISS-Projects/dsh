@@ -34,7 +34,7 @@ agent in this repo: commands, branch rules, gates, and the development process.
 | `dsh-doc-indexer-worker` | Async indexing worker |
 | `dsh-data` | Shared models and persistence |
 | `dsh-solr` | Solr integration and custom plugins (proposed for replacement — see ADR-001) |
-| `dsh-test-dataset` | PDF/HTML fixtures used by tests |
+| `dsh-test-dataset` | PDF fixtures used by tests |
 | `dsh-coverage-report` | Aggregates JaCoCo coverage across modules |
 
 ## Commands
