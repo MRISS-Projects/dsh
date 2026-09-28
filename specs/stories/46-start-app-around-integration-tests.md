@@ -66,6 +66,30 @@ the staging build has none, because `parent-poms#78` removed its service contain
    later story can move them onto real infrastructure; this one proves the mechanism.
 4. **The API's `200`-for-errors contract is asserted, not changed.** It is follow-up issue
    `#138` (§8).
+5. **The test layers become the written rule.** Added at spec review, delivered by Task 8. There are
+   four layers, and where integration tests may run is stated with them:
+
+   | Layer | What | Required when | Runs |
+   |---|---|---|---|
+   | 1. Unit | Mockito, no Spring context, REST entry points included | always; the 95% gate counts only this layer | everywhere, `mvn -B clean install` |
+   | 2. Spring context | `*IT`, full or sliced context, `@MockBean` for every external service, MockMvc or Spring's test framework for REST entry points | a story creates or changes a Spring bean class, REST entry points included | staging, deploy, local gate |
+   | 3. Over the wire | `*HttpIT`, the application forked by Maven, real ports, real external services in Docker | a story adds a REST endpoint or changes one's contract | staging, deploy, local gate |
+   | 4. External client | Postman collections run by newman: a consumer that sees only the API contract, not the internals | when collections exist, `#137` | staging, deploy, local gate |
+
+   - **Layers 2 and 3 share a vantage point.** Both are written by us as client *and* provider.
+     Layer 4 is the only one that tests as an outsider, which is why it is needed at all.
+   - **"Deploy" is future.** It means a deploy workflow from `DEVELOP`, which does not exist yet.
+   - **Never on pull requests.** Layers 2 to 4 do not run on PRs.
+   - **The local gate is conditional.** It applies only when a story changes code that touches an
+     external system (MongoDB, RabbitMQ, Solr, or any other service outside the JVM) or a REST API
+     entry point.
+   - **It covers only the affected modules.** After the root `mvn -B clean install` gate passes,
+     the story passes `mvn -B clean verify -DintegrationTests -pl <affected modules>`.
+     The affected modules are the ones whose code changed.
+   - **No `-am`, deliberately.** The root build has already installed every upstream module, and
+     `-am` would run their integration tests too.
+   - **Going forward only.** The layer-2 requirement is enforced at review, not mechanically. Existing
+     beans are not retrofitted.
 
 ## 4. Design
 
@@ -204,8 +228,11 @@ one.
 | `dsh-rest-api/src/test/docker/mongo-init.js` | new: creates `dshuser` in `dsh` |
 | `dsh-rest-api/src/main/resources/enqueue-docId-context.xml` | host and port placeholders (§4.2) |
 | `dsh-rest-api/src/test/java/com/mriss/dsh/restapi/integration/DocumentResourceHttpIT.java` | new (§4.3) |
-| `.github/copilot/rules/testing-patterns.md` | an "Over the wire" subsection |
-| `CLAUDE.md` | one sentence in *Quality gates*: `-DintegrationTests` needs Docker |
+| `.github/copilot/rules/testing-patterns.md` | an "Over the wire" subsection (Task 7), then restructured around the four test layers (Task 8) |
+| `.github/copilot/rules/java-conventions.md` | its unit-test line points at the layers (Task 8) |
+| `.github/copilot/prompts/test-generation.md` | templates aligned with layers 1 and 2 (Task 8) |
+| `CLAUDE.md` | *Quality gates*: `-DintegrationTests` needs Docker (Task 7), a pointer to the layers and the local integration gate (Task 8) |
+| `.claude/skills/dsh-ship-story/SKILL.md` | runs the conditional, per-module integration gate in step 5 (Task 8) |
 
 `api-testing.yml` is deliberately absent (§3.1).
 
@@ -480,6 +507,44 @@ Nothing here is committed except §7.
 - [ ] **Step 3.** The markdown-lint command from CLAUDE.md passes.
 - [ ] **Step 4.** Commit: `docs(#46): document over-the-wire integration tests`.
 
+### Task 8 — The test layers
+
+Documentation only; the content is §3.5. `testing-patterns.md` is the single source of truth.
+CLAUDE.md is a router and does not restate standards, so it gets a pointer and the gate, not the
+table.
+
+- [ ] **Step 1.** `testing-patterns.md`:
+  - replace the three-item list at the top (`:7-9`) with §3.5's table and its bullets;
+  - the *API / E2E* entry becomes layer 4, owned by `#137`;
+  - rename *Integration Tests (`@SpringBootTest`)* to *Layer 2: Spring context*;
+  - rewrite its "optional by design" line (`:113`) as §3.5's layer-2 trigger;
+  - rename Task 7's *Over the wire* to *Layer 3: over the wire* and state the `*HttpIT` suffix;
+  - add *Layer 4: external client*: the contract-only vantage point, not yet in force, `#137`;
+  - add *Where integration tests run*: staging, deploy (future), local gate, never on pull
+    requests.
+- [ ] **Step 2.** `java-conventions.md:60`: keep the one-line unit rule and add "see the test layers
+      in `testing-patterns.md`". Do not copy the table.
+- [ ] **Step 3.** `.github/copilot/prompts/test-generation.md`:
+  - the unit template states that REST entry points get a Mockito unit test (layer 1), with
+    `MockMvcBuilders.standaloneSetup` and no context;
+  - the *Controller Slice Test* template is labelled layer 2 and names the class `*IT` in the
+    `integration` package.
+- [ ] **Step 4.** `CLAUDE.md`, *Quality gates*:
+  - add a third, conditional gate, worded as in §3.5:
+    - when it applies: code touching an external system or a REST API entry point;
+    - what runs: `mvn -B clean verify -DintegrationTests -pl <affected modules>`, after the root
+      `clean install`;
+    - why there is no `-am`;
+  - add the same gate to `dsh-ship-story`'s step-5 checks (`.claude/skills/dsh-ship-story/`), so
+    the process runs it rather than only documenting it;
+  - add one sentence pointing at `testing-patterns.md` for the four layers;
+  - keep the section's existing statement that `jacoco-it.exec` is never read by the coverage gate.
+- [ ] **Step 5.** Grep the touched files for `optional by design` and `Postman collections in` and
+      confirm no stale statement survives outside layer 4's description. Run the markdown-lint
+      command from CLAUDE.md.
+- [ ] **Step 6.** Comment on `#137` that it delivers layer 4 of the rule in `testing-patterns.md`,
+      linking the commit. Commit: `docs(#46): state the four test layers and where they run`.
+
 ### 6.1 The profile, final form
 
 Appended to `dsh-rest-api/pom.xml`, replacing the commented `<!-- <profiles> -->` placeholder. The
@@ -675,3 +740,6 @@ Created on 2026-09-28 at spec approval, before the spec was committed.
   §4.1, §4.2.
 - [ ] AC007: `api-testing.yml` deliberately left alone — §3.1, follow-up `#137`.
 - [ ] AC008: the coverage gate is unaffected — §7.1.
+- [ ] AC009 (added at spec review, 2026-09-28): `testing-patterns.md` states the four test
+  layers, when each is required, and where integration tests run; CLAUDE.md points at them and
+  carries the conditional, per-module `-DintegrationTests` gate, which `dsh-ship-story` runs — §3.5, Task 8.
