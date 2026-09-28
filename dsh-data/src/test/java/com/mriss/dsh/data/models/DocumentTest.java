@@ -10,12 +10,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -51,21 +51,24 @@ public class DocumentTest {
 
     private static Document documentWithTitle() throws NoSuchAlgorithmException, IOException {
         Document d = new Document(TITLE);
-        d.setOriginalFileContents(IOUtils.toByteArray(new FileInputStream(new File(BBC_PDF))));
+        d.setOriginalFileContents(FileUtils.readFileToByteArray(new File(BBC_PDF)));
         return d;
     }
 
     private static Document documentWithTitleAndContents() throws Exception {
-        return new Document(IOUtils.toByteArray(new FileInputStream(new File(BBC_PDF))), TITLE);
+        return new Document(FileUtils.readFileToByteArray(new File(BBC_PDF)), TITLE);
     }
 
     private static Document documentWithTitleAndContentsFromStream() throws Exception {
-        return new Document(new FileInputStream(new File(BBC_PDF)), TITLE);
+        try (InputStream is = new FileInputStream(new File(BBC_PDF))) {
+            return new Document(is, TITLE);
+        }
     }
 
     private static Document anotherDocument() throws Exception {
-        return new Document(new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf")),
-                "Emails show Trump Tower meeting follow-up");
+        try (InputStream is = new FileInputStream(new File("target/test-classes/pdf/edition.cnn.com-1.pdf"))) {
+            return new Document(is, "Emails show Trump Tower meeting follow-up");
+        }
     }
 
     @Test
