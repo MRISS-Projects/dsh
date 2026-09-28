@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -130,7 +131,7 @@ public class DocumentResourceIT {
     public void testSubmitDocument() throws Exception {
         MockMultipartFile firstFile = new MockMultipartFile(
                 "contents", "bbc-news-1.pdf", "application/pdf",
-                new FileInputStream(testFile1));
+                FileUtils.readFileToByteArray(testFile1));
 
         startRequest();
 
@@ -154,8 +155,7 @@ public class DocumentResourceIT {
         TokenDto tDto = new ObjectMapper().readerFor(TokenDto.class).readValue(body);
 
         // Stub findDocumentByToken so status endpoint also works in follow-up call
-        Document stored = new Document(
-                new FileInputStream(testFile1), "Russia-Trump: FBI chief Wray defends agency");
+        Document stored = documentFrom(testFile1, "Russia-Trump: FBI chief Wray defends agency");
         stored.transitionStatus(com.mriss.dsh.data.models.TransitionType.SUCCESS);
         when(dao.findDocumentByToken(tDto.getToken())).thenReturn(stored);
     }
@@ -167,7 +167,7 @@ public class DocumentResourceIT {
     public void testError() throws Exception {
         MockMultipartFile firstFile = new MockMultipartFile(
                 "contents", "bbc-news-1.pdf", "application/pdf",
-                new FileInputStream(testFile1));
+                FileUtils.readFileToByteArray(testFile1));
 
         startRequest();
 
@@ -199,7 +199,7 @@ public class DocumentResourceIT {
         // Submit a document first to obtain a token
         MockMultipartFile firstFile = new MockMultipartFile(
                 "contents", "edition.cnn.com-1.pdf", "application/pdf",
-                new FileInputStream(testFile2));
+                FileUtils.readFileToByteArray(testFile2));
 
         startRequest();
         MvcResult submitResult = mockMvc.perform(
@@ -215,8 +215,7 @@ public class DocumentResourceIT {
         TokenDto tDto = new ObjectMapper().readerFor(TokenDto.class).readValue(body);
 
         // Prepare a document in success state for the status check
-        Document d = new Document(new FileInputStream(testFile2),
-                "Emails show Trump Tower meeting follow-up");
+        Document d = documentFrom(testFile2, "Emails show Trump Tower meeting follow-up");
         d.addKeyword(new Keyword("test", 0.5));
         d.addSentence(new Sentence("test sentence", 0.6, 1));
         d.transitionStatus(com.mriss.dsh.data.models.TransitionType.NEUTRAL);
@@ -309,6 +308,12 @@ public class DocumentResourceIT {
     // -------------------------------------------------------------------------
     // helpers
     // -------------------------------------------------------------------------
+
+    private static Document documentFrom(File file, String title) throws Exception {
+        try (InputStream is = new FileInputStream(file)) {
+            return new Document(is, title);
+        }
+    }
 
     protected void startRequest() {
         request = new MockHttpServletRequest();
