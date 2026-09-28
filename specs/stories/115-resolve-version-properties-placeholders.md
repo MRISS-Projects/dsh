@@ -218,7 +218,7 @@ as verified. The general check now lives in `#115`'s AC001.
 ## 7. Build record
 
 Built on 2026-09-28 on `issue-115-resolve-version-properties-placeholders`, cut from the RC at
-`06c0013ef`.
+`a8fc6ebc2`. Task 1's baseline ran at `06c0013ef`, which adds only this spec.
 
 | Run | Log | Exit | Sweep (§3.2) | `jar tf` hits | `All coverage checks have been met.` | `Rule violated` |
 |---|---|---|---|---|---|---|
@@ -250,7 +250,8 @@ Each module's last surefire `Tests run:` summary was identical in both runs, all
 | `dsh-top-sentences-extractor` | 2 |
 | `dsh-doc-processor-worker` | 2 |
 
-Commits: `a99f2ad82` (the deletion, Task 2) and `5598913d2` (this record, Task 3).
+Commits: `a99f2ad82` (the deletion, Task 2), then `5598913d2` and `e6dcbcf13` (this record and
+the posted comments, Task 3).
 Issue comments (Task 3.4), posted as written in §6 after the user approved them:
 
 - `#115`: <https://github.com/MRISS-Projects/dsh/issues/115#issuecomment-5877062373>
