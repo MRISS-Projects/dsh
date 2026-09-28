@@ -516,6 +516,8 @@ Raised as [`#115`](https://github.com/MRISS-Projects/dsh/issues/115), whose AC00
 story's AC003 to its general form once the placeholder is resolved or the file is removed. AC003
 here is narrowed to `mongo.*` so it states what this story actually controls — the alternative
 was either deleting two orphaned lines inside an unrelated PR, or leaving an AC that cannot pass.
+`#115` deleted both files rather than restoring this AC on a closed issue; its AC001 carries the
+general sweep. See `specs/stories/115-resolve-version-properties-placeholders.md` §3.3.
 
 **One rule was broken while gathering this evidence,** and it is recorded because the spec is
 where a future reader looks for how the numbers were obtained: the filtered `mongo.properties`

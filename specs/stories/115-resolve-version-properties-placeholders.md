@@ -154,7 +154,7 @@ the `tail -f` command, `wait`, and report the exit code.
 There is no Java under test. The failing check is §3.2's sweep: **Task 1** records it red on the
 RC, and Task 2 turns it green without changing any other measurement.
 
-- [ ] **Task 1 — baseline on the RC.** Before any edit:
+- [x] **Task 1 — baseline on the RC.** Before any edit:
       1. `mvn -B clean install > .logs/mvn-clean-install-baseline.log 2>&1`. Expected: exit 0.
          Record in §7 the last `Tests run:` summary per module, and the counts of
          `All coverage checks have been met.` and `Rule violated`.
@@ -166,7 +166,7 @@ RC, and Task 2 turns it green without changing any other measurement.
          `BOOT-INF/lib/dsh-data-0.3.0-SNAPSHOT.jar` is the same file as the `dsh-data` jar's, so the
          first check covers it.
       4. Commit nothing.
-- [ ] **Task 2 — delete the files.**
+- [x] **Task 2 — delete the files.**
       `git rm dsh-data/src/main/resources/version.properties dsh-rest-api/src/main/resources/version.properties`.
       `mvn -B clean install > .logs/mvn-clean-install.log 2>&1`. Expected:
       - exit 0;
@@ -217,16 +217,50 @@ as verified. The general check now lives in `#115`'s AC001.
 
 ## 7. Build record
 
-Filled in by `dsh-build-story`.
+Built on 2026-09-28 on `issue-115-resolve-version-properties-placeholders`, cut from the RC at
+`06c0013ef`.
+
+| Run | Log | Exit | Sweep (§3.2) | `jar tf` hits | `All coverage checks have been met.` | `Rule violated` |
+|---|---|---|---|---|---|---|
+| Task 1 — baseline, before any edit | `.logs/mvn-clean-install-baseline.log` | 0 | 2 paths | 2 | 8 | 0 |
+| Task 2 — after deleting both files | `.logs/mvn-clean-install.log` | 0 | none | 0 | 8 | 0 |
+
+Task 1's sweep printed exactly the two paths §3.2 predicted:
+
+```text
+./dsh-data/target/classes/version.properties
+./dsh-rest-api/target/classes/version.properties
+```
+
+and its `jar tf` checks found `version.properties` in the `dsh-data` jar and
+`BOOT-INF/classes/version.properties` in the `dsh-rest-api` jar. Task 2's sweep and both `jar tf`
+checks printed nothing.
+
+Each module's last surefire `Tests run:` summary was identical in both runs, all with
+`Failures: 0, Errors: 0, Skipped: 0`:
+
+| Module | Tests run |
+|---|---|
+| `dsh-data` | 51 |
+| `dsh-rest-api` | 36 |
+| SOLR - Terms Vector Orderer | 22 |
+| SOLR - Advanced Numbers Filter | 10 |
+| `dsh-doc-indexer-worker` | 2 |
+| Document Keyword Extractor | 2 |
+| `dsh-top-sentences-extractor` | 2 |
+| `dsh-doc-processor-worker` | 2 |
+
+Commits: `a99f2ad82` (the deletion, Task 2) and the `docs(#115)` commit that records this (Task 3).
+Issue comments (Task 3.4): pending the user's approval of §6's text.
 
 ## 8. Acceptance criteria
 
-- [ ] **AC001** — No built resource under any module's `target/classes` contains an unresolved
+- [x] **AC001** — No built resource under any module's `target/classes` contains an unresolved
       `${...}` placeholder after `mvn -B install`. The run uses `clean install`, because
       `CLAUDE.md` requires `clean` for any result about the build. *§3.2, Task 2.*
 - [ ] **AC002** — The decision is recorded on this issue, with its evidence: delete both files.
       *§3.1, §6.*
-- [ ] **AC003** — Discharged: `version.properties` does not survive. The reader history is recorded
+- [x] **AC003** — Discharged: `version.properties` does not survive. The reader history is recorded
       anyway. *§2.1, §6.*
 - [ ] **AC004** — `#115` records why `#114`'s AC003 is not restored, and `#114` points forward.
       *§3.3, §6.*
