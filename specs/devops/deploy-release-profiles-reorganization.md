@@ -297,7 +297,7 @@ deployment                     (generic — present at parent-poms/pom.xml and i
 
   | Workflow | File | Trigger | Required outcome |
   |----------|------|---------|-----------------|
-  | API Testing | `.github/workflows/api-testing.yml` | Manual / push to `develop` or `main` | All Postman collection tests pass; REST API starts and responds correctly |
+  | API Testing | `.github/workflows/api-testing.yml` | Manual / push to `DEVELOP` | All Postman collection tests pass; REST API starts and responds correctly |
   | Spec Validation | `.github/workflows/spec-validation.yml` | Push / PR touching `specs/**` | OpenAPI spec lints clean; Markdown files lint clean; all spec references resolve |
 
 - **Acceptance Criteria**:

@@ -14,7 +14,7 @@ API documentation is automatically generated from the OpenAPI specification:
 
 - **Source**: `/specs/api/openapi/dsh-rest-api.yaml`
 - **Generator**: Redocly CLI (`redocly build-docs`)
-- **Trigger**: Push to `develop` or `main` via `/.github/workflows/documentation-sync.yml`
+- **Trigger**: Push to `DEVELOP` via `/.github/workflows/documentation-sync.yml`
 
 ## Local Generation
 
