@@ -647,9 +647,15 @@ dataset has three gaps these waves will meet, each for the story that first need
 1. **No HTML fixtures**, although `#12` and `README.md` promise PDF and HTML.
 2. **No expected outputs.** No reference keywords or top sentences exist to assert against, which
    Wave 4 needs to compare Vertex AI Search's results with Solr's.
-3. **Sizes against the 1 MB Firestore limit.** ADR-001 moves file bytes to GCS because Firestore
-   caps a document at 1 MB. The largest fixture, `The-Categories.pdf`, is 262 KB (268,696 bytes),
-   so none reaches it: add one above 1 MB with the story that implements `GcsFileStorageService`.
+3. **Sizes against the 1 MiB Firestore limit.** ADR-001 moves file bytes to GCS because Firestore
+   caps a document at 1 MiB (1,048,576 bytes). The largest fixture, `The-Categories.pdf`, is
+   262 KiB (268,696 bytes), so none reaches it: add one above 1 MiB with the story that implements
+   `GcsFileStorageService`.
+
+The bundle is a plugin parameter, not a dependency, so `mvn -pl <module> -am` does not build
+`dsh-test-dataset`, and the plugin resolves it from the local repository or GitHub Packages
+instead. That copy can be missing or older than the source. Run a full `mvn -B install` first, or
+add `dsh-test-dataset` to `-pl`.
 
 **Tasks (ADR-001 §4 Phase 2):**
 

@@ -159,8 +159,13 @@ dataset has three gaps these waves will meet, each for the story that first need
 1. **No HTML fixtures**, although `#12` and `README.md` promise PDF and HTML.
 2. **No expected outputs.** No reference keywords or top sentences exist to assert against, which
    Wave 4 needs to compare Vertex AI Search's results with Solr's.
-3. **Sizes against the 1 MB Firestore limit.** ADR-001 moves file bytes to GCS because Firestore
-   caps a document at 1 MB. <SIZE-FINDING>
+3. **Sizes against the 1 MiB Firestore limit.** ADR-001 moves file bytes to GCS because Firestore
+   caps a document at 1 MiB (1,048,576 bytes). <SIZE-FINDING>
+
+The bundle is a plugin parameter, not a dependency, so `mvn -pl <module> -am` does not build
+`dsh-test-dataset`, and the plugin resolves it from the local repository or GitHub Packages
+instead. That copy can be missing or older than the source. Run a full `mvn -B install` first, or
+add `dsh-test-dataset` to `-pl`.
 ```
 
 `<SIZE-FINDING>` is filled at build time by Task 3 step 1, from a measurement. It is not a
@@ -188,6 +193,8 @@ placeholder left for later.
 | `dsh-data/pom.xml` | §4.2: comment above line 117 |
 | `dsh-rest-api/pom.xml` | §4.2: comment above line 175 |
 | `specs/product/PRD.md` | §4.3: paragraph after line 640 |
+| `CLAUDE.md` | Step 5 review: `dsh-test-dataset` holds PDF fixtures, not PDF/HTML (§8) |
+| `dsh-test-dataset/src/site/markdown/index.md` | Step 5 review: the same correction |
 | this spec | Tick tasks and ACs, and fill §8 |
 
 ## 6. Tasks
@@ -213,9 +220,9 @@ it establishes, on the RC as it stands, what each AC measures, so Task 4 compare
       `build(#124): drop the unused fixture unpack from the Solr modules, explain attachToMain`.
 - [x] **Task 3 — the PRD note.**
       1. Measure the fixtures: `ls -l dsh-test-dataset/src/test/resources/pdf/`. If the largest is
-         under 1 MiB (1,048,576 bytes), `<SIZE-FINDING>` becomes "The largest fixture is N KB, so
-         none reaches it: add one above 1 MB with the story that implements `GcsFileStorageService`."
-         Otherwise: "`<name>` (N MB) exceeds it and exercises the GCS path. Keep it."
+         under 1 MiB (1,048,576 bytes), `<SIZE-FINDING>` becomes "The largest fixture is N KiB, so
+         none reaches it: add one above 1 MiB with the story that implements `GcsFileStorageService`."
+         Otherwise: "`<name>` (N MiB) exceeds it and exercises the GCS path. Keep it."
       2. Insert §4.3's paragraph with the finding filled in.
       3. Run the markdown lint command from `CLAUDE.md`. Expected: exit 0.
       4. Commit: `docs(#124): record the fixture gaps for the ADR-001 waves`.
@@ -279,7 +286,7 @@ Four-module `clean install`: exit 0. `dsh-data`, `dsh-rest-api`, `solr-terms-vec
 | `edition.cnn.com-1.pdf` | 35,454 |
 | `edition.cnn.com-2.pdf` | 39,031 |
 
-The largest is 262 KB, under 1 MiB, so the "none reaches it" finding went in. Markdown lint: exit 0.
+The largest is 262 KiB, under 1 MiB, so the "none reaches it" finding went in. Markdown lint: exit 0.
 
 ### Task 4 — §7
 
@@ -311,6 +318,19 @@ The largest is 262 KB, under 1 MiB, so the "none reaches it" finding went in. Ma
 
 **Run 3, `mvn -B clean install -DintegrationTests`: exit 0.** `DocumentResourceIT`: `Tests run: 6,
 Failures: 0, Errors: 0, Skipped: 0`. The five other ITs in the reactor pass too.
+
+### Step 5 — local review
+
+No Critical or Important findings. Three Minor ones, all acted on:
+
+1. `CLAUDE.md` and `dsh-test-dataset`'s site page described the dataset as PDF and HTML, which
+   §3 contradicts. Both now say PDF. `README.md` and the other site pages say DSH *processes* PDF
+   and HTML. That is a product claim, not a claim about the fixtures, so they stay.
+2. Sizes were given as KB against a limit given as MB. They are now KiB and MiB, in the PRD and
+   in §4.3, Task 3 and this record. Firestore's limit is 1,048,576 bytes.
+3. `-pl <module> -am` does not build `dsh-test-dataset`, because the bundle is a plugin parameter,
+   not a dependency. Task 2's four-module log built six projects without it. The problem predates
+   this story. It is recorded as a note in the §4.3 paragraph, and not changed here.
 
 ## 9. Acceptance criteria
 
