@@ -305,6 +305,7 @@ so it is not mistaken for part of the goal:
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
 | `3.9.0` | none | **Released 2026-09-27** — cleared by `#70`, tagged `mriss-parent-3.9.0` |
+| `3.9.1` | none | **Closed 2026-09-29 without a release** — held only `#93`, a fix to the `@master`-pinned `commit-readme` action, raised by DSH `#143`'s staging run. No artifact changed, so DSH stays on `3.9.0` |
 | `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86`, `#88`, `#89` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0; cleared and released at the start of Wave 1 |
 
 **This goal is met.** `3.9.0-SNAPSHOT` was renamed to `3.9.0` before the release, as `3.8.0` was,
@@ -1029,9 +1030,14 @@ issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: W
     fix, uses the full round trip in `CLAUDE.md` against parent-poms' next minor version.
   - **The snapshot must be deployed before it is pinned.** As the entry above records, a hotfix
     `-SNAPSHOT` is not in GitHub Packages until a snapshot deploy publishes it.
+  - **A workflow-only fix needs no pin.** parent-poms' reusable workflows and its `commit-readme`
+    action are called `@master`, so a fix to them reaches DSH when it merges. The hotfix milestone
+    still tracks the issue, but nothing is deployed, pinned or released. `parent-poms#93` was the
+    first: milestone `3.9.1`, closed on 2026-09-29 without a release.
 
   This applies from the first wave after DSH 0.3.0 ships. Until then, no parent-poms work is picked
-  up at all (entry above).
+  up at all (entry above), with one exception granted on 2026-09-26: an upstream issue raised and
+  fixed inside the DSH story cycle that found it. `parent-poms#93` used it.
 - **`parent-poms#65` and `parent-poms#69` ship on 3.9.0 proven by rehearsal, not by a real release —
   accepted, with a named confirming run.** Both have acceptance criteria that can only be met by a
   real consuming release, and the release they need is the one this wave exists to unblock. Rather
