@@ -232,6 +232,11 @@
 					<name>integrationTests</name>
 				</property>
 			</activation>
+			<properties>
+				<!-- -DskipITs skips the containers and the application along with the tests. -DskipTests
+				     alone still starts them for nothing: add -DskipITs, or leave -DintegrationTests off. -->
+				<skipITs>false</skipITs>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -264,6 +269,7 @@
 									<goal>start</goal>
 								</goals>
 								<configuration>
+									<skip>${skipITs}</skip>
 									<jmxPort>${dsh.it.jmx.port}</jmxPort>
 									<maxAttempts>120</maxAttempts>
 									<arguments>
@@ -284,6 +290,7 @@
 									<goal>stop</goal>
 								</goals>
 								<configuration>
+									<skip>${skipITs}</skip>
 									<jmxPort>${dsh.it.jmx.port}</jmxPort>
 								</configuration>
 							</execution>
@@ -295,6 +302,7 @@
 						<!-- Not yet managed by parent-poms; see parent-poms#90. -->
 						<version>0.49.0</version>
 						<configuration>
+							<skip>${skipITs}</skip>
 							<containerNamePattern>dsh-it-%a-%t</containerNamePattern>
 							<images>
 								<image>

@@ -160,10 +160,14 @@ integration-test phase. `DocumentResourceHttpIT` is the example.
   test must fail and say why
 - **Docker is a prerequisite** of `-DintegrationTests`. The plain `mvn -B clean install` gate does
   not need it
-- **Containers leak only if startup fails.** A failing *test* still reaches
-  `post-integration-test`, which stops the application and then the containers. A failure in
-  `spring-boot:start` does not, so the containers survive. Remove them with
+- **A failing test does not leak.** It still reaches `post-integration-test`, which stops the
+  application and then the containers
+- **These do leak**, because the build never reaches `post-integration-test`: a failure in
+  `spring-boot:start` or `spring-boot:stop`, a failsafe fork that crashes or times out, a build
+  that ends at `package` (`mvn package -DintegrationTests`), and Ctrl-C. Remove the containers with
   `docker rm -f $(docker ps -aq --filter name=dsh-it-)`
+- **Skip with `-DskipITs`**, which skips the containers and the application too. `-DskipTests`
+  alone skips the tests but still starts both
 
 ## Layer 4: external client
 
