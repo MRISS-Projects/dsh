@@ -363,10 +363,12 @@ PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH" markdownlint src/site/markdown/REA
 
 - [x] Apply §4.1 Introduction and Package/Folders Description.
 - [x] The AC005 README grep returns nothing.
-- [x] Every `<module>` in the root `pom.xml` and `dsh-doc-analyser/pom.xml` has an entry:
+- [x] Every `<module>` in every tracked `pom.xml` has an entry. Scanning every POM, not a list of
+  aggregators, means a new aggregator is covered without editing the check; no POM holds a
+  commented-out `<module>` line that would make it report a module that is not built:
 
   ```bash
-  for m in $(grep -ho '<module>[^<]*' pom.xml dsh-doc-analyser/pom.xml | sed 's/<module>//'); do
+  for m in $(git ls-files '*pom.xml' | xargs grep -ho '<module>[^<]*' | sed 's/<module>//'); do
     grep -q "\*\*$m\*\*" src/site/markdown/README.md || echo "missing: $m"
   done
   ```
@@ -492,6 +494,17 @@ Those name the JDK vendor, not the Eclipse IDE server AC002 excludes, so the tex
 
 - Lint command: exit 0 on both files.
 - AC002 grep and both AC005 greps: no output.
+
+### 7.2.2 PR review round 1 (#145)
+
+Copilot's automatic review at `ee5a2889f`, effort Balanced, raised two findings, both valid.
+
+- The README had no entries for `solr-terms-vector-order` and `solr-advanced-numbers-filter`,
+  which `dsh-solr/pom.xml` declares as reactor modules. Fixed in `8ef83d9bb`.
+- The Task 2 module check scanned only the root and `dsh-doc-analyser` POMs, so it passed while
+  those two entries were missing. That is how the gap got through Task 2 and the local review. The
+  check now scans every tracked POM (Task 2). Run on the fixed README, it prints nothing; run on
+  `ee5a2889f`'s README, it prints both modules as missing.
 
 ### 7.3 Staging regeneration (Task 8: AC007)
 
