@@ -46,7 +46,7 @@ the decisions that reordered the waves around building it.
 
 | Wave | Milestone |
 |---|---|
-| 0 | `0.3.0-SNAPSHOT` |
+| 0 | `0.3.0` (released 2026-09-29) |
 | 1 | `0.4.0-SNAPSHOT` |
 | 2 | `0.4.0-SNAPSHOT` |
 | 3 | `0.5.0-SNAPSHOT` |
@@ -65,7 +65,9 @@ the wave the task came from.
 
 ### Wave 0 — Engineering foundation
 
-Milestone: `0.3.0-SNAPSHOT`. Housekeeping and build-health work that has no dependency on the GCP
+Milestone: `0.3.0`, **released on 2026-09-29** as tag `v0.3.0` by release run
+[36606687680](https://github.com/MRISS-Projects/dsh/actions/runs/36606687680). The milestone was
+renamed from `0.3.0-SNAPSHOT` before the release and closed after it. Housekeeping and build-health work that has no dependency on the GCP
 migration, plus gaps found while writing this PRD.
 
 **Triaged issues.** `Status` is reconciled against GitHub in step 8 of the process
@@ -306,7 +308,7 @@ so it is not mistaken for part of the goal:
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
 | `3.9.0` | none | **Released 2026-09-27** — cleared by `#70`, tagged `mriss-parent-3.9.0` |
 | `3.9.1` | none | **Closed 2026-09-29 without a release** — held only `#93`, a fix to the `@master`-pinned `commit-readme` action, raised by DSH `#143`'s staging run. No artifact changed, so DSH stays on `3.9.0` |
-| `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86`, `#88`, `#89` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0; cleared and released at the start of Wave 1 |
+| `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86`, `#88`, `#89`, `#95`, `#96` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0; cleared and released at the start of Wave 1 |
 
 **This goal is met.** `3.9.0-SNAPSHOT` was renamed to `3.9.0` before the release, as `3.8.0` was,
 released on 2026-09-27 and closed. DSH's root `pom.xml` names the released `3.9.0`, and a staging
@@ -314,7 +316,8 @@ run against it on `staging-0.3.0-SNAPSHOT-RC` passed, with the README complete a
 report regenerated. **From here no parent-poms issue is picked up until DSH 0.3.0 is released and
 work is back on `DEVELOP`.** That includes `3.10.0-SNAPSHOT` and the unmilestoned
 `parent-poms#85`. What was left of Wave 0 was DSH's own `0.3.0-SNAPSHOT` issues. The last of them,
-`#143`, closed on 2026-09-29, and the milestone has no open issue.
+`#143`, closed on 2026-09-29, and the milestone has no open issue. DSH 0.3.0 was released the same
+day, and work is back on `DEVELOP`.
 
 **The first half is the history below.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
 fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
@@ -648,16 +651,25 @@ ADR-001 phase table, it says so.
 
 Milestone: `0.4.0-SNAPSHOT`.
 
-**Upstream catch-up comes first.** Nothing upstream starts before 0.3.0 is released and work is back
-on `DEVELOP` (Wave 0). From that point, this block goes before anything else in the wave, in order:
+**Upstream catch-up comes first.** Nothing upstream was to start before 0.3.0 was released and work
+was back on `DEVELOP` (Wave 0). Both held on 2026-09-29, so this block goes before anything else in
+the wave, in order:
 
 1. [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36) and
    [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37), on the fork's
    `2.12.10-SNAPSHOT`, then release **2.12.10**. The fork's process is the last section of its
    README.
 2. parent-poms `3.10.0-SNAPSHOT`: `#86` (bump the changes plugin to 2.12.10), `#74`, `#81`, `#88`
-   and `#89`. `#89` joined the milestone on 2026-09-28, because its 404 is on DSH's own site. Clear
-   the milestone, then release **3.10.0** by the full round trip in `CLAUDE.md`.
+   and `#89`, `#95` and `#96`. `#89` joined the milestone on 2026-09-28, because its 404 is on DSH's
+   own site. Clear the milestone, then release **3.10.0** by the full round trip in `CLAUDE.md`.
+
+   `#95` and `#96` came out of DSH 0.3.0's release on 2026-09-29. The release site's test and
+   coverage reports are empty (`#95`) and it has no coverage badge (`#96`), so the badge on
+   `master`'s README is broken. Both have one cause: `project-release.yml` deletes
+   `target/checkout`, where `release:perform` ran the tests, before it builds the site. Both belong
+   to parent-poms, not DSH, because staging publishes both correctly. `#95` includes a one-off
+   republish of the 0.3.0 release site from `v0.3.0`, and that republish is what fixes `master`'s
+   badge (`#96` AC003).
 3. DSH: re-pin the root `pom.xml` to the released `3.10.0`, and remove the issue-labelling rule
    from `CLAUDE.md` and `dsh-new-story`. `CLAUDE.md` names that removal as the exit condition for
    `parent-poms#86`. No issue yet.
@@ -691,8 +703,8 @@ on `DEVELOP` (Wave 0). From that point, this block goes before anything else in 
   [Code Based Site and Reports](https://github.com/MRISS-Projects/dsh/wiki/Code-Based-Site-and-Reports)
   page on 2026-09-27. `snapshots/dsh` still serves a site from 2020, and `group.id.path`
   (`products/dsh`) will send 0.3.0's site to `releases/products/dsh`, leaving the wiki's release link
-  on 0.2.x. `#128` can only start once 0.3.0 is out. `#90` is closed, so the release site should carry
-  every module's `index.html`; the 0.3.0 release run is the first evidence of that.
+  on 0.2.x. `#128` could only start once 0.3.0 was out, which it was on 2026-09-29. `#90`'s fix held
+  on the release: `releases/products/dsh/` serves the root `index.html` and all 13 modules' pages.
 - `#132` — Enforce SpotBugs and Checkstyle in the build and publish their reports.
 
   Not an ADR-001 phase task. It came from triaging Wave 0's `#43` on 2026-09-27. `#43` asked for
@@ -1035,9 +1047,9 @@ issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: W
     still tracks the issue, but nothing is deployed, pinned or released. `parent-poms#93` was the
     first: milestone `3.9.1`, closed on 2026-09-29 without a release.
 
-  This applies from the first wave after DSH 0.3.0 ships. Until then, no parent-poms work is picked
-  up at all (entry above), with one exception granted on 2026-09-26: an upstream issue raised and
-  fixed inside the DSH story cycle that found it. `parent-poms#93` used it.
+  This applies from Wave 1, the first wave after DSH 0.3.0 shipped on 2026-09-29. Until then, no
+  parent-poms work was picked up at all (entry above), with one exception granted on 2026-09-26: an
+  upstream issue raised and fixed inside the DSH story cycle that found it. `parent-poms#93` used it.
 - **`parent-poms#65` and `parent-poms#69` ship on 3.9.0 proven by rehearsal, not by a real release —
   accepted, with a named confirming run.** Both have acceptance criteria that can only be met by a
   real consuming release, and the release they need is the one this wave exists to unblock. Rather
@@ -1084,3 +1096,12 @@ issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: W
   its last clause: the real `0.3.0` release confirms, or corrects, what the rehearsals showed.
   `#117` removed the last blocker (PR #118, 2026-09-25): the release wrapper now passes
   `development_branch`, and a rehearsal through it reached and verified the merge-back.
+
+  **Closed on 2026-09-29: the real `0.3.0` release confirmed `#65`.** A rehearsal first
+  ([36604595994](https://github.com/MRISS-Projects/dsh/actions/runs/36604595994)) announced all 9
+  write points exactly once and wrote nothing. Then the release
+  ([36606687680](https://github.com/MRISS-Projects/dsh/actions/runs/36606687680)) merged `v0.3.0`
+  into `DEVELOP` (`e6cccf502`, after `f0d1931e7` aligned it to `0.4.0-SNAPSHOT`). The RC's commits,
+  315 of them not on `DEVELOP` before, are reachable from it, and `#69`'s check found all 13 modules
+  at `0.3.1-SNAPSHOT` on `0.3.x`. The release did surface two defects outside `#65` and `#69`,
+  both in its site: `parent-poms#95` and `#96` (Wave 1, upstream catch-up).
