@@ -1,0 +1,239 @@
+---
+issue: 146
+slug: release-0-3-1-with-site-reports
+parent_branch: 0.3.x
+wave: 1
+milestone: 0.3.1-SNAPSHOT
+---
+
+# Story 146 — Release DSH 0.3.1 with a release site that carries its test reports and coverage badge
+
+## 1. Story
+
+**As a** reader of DSH's `master` README and its release site
+**I want** a DSH 0.3.1 hotfix release whose site carries real test and coverage reports and a working
+coverage badge
+**So that** the released documentation shows the coverage DSH actually has, rather than an empty
+report and a broken badge image
+
+## 2. Context
+
+- Wave: 1, upstream step 0 (`specs/product/PRD.md` §4, Wave 1), DSH milestone `0.3.1-SNAPSHOT`
+- Issue: [#146](https://github.com/MRISS-Projects/dsh/issues/146)
+- Parent branch: `0.3.x`, the hotfix line, at `6932be686` (`0.3.1-SNAPSHOT`, parent `3.9.0`) when
+  this spec was written. The task branch is `issue-146-release-0-3-1-with-site-reports`.
+- Upstream half: [`parent-poms#95`](https://github.com/MRISS-Projects/parent-poms/issues/95) (empty
+  release reports) and [`#96`](https://github.com/MRISS-Projects/parent-poms/issues/96) (no coverage
+  badge), parent-poms milestone `3.9.2-SNAPSHOT`. Their fix is designed in parent-poms' own spec,
+  `specs/95-<slug>.md` on parent-poms `master`, not here.
+- Evidence of the defect: DSH 0.3.0's release,
+  [run 36606687680](https://github.com/MRISS-Projects/dsh/actions/runs/36606687680).
+
+### 2.1 What was established while writing this spec
+
+| Fact | Evidence |
+|---|---|
+| parent-poms `master` is `3.9.0` plus only `#93`, a fix to the `commit-readme` placeholder check | `git diff --stat mriss-parent-3.9.0 origin/master`: five files, all under `.github/` and `specs/`. `master` is at `f7600ffe`, POM version `3.10.0-SNAPSHOT` |
+| A parent-poms release always advances MINOR and resets FIX | `deploy.yml`, `Release Deploy`: `NEXT_DEV_VERSION="${MAJOR}.$((MINOR + 1)).0-SNAPSHOT"`. Releasing `3.9.2` leaves `master` at `3.10.0-SNAPSHOT` with no manual step |
+| A rehearsal accepts a `-SNAPSHOT` parent, and a real release does not | `parent-poms/specs/72-dry-run-release-workflows.md:104`: dry-run `check-dependency-snapshots` logs `Ignoring SNAPSHOT dependencies and plugins`. DSH `#117`'s green rehearsal, [run 36162240349](https://github.com/MRISS-Projects/dsh/actions/runs/36162240349), ran at `fc7902c6a`, whose parent is `3.9.0-SNAPSHOT`. A real `release:prepare` refuses a SNAPSHOT parent |
+| `project-hotfix.yml` releases whatever branch it is given | `project-hotfix.yml:57`: the checkout uses `ref: ${{ inputs.branch_name }}`. The version it releases is the checked-out POM's (`Read hotfix release number`, line 182). So a dry run can target the task branch itself |
+| DSH's wrapper calls the upstream workflow at `@master` | `.github/workflows/hotfix.yml`: `uses: MRISS-Projects/parent-poms/.github/workflows/project-hotfix.yml@master`. A workflow change upstream reaches DSH as soon as it merges |
+
+## 3. The defect, in brief
+
+Full analysis in `parent-poms#95`. In `project-hotfix.yml`, as in `project-release.yml`, the only test
+run of the released code is inside `release:perform`, in `target/checkout`. `Merge Release Tag to
+Master` then begins with `rm -rf target/checkout` (line 229) and clones `master` afresh. `Deploy Site
+to gh-pages` runs `site-deploy` in that fresh tree. The site lifecycle reaches neither `test` nor
+`verify`, and `-DintegrationTests` is never passed. So surefire, failsafe, per-module JaCoCo and the
+aggregate report all render empty, and `dsh-coverage-report`'s badge, which is bound to `verify` (`#104`),
+is never written.
+
+## 4. Design
+
+### 4.1 Decisions
+
+1. **The pin is unconditional.** `#146`'s AC001 left it to where the upstream fix lands: a
+   workflow-only fix would reach DSH at `@master` with no pin. This spec pins anyway, because
+   parent-poms releases `3.9.2` regardless. Its `master` is re-versioned to `3.9.2-SNAPSHOT` for the
+   fix and released from there. Pinning `0.3.x` to that release keeps the 0.3.1 release's parent the
+   one that was released alongside its fix, whatever files the fix touched. AC001 records this reason.
+2. **parent-poms' fix line is `master`, re-versioned. It is not a `3.9.x` branch.** A branch cut from
+   `mriss-parent-3.9.0` would add nothing: every consumer calls the reusable workflows at `@master`,
+   so the workflow half of the fix must be on `master` anyway. `master` holds nothing beyond `3.9.0`
+   except `#93`, which is itself a fix and belongs in a patch release.
+3. **The `-SNAPSHOT` pin never reaches `0.3.x`** (option A, chosen 2026-09-29). This branch carries
+   both pin commits and rehearses against itself. It opens one PR into `0.3.x`, after the re-pin to
+   the released `3.9.2`. `0.3.x` goes from `3.9.0` straight to `3.9.2`.
+4. **A second rehearsal on `0.3.x` precedes the real release.** The first rehearsal, on this branch,
+   proves the fix against `3.9.2-SNAPSHOT`. The second, on `0.3.x` after the merge, is AC002 as the
+   issue words it, and it proves the exact tree and parent the real release will use.
+
+### 4.2 Cross-repository order
+
+`P` steps are in parent-poms, `T` steps are the DSH tasks in §6.
+
+| # | Where | Step | Waits for |
+|---|---|---|---|
+| T1 | DSH | Red rehearsal on this branch, against `3.9.0` and the unfixed `@master` workflow | this spec pushed |
+| P1 | parent-poms | `./set-version.sh 3.9.2-SNAPSHOT` on `master`, committed referencing `#95` | T1 |
+| P2 | parent-poms | Fix `#95`/`#96` through their own spec and PR into `master` | P1 |
+| P3 | parent-poms | Dispatch `deploy.yml` with `release_type: snapshots` on `master`, which deploys `3.9.2-SNAPSHOT` | P2 |
+| T2 | DSH | Pin this branch to `3.9.2-SNAPSHOT` | P3 |
+| T3 | DSH | Green rehearsal on this branch | T2 |
+| P4 | parent-poms | Clear the milestone (§4.3), rename it to `3.9.2`, dispatch `deploy.yml` with `release_type: releases`. The result is tag `mriss-parent-3.9.2`, with `master` back at `3.10.0-SNAPSHOT` | T3 |
+| T4 | DSH | Re-pin this branch to `3.9.2` | P4 |
+| T5 | DSH | Ship: local review, PR into `0.3.x`, review cycle, merge by you | T4 |
+| T6 | DSH | Confirming rehearsal on `0.3.x` | T5 merged |
+| T7 | DSH | Real `hotfix.yml` dispatch on `0.3.x`, which releases 0.3.1 | T6 |
+
+**T1 must run before P2 merges.** Once the fix is on parent-poms `master`, the unfixed workflow no
+longer exists to be run.
+
+**Nothing destined for `3.10.0` merges to parent-poms `master` between P1 and P4.** Anything that did
+would ship in `3.9.2`. That milestone's issues have not started, so this costs nothing today.
+
+### 4.3 A circularity to settle at P4
+
+CLAUDE.md requires a parent-poms milestone to be cleared before its release. But `#95` AC004 and
+`#96` AC003 are proven only by DSH's 0.3.1 release (T7), which needs `3.9.2` released first (P4). As
+the issues stand, they cannot close before the release that ships their fix.
+
+**Resolution, applied at P4:** before the release, revise `#95` AC004 and `#96` AC003 to say that the
+fix is proven by DSH `#146`'s green rehearsal (T3), and that the confirming release is tracked in DSH
+`#146` AC004/AC005, which already state the same URL checks. Then close both issues on T3's evidence
+and release. Their other criteria are all provable at T3. The revision is a comment and an edit on each
+issue, made by the parent-poms side, with the T3 run link.
+
+### 4.4 Out of scope
+
+- The fix itself, which belongs to `parent-poms#95`/`#96` and their spec. If a rehearsal from here
+  shows it incomplete, that goes back upstream and is not patched on this branch (CLAUDE.md, "Fix
+  shared gaps upstream").
+- Any change to `.github/workflows/hotfix.yml`. It already passes `development_branch: DEVELOP` (`#117`)
+  and the Mongo properties (`#114`), and takes its behaviour from `@master`.
+- Republishing 0.3.0's site, re-pinning `DEVELOP` to `3.10.0` (Wave 1 upstream step 3), `ci.yml`,
+  `staging.yml`, `release.yml`, and any product code.
+- `specs/product/PRD.md`. `dsh-reconcile-prd` (step 8) owns its update after the merge. It is listed
+  here so a reviewer does not flag it as missed.
+
+## 5. Files to change
+
+### 5.1 `pom.xml` (root)
+
+Lines 9-13, `<parent>`: `<version>3.9.0</version>` → `3.9.2-SNAPSHOT` (T2) → `3.9.2` (T4). Nothing
+else. The modules inherit their parent from the root reactor, so the root is the only file with a
+parent version.
+
+## 6. Tasks
+
+No `.java` file changes, so the red/green cycle is on the workflow: T1's rehearsal against the
+unfixed workflow is the failing test, and T3's is green. Every local Maven run follows CLAUDE.md,
+"Always log local Maven runs".
+
+- [ ] **T1 — red.** After this spec is pushed and before `parent-poms#95`'s fix merges, dispatch the
+      rehearsal in §7.1 on this branch. Expect green overall, since the defect writes nothing wrong in
+      a dry run. The log shows no `maven-surefire-plugin` or `jacoco:report` execution between
+      `Merge Release Tag to Master` and `Deploy Site to gh-pages`, and no `badges/jacoco.svg`
+      written. Record the run link and the lines against AC007.
+- [ ] **T2 — pin to `3.9.2-SNAPSHOT`.** After P3. Confirm that it resolves:
+      `mvn -B -U -N help:evaluate -Dexpression=project.parent.version -DforceStdout`, logged to
+      `.logs/mvn-help-evaluate.log`. Edit §5.1. Run gate 1, `mvn -B -U clean install`, logged to
+      `.logs/mvn-clean-install.log`, and report its exit code. Commit
+      `build(#146): pin the parent to 3.9.2-SNAPSHOT`.
+- [ ] **T3 — green.** Push. Dispatch §7.1 on this branch. Check §7.2. Record the run link against
+      AC001 and AC002, and hand it to the parent-poms side for §4.3.
+- [ ] **T4 — re-pin to `3.9.2`.** After P4. Edit §5.1. Run gate 1 again (`-U`, logged). Commit
+      `build(#146): pin the parent to the released 3.9.2`. Record AC003.
+- [ ] **T5 — ship.** `dsh-ship-story`, then `dsh-pr-cycle`, into `0.3.x`. You merge.
+- [ ] **T6 — confirming rehearsal on `0.3.x`.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`. Check
+      §7.2. This is AC002 as the issue words it.
+- [ ] **T7 — release.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`, without `dry_run`. Then check
+      §7.3 and record AC004 to AC006.
+
+Gate 3 does not apply: no code touching an external system or a REST entry point changes. The parent
+change does alter the build, and the rehearsals run the integration tests under `-DintegrationTests`,
+which covers it.
+
+T6 and T7 happen after this branch is merged. Their evidence goes on `#146` as a comment. The ticked
+ACs go into this spec with a `docs(#146)` commit on `DEVELOP` once the release has merged `v0.3.1`
+back into it, as parent-poms `#93` recorded its post-merge run.
+
+## 7. Verification
+
+### 7.1 Dispatch
+
+```bash
+gh workflow run hotfix.yml --ref issue-146-release-0-3-1-with-site-reports \
+  -f branch_name=issue-146-release-0-3-1-with-site-reports -f dry_run=true
+```
+
+`--ref` selects which copy of the wrapper runs, and `branch_name` selects the tree that is released.
+They match in every dispatch here.
+
+### 7.2 A rehearsal is green when its log shows all of the following
+
+Every item is read from the log, not inferred from the run's conclusion.
+
+1. Unit tests **and** integration tests executing in the tree `Deploy Site to gh-pages` builds from,
+   with surefire and failsafe summaries reporting a non-zero test count. That tree is either
+   `target/checkout` or whatever tree the upstream fix makes the site step use.
+2. `jacoco:report` and `jacoco:report-aggregate` reading real `jacoco.exec`/`jacoco-it.exec`, not
+   `Skipping JaCoCo execution due to missing execution data file`.
+3. `dsh-coverage-report`'s badge written to `…/badges/jacoco.svg`.
+4. `rehearsal-verify`: `all 6 declared write point(s) announced exactly once`, and
+   `the remote is byte-for-byte as it was before the run`.
+5. `merge-to-develop: carried <n> path(s) from v0.3.1 into DEVELOP; 0 lost`.
+6. The parent resolved is the one named in §5.1 at that point: `3.9.2-SNAPSHOT` at T3, `3.9.2` at T6.
+
+Before and after, against the remote: no `v0.3.1` tag, and `master`, `DEVELOP`, `0.3.x` and `gh-pages`
+unchanged. Record their SHAs in the task.
+
+### 7.3 After the real release
+
+Base: `https://mriss-projects.github.io/dsh/releases/products/dsh/`. Allow for gh-pages propagation,
+re-checking for up to about ten minutes before treating a 404 as real.
+
+```bash
+B=https://mriss-projects.github.io/dsh/releases/products/dsh
+for p in failsafe.html dsh-rest-api/jacoco/index.html dsh-data/jacoco/index.html \
+         dsh-coverage-report/badges/jacoco.svg; do
+  printf '%s %s\n' "$(curl -s -o /dev/null -w '%{http_code}' "$B/$p")" "$p"
+done
+curl -s "$B/surefire.html" | grep -o -E 'Tests</th>.{0,200}' | head -3
+curl -s "$B/dsh-coverage-report/jacoco-aggregate/index.html" | grep -o -E 'Total.{0,300}' | head -1
+git fetch -q && git tag -l v0.3.1 && git merge-base --is-ancestor v0.3.1 origin/DEVELOP && echo reachable
+MSYS_NO_PATHCONV=1 git show origin/DEVELOP:pom.xml | sed -n 9,13p
+```
+
+Then open `master`'s README on GitHub and confirm that the badge renders as an image.
+
+## 8. Acceptance criteria
+
+From the issue:
+
+- [ ] **AC001** — Before the rehearsal, this branch's root `pom.xml` names `3.9.2-SNAPSHOT`, which is
+      deployed to GitHub Packages before the pin. Why: §4.1 (1). The fix line is parent-poms `master`
+      re-versioned, and `3.9.2` is released whether or not the fix touches a POM. Evidence: P3's
+      deploy run and T2's commit.
+- [ ] **AC002** — A `hotfix.yml` dispatch on `0.3.x` with `dry_run=true` (T6) meets every point of §7.2.
+      The same check on this branch against `3.9.2-SNAPSHOT` (T3) precedes it.
+- [ ] **AC003** — Before the real release, the root `pom.xml` names the released `3.9.2`, with no
+      `-SNAPSHOT` (T4), and that is what `0.3.x` carries after the merge.
+- [ ] **AC004** — The real dispatch (T7) releases `0.3.1`, tagged `v0.3.1`. The site checks in §7.3
+      hold: root `surefire.html` reports a non-zero test count, and `failsafe.html`,
+      `dsh-rest-api/jacoco/index.html` and `dsh-data/jacoco/index.html` return 200.
+      `dsh-coverage-report/jacoco-aggregate` reports more than 0% line coverage.
+- [ ] **AC005** — `…/dsh-coverage-report/badges/jacoco.svg` returns 200, and the badge renders on
+      `master`'s README.
+- [ ] **AC006** — `DEVELOP` is at `0.4.0-SNAPSHOT` with `v0.3.1` reachable from it. Record the parent
+      version `DEVELOP` names afterwards, expected to be `3.9.2`.
+
+Added by this spec:
+
+- [ ] **AC007** — T1's rehearsal against the unfixed workflow shows no test or coverage execution
+      before the site step and no badge written. This proves T3 is green because of the upstream fix.
+- [ ] **AC008** — `0.3.x` never names a `-SNAPSHOT` parent: its `pom.xml` history goes from `3.9.0` to
+      `3.9.2` in one merge.
+- [ ] **AC009** — CI is green on the PR into `0.3.x`. No `.java` is in the diff, so the coverage gate
+      is unaffected.
