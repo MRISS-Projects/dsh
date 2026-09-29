@@ -250,6 +250,14 @@ parallel; failsafe runs the classes of this module in one JVM, sequentially.
   agent to the fork is not needed by any AC.
 - **Docker becomes a prerequisite of `-DintegrationTests`.** `mvn -B clean install`, the gate, is
   unaffected.
+- **The reserved ports can be taken.** *Added at code review.* `build-helper` releases the HTTP and
+  JMX ports as soon as it has chosen them, and `spring-boot:start` binds them 15–20 s later, after
+  the containers are up. Another process can take one in between, and the start then fails. The
+  window is short and the ports random, so the risk is accepted.
+- **The image tags float.** *Added at code review.* `mongo:6` and `rabbitmq:3` resolve to the newest
+  matching image, and staging pulls on every run. An upstream image change, or a truncated pull as
+  in §7.3, can turn staging red with no change here. Accepted for now: pinning digests would trade
+  that for a maintenance chore nobody has asked for.
 
 ### 4.5 The `docker-maven-plugin` version, pinned locally for now
 
@@ -617,6 +625,11 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                 <name>integrationTests</name>
             </property>
         </activation>
+        <properties>
+            <!-- -DskipITs skips the containers and the application along with the tests. -DskipTests
+                 alone still starts them for nothing: add -DskipITs, or leave -DintegrationTests off. -->
+            <skipITs>false</skipITs>
+        </properties>
         <build>
             <plugins>
                 <plugin>
@@ -649,12 +662,14 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                                 <goal>start</goal>
                             </goals>
                             <configuration>
+                                <skip>${skipITs}</skip>
                                 <jmxPort>${dsh.it.jmx.port}</jmxPort>
                                 <maxAttempts>120</maxAttempts>
                                 <arguments>
                                     <argument>--server.port=${dsh.it.http.port}</argument>
                                     <argument>--mongo.host=localhost</argument>
                                     <argument>--mongo.port=${dsh.it.mongo.port}</argument>
+                                    <!-- Must match the user src/test/docker/mongo-init.js creates. -->
                                     <argument>--mongo.user=dshuser</argument>
                                     <argument>--mongo.password=dshpass</argument>
                                     <argument>--spring.rabbitmq.host=localhost</argument>
@@ -669,6 +684,7 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                                 <goal>stop</goal>
                             </goals>
                             <configuration>
+                                <skip>${skipITs}</skip>
                                 <jmxPort>${dsh.it.jmx.port}</jmxPort>
                             </configuration>
                         </execution>
@@ -680,6 +696,7 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                     <!-- Not yet managed by parent-poms; see parent-poms#90. -->
                     <version>0.49.0</version>
                     <configuration>
+                        <skip>${skipITs}</skip>
                         <containerNamePattern>dsh-it-%a-%t</containerNamePattern>
                         <images>
                             <image>
@@ -687,7 +704,7 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                                 <name>mongo:6</name>
                                 <run>
                                     <ports>
-                                        <port>dsh.it.mongo.port:27017</port>
+                                        <port>127.0.0.1:dsh.it.mongo.port:27017</port>
                                     </ports>
                                     <volumes>
                                         <bind>
@@ -706,7 +723,7 @@ POM indents with tabs; the block below uses spaces only because markdownlint for
                                 <name>rabbitmq:3</name>
                                 <run>
                                     <ports>
-                                        <port>dsh.it.rabbitmq.port:5672</port>
+                                        <port>127.0.0.1:dsh.it.rabbitmq.port:5672</port>
                                     </ports>
                                     <wait>
                                         <log>Server startup complete</log>
@@ -878,6 +895,31 @@ The test was reverted, with `git diff --exit-code` clean.
 The first two are container-side ports. No host port is hardcoded.
 
 **AC007.** `git diff --stat staging-0.3.0-SNAPSHOT-RC -- .github/workflows` is empty.
+
+### 7.7 Code review round (step 5)
+
+The review of `26e056e3d..354665f51` returned **With fixes**, with no critical findings. The human
+chose what to act on; each finding was checked against the code first.
+
+| Finding | Outcome |
+|---|---|
+| Important: gate 3's "changed modules, no `-am`" misses consumers of shared code | `-pl <changed modules> -amd` in CLAUDE.md, `testing-patterns.md`, `dsh-ship-story` and §3.5 (`a8a8d1d7b`) |
+| Important: build-story, ship-story, pr-cycle and the process doc still called one command "the whole gate" | scoped to gates 1 and 2, with gate 3 named where it applies (`8daaed202`) |
+| Important: a password with URI-reserved characters now breaks the connection string | stated in the README source and beside the connection string (`859ba5992`) |
+| Minor: `-DskipITs` still started containers and the application; the leak list was too short | `<skip>${skipITs}</skip>` on all four goals, red then green (`38dce73d8`) |
+| Minor: `RestTemplate` without timeouts | connect 5 s, read 60 s (`98556a977`) |
+| Minor: container ports on `0.0.0.0` | `127.0.0.1:` bindings; `docker ps` showed `127.0.0.1:54669->27017/tcp` and `127.0.0.1:54671->5672/tcp` (`b5860207b`) |
+| Minor: duplicated test credentials; stale `mongo-init.js` comment | cross-referenced both ways; comment rewritten (`776da5f16`) |
+| Minor: reserved-port race; floating image tags | accepted, §4.4 |
+| Minor: dead `spring.data.mongodb.*` lines in `application.properties` | pre-existing; a follow-up issue if the human approves one |
+
+- **The skip wiring.** Before the change, `-DintegrationTests -DskipITs -DskipTests` logged `Start
+  container` for both images, and `spring-boot:start` forked the application (`.logs/mvn-verify-skipits-red.log`).
+  After it, all four goals ran as no-ops, and no container or process was left.
+- **After the round,** `mvn -B clean install` exited `0`, and so did gate 3,
+  `mvn -B clean verify -DintegrationTests -pl dsh-data,dsh-rest-api -amd`. `-amd` pulled in
+  `dsh-doc-indexer-worker` and `dsh-coverage-report`, and `DshDocIndexerApplicationIT` ran beside
+  the three `dsh-rest-api` IT classes. All were green.
 
 ## 8. Follow-up issues
 
