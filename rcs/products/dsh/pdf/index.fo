@@ -24,25 +24,35 @@ Welcome to DSH
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Document Smart Highlights</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Document Smart Highlights aims to provide a set of web services to allow uploading
-of PDF and HTML files and return a list of keywords and most relevant sentences.
-This system applies state of the art algorithms, using NLP techniques to produce
-both the list of keywords and most relevant sentences. This last one, using
-automatic document summarization techniques.</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Document Smart Highlights aims to provide web services that accept PDF and HTML files and return
+a list of keywords and the most relevant sentences, extracted with NLP techniques; the sentences
+through automatic document summarization.</fo:block>
 </fo:block>
 
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2   Overall Process Description</fo:block>
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2   What DSH Does Today</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The overall process of file submission and keywords/relevant sentence extraction is
-described as follows:</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Version 0.3.0 accepts a PDF document, stores it in a NoSQL store, puts its id on a queue for
+indexing, and reports the document's processing status. Nothing consumes that queue yet, so 0.3.0
+does not index documents and does not extract keywords or sentences. The REST API has two
+operations: submit a document and receive a token, and ask for the status of the document a token
+was issued for.</fo:block>
+</fo:block>
 
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.1   File Submission</fo:block>
+<fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">3   Planned Process</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The design DSH is being built towards. It is not the behaviour of 0.3.0, which covers the first two
+steps of file submission and stops there.</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">3.1   File Submission</fo:block>
 
 <fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">A web service is established in a way that:</fo:block>
 
@@ -55,7 +65,10 @@ described as follows:</fo:block>
 </fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>User uses a web service call to submit/upload a file.
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">User uses a web service call to submit/upload a file.</fo:block>
+
 
 <fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
 
@@ -81,8 +94,12 @@ described as follows:</fo:block>
 </fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>User uses a web service call to keep probing the status of file processing, using
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">User uses a web service call to keep probing the status of file processing, using
 the token previously returned.</fo:block>
+
+</fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -92,8 +109,11 @@ the token previously returned.</fo:block>
 </fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>When the file processing is done, the previous call returns success and user uses
-another call to retrieve the results having two parts:
+<fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">When the file processing is done, the previous call returns success and user uses
+another call to retrieve the results having two parts:</fo:block>
+
 
 <fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
 
@@ -119,6 +139,8 @@ another call to retrieve the results having two parts:
 
 </fo:list-block>
 
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Retrieving the results is not available yet.</fo:block>
+
 </fo:block>
 </fo:list-item-body>
 </fo:list-item>
@@ -129,7 +151,7 @@ another call to retrieve the results having two parts:
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.2   File Indexing</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">3.2   File Indexing</fo:block>
 
 
 <fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
@@ -140,12 +162,8 @@ another call to retrieve the results having two parts:
 </fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>The first processing task is to submit files to a database where it will
-be indexed and processed to be able to identify individual terms or tokens
-inside the file context. This is done by submitting the files to be stored at
-a database provided by 
-<fo:basic-link external-destination="http://lucene.apache.org/solr/">
-<fo:inline color="green">Apache SOLR</fo:inline></fo:basic-link>.</fo:block>
+<fo:block>The first processing task is to send the file to an indexer, which identifies the individual
+terms or tokens in the file's text.</fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -155,7 +173,7 @@ a database provided by
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.3   File Keyword Extraction</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">3.3   File Keyword Extraction</fo:block>
 
 
 <fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
@@ -205,7 +223,7 @@ combination of all TF/IDF combinations, will then be returned as the best ranked
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">2.4   Most Relevant Sentences Extraction</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">3.4   Most Relevant Sentences Extraction</fo:block>
 
 
 <fo:list-block start-indent="inherited-property-value(start-indent)" space-before.optimum="10pt" provisional-distance-between-starts="1em" provisional-label-separation="1em">
