@@ -1,10 +1,10 @@
 # Document Smart Highlights
 
-![Coverage](https://mriss-projects.github.io/dsh/rcs/products/dsh/dsh-coverage-report/badges/jacoco.svg)
+![Coverage](https://mriss-projects.github.io/dsh/releases/products/dsh/dsh-coverage-report/badges/jacoco.svg)
 
 ## Version
 
-0.3.0-SNAPSHOT - RC26 - 20260929-144401
+0.3.0
 
 ## Introduction
 
@@ -414,7 +414,7 @@ The API description, in Swagger 2 format, is served at
 
 ## Release Notes
 
-### Version 0.3.0-SNAPSHOT
+### Version 0.3.0
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
