@@ -131,11 +131,13 @@ No `.java` file changes, so the red/green cycle is on the workflow: T1's rehears
 unfixed workflow is the failing test, and T3's is green. Every local Maven run follows CLAUDE.md,
 "Always log local Maven runs".
 
-- [ ] **T1 — red.** After this spec is pushed and before `parent-poms#95`'s fix merges, dispatch the
+- [x] **T1 — red.** After this spec is pushed and before `parent-poms#95`'s fix merges, dispatch the
       rehearsal in §7.1 on this branch. Expect green overall, since the defect writes nothing wrong in
       a dry run. The log shows no `maven-surefire-plugin` or `jacoco:report` execution between
       `Merge Release Tag to Master` and `Deploy Site to gh-pages`, and no `badges/jacoco.svg`
       written. Record the run link and the lines against AC007.
+      [Run 36614968935](https://github.com/MRISS-Projects/dsh/actions/runs/36614968935), at `c70d50ab6`
+      against parent-poms `f7600ffe`, is green. Findings in §7.4.
 - [ ] **T2 — pin to `3.9.2-SNAPSHOT`.** After P3. Confirm that it resolves:
       `mvn -B -U -N help:evaluate -Dexpression=project.parent.version -DforceStdout`, logged to
       `.logs/mvn-help-evaluate.log`. Edit §5.1. Run gate 1, `mvn -B -U clean install`, logged to
@@ -208,6 +210,36 @@ MSYS_NO_PATHCONV=1 git show origin/DEVELOP:pom.xml | sed -n 9,13p
 
 Then open `master`'s README on GitHub and confirm that the badge renders as an image.
 
+### 7.4 What T1's red rehearsal showed
+
+[Run 36614968935](https://github.com/MRISS-Projects/dsh/actions/runs/36614968935), 2026-09-29. The job
+log reports every step as `UNKNOWN STEP`, so the steps below are delimited by their `##[group]Run`
+lines and the `REHEARSAL <point>:` markers.
+
+| Step (log lines) | Tests | Coverage | Badge |
+|---|---|---|---|
+| `Maven Release` / `release:prepare` (538-10158) | 8 surefire summaries: 51 + 36 + 22 + 10 + 2 + 2 + 2 + 2 = **127 tests**, the staging count. No failsafe run, because `-DintegrationTests` is not passed | not reported here | the plugin is resolved, but nothing is published from this tree |
+| `Maven Release Perform` (11295-11369) | **none**: under `-DdryRun=true`, `release:perform` builds nothing | none | none |
+| `Deploy Site to gh-pages` (11428-191317) | **none**: no `surefire:test`, no `failsafe:integration-test`, no `Tests run:` line | all 13 `jacoco:report` log `Skipping JaCoCo execution due to missing execution data file`. `report-aggregate` analyses bundles with no execution data | none written |
+
+AC007 holds. Beyond the red itself, T1 found two things:
+
+1. **In a rehearsal, `release:perform` runs nothing.** A fix that keeps `perform`'s `target/checkout`
+   output for the site step would pass a real release but could not be proven by any rehearsal: the
+   rehearsal site would still be empty, and T3 would read the same as T1. For T3 to prove the fix,
+   the tests must run in the tree `Deploy Site to gh-pages` builds from, as `project-staging.yml`
+   does. This goes to `parent-poms#95` as design input.
+2. **The dry-run site step lists 148,202 `- delete` lines**, covering all of `rcs/` and the `gh-pages`
+   root files, 13 times over, once per module's scm-publish. This is dry-run reporting only. 0.3.0's
+   real release made ten `gh-pages` commits, `6d7a18b16`..`b818352ed`, each of them insertions only
+   with no deletions, and `rcs/` still serves its badge. It is not a finding against the fix, and a
+   reader of T3's log should not mistake it for one.
+
+The rehearsal also ended with `rehearsal: all 6 declared write point(s) announced exactly once`
+and `merge-to-develop: carried 1 path(s) from v0.3.1 into DEVELOP; 0 lost`. The one path is this
+spec. Remote refs before the run: `master` `7647692ab`, `DEVELOP` `b3a65eaa9`, `0.3.x` `6932be686`,
+`gh-pages` `b818352ed`, and no `v0.3.1` tag.
+
 ## 8. Acceptance criteria
 
 From the issue:
@@ -231,8 +263,9 @@ From the issue:
 
 Added by this spec:
 
-- [ ] **AC007** — T1's rehearsal against the unfixed workflow shows no test or coverage execution
+- [x] **AC007** — T1's rehearsal against the unfixed workflow shows no test or coverage execution
       before the site step and no badge written. This proves T3 is green because of the upstream fix.
+      [Run 36614968935](https://github.com/MRISS-Projects/dsh/actions/runs/36614968935), §7.4.
 - [ ] **AC008** — `0.3.x` never names a `-SNAPSHOT` parent: its `pom.xml` history goes from `3.9.0` to
       `3.9.2` in one merge.
 - [ ] **AC009** — CI is green on the PR into `0.3.x`. No `.java` is in the diff, so the coverage gate
