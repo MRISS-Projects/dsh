@@ -310,7 +310,7 @@
 									<name>mongo:6</name>
 									<run>
 										<ports>
-											<port>dsh.it.mongo.port:27017</port>
+											<port>127.0.0.1:dsh.it.mongo.port:27017</port>
 										</ports>
 										<volumes>
 											<bind>
@@ -329,7 +329,7 @@
 									<name>rabbitmq:3</name>
 									<run>
 										<ports>
-											<port>dsh.it.rabbitmq.port:5672</port>
+											<port>127.0.0.1:dsh.it.rabbitmq.port:5672</port>
 										</ports>
 										<wait>
 											<log>Server startup complete</log>
