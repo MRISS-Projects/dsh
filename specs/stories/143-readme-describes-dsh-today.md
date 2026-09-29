@@ -112,9 +112,12 @@ links are kept, with trailing spaces removed.
 * **dsh-rest-api**: the application. A Spring Boot jar exposing the REST API: document submission
   and processing status. Querying the results (keywords and relevant sentences) is not available
   yet.
-* **dsh-solr**: two Solr plugins, a numbers filter and a term vector component that orders terms,
-  and a `solrconfig.xml`. Nothing in 0.3.0 runs Solr, and replacing it is proposed in
+* **dsh-solr**: a parent module grouping two Solr plugins, plus a `solrconfig.xml`. Nothing in
+  0.3.0 runs Solr, and replacing it is proposed in
   [ADR-001](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-001-GCP-based-components.md).
+  * **solr-terms-vector-order**: a search component that returns a document's term vector ordered
+    by term statistics such as term and document frequency.
+  * **solr-advanced-numbers-filter**: a token filter for tokens made of digits.
 * **dsh-doc-indexer-worker**: a Spring Boot application holding only its main class so far. Its job
   will be to take a document id off the indexing queue, read the document from the database, send
   it to the indexer, and split its text into paragraphs, sentences and terms.
