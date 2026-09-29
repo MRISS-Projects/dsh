@@ -105,7 +105,7 @@ reconciliation that rediscovers them should leave them out.
 | `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
 | `#124` | **closed** — PR #133 | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
 | `#139` | **closed** — PR #141 | `dsh-data` connects to MongoDB unauthenticated, with connection settings fixed at build time |
-| `#143` | open | Make the README and the site index describe what DSH does today |
+| `#143` | **closed** — PR #145 | Make the README and the site index describe what DSH does today |
 
 `#143` was added by the re-plan of 2026-09-28 (§4, "The 2026-09-28 re-plan"):
 
@@ -312,7 +312,8 @@ released on 2026-09-27 and closed. DSH's root `pom.xml` names the released `3.9.
 run against it on `staging-0.3.0-SNAPSHOT-RC` passed, with the README complete and every coverage
 report regenerated. **From here no parent-poms issue is picked up until DSH 0.3.0 is released and
 work is back on `DEVELOP`.** That includes `3.10.0-SNAPSHOT` and the unmilestoned
-`parent-poms#85`. What is left of Wave 0 is DSH's own `0.3.0-SNAPSHOT` issues.
+`parent-poms#85`. What was left of Wave 0 was DSH's own `0.3.0-SNAPSHOT` issues. The last of them,
+`#143`, closed on 2026-09-29, and the milestone has no open issue.
 
 **The first half is the history below.** `parent-poms#13` was the last issue on `3.8.0-SNAPSHOT`; it was
 fixed, the milestone was cleared, and **3.8.0 was released on 2026-09-19**, tagged
@@ -706,6 +707,14 @@ on `DEVELOP` (Wave 0). From that point, this block goes before anything else in 
   `#140` came from `#46`'s code review.
 - `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
   task 5 below is written as its body, so no new issue is opened for that task.
+- `#144` — Swagger UI is not served: `/swagger-ui/` returns 404 and the webjar page fails to load.
+
+  Not an ADR-001 phase task. It came out of `#143` on 2026-09-28, whose smoke run followed the
+  README literally and found no Swagger UI at any path. It was not folded into `#143`: that story
+  changed documentation only, and the fix is a change to `dsh-rest-api`, so the 0.3.0 README says
+  the UI is not served. It sits in this wave rather than Wave 2 because it does not depend on
+  ADR-003, and because the choice it leaves open, Springfox's starter or springdoc-openapi, turns on
+  the Spring Boot line `#120` settles.
 
 `#142`, which came from the same `#46` review, moved to Wave 2 on 2026-09-28.
 
