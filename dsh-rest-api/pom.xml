@@ -276,6 +276,7 @@
 										<argument>--server.port=${dsh.it.http.port}</argument>
 										<argument>--mongo.host=localhost</argument>
 										<argument>--mongo.port=${dsh.it.mongo.port}</argument>
+										<!-- Must match the user src/test/docker/mongo-init.js creates. -->
 										<argument>--mongo.user=dshuser</argument>
 										<argument>--mongo.password=dshpass</argument>
 										<argument>--spring.rabbitmq.host=localhost</argument>
