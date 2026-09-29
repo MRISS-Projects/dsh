@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"com.mriss.dsh.analyser.keywords","c":"DshKeywordExtractorApplication","l":"DshKeywordExtractorApplication()","u":"%3Cinit%3E()"},{"p":"com.mriss.dsh.analyser.keywords","c":"DshKeywordExtractorApplication","l":"main(String[])","u":"main(java.lang.String[])"}];updateSearchResults();
