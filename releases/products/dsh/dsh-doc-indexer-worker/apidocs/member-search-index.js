@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"com.mriss.dsh.docindexer","c":"DshDocIndexerApplication","l":"DshDocIndexerApplication()","u":"%3Cinit%3E()"},{"p":"com.mriss.dsh.docindexer","c":"DshDocIndexerApplication","l":"main(String[])","u":"main(java.lang.String[])"}];updateSearchResults();
