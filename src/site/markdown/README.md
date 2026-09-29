@@ -318,21 +318,21 @@ token is described under Secrets in `docs/devops/README.md`.
 
 ### MongoDB Access Properties
 
-Edit or create the maven user `settings.xml` file typically at `$HOME/.m2` (or `%HOMEPATH%\.m2` 
+Edit or create the maven user `settings.xml` file typically at `$HOME/.m2` (or `%HOMEPATH%\.m2`
 at windows) folder and add a default activated profile similar to this:
 
 ```xml
 <profile>
-	<id>development-properties</id>
-	<activation>
-		<activeByDefault>true</activeByDefault>
-	</activation>
-	<properties>
-		<mongo.host>localhost</mongo.host>
-		<mongo.port>27017</mongo.port>
-		<mongo.user>dshuser</mongo.user>
-		<mongo.password>[password you have configured in the steps above when installing mongo]</mongo.password>
-	</properties>
+  <id>development-properties</id>
+  <activation>
+    <activeByDefault>true</activeByDefault>
+  </activation>
+  <properties>
+    <mongo.host>localhost</mongo.host>
+    <mongo.port>27017</mongo.port>
+    <mongo.user>dshuser</mongo.user>
+    <mongo.password>[the password you chose when creating the MongoDB user]</mongo.password>
+  </properties>
 </profile>
 ```
 
@@ -343,117 +343,64 @@ connection string: `mongodb://<user>:<password>@<host>:<port>/dsh`. A password c
 `/`, `?`, `#` or `%` must be percent-encoded in `mongo.password` (`@` as `%40`, for example), or the
 connection string breaks. Any value can be overridden at runtime, e.g. `--mongo.port=27018`.
 
-### Tomcat Admin User Configuration
-
-Stop Tomcat if it is already started, and edit the file `TOMCAT_HOME/conf/tomcat-users.xml`.
-If the `tomcat-users` tag is empty or with all elements commented, add the following 
-content inside the `<tomcat-users>` tag.
-
-```xml
-	<role rolename="tomcat" />  
-	<role rolename="manager-gui" />  
-	<role rolename="manager-script" />  
-	<role rolename="admin-gui" />  
-				  
-	<user username="admin" password="[your admin password]" roles="tomcat,manager-gui,manager-script,admin-gui" />
-	<user username="tomcat" password="[your tomcat user password]" roles="tomcat,manager-gui,manager-script,admin-gui" />
-```
-Replace the admin and tomcat's password with any desired password. 
-
 ## Usage
 
-### Running Application from Eclipse Embedded Tomcat
+With MongoDB and RabbitMQ running and the build done, start the application in either of two ways.
 
-The module `dsh-rest-api` is a web application. The type tag in pom.xml file is .war. Thus the
-first step is to install a Tomcat (8.0.X) at 
-[https://tomcat.apache.org/download-80.cgi](https://tomcat.apache.org/download-80.cgi). 
-After that, if you have Eclipse Oxygen JEE version correctly installed and configured, 
-then is just a matter of showing the Servers view and adding a new server. At eclipse menu, 
-follow the path: `Window -> Show View -> Other -> Servers -> Server`. When the `Servers` 
-view opens, add a new Tomcat Server. You will need to have a Tomcat already installed at your 
-system, since eclipse will ask for an installed Tomcat root directory. When creating a new server
-inside eclipse, it will show the dsh-rest-api as a potential project to be installed in that server.
+### Running the Jar
 
-After having the dsh-rest-api inside the server, configure the server `startup` and `shutdown` 
-timeouts to something like 120s each.
-
-Start the server and access the application swagger UI at: `http://localhost:8080/dsh-rest-api/swagger-ui.html`. 
-
-### Using Application .war File on a Servlet Container
-
-After the build, the folder dsh-rest-api/target should have a file named dsh-rest-api-[version].war. 
-That war file can be dropped to a servlet container to be used as a web application. At this moment 
-the server having the servlet container should be the same having MongoDB and RabbitMQ installed, up 
-and running.
-
-#### Using Tomcat Application Manager
-
-Access the Tomcat's manager usually at the address `http://localhost:8080/manager/html`. 
-The browser will ask for user and password. Enter the user and password configured at the 
-`TOMCAT_HOME/conf/tomcat-users.xml` (see the configuration section above).
-
-After login, at the Deploy section, fulfill the fields:
-
+```bash
+java -jar dsh-rest-api/target/dsh-rest-api-<version>.jar
 ```
-Context Path: 	dsh-rest-api
-WAR or Directory URL:	[absolute path to the generated dsh-rest-api-<version>.war file] 
+
+The MongoDB connection comes from the `mongo.*` properties in your Maven settings (see
+[MongoDB Access Properties](#mongodb-access-properties)), resolved when the jar was built. Any of
+them can be overridden when starting it, as can the RabbitMQ address:
+
+```bash
+java -jar dsh-rest-api/target/dsh-rest-api-<version>.jar \
+  --mongo.host=localhost --mongo.port=27017 \
+  --mongo.user=dshuser --mongo.password=YOUR-DSH-PASSWORD \
+  --spring.rabbitmq.host=localhost --spring.rabbitmq.port=5672
 ```
-You can also upload the war file from `dsh-rest-api/target` folder, using the `Choose File` button
-at the Tomcat's manager application. However, in this case, it is recommenDed
-to rename the file `dsh-rest-api-<version>.war` to just `dsh-rest-api.war` just to not have the
-version name associated with the web application, which will then be used to access the application
-at the web browser.
 
-Start the server and access the application swagger UI at: `http://localhost:8080/dsh-rest-api/swagger-ui.html`.
+### Running with the Spring Boot Maven Plugin
 
-#### Just Dropping Application .war File
+From the `dsh-rest-api` folder:
 
-Rename the file `dsh-rest-api/target/dsh-rest-api-<version>.war` to `dsh-rest-api.war` and
-drop it at Tomcat's `webapps` folder. Restart Tomcat if needed.
-
-Start the server and access the application swagger UI at: `http://localhost:8080/dsh-rest-api/swagger-ui.html`.
-
-### Running Application Using Spring Boot Maven Plugin
-
-Go to `dsh-rest-api` module root folder project, by using `cd dsh-rest-api`  at the sources root, and run:
-
-```
+```bash
 mvn spring-boot:run
 ```
-Wait until the application boots up. Typically when the following output is present:
 
+Either way, the application is up when the log shows a line like:
+
+```text
+c.m.dsh.restapi.DshRestApplication - Started DshRestApplication in 9.385 seconds
 ```
-.
-.
-.
-08:37:47.665 [main] INFO  o.s.c.s.DefaultLifecycleProcessor - Starting beans in phase 2147483647
-08:37:47.665 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
-08:37:47.702 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
-08:37:47.746 [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
-08:37:47.962 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
-08:37:47.979 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
-08:37:47.984 [main] INFO  o.a.tomcat.util.net.NioSelectorPool - Using a shared selector for servlet write/read
-08:37:48.016 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http)
-08:37:48.022 [main] INFO  c.m.dsh.restapi.DshRestApplication - Started DshRestApplication in 9.385 seconds (JVM running for 18.084)
-08:37:48.025 [main] INFO  c.m.dsh.restapi.DshRestApplication - Main application run!!!
+
+### Calling the API
+
+The REST API has the two operations of the document resource:
+
+* **submit**, `POST /v1/dsh/document/submit`: uploads a PDF file (`contents`) with a `title`, and
+  returns a token. If the submission fails, the token is `ERROR` and the message says why.
+* **status**, `GET /v1/dsh/document/status/{token}`: returns the processing status of the document
+  the token was issued for. Right after a submit it can show `QUEUED_FOR_INDEXING` for a moment;
+  in 0.3.0 a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and its id queued for
+  indexing. It shows `QUEUED_FOR_INDEXING_ERROR` if the id could not be queued, and an unknown
+  token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing worker exists.
+
+Submit a PDF file, then ask for its status with the token the submit returned:
+
+```bash
+curl -F title="My document" -F contents=@/path/to/file.pdf \
+  http://localhost:8080/v1/dsh/document/submit
+curl http://localhost:8080/v1/dsh/document/status/<token>
 ```
-Start the server and access the application swagger UI at: `http://localhost:8080/swagger-ui.html`.
 
-### Swagger User Interface
-
-Swagger UI has two methods for a document resource:
-
-* submit: uploads a PDF file and returns a token.
-
-* status: use the token returned in the first method to ask for the document processing status. At the moment
-  the only status would be `QUEUED_FOR_INDEXING_SUCCESS`.
-  
-![Swagger UI](/src/site/resources/images/swagger-ui.jpg)
-
-In order to use the methods, click on the method and after in the `Try it out` button (firstly for the submit method).
-
-A new form will open with the fields to fulfill. In case of submit you will need to choose a file to upload and
-inform its title. In case of `status`, you just needs to enter the the token returned by the previous `submit` method call.
+The API description, in Swagger 2 format, is served at
+`http://localhost:8080/v2/api-docs?group=dsh-app`. The Swagger UI is not served in 0.3.0; see
+[#144](https://github.com/MRISS-Projects/dsh/issues/144).
 
 ## Release Notes
 
