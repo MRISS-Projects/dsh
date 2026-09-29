@@ -446,9 +446,9 @@ in the commit of the task that wrote it, and the run starts again.
 
 The last check before the issue is closed. It is not run on the task branch.
 
-- [ ] Once the staging run on `staging-0.3.0-SNAPSHOT-RC` has finished, the root `README.md` on the
+- [x] Once the staging run on `staging-0.3.0-SNAPSHOT-RC` has finished, the root `README.md` on the
   RC contains "What 0.3.0 does today" and no line matching the AC002 grep.
-- [ ] Record the run URL in §7.3.
+- [x] Record the run URL in §7.3.
 
 ## 7. Verification
 
@@ -507,6 +507,30 @@ Copilot's automatic review at `ee5a2889f`, effort Balanced, raised two findings,
   `ee5a2889f`'s README, it prints both modules as missing.
 
 ### 7.3 Staging regeneration (Task 8: AC007)
+
+Task 8 ran after `#143` had been closed, on 2026-09-29.
+
+- First staging run on the RC at `027c31c1d`:
+  [36574918380](https://github.com/MRISS-Projects/dsh/actions/runs/36574918380), **red**. Maven
+  (`-Ddeployment -DintegrationTests`) succeeded, but parent-poms' README placeholder check rejected
+  line 425, `#115`'s issue title, which contains a literal `${jenkins.build.number}` and which
+  `maven-changes-plugin` copies into the release notes. The site was not deployed and the README
+  not committed. Raised as
+  [parent-poms#93](https://github.com/MRISS-Projects/parent-poms/issues/93), on a `3.9.1-SNAPSHOT`
+  hotfix milestone under the 0.3.0 exception. It was fixed by
+  [parent-poms#94](https://github.com/MRISS-Projects/parent-poms/pull/94), merged as `1e79e944`:
+  the check now reports a `${name}` only when the README source has it too. The action is pinned
+  `@master`, so DSH needed no change and no re-pin.
+- Second run, same RC commit:
+  [36583922126](https://github.com/MRISS-Projects/dsh/actions/runs/36583922126), **green**. The
+  check ran as `check-placeholders.sh README.md src/site/markdown/README.md`, the site deployed,
+  and the README was committed as `323dcf0e7`.
+- `323dcf0e7:README.md` contains "What 0.3.0 does today" once. The AC002 grep matches nothing.
+  Version `0.3.0-SNAPSHOT - RC26 - 20260929-144401`, badge path `rcs/`. The only `${` is `#115`'s
+  title at line 425.
+- Both runs also ran `#46`'s integration tests in CI for the first time, all passing:
+  `DocumentResourceHttpIT` 4, `DocumentResourceIT` 6, `DshRestApplicationIT` 2, and the four
+  worker ITs 1, 2, 2, 2, against `mongo:6` and `rabbitmq:3` started by docker-maven-plugin.
 
 ## 8. Acceptance criteria
 
