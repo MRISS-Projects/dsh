@@ -37,7 +37,7 @@ Read from the RC at `e7a9b5d4a` on 2026-09-28.
 | `mongo.*` and `spring.rabbitmq.*` can be overridden on the command line | the `start-application` execution in `dsh-rest-api/pom.xml` passes `--mongo.host`, `--mongo.port`, `--mongo.user`, `--mongo.password`, `--spring.rabbitmq.host`, `--spring.rabbitmq.port` |
 | Two endpoints exist: `POST /v1/dsh/document/submit` (`title`, `contents`) and `GET /v1/dsh/document/status/{token}` | `DocumentResource.java` |
 | A failed submit returns the token `ERROR` with a message; an unknown token returns status `TOKEN_NOT_FOUND` | `DocumentResource.java` |
-| After a submit the status is `QUEUED_FOR_INDEXING_SUCCESS`, or `QUEUED_FOR_INDEXING_ERROR` when the id could not be queued; nothing moves it further | `DocumentEnqueueResponseMessageHandler.java`, `DocumentStatus.java`; no module consumes the queue |
+| After a submit the status ends at `QUEUED_FOR_INDEXING_SUCCESS`, or `QUEUED_FOR_INDEXING_ERROR` when the id could not be queued; nothing moves it further | `DocumentEnqueueResponseMessageHandler.java`, `DocumentStatus.java`; no module consumes the queue |
 | `dsh-doc-indexer-worker`, `dsh-doc-processor-worker`, `dsh-keyword-extractor`, `dsh-top-sentences-extractor` each hold only a `@SpringBootApplication` main class | their `src/main/java` trees |
 | `dsh-solr` holds two Solr plugins, `solr-advanced-numbers-filter` and `solr-terms-vector-order`, plus `config/conf/solrconfig.xml` | `dsh-solr/` |
 | `dsh-coverage-report` and `dsh-test-dataset` have no production sources | their trees |
@@ -101,7 +101,8 @@ infrastructure stores requests and chains a workflow of operations (workers) tha
 and relevant sentences, all provided as a REST API." Goal 2, the contribution paragraphs and the
 links are kept, with trailing spaces removed.
 
-**Package/Folders Description.** Replaced by one entry per reactor module, in reactor order:
+**Package/Folders Description.** Replaced by one entry per reactor module, in reactor order; the
+`dsh-doc-analyser` children put the processor worker first, because it runs the other two:
 
 ```markdown
 * **dsh-test-dataset**: the PDF files used as fixtures by automated tests.
@@ -114,15 +115,15 @@ links are kept, with trailing spaces removed.
 * **dsh-solr**: two Solr plugins, a numbers filter and a term vector component that orders terms,
   and a `solrconfig.xml`. Nothing in 0.3.0 runs Solr, and replacing it is proposed in
   [ADR-001](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-001-GCP-based-components.md).
-* **dsh-doc-indexer-worker**: a Spring Boot application with no behaviour yet. It is meant to take
-  a document id off the indexing queue, read the document from the database, send it to the
-  indexer, and split its text into paragraphs, sentences and terms.
+* **dsh-doc-indexer-worker**: a Spring Boot application holding only its main class so far. Its job
+  will be to take a document id off the indexing queue, read the document from the database, send
+  it to the indexer, and split its text into paragraphs, sentences and terms.
 * **dsh-doc-analyser**: a parent module grouping the analysis modules below.
-  * **dsh-doc-processor-worker**: a Spring Boot application with no behaviour yet. It is meant to
+  * **dsh-doc-processor-worker**: an empty Spring Boot application for now; the plan is for it to
     take indexed documents off a queue and run both extractors on them.
-  * **dsh-keyword-extractor**: no behaviour yet. It is meant to score each term of a document with
+  * **dsh-keyword-extractor**: not implemented yet. It will score each term of a document with
     combinations of TF/IDF and return the best ranked terms as keywords.
-  * **dsh-top-sentences-extractor**: no behaviour yet. It is meant to rank sentences with
+  * **dsh-top-sentences-extractor**: not implemented yet; planned to rank sentences with
     [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization) techniques
     and return the most relevant ones.
 * **dsh-coverage-report**: aggregates the test coverage of every module into one report and the
@@ -155,8 +156,8 @@ docker run -d --name dsh-mongo -p 127.0.0.1:27017:27017 mongo:6
 docker run -d --name dsh-rabbitmq -p 127.0.0.1:5672:5672 rabbitmq:3
 ```
 
-Create the user the application connects to MongoDB as, with read and write access to the `dsh`
-database. Choose your own password:
+MongoDB takes a few seconds to start. Then create the user the application connects to it as, with
+read and write access to the `dsh` database. Choose your own password:
 
 ```bash
 docker exec dsh-mongo mongosh dsh --quiet --eval \
@@ -236,8 +237,10 @@ c.m.dsh.restapi.DshRestApplication - Started DshRestApplication in 9.385 seconds
 
 If the smoke run (Task 6) shows `mvn spring-boot:run` needs the same overrides, the section says
 how to pass them (`-Dspring-boot.run.arguments=...`). What the smoke run shows is what the README
-says. It showed none are needed: `mongo.*` is filtered into `mongo.properties` at build time, from
-the same Maven settings the jar is built with.
+says. The README gives none: `mongo.*` is filtered into `mongo.properties` at build time, from the
+same Maven settings the jar is built with, so a reader who used one password throughout needs no
+override. That is inferred from the build, not observed; the smoke run overrode the password because
+the local settings carry a different one (§7.2).
 
 **Swagger User Interface.** Revised after the smoke run (Task 6) found no working Swagger UI in
 0.3.0 ([#144](https://github.com/MRISS-Projects/dsh/issues/144)). The section, screenshot included,
@@ -292,8 +295,8 @@ was issued for.
 ```
 
 `## Overall Process Description` becomes `## Planned Process`, and its lead-in becomes: "The design
-DSH is being built towards. It is not the behaviour of 0.3.0, which stops after the file
-submission's first step." File Submission step 3 gets a closing sentence: "Retrieving the results
+DSH is being built towards. It is not the behaviour of 0.3.0, which covers the first two steps of
+file submission and stops there." File Submission step 3 gets a closing sentence: "Retrieving the results
 is not available yet."
 
 File Indexing becomes:
@@ -403,7 +406,10 @@ in the commit of the task that wrote it, and the run starts again.
   ```
 
 - [x] Start the jar with the override command from §4.1 Usage. It logs `Started DshRestApplication`.
-- [x] `curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/swagger-ui/` returns `200`.
+- [x] `curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/swagger-ui/` was planned to
+  return `200`. It returned **404**, and so did every other Swagger UI path. What was checked
+  instead: `/v2/api-docs?group=dsh-app` returns `200`. The UI is raised as
+  [#144](https://github.com/MRISS-Projects/dsh/issues/144), and the README revised (§4.1).
 - [x] Submit a fixture and ask for its status:
 
   ```bash
@@ -415,7 +421,8 @@ in the commit of the task that wrote it, and the run starts again.
   ```
 
   Expect a token other than `ERROR`, the status `QUEUED_FOR_INDEXING_SUCCESS`, then
-  `TOKEN_NOT_FOUND`.
+  `TOKEN_NOT_FOUND`. The first status call, made immediately, returned `QUEUED_FOR_INDEXING`; a
+  repeat seconds later returned `QUEUED_FOR_INDEXING_SUCCESS`. The README was revised to say so.
 - [x] Stop the jar, then `mvn spring-boot:run` from `dsh-rest-api` and confirm it starts. If it needs
   arguments the README does not give, add them to the README (§4.1).
 - [x] `docker rm -f dsh-mongo dsh-rabbitmq`.
@@ -469,9 +476,10 @@ Run on 2026-09-28, following the README as of Task 5, with a throwaway MongoDB p
   base URL. Raised as [#144](https://github.com/MRISS-Projects/dsh/issues/144); the README states
   the UI is not served (§4.1, revised).
 - `mvn spring-boot:run` from `dsh-rest-api`: `Started DshRestApplication in 3.806 seconds`, and a
-  submit returned a token. It needs no arguments when the Maven settings hold the password the
-  MongoDB user was created with; this run passed `-Dspring-boot.run.arguments=--mongo.password=…`
-  only because the local settings carry a different one.
+  submit returned a token. This run passed `-Dspring-boot.run.arguments=--mongo.password=…`,
+  because the local settings carry a different password. That no arguments are needed when the
+  settings hold the MongoDB user's password is inferred from the build-time filtering, not
+  observed.
 - `docker rm -f dsh-mongo dsh-rabbitmq`: both removed.
 
 Task 4's second grep also matches "Eclipse Temurin" and "Eclipse Adoptium" in the Java section.
