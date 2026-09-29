@@ -42,7 +42,8 @@ Read from the RC at `e7a9b5d4a` on 2026-09-28.
 | `dsh-solr` holds two Solr plugins, `solr-advanced-numbers-filter` and `solr-terms-vector-order`, plus `config/conf/solrconfig.xml` | `dsh-solr/` |
 | `dsh-coverage-report` and `dsh-test-dataset` have no production sources | their trees |
 | The data models are `Document`, `Keyword`, `Sentence` and the `DocumentStatus` workflow; the README's `RelevantSentence` does not exist | `dsh-data/src/main/java/com/mriss/dsh/data/models/` |
-| Springfox is 3.0.0, which serves the UI at `/swagger-ui/`, not `/swagger-ui.html` | `spring-fox.version` 3.0.0 in parent-poms `products` 3.9.0, which DSH pins; **the path is verified by the smoke run, Task 6** |
+| Springfox is 3.0.0, and 0.3.0 serves **no** working Swagger UI; the Swagger 2 description is at `/v2/api-docs?group=dsh-app` | `spring-fox.version` 3.0.0 in parent-poms `products` 3.9.0, which DSH pins; the smoke run, Task 6, found every UI path 404 and no `springfox-boot-starter`. Raised as [#144](https://github.com/MRISS-Projects/dsh/issues/144) |
+| The status moves from `QUEUED_FOR_INDEXING` to `QUEUED_FOR_INDEXING_SUCCESS` asynchronously, within seconds of the submit | smoke run, Task 6 |
 | The unit build starts no Spring context, so `mvn -B clean install` needs no running MongoDB or RabbitMQ | `CLAUDE.md` hard rules, `.github/scripts/check-unit-tests-context-free.sh` |
 
 ### 2.2 Baseline
@@ -231,33 +232,41 @@ Either way, the application is up when the log shows a line like:
 ```text
 c.m.dsh.restapi.DshRestApplication - Started DshRestApplication in 9.385 seconds
 ```
-
-Then open the Swagger UI at `http://localhost:8080/swagger-ui/`.
 ````
 
 If the smoke run (Task 6) shows `mvn spring-boot:run` needs the same overrides, the section says
 how to pass them (`-Dspring-boot.run.arguments=...`). What the smoke run shows is what the README
-says.
+says. It showed none are needed: `mongo.*` is filtered into `mongo.properties` at build time, from
+the same Maven settings the jar is built with.
 
-**Swagger User Interface.** Replaced by:
+**Swagger User Interface.** Revised after the smoke run (Task 6) found no working Swagger UI in
+0.3.0 ([#144](https://github.com/MRISS-Projects/dsh/issues/144)). The section, screenshot included,
+is replaced by:
 
 ````markdown
-### Swagger User Interface
+### Calling the API
 
-The Swagger UI lists the two operations of the document resource:
+The REST API has the two operations of the document resource:
 
 * **submit**, `POST /v1/dsh/document/submit`: uploads a PDF file (`contents`) with a `title`, and
   returns a token. If the submission fails, the token is `ERROR` and the message says why.
 * **status**, `GET /v1/dsh/document/status/{token}`: returns the processing status of the document
-  the token was issued for. In 0.3.0 a document ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and
-  its id queued for indexing. It shows `QUEUED_FOR_INDEXING_ERROR` if the id could not be queued,
-  and an unknown token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing
-  worker exists.
+  the token was issued for. Right after a submit it can show `QUEUED_FOR_INDEXING` for a moment;
+  in 0.3.0 a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and its id queued for
+  indexing. It shows `QUEUED_FOR_INDEXING_ERROR` if the id could not be queued, and an unknown
+  token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing worker exists.
 
-![Swagger UI](/src/site/resources/images/swagger-ui.jpg)
+Submit a PDF file, then ask for its status with the token the submit returned:
 
-To call an operation, expand it and press `Try it out`. For submit, choose a file and enter its
-title; for status, enter the token submit returned.
+```bash
+curl -F title="My document" -F contents=@/path/to/file.pdf \
+  http://localhost:8080/v1/dsh/document/submit
+curl http://localhost:8080/v1/dsh/document/status/<token>
+```
+
+The API description, in Swagger 2 format, is served at
+`http://localhost:8080/v2/api-docs?group=dsh-app`. The Swagger UI is not served in 0.3.0; see
+[#144](https://github.com/MRISS-Projects/dsh/issues/144).
 ````
 
 **Release Notes.** Untouched.
@@ -300,7 +309,10 @@ The keyword and sentence extraction sections are unchanged.
 
 As the issue lists, plus:
 
-- The `swagger-ui.jpg` screenshot and its root-relative path, broken by design since `#90`.
+- The `swagger-ui.jpg` image file, which the README no longer references, and its root-relative
+  path, broken by design since `#90`.
+- Serving the Swagger UI: [#144](https://github.com/MRISS-Projects/dsh/issues/144), milestone
+  `0.4.0-SNAPSHOT`.
 - Adding `src/site/` to the documented `markdownlint` command in `CLAUDE.md` and CI. Worth a small
   issue of its own; offered, not raised.
 - `src/site/markdown/releases-history.md`.
@@ -324,28 +336,28 @@ PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH" markdownlint src/site/markdown/REA
 
 ### Task 1 — Baseline, red
 
-- [ ] Run the lint command. Expect 144 errors (§2.2).
-- [ ] Run the AC002 grep. Expect matches:
+- [x] Run the lint command. Expect 144 errors (§2.2).
+- [x] Run the AC002 grep. Expect matches:
 
   ```bash
   grep -niE '\.war|servlet container|tomcat-users|tomcat 8|Tomcat \(8' src/site/markdown/README.md
   ```
 
-- [ ] Run the AC005 greps. Expect `index.md` to match `SOLR`:
+- [x] Run the AC005 greps. Expect `index.md` to match `SOLR`:
 
   ```bash
   sed -n '/^## Introduction/,/^## Package/p' src/site/markdown/README.md | grep -niE 'solr|mongo|rabbit|tomcat'
   grep -niE 'solr|mongo|rabbit|tomcat' src/site/markdown/index.md
   ```
 
-- [ ] `docker version`, to confirm Task 6 can run here. If Docker is unavailable, stop and say so.
-- [ ] Record the outputs in §7.1. No commit.
+- [x] `docker version`, to confirm Task 6 can run here. If Docker is unavailable, stop and say so.
+- [x] Record the outputs in §7.1. No commit.
 
 ### Task 2 — README: Introduction and modules
 
-- [ ] Apply §4.1 Introduction and Package/Folders Description.
-- [ ] The AC005 README grep returns nothing.
-- [ ] Every `<module>` in the root `pom.xml` and `dsh-doc-analyser/pom.xml` has an entry:
+- [x] Apply §4.1 Introduction and Package/Folders Description.
+- [x] The AC005 README grep returns nothing.
+- [x] Every `<module>` in the root `pom.xml` and `dsh-doc-analyser/pom.xml` has an entry:
 
   ```bash
   for m in $(grep -ho '<module>[^<]*' pom.xml dsh-doc-analyser/pom.xml | sed 's/<module>//'); do
@@ -353,34 +365,34 @@ PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH" markdownlint src/site/markdown/REA
   done
   ```
 
-- [ ] Commit: `docs: state what 0.3.0 does and describe every module in the README`.
+- [x] Commit: `docs: state what 0.3.0 does and describe every module in the README`.
 
 ### Task 3 — README: prerequisites, installation, build
 
-- [ ] Apply §4.1 Pre-requisites, MongoDB and RabbitMQ, Building From Sources; delete Tomcat.
-- [ ] Commit: `docs: install MongoDB and RabbitMQ from Docker, drop Tomcat`.
+- [x] Apply §4.1 Pre-requisites, MongoDB and RabbitMQ, Building From Sources; delete Tomcat.
+- [x] Commit: `docs: install MongoDB and RabbitMQ from Docker, drop Tomcat`.
 
 ### Task 4 — README: configuration, usage, Swagger
 
-- [ ] Apply §4.1 Configuration, Usage and Swagger User Interface.
-- [ ] The AC002 grep returns nothing, and so does
+- [x] Apply §4.1 Configuration, Usage and Swagger User Interface.
+- [x] The AC002 grep returns nothing, and so does
   `grep -niE 'eclipse|tomcat manager|webapps|swagger-ui\.html' src/site/markdown/README.md`.
-- [ ] Commit: `docs: run the REST API as a jar and describe its two endpoints`.
+- [x] Commit: `docs: run the REST API as a jar and describe its two endpoints`.
 
 ### Task 5 — `index.md`
 
-- [ ] Apply §4.2.
-- [ ] The AC005 `index.md` grep returns nothing.
-- [ ] Commit: `docs: say what DSH does today on the site index`.
+- [x] Apply §4.2.
+- [x] The AC005 `index.md` grep returns nothing.
+- [x] Commit: `docs: say what DSH does today on the site index`.
 
 ### Task 6 — Smoke run, following the README literally
 
 Every command is copied from the README as it now reads. A step that fails is fixed in the README,
 in the commit of the task that wrote it, and the run starts again.
 
-- [ ] The two `docker run` commands and the `mongosh` user creation from §4.1, with a throwaway
+- [x] The two `docker run` commands and the `mongosh` user creation from §4.1, with a throwaway
   password.
-- [ ] Gate 1, logged per `CLAUDE.md`:
+- [x] Gate 1, logged per `CLAUDE.md`:
 
   ```bash
   mkdir -p .logs
@@ -390,9 +402,9 @@ in the commit of the task that wrote it, and the run starts again.
   wait $MVN_PID; echo "maven exit=$?"
   ```
 
-- [ ] Start the jar with the override command from §4.1 Usage. It logs `Started DshRestApplication`.
-- [ ] `curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/swagger-ui/` returns `200`.
-- [ ] Submit a fixture and ask for its status:
+- [x] Start the jar with the override command from §4.1 Usage. It logs `Started DshRestApplication`.
+- [x] `curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/swagger-ui/` returns `200`.
+- [x] Submit a fixture and ask for its status:
 
   ```bash
   pdf=dsh-test-dataset/src/test/resources/pdf/bbc-news-1.pdf
@@ -404,19 +416,19 @@ in the commit of the task that wrote it, and the run starts again.
 
   Expect a token other than `ERROR`, the status `QUEUED_FOR_INDEXING_SUCCESS`, then
   `TOKEN_NOT_FOUND`.
-- [ ] Stop the jar, then `mvn spring-boot:run` from `dsh-rest-api` and confirm it starts. If it needs
+- [x] Stop the jar, then `mvn spring-boot:run` from `dsh-rest-api` and confirm it starts. If it needs
   arguments the README does not give, add them to the README (§4.1).
-- [ ] `docker rm -f dsh-mongo dsh-rabbitmq`.
-- [ ] Record the outputs in §7.2.
+- [x] `docker rm -f dsh-mongo dsh-rabbitmq`.
+- [x] Record the outputs in §7.2.
 
 ### Task 7 — Lint clean
 
-- [ ] Fix every remaining lint error in both files: languages on fences (`bash`, `text`, `xml`,
+- [x] Fix every remaining lint error in both files: languages on fences (`bash`, `text`, `xml`,
   `bat`), blank lines around fences and headings, no trailing spaces, no hard tabs, bare URLs as
   links, list indentation. Wording outside §4 does not change.
-- [ ] The lint command exits 0.
-- [ ] Re-run the AC002 and AC005 greps: still nothing.
-- [ ] Commit: `docs: make the README and site index pass markdownlint`.
+- [x] The lint command exits 0.
+- [x] Re-run the AC002 and AC005 greps: still nothing.
+- [x] Commit: `docs: make the README and site index pass markdownlint`.
 
 ### Task 8 — After the merge into the RC
 
@@ -432,7 +444,43 @@ Recorded as each task completes.
 
 ### 7.1 Baseline (Task 1)
 
+Run on 2026-09-28 at `2c52de144`.
+
+- Lint: 144 errors, as §2.2.
+- AC002 grep: 20 matches, in Introduction, Package/Folders (`dsh-rest-api`), Pre-requisites,
+  Tomcat, Tomcat Admin User Configuration and Usage.
+- AC005: the README overview matches nothing; `index.md` matches `SOLR` at line 34.
+- `docker version`: server 29.8.0.
+
 ### 7.2 Smoke run and gate 1 (Task 6)
+
+Run on 2026-09-28, following the README as of Task 5, with a throwaway MongoDB password.
+
+- `docker run` of `mongo:6` and `rabbitmq:3`, and the `mongosh` user creation: `{ ok: 1 }`.
+- Gate 1, `mvn -B clean install`: `maven exit=0`, all 13 reactor modules `SUCCESS`.
+- The jar, started with the §4.1 override command: `Started DshRestApplication in 6.231 seconds`.
+- Submit of `bbc-news-1.pdf`: token `202609286d2eea20-…`, message empty.
+- Status of that token, immediately: `QUEUED_FOR_INDEXING`; seconds later:
+  `QUEUED_FOR_INDEXING_SUCCESS`. The README was corrected to say so.
+- Status of `no-such-token`: `TOKEN_NOT_FOUND`.
+- `/swagger-ui/`: **404**, and so are `/swagger-ui/index.html` and `/swagger-ui.html`.
+  `/v2/api-docs?group=dsh-app` and `/swagger-resources`: 200. `springfox-boot-starter` is not on
+  the classpath, and the webjar page at `/webjars/springfox-swagger-ui/index.html` cannot derive its
+  base URL. Raised as [#144](https://github.com/MRISS-Projects/dsh/issues/144); the README states
+  the UI is not served (§4.1, revised).
+- `mvn spring-boot:run` from `dsh-rest-api`: `Started DshRestApplication in 3.806 seconds`, and a
+  submit returned a token. It needs no arguments when the Maven settings hold the password the
+  MongoDB user was created with; this run passed `-Dspring-boot.run.arguments=--mongo.password=…`
+  only because the local settings carry a different one.
+- `docker rm -f dsh-mongo dsh-rabbitmq`: both removed.
+
+Task 4's second grep also matches "Eclipse Temurin" and "Eclipse Adoptium" in the Java section.
+Those name the JDK vendor, not the Eclipse IDE server AC002 excludes, so the text stays.
+
+### 7.2.1 Lint (Task 7)
+
+- Lint command: exit 0 on both files.
+- AC002 grep and both AC005 greps: no output.
 
 ### 7.3 Staging regeneration (Task 8: AC007)
 
