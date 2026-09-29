@@ -206,7 +206,7 @@ The probe with `--mongo.port=11111` then dialled `localhost:11111`. Every consum
 now authenticates. That matters wherever MongoDB runs without the user: `api-testing.yml` creates
 `dshuser`, and `mongo.properties`'s values come from each environment's Maven settings. A password
 containing `@`, `:` or `/` would need percent-encoding in the connection string. The defect is
-recorded as its own bug issue (§8).
+recorded as its own bug issue, #139 (§8).
 
 ### 4.3 The IT
 
@@ -887,6 +887,13 @@ Created on 2026-09-28 at spec approval, before the spec was committed.
   lookup failures*, label `enhancement`, no milestone.
 - [parent-poms#90](https://github.com/MRISS-Projects/parent-poms/issues/90): *Manage
   docker-maven-plugin's version*, label `task`; worked after DSH `0.3.0` ships (§4.5).
+
+Created on 2026-09-28 during the build:
+
+- [#139](https://github.com/MRISS-Projects/dsh/issues/139): *dsh-data connects to MongoDB
+  unauthenticated, with connection settings fixed at build time*, label `bug`, milestone
+  `0.3.0-SNAPSHOT`. Not a follow-up: it records the defect that §4.2.2 fixes on this branch, and
+  closes with #46's PR.
 
 ## 9. Acceptance criteria
 
