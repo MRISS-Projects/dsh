@@ -104,9 +104,11 @@ each is and when each is required — are in `.github/copilot/rules/testing-patt
    `MRISS-Projects/parent-poms`, not declared here — grepping this repository will not find them.**
 3. **The local integration gate, conditional.** When a story changes code that touches an external
    system (MongoDB, RabbitMQ, Solr, or any other service outside the JVM) or a REST API entry point,
-   run `mvn -B clean verify -DintegrationTests -pl <affected modules>` after gate 1 passes. The
-   affected modules are the ones whose code changed. There is no `-am`, deliberately: gate 1 has
-   already installed every upstream module, and `-am` would run their integration tests too.
+   run `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd` after gate 1 passes. The
+   changed modules are the ones whose code changed; `-amd` adds every module that depends on them,
+   because a change to shared code (`dsh-data`) breaks only in its consumers. There is no `-am`,
+   deliberately: gate 1 has already installed every upstream module, and `-am` would run their
+   integration tests too.
 
 `.github/workflows/ci.yml` enforces gates 1 and 2 on every PR. `mvn -B clean install` runs them
 itself, because they are bound to `verify`; there is no second command to run for them. Gate 3 never

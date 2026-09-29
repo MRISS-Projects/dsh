@@ -27,8 +27,11 @@ Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does
   - **When it applies:** a story changes code that touches an external system (MongoDB, RabbitMQ,
     Solr, or any other service outside the JVM) or a REST API entry point.
   - **What runs:** after the root `mvn -B clean install` passes,
-    `mvn -B clean verify -DintegrationTests -pl <affected modules>`. The affected modules are the
-    ones whose code changed.
+    `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd`. The changed modules are
+    the ones whose code changed.
+  - **`-amd`, so the consumers run too.** A change to shared code breaks in the modules that depend
+    on it: #139 was a `dsh-data` defect that only `dsh-rest-api`'s IT could see, and `dsh-data`
+    has no ITs of its own.
   - **No `-am`, deliberately.** The root build has already installed every upstream module, and
     `-am` would run their integration tests too.
 

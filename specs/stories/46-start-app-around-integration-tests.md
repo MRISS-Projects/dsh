@@ -83,9 +83,11 @@ the staging build has none, because `parent-poms#78` removed its service contain
    - **The local gate is conditional.** It applies only when a story changes code that touches an
      external system (MongoDB, RabbitMQ, Solr, or any other service outside the JVM) or a REST API
      entry point.
-   - **It covers only the affected modules.** After the root `mvn -B clean install` gate passes,
-     the story passes `mvn -B clean verify -DintegrationTests -pl <affected modules>`.
-     The affected modules are the ones whose code changed.
+   - **It covers the changed modules and their dependents.** After the root `mvn -B clean install`
+     gate passes, the story passes `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd`.
+     The changed modules are the ones whose code changed. *Amended at code review:* this first said
+     `-pl <affected modules>` without `-amd`, which would have run no IT for a `dsh-data`-only
+     change, though #139 shows up only in `dsh-rest-api`.
    - **No `-am`, deliberately.** The root build has already installed every upstream module, and
      `-am` would run their integration tests too.
    - **Going forward only.** The layer-2 requirement is enforced at review, not mechanically. Existing
