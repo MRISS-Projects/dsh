@@ -15,7 +15,7 @@
     <!-- THE BASICS -->
     <groupId>com.mriss.products</groupId>
     <artifactId>dsh</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- FR006: DSH-internal cross-module versions remain here; third-party versions are in products/pom.xml -->
