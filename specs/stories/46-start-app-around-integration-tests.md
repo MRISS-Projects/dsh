@@ -601,8 +601,8 @@ table.
 - [x] **Step 5.** Grep the touched files for `optional by design` and `Postman collections in` and
       confirm no stale statement survives outside layer 4's description. Run the markdown-lint
       command from CLAUDE.md.
-- [ ] **Step 6.** Comment on `#137` that it delivers layer 4 of the rule in `testing-patterns.md`,
-      linking the commit. Commit: `docs(#46): state the four test layers and where they run`.
+- [x] **Step 6.** Comment on `#137` that it delivers layer 4 of the rule in `testing-patterns.md`,
+      linking the commit. Posted after the push: issuecomment-5881243661. Commit: `docs(#46): state the four test layers and where they run`.
 
 ### 6.1 The profile, final form
 
