@@ -6,12 +6,30 @@ on:
       branch_name:
         description: 'Hotfix branch (e.g. 0.3.x)'
         required: true
+      dry_run:
+        description: >-
+          Rehearse the hotfix release. No artifact deploy, no gh-pages publication, no push to
+          master, no deletion of the branch — every suppressed write is announced in the log.
+          Run one before any first release on a line.
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   hotfix:
     uses: MRISS-Projects/parent-poms/.github/workflows/project-hotfix.yml@master
     with:
       git_project: dsh
+      # #117: same as release.yml — the merge-back targets DEVELOP, not the DEVELOPMENT default.
+      development_branch: DEVELOP
       branch_name: ${{ inputs.branch_name }}
+      dry_run: ${{ inputs.dry_run }}
+      # #114: same as release.yml — release:prepare forks `clean install`, which filters
+      # dsh-data's mongo.properties. Nothing connects to Mongo on this path.
+      maven_properties: |
+        mongo.host=localhost
+        mongo.port=27017
+        mongo.user=dshuser
+        mongo.password=dshpass
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

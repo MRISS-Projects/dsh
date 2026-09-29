@@ -1,0 +1,112 @@
+---
+name: dsh-ship-story
+description: Use when a DSH story is built and needs local code review, then a push and a pull request - steps 5 and 6 of the DSH development process
+---
+
+# DSH: Ship Story
+
+Steps 5 and 6 of the process in `docs/process/ai-driven-development.md`. The review rounds that
+follow on the open pull request are step 7 — see `dsh-pr-cycle`.
+
+## Step 5 - review
+
+1. **Run the local integration gate if it applies** — gate 3 in CLAUDE.md's *Quality gates*. It
+   applies when the diff touches code that talks to an external system (MongoDB, RabbitMQ, Solr, or
+   any other service outside the JVM) or a REST API entry point. The changed modules are the ones
+   whose code changed. After the root `mvn -B clean install` has passed:
+
+       mkdir -p .logs
+       mvn -B clean verify -DintegrationTests -pl <changed modules> -amd > .logs/mvn-clean-verify-it.log 2>&1 &
+       MVN_PID=$!
+       echo "Monitor with:  tail -f .logs/mvn-clean-verify-it.log"
+       wait $MVN_PID; echo "maven exit=$?"
+
+   `-amd` adds the modules that depend on the changed ones, where shared code breaks. No `-am`:
+   the root build already installed the upstream modules. It needs a running Docker
+   daemon when `dsh-rest-api` is affected. A red run goes back through `dsh-build-story`. If the
+   gate does not apply, say so and why in the hand-off.
+2. Invoke `superpowers:requesting-code-review`, or run `/code-review` for the diff.
+3. **Stop. The human reads the findings.**
+4. For the findings you act on, invoke `superpowers:receiving-code-review` - verify each
+   claim against the code rather than agreeing on reflex.
+5. Fixes go back through `dsh-build-story` (TDD still applies to review fixes).
+
+## Step 6 - verify, push, PR
+
+Invoke `superpowers:verification-before-completion` first. Evidence before assertions:
+
+    mkdir -p .logs
+    mvn -B clean install > .logs/mvn-clean-install.log 2>&1 &
+    MVN_PID=$!
+    echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
+    wait $MVN_PID; echo "maven exit=$?"
+
+That one command is the whole of gates 1 and 2; gate 3 ran in step 5. `jacoco:check` enforces 95% LINE and BRANCH per module and
+`enforce-coverage-data-exists` rejects a module that produced no coverage data at all; both are
+bound to `verify` and inherited from `parent-poms`, so there is no second command to run and
+nothing to find by grepping this repository.
+
+Read `parent_branch` from the front matter of `specs/stories/<n>-<slug>.md`.
+
+## Hard stop
+
+Show the human the PR title, the PR body, the resolved base branch, and which review effort level
+this PR wants ("Ask for the right review effort", below). Wait for approval.
+**Then** run:
+
+    git push -u origin issue-<n>-<slug>
+    gh pr create --base <parent_branch> --title "<title>" --body "Refs #<n>" --fill
+    gh run watch
+
+**`--base` is never `master`.** If the front matter says `master`, something went wrong
+upstream in step 3 - stop and raise it.
+
+**`Refs`, not `Closes` — and do not "fix" this back.** GitHub only auto-closes a linked issue
+when the pull request merges into the repository's **default branch**. Here that is `master`,
+and a story PR never targets it: it targets `DEVELOP`, an RC branch, or a hotfix line. So
+`Closes #<n>` would silently do nothing on every story PR, while reading as though the issue
+were handled. Verified on `#98` - merged into `staging-0.3.0-SNAPSHOT-RC` with `Closes #95` in
+the body, and `#95` stayed open.
+
+Closing the issue stays the human's call, which is what the hard stop below already requires. In
+practice they close it as soon as the story PR merges into its parent branch: `#92`, `#93`, `#95`,
+`#99`, `#101`, `#103` and `#97` were every one closed that way, with milestone `0.3.0-SNAPSHOT`
+still open and the RC unreleased. So expect the issue to be closed on merge, and
+`dsh-reconcile-prd` to be runnable straight afterwards — do not tell the human an issue should stay
+open until the release. Claude still never closes it, whichever point that is.
+
+## Ask for the right review effort
+
+Copilot code review runs at a selectable **effort level**. Three layers set it, and they are not
+the same thing:
+
+| Layer | What it governs |
+|---|---|
+| Organization default | Inherited by repositories that have not set their own |
+| **Repository setting** | Settings > Copilot > Code review > "Review effort level" — the default for **automatic** reviews |
+| **Per-PR choice** | Chosen under **Reviewers** when a review is requested. Applies to that one review only and changes neither default |
+
+- **`Lite`** — cost-efficient and targeted.
+- **`Balanced`** — the level to request for a **substantive** pull request.
+
+**Claude cannot select any of them** — there is no workflow to change and no file in this
+repository that sets it. Every layer is a human action, on the PR page or in repository settings.
+
+So when you hand the PR over, say which level this PR wants. A review is only as good as the facts
+it applies; on a substantive change, buying the higher effort level is cheaper than a round spent
+answering a finding that the repository already contradicts.
+
+Note which layer supplied it when you record a result: a review that arrives **automatically**,
+without being requested, ran at the repository or organization default, not at a per-PR choice.
+
+## Where this skill stops
+
+The pull request is open and the first CI run has been started. That is the end.
+
+Do **not** carry on into the review rounds from here. CI results and reviewer comments — from
+GitHub Copilot or from a person — are **step 7**, and they belong to `dsh-pr-cycle`, which is
+invocable on its own because a round often arrives hours or days later in a fresh session.
+
+**Do not merge the PR. Do not close the issue.** Report the PR URL and the CI result, and hand it
+to the human. See `superpowers:finishing-a-development-branch` for what integration options look
+like, but the decision and the action are theirs.

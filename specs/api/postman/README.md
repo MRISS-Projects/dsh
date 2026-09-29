@@ -11,6 +11,7 @@ This directory contains Postman collection files for API testing and exploration
 ## Usage
 
 Collections in this directory are used by:
+
 - Manual API exploration and testing during development
 - Automated API testing in the CI pipeline (see `/.github/workflows/api-testing.yml`)
 - Onboarding new team members to the DSH API
@@ -18,12 +19,14 @@ Collections in this directory are used by:
 ## Running Collections
 
 ### Newman (CLI)
+
 ```bash
 npm install -g newman
 newman run <collection-file>.json --environment <env-file>.json
 ```
 
 ### Postman Desktop
+
 Import the `.json` file directly into Postman.
 
 ## Adding a New Collection

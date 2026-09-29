@@ -1,12 +1,15 @@
 # GitHub Copilot Development Guide
 
 ## Introduction
+
 This guide explains how to use GitHub Copilot effectively in the DSH (Document Smart Highlights) project. It covers setup, workflow integration, and how to leverage the spec-driven structure for optimal code generation.
 
 ## Setup
 
 ### Repository Configuration
+
 The DSH project is pre-configured for Copilot via `.github/copilot-instructions.md`. This file provides Copilot with:
+
 - Project architecture overview
 - Module responsibilities
 - File references to specifications
@@ -15,6 +18,7 @@ The DSH project is pre-configured for Copilot via `.github/copilot-instructions.
 Copilot will automatically use this context when suggesting code in this repository.
 
 ### Recommended VS Code Extensions
+
 - **GitHub Copilot** – AI pair programmer
 - **GitHub Copilot Chat** – Conversational Copilot interface
 - **Extension Pack for Java** – Java language support
@@ -35,7 +39,7 @@ Copilot will automatically use this context when suggesting code in this reposit
 
 Open Copilot Chat (`Ctrl+Shift+I`) and attach relevant spec files as context:
 
-```
+```text
 @workspace /specs/features/document-analysis.md
 Generate a Spring Boot service for document analysis following the conventions in
 /.github/copilot/rules/java-conventions.md
@@ -43,7 +47,7 @@ Generate a Spring Boot service for document analysis following the conventions i
 
 You can also attach wiki pages from `/docs/wiki/` for broader architectural context:
 
-```
+```text
 @workspace /docs/wiki/Architecture-Decisions.md /specs/features/indexing-workflow.md
 Implement the indexing service described in the wiki's architecture decisions,
 following the workflow spec and Java conventions in /.github/copilot/rules/java-conventions.md
@@ -63,13 +67,15 @@ following the workflow spec and Java conventions in /.github/copilot/rules/java-
 See `.github/copilot/prompts/` for ready-to-use prompt templates:
 
 | Template | Use Case |
-|----------|---------|
+| ---------- | --------- |
 | `component-generation.md` | Scaffold services, controllers, DTOs, repositories |
 | `test-generation.md` | Generate unit, integration, and performance tests |
 | `documentation-generation.md` | Generate JavaDoc, feature specs, OpenAPI schemas |
 
 ## Best Practices
+
 See `./best-practices.md` for detailed Copilot usage best practices.
 
 ## Example Sessions
+
 See `./prompt-examples.md` for real example prompts and their expected outputs.

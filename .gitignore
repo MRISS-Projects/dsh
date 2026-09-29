@@ -25,5 +25,8 @@
 # ----- Runtime logs -----
 **/error-logs.txt
 
+# ----- Local build logs (see CLAUDE.md: long commands redirect here) -----
+.logs/
+
 # ----- Misc -----
 **/*.md.html

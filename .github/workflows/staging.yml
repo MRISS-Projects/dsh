@@ -13,5 +13,13 @@ jobs:
     with:
       git_project: dsh
       branch_name: ${{ inputs.branch_name }}
+      # #114: the build's Mongo settings, which dsh-data's mongo.properties is filtered from.
+      # Without them every dsh-rest-api context fails on an unresolved placeholder. No MongoDB
+      # runs behind them: parent-poms#78 removed the service containers, and no test connects.
+      maven_properties: |
+        mongo.host=localhost
+        mongo.port=27017
+        mongo.user=dshuser
+        mongo.password=dshpass
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

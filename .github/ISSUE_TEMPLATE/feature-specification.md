@@ -24,8 +24,8 @@ assignees: ''
 
 ## Acceptance Criteria
 <!-- Define the conditions that must be met for this feature to be considered done -->
-- [ ] AC001: 
-- [ ] AC002: 
+- [ ] AC001:
+- [ ] AC002:
 
 ## Out of Scope
 <!-- Explicitly list what this feature will NOT include -->

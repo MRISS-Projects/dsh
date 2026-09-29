@@ -1,0 +1,233 @@
+# CLAUDE.md
+
+Document Smart Highlights (DSH) is a Java 17 / Spring Boot multi-module Maven system that
+analyses documents and produces smart highlights. It currently runs on self-managed
+MongoDB / RabbitMQ / Solr. A migration to managed GCP services (Firestore, Pub/Sub, Vertex AI
+Search) is **proposed** in `specs/architecture/ADR-001-GCP-based-components.md` — status
+Proposed, no implementation work has started yet.
+
+## This file is a router
+
+Coding standards live in `.github/copilot-instructions.md` and `.github/copilot/rules/`.
+**Do not duplicate them here.** This file covers only what is specific to working as an
+agent in this repo: commands, branch rules, gates, and the development process.
+
+| I need... | Read |
+|---|---|
+| Coding standards, module guidelines, code-gen preferences | `.github/copilot-instructions.md` |
+| Java conventions | `.github/copilot/rules/java-conventions.md` |
+| API standards | `.github/copilot/rules/api-standards.md` |
+| Testing patterns | `.github/copilot/rules/testing-patterns.md` |
+| Who owns what | `.github/roles.md` |
+| Target architecture and migration phases | `specs/architecture/ADR-001-GCP-based-components.md` |
+| Current architecture | `specs/architecture/system-design.md` |
+| The development process, in full | `docs/process/ai-driven-development.md` |
+| Branching, CI/CD and release pipeline | `docs/devops/README.md` |
+| What we are building next | `specs/product/PRD.md` |
+
+## Modules
+
+| Module | Responsibility |
+|---|---|
+| `dsh-rest-api` | Public REST API, Spring Boot |
+| `dsh-doc-analyser` | Analysis engine; sub-modules for keyword extraction, top-sentence extraction, and doc processing (`dsh-doc-processor-worker`) |
+| `dsh-doc-indexer-worker` | Async indexing worker |
+| `dsh-data` | Shared models and persistence |
+| `dsh-solr` | Solr integration and custom plugins (proposed for replacement — see ADR-001) |
+| `dsh-test-dataset` | PDF fixtures used by tests |
+| `dsh-coverage-report` | Aggregates JaCoCo coverage across modules |
+
+## Commands
+
+The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages via your
+`~/.m2/settings.xml`.
+
+| Task | Command |
+|---|---|
+| Full build with tests | `mvn -B clean install` |
+| Fast build, no tests | `mvn -B -DskipTests install` |
+| Single module | `mvn -B -pl dsh-data -am install` |
+| Markdown lint | `markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' 'CLAUDE.md' '.claude/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json` |
+
+### Always log local Maven runs
+
+This is a 13-module reactor and a full build is slow. **Never run `mvn` locally as a silent
+blocking command.** Redirect to `.logs/` and print a `tail` command first, so progress is
+watchable:
+
+```bash
+mkdir -p .logs
+mvn -B clean install > .logs/mvn-clean-install.log 2>&1 &
+MVN_PID=$!
+echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
+wait $MVN_PID; echo "maven exit=$?"
+```
+
+Name the log after the command (`.logs/mvn-clean-install.log`, `.logs/mvn-validate.log`). Report the
+exit code explicitly — a backgrounded `mvn` without `wait` reports success no matter what.
+Never pipe `mvn` directly into `tail`; you lose the diagnostics and `$?` becomes the pipe's
+status. `.logs/` is gitignored; never commit a build log. In `ci.yml` do **not** redirect —
+GitHub Actions already captures the output.
+
+Upgrading the parent version is a deliberate, manual edit to the root `pom.xml`. CI never
+rebuilds `parent-poms`, and both Maven invocations in this repository's workflows pass `-U` —
+while the parent is a `SNAPSHOT`, tracking the current one on every run is the intended contract.
+The release wrappers build through reusable workflows in `parent-poms`, which set their own flags.
+See
+`docs/devops/README.md`, "Parent POM", for why, and for when to drop the flag.
+
+## Branch rules
+
+    master                      release automation only - NEVER branch from it
+    DEVELOP                     mainline integration          \
+    staging-X.Y.Z-SNAPSHOT-RC   release candidate              }- legal task-branch parents
+    X.Y.x                       hotfix line                   /
+    issue-<n>-<slug>            task branch
+
+A task branch is always cut from `DEVELOP`, an RC branch, or a hotfix branch, and merges
+back into the branch it came from. **Never branch from `master`. Never open a PR into
+`master`** — the release workflow puts code there.
+
+## Quality gates
+
+A story is not done until both pass, plus the third when it applies. The four test layers — what
+each is and when each is required — are in `.github/copilot/rules/testing-patterns.md`.
+
+1. All tests pass under `mvn -B clean install`. That runs unit tests only, under surefire. Integration
+   tests are `*IT` in an `integration` package, run under `mvn -B clean install -DintegrationTests` and on
+   every staging build, and are measured by `jacoco-it.exec` — never by the coverage gate below.
+   For `dsh-rest-api`, `-DintegrationTests` also starts MongoDB and RabbitMQ in Docker, so it needs a
+   running Docker daemon.
+2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
+   by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
+   module which produced no coverage data at all. **Both are inherited from
+   `MRISS-Projects/parent-poms`, not declared here — grepping this repository will not find them.**
+3. **The local integration gate, conditional.** When a story changes code that touches an external
+   system (MongoDB, RabbitMQ, Solr, or any other service outside the JVM) or a REST API entry point,
+   run `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd` after gate 1 passes. The
+   changed modules are the ones whose code changed; `-amd` adds every module that depends on them,
+   because a change to shared code (`dsh-data`) breaks only in its consumers. There is no `-am`,
+   deliberately: gate 1 has already installed every upstream module, and `-am` would run their
+   integration tests too.
+
+`.github/workflows/ci.yml` enforces gates 1 and 2 on every PR. `mvn -B clean install` runs them
+itself, because they are bound to `verify`; there is no second command to run for them. Gate 3 never
+runs on a pull request; it is local, and staging runs every integration test anyway. If coverage
+fails, add tests — never weaken the gate.
+
+**The gate always includes `clean`.** CI builds from a fresh checkout, and a local `target/` does
+not. Stale output skews coverage in either direction, and nothing warns you. On 2026-09-27 a plain
+`mvn -B install` failed `dsh-rest-api` at 0.50 line coverage: test classes had reached
+`target/classes`, and `jacoco:check` analysed them as untested production code. The same tree
+passed under `clean install`. The cause was not an IDE. `maven-remote-resources-plugin` registered
+`target/test-classes` as a main resource directory, so any build after tests had been compiled, a
+`site` run included, copied them over. `#104` fixed that with `attachToMain=false`. The rule stays:
+stale output can skew coverage in other ways, and a local result without `clean` is not evidence
+about CI.
+
+`-DskipTests`, `-Dmaven.test.skip=true`, `-Dmaven.test.skip.exec=true` and `-Djacoco.skip=true`
+disarm the data guard along with the thing they skip, so the documented fast build stays green.
+`-Dcoverage.data.check.skip=true` disables the guard on its own and exists for a module that is
+genuinely exempt.
+
+`-Denforcer.skip=true` is the wrong tool, in both directions. It does **not** disable the coverage
+guard: that execution sets `<skip>` explicitly, and explicit configuration beats the parameter's
+`enforcer.skip` user property. It **does** disable this repository's own
+`enforce-lowercase-artifact-id` rule in the root `pom.xml`, which sets no `<skip>`. So reaching for
+it silently drops a check you wanted while leaving the one you were trying to bypass armed. Both
+halves verified by running it.
+
+**Hard rules.** PowerMock is forbidden here and in parent-poms, enforced by the `ban-powermock`
+enforcer execution inherited from parent-poms; Mockito, `mockStatic` included, is the sanctioned tool.
+A unit test never starts a Spring context, enforced by `.github/scripts/check-unit-tests-context-free.sh`
+in CI. Both are stated in full in `.github/copilot/rules/testing-patterns.md`.
+
+## The development process
+
+Eight steps. Full detail in `docs/process/ai-driven-development.md`.
+
+| Step | Do this | Skill |
+|---|---|---|
+| 1 | Brainstorm, then update the PRD with waves | `dsh-plan-wave` |
+| 2 | Turn a PRD task into an INVEST story on GitHub | `dsh-new-story` |
+| 3 | Turn the story into a reviewed spec on the task branch | `dsh-story-spec` |
+| 4 | Build the spec with TDD — red first, then green | `dsh-build-story` |
+| 5 | Local code review | `dsh-ship-story` |
+| 6 | Commit, push, open the PR | `dsh-ship-story` |
+| 7 | PR review cycle — CI and reviewer findings, triaged, fixed or answered, until green with every thread resolved | `dsh-pr-cycle` |
+| 8 | After you merge and close the issue — reconcile the PRD against GitHub | `dsh-reconcile-prd` |
+
+Step 7 repeats. Each round is: read CI and the review comments, **triage them** (a finding may be
+stale, or right for the wrong reason, or propose a remedy that does not work), then one commit per
+fix and one push per round. It ends when every check is green *and* every review thread is
+resolved — not at green alone.
+
+`dsh-pr-cycle` is invocable on its own. A review round often lands days after the PR opened; you do
+not need to re-run steps 5 and 6 to handle it.
+
+Step 8 starts where your merge ends. Once the PR is merged and the issue closed,
+`specs/product/PRD.md` is stale in two ways: the issue it tracked is still listed as open, and
+any issue the story spun off along the way is not listed at all. `dsh-reconcile-prd` reconciles
+the document against GitHub — status, placement by milestone, drifted titles — and is likewise
+invocable on its own.
+
+**Two things Claude never does:** close a GitHub issue, or merge a pull request. Both are
+yours. Claude creates issues and PRs only after you approve the content.
+
+**Every new issue carries a label** (`bug`, `enhancement` or `task`), however it is raised. Until
+`MRISS-Projects/parent-poms#86` ships, `README.md`'s release notes silently drop unlabelled issues
+— the defect is `MRISS-Projects/maven-changes-plugin#36`. Remove this rule, and its twin in
+`dsh-new-story`, once DSH is pinned to a parent-poms release that includes `#86`.
+
+## Shared build infrastructure lives in another repo
+
+DSH inherits from `com.mriss.mriss-parent:products`, maintained in
+[`MRISS-Projects/parent-poms`](https://github.com/MRISS-Projects/parent-poms). That repo owns the
+build and release machinery: plugin versions and configuration, the coverage gate, the reusable
+release/stage/staging/hotfix workflows, and Maven site generation.
+
+**A lot of what looks like a DSH problem is actually a parent-poms problem.** Before changing build
+configuration here, check whether it belongs there. Symptoms that usually mean *there, not here*:
+Maven site generation, gh-pages publishing, plugin versions, release workflow behaviour, coverage
+thresholds.
+
+Example already in place: the 95% coverage gate is **not** in this repo. `jacoco:check`
+(`element=BUNDLE`, LINE and BRANCH ≥ 0.95, bound to `verify`) is inherited from parent-poms and runs
+on every module here. Grepping only this repo's poms will tell you it does not exist. It does.
+
+### The round trip for a shared change
+
+1. Open an issue in `parent-poms`. Plain issue — INVEST framing is not required there; it is
+   infrastructure, not product.
+2. Make sure parent-poms' next milestone is open as a `-SNAPSHOT`.
+3. Implement and test it there, against that `-SNAPSHOT`.
+4. Point this repo's root `pom.xml` at that `-SNAPSHOT` temporarily to validate end to end.
+5. Close the issue and release parent-poms — its release script already exists.
+6. Re-pin this repo's root `pom.xml` to the newly released version.
+
+**Before releasing parent-poms, clear the milestone being released.** If it still has open issues,
+fix those first. A release that leaves its own milestone half-done makes the version meaningless.
+
+#### The light round trip, for a small change
+
+Not every shared change earns an issue, a milestone and a release. A small, self-contained build
+change — one plugin execution, a property, a version bump in `pluginManagement` — takes a shorter
+path:
+
+1. Commit it directly on parent-poms `master`. No issue is opened there.
+2. `mvn -B install` locally in parent-poms, so the `-SNAPSHOT` in your local repository carries the
+   change and the consuming repo can be verified against it without `-U`.
+3. Dispatch parent-poms' `deploy.yml` with `release_type: snapshots`. **Deploy, not release** — no
+   version bump, no tag, no milestone to clear.
+4. Comment the resulting commit SHA on the originating issue in this repo.
+
+**Step 4 is the condition, not a courtesy.** The commit has no issue of its own, so that comment is
+the only record connecting a change in shared infrastructure to the reason it was made. Without it
+the change is untraceable. Skipping it means using the full round trip above instead.
+
+This path is for a change small enough to review in one sitting and to describe in one comment.
+Anything touching the release workflows, the coverage thresholds, or the profile structure is not
+small — use the full round trip.
+
+**Keep parent-poms' Claude setup lightweight.** It has a deliberately minimal `CLAUDE.md` and none
+of this repo's eight-step process. It is infrastructure. Do not port this process there.

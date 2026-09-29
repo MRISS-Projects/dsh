@@ -11,6 +11,7 @@ This directory contains detailed functional requirements documents for DSH featu
 ## Structure
 
 Each requirements document should cover:
+
 - Requirement ID and title
 - Description
 - Priority (Must Have / Should Have / Could Have / Won't Have)

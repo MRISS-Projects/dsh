@@ -21,6 +21,7 @@ import com.mriss.dsh.data.models.TransitionType;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,9 +44,9 @@ public class DocumentEnqueueResponseMessageHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        document = new Document(
-                new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf")),
-                "Russia-Trump: FBI chief Wray defends agency");
+        try (InputStream is = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"))) {
+            document = new Document(is, "Russia-Trump: FBI chief Wray defends agency");
+        }
         // Advance to QUEUED_FOR_INDEXING so SUCCESS/ERROR transitions work
         document.transitionStatus(TransitionType.NEUTRAL);
         handler.setDocument(document);

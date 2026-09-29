@@ -1,35 +1,29 @@
 package com.mriss.dsh.docindexer;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.boot.SpringApplication;
 
-
-@RunWith(SpringRunner.class)
-@SpringBootTest
+/**
+ * Unit tests for {@link DshDocIndexerApplication}, with no Spring context. The context itself is
+ * exercised by {@code integration.DshDocIndexerApplicationIT}.
+ */
 public class DshDocIndexerApplicationTest {
-	
-	final static Logger logger = LoggerFactory.getLogger(DshDocIndexerApplicationTest.class);
 
-	@BeforeClass
-	public static void setUp() throws Exception {
-		logger.info("This is a log message!!!");
-	}
-	
-	@AfterClass
-	public static void tearDown() throws Exception{
-		logger.info("This is a log message!!!");
-	}
+    @Test
+    public void main_delegatesToSpringApplicationRun() {
+        String[] args = {"arg1", "arg2"};
+        try (MockedStatic<SpringApplication> spring = Mockito.mockStatic(SpringApplication.class)) {
+            DshDocIndexerApplication.main(args);
+            spring.verify(() -> SpringApplication.run(DshDocIndexerApplication.class, args));
+        }
+    }
 
-	@Test
-	public void testSomething() throws Exception {
-		logger.info("This is a log message!!!");
-		DshDocIndexerApplication.main(new String[]{"arg1", "arg2"});		
-	}
-
+    @Test
+    public void constructor_isInstantiable() {
+        assertNotNull(new DshDocIndexerApplication());
+    }
 }

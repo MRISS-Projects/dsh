@@ -6,14 +6,16 @@ Use these prompt templates with GitHub Copilot Chat to generate consistent tests
 
 ## Unit Test for Service
 
-```
-As a Backend Developer (see /.github/roles.md), generate JUnit 5 unit tests for
+```text
+As a Backend Developer (see /.github/roles.md), generate JUnit 4 unit tests for
 [ServiceName] in the DSH project.
 
 Requirements:
 - Test class name: [ServiceName]Test
+- No Spring context: no @SpringBootTest, no slice annotation, no @MockBean
+  (see "Unit vs integration" in testing-patterns.md)
 - Follow Arrange/Act/Assert pattern
-- Use Mockito to mock: [list dependencies]
+- Use Mockito (@Mock, @InjectMocks) to mock: [list dependencies]
 - Test cases:
   - Happy path: [describe expected success scenario]
   - Validation failure: [describe invalid input scenario]
@@ -25,14 +27,34 @@ Requirements:
 
 ---
 
-## Controller Slice Test
+## Controller Unit Test (layer 1)
 
-```
-As a Backend Developer (see /.github/roles.md), generate @WebMvcTest tests for
+```text
+As a Backend Developer (see /.github/roles.md), generate unit tests for
 [ControllerName] in the DSH project.
 
 Requirements:
 - Test class name: [ControllerName]Test
+- Layer 1: every REST entry point gets a Mockito unit test, with no Spring context
+- Mockito over the controller (@Mock services, @InjectMocks controller), calling its methods
+  directly; where the HTTP mapping itself must be exercised, use
+  MockMvcBuilders.standaloneSetup(controller), which starts no context
+- Cover every branch of every endpoint method
+- Follow patterns in /.github/copilot/rules/testing-patterns.md
+```
+
+---
+
+## Controller Slice Test (layer 2)
+
+```text
+As a Backend Developer (see /.github/roles.md), generate @WebMvcTest tests for
+[ControllerName] in the DSH project.
+
+Requirements:
+- Test class name: [ControllerName]IT, in the module's integration package
+  (e.g. com.mriss.dsh.restapi.integration); a slice starts a Spring context, so it is a
+  layer-2 integration test
 - Mock service dependencies with @MockBean
 - Test cases for each endpoint:
   - [HTTP method] [path]: success (expected status [code])
@@ -45,18 +67,17 @@ Requirements:
 
 ---
 
-## Integration Test
+## Integration Test (layer 2)
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a @SpringBootTest
 integration test for [FeatureName] in the DSH project.
 
 Requirements:
-- Test class name: [FeatureName]IT (integration test naming convention)
-- Tag with @Tag("integration")
-- Use Testcontainers for [MongoDB/Solr] dependencies
+- Test class name: [FeatureName]IT, in the module's integration package
+  (e.g. com.mriss.dsh.restapi.integration); the name is the selector, no tag is needed
 - Test the full flow: [describe end-to-end scenario]
-- Clean up test data in @AfterEach
+- Clean up test data in @After
 - Reference acceptance criteria in /specs/requirements/acceptance-criteria/[feature].md
 - Use @SpringBootTest(webEnvironment = RANDOM_PORT)
 ```
@@ -65,32 +86,33 @@ Requirements:
 
 ## Repository Test
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a Spring Data repository
 test for [RepositoryName] in the DSH project.
 
 Requirements:
+- Test class name: [RepositoryName]IT, in the module's integration package
+  (a slice starts a Spring context, so it is an integration test)
 - Use @DataMongoTest or @DataJpaTest slice context
-- Use Testcontainers for the database
 - Test cases:
   - Save and retrieve entity
   - Custom query method: [method name] with [scenario]
   - Edge case: [describe edge case]
 - Use AssertJ assertions
-- Include @AfterEach cleanup
+- Include @After cleanup
 ```
 
 ---
 
 ## Performance Test
 
-```
+```text
 As a Backend Developer (see /.github/roles.md), generate a performance test for
 [OperationName] in the DSH project.
 
 Requirements:
-- Tag with @Tag("performance")
-- Measure execution time using [JUnit 5 @Timeout / Micrometer]
+- Mark with a JUnit 4 @Category(PerformanceTest.class)
+- Measure execution time using [JUnit 4 @Test(timeout = ...) / Micrometer]
 - Target: complete [operation] within [X] ms for [input size]
 - Test with dataset from /dsh-test-dataset/
 - Reference benchmark targets in /specs/testing/performance-benchmarks/

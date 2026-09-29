@@ -9,14 +9,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +50,7 @@ public class MongoDocumentDaoTest {
     @Before
     public void before() throws Exception {
         docTitleConstructor = new Document(
-                IOUtils.toByteArray(new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"))),
+                FileUtils.readFileToByteArray(new File("target/test-classes/pdf/bbc-news-1.pdf")),
                 "Russia-Trump: FBI chief Wray defends agency");
         docTitleConstructor.setId("test-id");
 
