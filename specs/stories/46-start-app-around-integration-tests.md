@@ -911,7 +911,7 @@ chose what to act on; each finding was checked against the code first.
 | Minor: container ports on `0.0.0.0` | `127.0.0.1:` bindings; `docker ps` showed `127.0.0.1:54669->27017/tcp` and `127.0.0.1:54671->5672/tcp` (`b5860207b`) |
 | Minor: duplicated test credentials; stale `mongo-init.js` comment | cross-referenced both ways; comment rewritten (`776da5f16`) |
 | Minor: reserved-port race; floating image tags | accepted, §4.4 |
-| Minor: dead `spring.data.mongodb.*` lines in `application.properties` | pre-existing; a follow-up issue if the human approves one |
+| Minor: dead `spring.data.mongodb.*` lines in `application.properties` | pre-existing; follow-up #140 |
 
 - **The skip wiring.** Before the change, `-DintegrationTests -DskipITs -DskipTests` logged `Start
   container` for both images, and `spring-boot:start` forked the application (`.logs/mvn-verify-skipits-red.log`).
@@ -938,6 +938,9 @@ Created on 2026-09-28 during the build:
   unauthenticated, with connection settings fixed at build time*, label `bug`, milestone
   `0.3.0-SNAPSHOT`. Not a follow-up: it records the defect that §4.2.2 fixes on this branch, and
   closes with #46's PR.
+- [#140](https://github.com/MRISS-Projects/dsh/issues/140): *Remove the unused
+  `spring.data.mongodb.*` settings from dsh-rest-api*, label `task`, no milestone. From the code
+  review, §7.7.
 
 ## 9. Acceptance criteria
 
