@@ -707,8 +707,7 @@ on `DEVELOP` (Wave 0). From that point, this block goes before anything else in 
 - `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
   task 5 below is written as its body, so no new issue is opened for that task.
 
-`#142`, which came from the same `#46` review, left this wave on 2026-09-28 for §5: it fixes the
-RabbitMQ enqueue path, and Wave 2 deletes that path.
+`#142`, which came from the same `#46` review, moved to Wave 2 on 2026-09-28.
 
 **Tasks:**
 
@@ -785,6 +784,16 @@ RabbitMQ enqueue path, and Wave 2 deletes that path.
 
 Milestone: `0.4.0-SNAPSHOT`. It runs on the existing persistence layer (`DocumentDao`) and on
 in-memory channels, with no RabbitMQ and no Solr. Every task depends on ADR-003.
+
+**Triaged issue:** `#142` — Enqueue acks are applied to every in-flight document, not the one they
+confirm. It came out of Copilot's review of PR #141. The defect lives in `DocumentQueueServiceImpl`
+and `DocumentEnqueueResponseMessageHandler`, which task 1 deletes, and the re-plan rules out fixing
+RabbitMQ code. But the defect is about behaviour, not about RabbitMQ: a document must end in its own
+status when submissions overlap. So it is not closed as won't-fix. Task 1's story carries the test
+`#142` describes as an acceptance criterion against the new flow: two overlapping submissions, one
+forced to fail, each ending in its own status. That story closes `#142`. It was briefly proposed
+for won't-fix on 2026-09-28, and moved here the same day instead. **0.3.0 ships with the defect**,
+knowingly: status is wrong for overlapping submissions until Wave 2.
 
 **Tasks:**
 
@@ -864,8 +873,8 @@ Milestone: `1.0.0-SNAPSHOT`. ADR-001 Phase 3, rewritten by ADR-003 for the flow 
 files to have all servers configured as docker containers to run tests and/or the application" —
 i.e., Docker containers for MongoDB/RabbitMQ/Solr. It is re-scoped to **Firestore and Pub/Sub
 emulators** for local and CI testing, which is why it sits here, beside the Pub/Sub work it will
-exercise. Wave 8's local mode reuses it. Its GitHub milestone is still `0.4.0-SNAPSHOT` and moves to
-`1.0.0-SNAPSHOT`.
+exercise. Wave 8's local mode reuses it. Its GitHub milestone moved from `0.4.0-SNAPSHOT` to
+`1.0.0-SNAPSHOT` on 2026-09-28.
 
 **Tasks:**
 
@@ -962,13 +971,6 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
 The *Superseded by* column was renumbered by the re-plan of 2026-09-28. The comments on both closed
 issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: Wave 3 and Wave 4 for
 `#65`, Wave 2 for `#47`.
-
-**`#142` is proposed for won't-fix, and is still open.** It fixes enqueue acks being applied to every
-in-flight document rather than the one they confirm. The defect is real, but it lives in
-`DocumentQueueServiceImpl`, which Wave 2 task 1 deletes along with the rest of the RabbitMQ enqueue
-path. The re-plan of 2026-09-28 rules out further work on RabbitMQ. Closing it as `not planned` is
-the owner's call. Its lesson carries over: in the new flow, a stage's acknowledgement must correlate
-to one document.
 
 `#52` is explicitly **not** in this table — see Wave 9 above for why it was reviewed and kept.
 
