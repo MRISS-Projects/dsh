@@ -39,11 +39,11 @@ point for experimentation and proofing.
 
 If anyone out there is interested in contribute or apply this project on a more
 product-oriented environment, please get in touch through the email:
-marcelo.riss@gmail.com.
+<marcelo.riss@gmail.com>.
 
-Wiki: https://github.com/MRISS-Projects/dsh/wiki
+Wiki: <https://github.com/MRISS-Projects/dsh/wiki>
 
-Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
+Project Development Documentation: <https://mriss-projects.github.io/dsh-docs/>
 
 ## Package/Folders Description
 
@@ -87,23 +87,23 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 ##### Download and Installation
 
- 1. Download an Eclipse Temurin JDK 17 from [https://adoptium.net/temurin/releases/?version=17](https://adoptium.net/temurin/releases/?version=17).
-    1. **IMPORTANT NOTE**: Download and install a **JDK, not a JRE**. On the
-       download page select Version **17 (LTS)**, your operating system and
-       architecture, and the **JDK** package type.
-             
- 2. Windows
-    1. There should be a .msi windows installer. Just follow the
-       instructions.
-       
- 3. Linux	
-    1. Download the .tar.gz file. After downloading it, uncompress it at a folder of your preference.
-    2. Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:
-    
-       ```
-       # replace jdk-17.0.20.1+1 with the directory the archive extracted to
-       ln -s jdk-17.0.20.1+1 java
-       ```
+1. Download an Eclipse Temurin JDK 17 from [https://adoptium.net/temurin/releases/?version=17](https://adoptium.net/temurin/releases/?version=17).
+   1. **IMPORTANT NOTE**: Download and install a **JDK, not a JRE**. On the
+      download page select Version **17 (LTS)**, your operating system and
+      architecture, and the **JDK** package type.
+
+2. Windows
+   1. There should be a .msi windows installer. Just follow the
+      instructions.
+
+3. Linux
+   1. Download the .tar.gz file. After downloading it, uncompress it at a folder of your preference.
+   2. Create a link. Open a command prompt, go to the JDK parent folder (the folder where you extract JDK into), and type:
+
+      ```bash
+      # replace jdk-17.0.20.1+1 with the directory the archive extracted to
+      ln -s jdk-17.0.20.1+1 java
+      ```
 
 ##### Setting environment variables
 
@@ -112,36 +112,37 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 1. Open the file `/home/[YOUR_USER]/.profile`. This file might be hidden.
    If it does not appear at your home folder, using the file explorer, type
    `Ctrl+h`. Go to the end of the file and add:
-       
-    ```
-    export JAVA_HOME=/your/jdk/parent/folder/java
+
+   ```bash
+   export JAVA_HOME=/your/jdk/parent/folder/java
    export PATH=$JAVA_HOME/bin:$PATH
    ```
 
-###### Windows 
+###### Windows
 
 1. Open Control Panel go to System, Advanced system settings, `Environment
-   Variables` button.     
+   Variables` button.
 2. At the System Variables section, click New.
 3. Set JAVA_HOME and point to the root of JDK folder.
-4. Search for the variable named <<Path>> in the list, click on it and press 
+4. Search for the variable named <<Path>> in the list, click on it and press
    Edit.
 5. Prepend the value with:
- 
-   ```
+
+   ```bat
    %JAVA_HOME%\bin;
    ```
 
 ##### Verifying the installation
 
 1. Open a command prompt and type:
- 
-   ```
+
+   ```bash
    java -version
    ```
+
 2. The result should be something like:
 
-    ```
+   ```text
    openjdk version "17.0.20.1" 2026-08-18
    OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)
    OpenJDK 64-Bit Server VM Temurin-17.0.20.1+1 (build 17.0.20.1+1, mixed mode, sharing)
@@ -149,65 +150,71 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 
 #### Maven
 
-1. Download maven **3.9.16** from [https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip](https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip)    
+1. Download maven **3.9.16** from [https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip](https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip)
 2. Unzip it on a folder of your preference
 3. Set environment variables.
-   1. Linux   
+   1. Linux
       1. Put it at your `$HOME/.profile` file
-             
-         ```
+
+         ```bash
          export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
          export PATH=$M2_HOME/bin:$PATH
          export MAVEN_OPTS='-Xmx1024m'
-         ```    
-      2. If you already have java set up, your `.profile`, it 
-         should look like this: 
-
          ```
+
+      2. If you already have java set up, your `.profile`, it
+         should look like this:
+
+         ```bash
          export JAVA_HOME=/your/jdk/parent/folder/java
          export M2_HOME=/path/to/where/you/extracted/maven/apache-maven-3.9.16
          export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
          export MAVEN_OPTS='-Xmx1024m'
          ```
-      3. Logout and login again.            
+
+      3. Logout and login again.
       4. Test by opening a terminal and typing:
-             
-         ```
+
+         ```bash
          mvn -version
          ```
+
       5. The result should be similar to:
-             
-         ```
+
+         ```text
          Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
          Maven home: /home/[YOUR_USER]/apps/apache-maven-3.9.16
          Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: /home/[YOUR_USER]/apps/jdk-17.0.20.1+1
          Default locale: en_US, platform encoding: UTF-8
          OS name: "linux", version: "6.8.0-45-generic", arch: "amd64", family: "unix"
          ```
-    2. Windows       
-       1. Open Control Panel go to System, Advanced system settings, **Environment Variables** button.
-       2. At the System Variables section, click New.
-       3. Set `M2_HOME` and point to the root of maven folder.
-       4. Search for the variable `Path` in the list, click on it and press Edit.
-       5. Put the maven bin folder right after java home:
-             
-          ```
-          %JAVA_HOME%\bin;%M2_HOME%\bin;
-          ```   
-       6. Set the variable `MAVEN_OPTS`.
-			 
-          ```
-          MAVEN_OPTS=-Xmx1024m
-          ```	 
-       7. The result should be similar to:
-             
-          ```
-          Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
-          Maven home: C:\data\apache-maven-3.9.16
-          Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.20.1+1
-          Default locale: en_US, platform encoding: Cp1252
-          OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
-          ```
+
+   2. Windows
+      1. Open Control Panel go to System, Advanced system settings, **Environment Variables** button.
+      2. At the System Variables section, click New.
+      3. Set `M2_HOME` and point to the root of maven folder.
+      4. Search for the variable `Path` in the list, click on it and press Edit.
+      5. Put the maven bin folder right after java home:
+
+         ```bat
+         %JAVA_HOME%\bin;%M2_HOME%\bin;
+         ```
+
+      6. Set the variable `MAVEN_OPTS`.
+
+         ```bat
+         MAVEN_OPTS=-Xmx1024m
+         ```
+
+      7. The result should be similar to:
+
+         ```text
+         Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+         Maven home: C:\data\apache-maven-3.9.16
+         Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.20.1+1
+         Default locale: en_US, platform encoding: Cp1252
+         OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
+         ```
 
 #### MongoDB and RabbitMQ
 

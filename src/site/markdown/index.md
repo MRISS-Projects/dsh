@@ -64,4 +64,3 @@ A web service is established in a way that:
 
 3. The sum of two criteria will define the score. The best scored sentences are returned
    along with their respective paragraph numbers.
-
