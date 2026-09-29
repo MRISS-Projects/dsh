@@ -57,7 +57,7 @@ the decisions that reordered the waves around building it.
 | 8 | `1.0.0-SNAPSHOT` |
 | 9 | `1.0.0-SNAPSHOT` |
 
-Wave 1's upstream step 0 is the exception: its DSH issue goes on `0.3.1-SNAPSHOT`, because it is
+Wave 1's upstream step 0 is the exception: its DSH issue, `#146`, goes on `0.3.1-SNAPSHOT`, because it is
 built on the `0.3.x` hotfix line and ships as the `0.3.1` release, not in `0.4.0`.
 
 `0.5.0-SNAPSHOT` does not exist in GitHub yet; the others do. It is created when Wave 3's first
@@ -671,8 +671,8 @@ the wave, in order:
       release.
    2. Move `parent-poms#95` and `#96` from `3.10.0-SNAPSHOT` to `3.9.2-SNAPSHOT`.
    3. Fix both, snapshot-deploy `3.9.2-SNAPSHOT`, and pin DSH's root `pom.xml` **on `0.3.x`** to
-      it. The DSH change is a task branch cut from `0.3.x` and merged back into it, with its issue
-      on DSH milestone `0.3.1-SNAPSHOT`.
+      it. The DSH change is a task branch cut from `0.3.x` and merged back into it. Its issue is
+      `#146`, on DSH milestone `0.3.1-SNAPSHOT`, and it carries sub-steps 3 to 6 on the DSH side.
    4. Dispatch `hotfix.yml` with `branch_name=0.3.x` and `dry_run=true`. It must show the test and
       coverage reports and the badge generated where the site is built.
    5. Rename the milestone to `3.9.2`, release it, and re-pin `0.3.x` to the released `3.9.2`:
