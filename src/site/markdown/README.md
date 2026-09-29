@@ -8,33 +8,34 @@ ${project.build.version}
 
 ## Introduction
 
-Welcome to **DSH - Document Smart Highlights**. Document Smart Hightlights aims 
-to provide a set of web services to allow uploading
-of PDF and HTML files and return a list of keywords and most relevant sentences.
-This system applies state of the art algorithms, using NLP techniques to produce
-both the list of keywords and most relevant sentences. This last one, using
-automatic document summarization techniques. More details at the [wiki](https://github.com/MRISS-Projects/dsh/wiki).
+Welcome to **DSH - Document Smart Highlights**. Document Smart Highlights aims to provide web
+services that accept PDF and HTML files and return a list of keywords and the most relevant
+sentences, extracted with NLP techniques; the sentences through automatic document summarization.
+More details at the [wiki](https://github.com/MRISS-Projects/dsh/wiki).
 
-This project is distributed as source code. In order to generate the application
-to run it is needed to install the pre-requisites and compile. No binaries distribution
-is provided for now. The final application is a java `.WAR` file which can be]
-dropped in a standard java servlet container.
+**What 0.3.0 does today.** It accepts a PDF document, stores it in a NoSQL store, puts its id on a
+queue for indexing, and reports the document's processing status. Nothing consumes that queue
+yet, so 0.3.0 does not index documents and does not extract keywords or sentences.
+
+This project is distributed as source code; no binary distribution is provided yet. Building it
+produces the REST API as an executable Spring Boot jar, which runs on its own, with no separate
+server to install.
 
 The goals for this project are basically two:
 
-1. Implement a NLP based system to extract relevant information from PDF files in
-a potentially scalable fashion by using NoSql databases and Queues. This infrastructure
-stores requests and chain a worflow of operations (workers) which will do the operations
-of keyword and relevant sentences extraction. All provided as a web service REST API.
+1. Implement an NLP based system to extract relevant information from PDF files in a potentially
+   scalable fashion, using a NoSQL store and queues. This infrastructure stores requests and chains
+   a workflow of operations (workers) that extract keywords and relevant sentences, all provided as
+   a REST API.
 
 2. Learn concepts of NLP associated with scaleable cloud based REST API building. The
 technology used is java based, so as another goal here we can mention the build
-learning process using [Spring Framework](http://spring.io/) in order to build the 
+learning process using [Spring Framework](http://spring.io/) in order to build the
 API and infrastructure.
 
 As part of the goals is learning about technologies, comments and contributions are
 welcome. However, this is not a final product, application or concept. Just a
-point for experimentation and proofing. 
+point for experimentation and proofing.
 
 If anyone out there is interested in contribute or apply this project on a more
 product-oriented environment, please get in touch through the email:
@@ -43,28 +44,32 @@ marcelo.riss@gmail.com.
 Wiki: https://github.com/MRISS-Projects/dsh/wiki
 
 Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
- 
+
 ## Package/Folders Description
 
-* **dsh-data**: data models definition for a **Document**, **Keyword** and **RelevantSentence**.
-  Additionally this module defines a [workflow](https://github.com/MRISS-Projects/dsh/wiki/Workflow) to map the status progress 
-  of a document processing request.
-* **dsh-doc-analyzer**:  This is a container module to have the keyword and relevant sentences
-  extractor modules. One extra module to dequeue documents to be analyzed and
-  call the extractors.
-  * **dsh-doc-processor-worker**: The keyword extraction is executed by setting scores to 
-    each term in the document's text.
-  * **dsh-keyword-extractor**: The keyword extraction is executed by setting scores to each term in
-    the document's text.
-  * **dsh-top-sentences-extractor**: The extraction of top sentences is achieved applying typical [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization) techniques like extractive summarization or [key phrase extraction](https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction).
-* **dsh-doc-indexer-worker**: dequeues a document id from a queue, gets the document from the
-  database and send it for indexing at [SOLR](https://lucene.apache.org/solr/). 
-  Besides indexing, this module will extract the text,
-  paragraphs, sentences on each paragraph and terms on each sentence.
-* **dsh-rest-api**: this module is the real application to be deployed or installed on a
-  servlet container. It is the entry point for document submission, document processing
-  status querying and document processing results (keywords and relevant sentences) querying.
-* **dsh-test-dataset**: default and common data set of files used for automated testing.
+* **dsh-test-dataset**: the PDF files used as fixtures by automated tests.
+* **dsh-data**: the data models, **Document**, **Keyword** and **Sentence**, and the
+  [workflow](https://github.com/MRISS-Projects/dsh/wiki/Workflow) of statuses a document moves
+  through while it is processed. Also the MongoDB persistence of documents.
+* **dsh-rest-api**: the application. A Spring Boot jar exposing the REST API: document submission
+  and processing status. Querying the results (keywords and relevant sentences) is not available
+  yet.
+* **dsh-solr**: two Solr plugins, a numbers filter and a term vector component that orders terms,
+  and a `solrconfig.xml`. Nothing in 0.3.0 runs Solr, and replacing it is proposed in
+  [ADR-001](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-001-GCP-based-components.md).
+* **dsh-doc-indexer-worker**: a Spring Boot application holding only its main class so far. Its job
+  will be to take a document id off the indexing queue, read the document from the database, send
+  it to the indexer, and split its text into paragraphs, sentences and terms.
+* **dsh-doc-analyser**: a parent module grouping the analysis modules below.
+  * **dsh-doc-processor-worker**: an empty Spring Boot application for now; the plan is for it to
+    take indexed documents off a queue and run both extractors on them.
+  * **dsh-keyword-extractor**: not implemented yet. It will score each term of a document with
+    combinations of TF/IDF and return the best ranked terms as keywords.
+  * **dsh-top-sentences-extractor**: not implemented yet; planned to rank sentences with
+    [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization) techniques
+    and return the most relevant ones.
+* **dsh-coverage-report**: aggregates the test coverage of every module into one report and the
+  coverage badge.
 
 ## Installation
 
