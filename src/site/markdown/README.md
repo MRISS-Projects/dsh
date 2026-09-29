@@ -462,6 +462,11 @@ at windows) folder and add a default activated profile similar to this:
 
 Or add the `properties` section at any default activated profile already present at `settings.xml` file.
 
+The application authenticates to MongoDB as `mongo.user`, against the `dsh` database, through a
+connection string: `mongodb://<user>:<password>@<host>:<port>/dsh`. A password containing `@`, `:`,
+`/`, `?`, `#` or `%` must be percent-encoded in `mongo.password` (`@` as `%40`, for example), or the
+connection string breaks. Any value can be overridden at runtime, e.g. `--mongo.port=27018`.
+
 ### Tomcat Admin User Configuration
 
 Stop Tomcat if it is already started, and edit the file `TOMCAT_HOME/conf/tomcat-users.xml`.

@@ -27,7 +27,7 @@ Requirements:
 
 ---
 
-## Controller Unit Test
+## Controller Unit Test (layer 1)
 
 ```text
 As a Backend Developer (see /.github/roles.md), generate unit tests for
@@ -35,15 +35,17 @@ As a Backend Developer (see /.github/roles.md), generate unit tests for
 
 Requirements:
 - Test class name: [ControllerName]Test
-- No Spring context: Mockito over the controller (@Mock services, @InjectMocks controller),
-  calling its methods directly
+- Layer 1: every REST entry point gets a Mockito unit test, with no Spring context
+- Mockito over the controller (@Mock services, @InjectMocks controller), calling its methods
+  directly; where the HTTP mapping itself must be exercised, use
+  MockMvcBuilders.standaloneSetup(controller), which starts no context
 - Cover every branch of every endpoint method
 - Follow patterns in /.github/copilot/rules/testing-patterns.md
 ```
 
 ---
 
-## Controller Slice Test
+## Controller Slice Test (layer 2)
 
 ```text
 As a Backend Developer (see /.github/roles.md), generate @WebMvcTest tests for
@@ -51,7 +53,8 @@ As a Backend Developer (see /.github/roles.md), generate @WebMvcTest tests for
 
 Requirements:
 - Test class name: [ControllerName]IT, in the module's integration package
-  (a slice starts a Spring context, so it is an integration test)
+  (e.g. com.mriss.dsh.restapi.integration); a slice starts a Spring context, so it is a
+  layer-2 integration test
 - Mock service dependencies with @MockBean
 - Test cases for each endpoint:
   - [HTTP method] [path]: success (expected status [code])
@@ -64,7 +67,7 @@ Requirements:
 
 ---
 
-## Integration Test
+## Integration Test (layer 2)
 
 ```text
 As a Backend Developer (see /.github/roles.md), generate a @SpringBootTest

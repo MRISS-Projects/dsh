@@ -49,14 +49,16 @@
 					<include>**</include>
 				</includes>
 				<excludes>
-					<exclude>applicationContext.xml</exclude>
+					<exclude>dshApplicationContext.xml</exclude>
 				</excludes>
 				<filtering>true</filtering>
 			</resource>
+			<!-- #46: unfiltered, so its placeholders resolve at runtime from mongo.properties and the
+			     Environment. It used to name applicationContext.xml, which no longer exists. -->
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
-					<include>applicationContext.xml</include>
+					<include>dshApplicationContext.xml</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>

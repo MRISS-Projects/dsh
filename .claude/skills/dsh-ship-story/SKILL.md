@@ -10,11 +10,26 @@ follow on the open pull request are step 7 — see `dsh-pr-cycle`.
 
 ## Step 5 - review
 
-1. Invoke `superpowers:requesting-code-review`, or run `/code-review` for the diff.
-2. **Stop. The human reads the findings.**
-3. For the findings you act on, invoke `superpowers:receiving-code-review` - verify each
+1. **Run the local integration gate if it applies** — gate 3 in CLAUDE.md's *Quality gates*. It
+   applies when the diff touches code that talks to an external system (MongoDB, RabbitMQ, Solr, or
+   any other service outside the JVM) or a REST API entry point. The changed modules are the ones
+   whose code changed. After the root `mvn -B clean install` has passed:
+
+       mkdir -p .logs
+       mvn -B clean verify -DintegrationTests -pl <changed modules> -amd > .logs/mvn-clean-verify-it.log 2>&1 &
+       MVN_PID=$!
+       echo "Monitor with:  tail -f .logs/mvn-clean-verify-it.log"
+       wait $MVN_PID; echo "maven exit=$?"
+
+   `-amd` adds the modules that depend on the changed ones, where shared code breaks. No `-am`:
+   the root build already installed the upstream modules. It needs a running Docker
+   daemon when `dsh-rest-api` is affected. A red run goes back through `dsh-build-story`. If the
+   gate does not apply, say so and why in the hand-off.
+2. Invoke `superpowers:requesting-code-review`, or run `/code-review` for the diff.
+3. **Stop. The human reads the findings.**
+4. For the findings you act on, invoke `superpowers:receiving-code-review` - verify each
    claim against the code rather than agreeing on reflex.
-4. Fixes go back through `dsh-build-story` (TDD still applies to review fixes).
+5. Fixes go back through `dsh-build-story` (TDD still applies to review fixes).
 
 ## Step 6 - verify, push, PR
 
@@ -26,7 +41,7 @@ Invoke `superpowers:verification-before-completion` first. Evidence before asser
     echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
-That one command is the whole gate. `jacoco:check` enforces 95% LINE and BRANCH per module and
+That one command is the whole of gates 1 and 2; gate 3 ran in step 5. `jacoco:check` enforces 95% LINE and BRANCH per module and
 `enforce-coverage-data-exists` rejects a module that produced no coverage data at all; both are
 bound to `verify` and inherited from `parent-poms`, so there is no second command to run and
 nothing to find by grepping this repository.

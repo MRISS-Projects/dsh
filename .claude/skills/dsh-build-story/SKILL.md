@@ -32,12 +32,17 @@ Log the build and give the human something to watch - see "Always log local Mave
     echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
-That one command is the whole gate. Every module with production sources holds at least 95% LINE
+That one command is the whole of gates 1 and 2. Every module with production sources holds at least 95% LINE
 and 95% BRANCH coverage, enforced by `jacoco:check`, and a module that produced no coverage data at
 all fails `enforce-coverage-data-exists` - the companion guard that exists because `jacoco:check`
 silently skips a module with no exec data. Both are bound to `verify` and inherited from
 `parent-poms`, so the build fails by itself - there is no second command to run, and nothing to
 find by grepping this repository. All tests pass. A red build is not "done with a known issue".
+
+Gate 3 in CLAUDE.md's *Quality gates* is conditional:
+when the story touches an external system or a REST API entry point, also run
+`mvn -B clean verify -DintegrationTests -pl <changed modules> -amd`, logged the same way, after it.
+A red gate-3 run sent back here from `dsh-ship-story` is fixed here and re-run here.
 
 If the coverage gate fails, add tests. Weakening the gate to make it pass is falsifying it - if a
 drop is genuinely justified, say so out loud and let the human decide.

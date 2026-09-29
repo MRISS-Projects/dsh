@@ -90,19 +90,30 @@ back into the branch it came from. **Never branch from `master`. Never open a PR
 
 ## Quality gates
 
-A story is not done until both pass:
+A story is not done until both pass, plus the third when it applies. The four test layers — what
+each is and when each is required — are in `.github/copilot/rules/testing-patterns.md`.
 
 1. All tests pass under `mvn -B clean install`. That runs unit tests only, under surefire. Integration
    tests are `*IT` in an `integration` package, run under `mvn -B clean install -DintegrationTests` and on
    every staging build, and are measured by `jacoco-it.exec` — never by the coverage gate below.
+   For `dsh-rest-api`, `-DintegrationTests` also starts MongoDB and RabbitMQ in Docker, so it needs a
+   running Docker daemon.
 2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
    by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
    module which produced no coverage data at all. **Both are inherited from
    `MRISS-Projects/parent-poms`, not declared here — grepping this repository will not find them.**
+3. **The local integration gate, conditional.** When a story changes code that touches an external
+   system (MongoDB, RabbitMQ, Solr, or any other service outside the JVM) or a REST API entry point,
+   run `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd` after gate 1 passes. The
+   changed modules are the ones whose code changed; `-amd` adds every module that depends on them,
+   because a change to shared code (`dsh-data`) breaks only in its consumers. There is no `-am`,
+   deliberately: gate 1 has already installed every upstream module, and `-am` would run their
+   integration tests too.
 
-`.github/workflows/ci.yml` enforces both gates on every PR. `mvn -B clean install` runs them itself,
-because they are bound to `verify`; there is no second command to run. If coverage fails, add
-tests — never weaken the gate.
+`.github/workflows/ci.yml` enforces gates 1 and 2 on every PR. `mvn -B clean install` runs them
+itself, because they are bound to `verify`; there is no second command to run for them. Gate 3 never
+runs on a pull request; it is local, and staging runs every integration test anyway. If coverage
+fails, add tests — never weaken the gate.
 
 **The gate always includes `clean`.** CI builds from a fresh checkout, and a local `target/` does
 not. Stale output skews coverage in either direction, and nothing warns you. On 2026-09-27 a plain

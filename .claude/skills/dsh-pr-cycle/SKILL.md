@@ -88,10 +88,14 @@ Run the local gate first, then push once:
     echo "Monitor with:  tail -f .logs/mvn-clean-install.log"
     wait $MVN_PID; echo "maven exit=$?"
 
-That one command is the whole gate. `jacoco:check` enforces 95% LINE and BRANCH per module and
+That one command is the whole of gates 1 and 2. `jacoco:check` enforces 95% LINE and BRANCH per module and
 `enforce-coverage-data-exists` rejects a module that produced no coverage data at all; both are
 bound to `verify` and inherited from `parent-poms`, so there is no second command to run and
 nothing to find by grepping this repository.
+
+If the round's fixes touch an external system or a REST API entry point, gate 3 in CLAUDE.md's
+*Quality gates* applies too: `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd`,
+logged the same way, after the command above. CI never runs it.
 
 Batching the round into one push keeps CI runs proportional to review rounds rather than to
 individual fixes.

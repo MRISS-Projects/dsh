@@ -155,13 +155,14 @@ required change has been made and re-reviewed until it is.
 **Skill.** `dsh-ship-story`, which hands off to `verification-before-completion`.
 
 **Artifact.** A pushed branch and an open pull request, with the first CI run started.
-`.github/workflows/ci.yml` enforces the quality gates defined in `CLAUDE.md` — all tests passing
+`.github/workflows/ci.yml` enforces quality gates 1 and 2 defined in `CLAUDE.md` — all tests passing
 under `mvn -B clean install`, and 95% LINE and BRANCH coverage per module from the `jacoco:check`
 inherited from `parent-poms`, together with the `enforce-coverage-data-exists` guard that fails a
 module which produced no coverage data at all — on every PR. `mvn -B clean install` runs unit tests only,
 under surefire. Integration tests are `*IT` in an `integration` package, run under
 `mvn -B clean install -DintegrationTests` and on every staging build, and are measured by `jacoco-it.exec`,
-never by the coverage gate. CI also fails any unit test that starts a Spring context.
+never by the coverage gate. CI also fails any unit test that starts a Spring context. Gate 3, the
+conditional local integration gate, never runs on a pull request: `dsh-ship-story` runs it in step 5.
 
 **Hard stop.** The owner approves the PR title, body and base branch **before** the push. `--base`
 is never `master`; if the story spec's front matter says `master`, something went wrong in step 3.
