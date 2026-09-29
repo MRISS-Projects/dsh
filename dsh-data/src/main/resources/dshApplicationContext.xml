@@ -12,7 +12,9 @@
 	<context:property-placeholder location="classpath:/mongo.properties" />
 
 	<!-- #46: a connection string, not the old `credentials` attribute. spring-data-mongodb 3.x's parser
-	     reads only `credential`, so `credentials` was dropped and the client connected unauthenticated. -->
+	     reads only `credential`, so `credentials` was dropped and the client connected unauthenticated.
+	     The values go into a URI unescaped: a mongo.password containing @ : / ? # or % must be
+	     percent-encoded where it is set. -->
 	<mongo:mongo-client id="mongoClient"
 		connection-string="mongodb://${mongo.user}:${mongo.password}@${mongo.host}:${mongo.port}/dsh"/>
 
