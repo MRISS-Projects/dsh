@@ -76,18 +76,10 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
 ### Pre-requisites
 
 * Java 17 (Temurin)
-
 * Maven 3.9.16
-
-* MongoDB 3.4 (windows 10)
-
-* MongoDB 4.0.6 (Ubuntu 18.04 LTS)
-
-* RabbitMQ 3.6.14 (windows 10)
-
-* RabbitMQ 3.7.14 (Ubuntu 18.04 LTS)
-
-* Tomcat 8.0.X
+* Docker, to run MongoDB and RabbitMQ, and for the integration build
+* MongoDB 6, run from the `mongo:6` image
+* RabbitMQ 3, run from the `rabbitmq:3` image
 
 ### Installing/Building the Application
 
@@ -217,162 +209,41 @@ Project Development Documentation: https://mriss-projects.github.io/dsh-docs/
           OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
           ```
 
-#### MongoDB
+#### MongoDB and RabbitMQ
 
-##### Windows
+Run both from the images the integration build is verified against:
 
-1. Install MongoDB using the instructions at [this link](https://docs.mongodb.com/v3.4/tutorial/install-mongodb-on-windows/)
-2. Enable security following general guidelines at [this link](https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332)
-3. Start MongoDB:
+```bash
+docker run -d --name dsh-mongo -p 127.0.0.1:27017:27017 mongo:6
+docker run -d --name dsh-rabbitmq -p 127.0.0.1:5672:5672 rabbitmq:3
+```
 
-    ```
-    "C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe"
-    ```
-4. In another prompt connect to MongoDB
+MongoDB takes a few seconds to start. Then create the user the application connects to it as, with
+read and write access to the `dsh` database. Choose your own password:
 
-   ```
-   "C:\Program Files\MongoDB\Server\3.4\bin\mongo.exe"
-   ```
-5. Create super user
+```bash
+docker exec dsh-mongo mongosh dsh --quiet --eval \
+  'db.createUser({user: "dshuser", pwd: "YOUR-DSH-PASSWORD", roles: [{role: "readWrite", db: "dsh"}]})'
+```
 
-   ```
-   $ use admin
-   $ db.createUser(
-   {
-     user: "superAdmin",
-     pwd: "[your admin password]",
-     roles: [ { role: "root", db: "admin" } ]
-    })   
-   ```
-6. Disconnect and re-connect at MongoDB as super user:
+RabbitMQ needs no set-up: the application connects as its default `guest` user. Stop both with
+`docker stop dsh-mongo dsh-rabbitmq`, and start them again with `docker start`; the MongoDB user
+lives in the container, so it survives a restart but not a `docker rm`.
 
-   ```
-   connect-mongo-super-user.bat [your admin password]
-   ```
-7. Create user access (readWrite) for specific dsh database
-
-   ```
-   $ use dsh
-   $ db.createUser(
-     {
-      user: "dshuser",
-      pwd: "[your password]",
-      roles: [ "readWrite"]
-     })   
-   ```
-8. Disconnect and re-connect at MongoDB as specific user:
-
-   ```
-   connect-mongo.bat [your dshuser passoword]
-   ```
-   
-##### Linux Ubuntu 18.04 LTS
-
-1. Install MongoDB following the instructions at [https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
-2. Enable security following general guidelines at [this link](https://medium.com/@raj_adroit/mongodb-enable-authentication-enable-access-control-e8a75a26d332)
-3. Start MongoDB service
-
-   ```
-   sudo service mongod start
-   ```
-4. In another prompt connect to MongoDB
-
-   ```
-   mongo --host 127.0.0.1:27017
-   ```
-5. Create super user
-
-   ```
-   $ use admin
-   $ db.createUser(
-   {
-     user: "superAdmin",
-     pwd: "[your admin password]",
-     roles: [ { role: "root", db: "admin" } ]
-    })   
-   ```
-6. Disconnect and re-connect at MongoDB as super user:
-
-   ```
-   ./connect-mongo-super-user.sh [your admin password]
-   ```
-7. Create user access (readWrite) for specific dsh database
-
-   ```
-   $ use dsh
-   $ db.createUser(
-     {
-      user: "dshuser",
-      pwd: "[your password]",
-      roles: [ "readWrite"]
-     })   
-   ```
-
-8. Disconnect and re-connect at MongoDB as specific user:
-
-   ```
-   ./connect-mongo.sh [your dshuser passoword]
-   ```
-
-#### RabitMQ
-
-##### Windows
-
-1. Follow the instructions at [http://www.rabbitmq.com/install-windows.html](http://www.rabbitmq.com/install-windows.html)
-2. Enable the ports mentioned at the link above at the firewall.
-3. Enable the management plugin:
-
-   ```
-   rabbitmq-plugins.bat enable rabbitmq_management
-   rabbitmq-service.bat stop  
-   rabbitmq-service.bat remove	
-   rabbitmq-service.bat install  
-   rabbitmq-service.bat start   
-   ``` 
-4. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
-
-##### Linux Ubuntu 18.04 LTS
-
- 1. Follow the instructions at [https://www.rabbitmq.com/install-debian.html](https://www.rabbitmq.com/install-debian.html)
-     1. As Ubunt has a 3.5.x version it is better to download the .deb for version 3.7.x from link above
-     1. Or follow the instructions at the link and add RabbitMQ Ubuntu repositories before to run the `apt-get install`.
-2. Enable the management plugin:
-
-   ```
-   sudo rabbitmq-plugins enable rabbitmq_management
-   service rabbitmq-server stop  
-   service rabbitmq-server start
-   ``` 
-3. Test it with `http://localhost:15672/mgmt`. User: guest. Password: guest.
- 
 #### Building From Sources
 
-1. In order to build, both MongoDB and RabbitMQ services should be running. 
-2. Maven development user settings should be correctly configured — see
-   [Maven Settings for GitHub Packages](#maven-settings-for-github-packages) below, which is
-   what lets Maven resolve the parent POM `com.mriss.mriss-parent:products`.
-3. At the root dsh folder type:
+1. Configure Maven's user settings as described in
+   [Maven Settings for GitHub Packages](#maven-settings-for-github-packages) below, which is what
+   lets Maven resolve the parent POM `com.mriss.mriss-parent:products`.
+2. At the root dsh folder type:
 
-```
-mvn clean install
-```
-#### Tomcat
+   ```bash
+   mvn clean install
+   ```
 
-##### Windows
-
-1. Download Tomcat 8.0.X 32-bit/64-bit Windows Service Installer at 
-   [https://tomcat.apache.org/download-80.cgi](https://tomcat.apache.org/download-80.cgi). 
-   This will install Tomcat as a windows service.
-2. Start Tomcat windows service using windows services application.
-3. Look at the address: http://localhost:8080 
-
-##### Linux Ubuntu 19.04 LSTS
-
-1. Download Tomcat 8.0.x .zip or .tar.gz file at 
-   [https://tomcat.apache.org/download-80.cgi](https://tomcat.apache.org/download-80.cgi). 
-2. Unpack the contents on a folder.
-3. Go to the `bin` folder and type `./startup.sh`.
-4. Look at the address: http://localhost:8080 
+This runs the unit tests only, and needs neither MongoDB nor RabbitMQ running. The integration
+tests run with `mvn clean install -DintegrationTests`, which starts its own MongoDB and RabbitMQ
+containers, so it needs a running Docker daemon.
 
 ## Configuration
 
