@@ -138,13 +138,39 @@ unfixed workflow is the failing test, and T3's is green. Every local Maven run f
       written. Record the run link and the lines against AC007.
       [Run 36614968935](https://github.com/MRISS-Projects/dsh/actions/runs/36614968935), at `c70d50ab6`
       against parent-poms `f7600ffe`, is green. Findings in §7.4.
-- [ ] **T2 — pin to `3.9.2-SNAPSHOT`.** After P3. Confirm that it resolves:
+- [x] **T2 — pin to `3.9.2-SNAPSHOT`.** After P3. Confirm that it resolves:
       `mvn -B -U -N help:evaluate -Dexpression=project.parent.version -DforceStdout`, logged to
       `.logs/mvn-help-evaluate.log`. Edit §5.1. Run gate 1, `mvn -B -U clean install`, logged to
       `.logs/mvn-clean-install.log`, and report its exit code. Commit
       `build(#146): pin the parent to 3.9.2-SNAPSHOT`.
-- [ ] **T3 — green.** Push. Dispatch §7.1 on this branch. Check §7.2. Record the run link against
+      `e36d7c612`. It resolved `products-3.9.2-20260929.220215-2.pom`, P3's build from parent-poms
+      `master` at `7cfc6d30`, which carries `release.forked.test.arguments`. Gate 1: `maven exit=0`,
+      every module's coverage checks met.
+- [x] **T3 — green.** Push. Dispatch §7.1 on this branch. Check §7.2. Record the run link against
       AC001 and AC002, and hand it to the parent-poms side for §4.3.
+      [Run 36638594571](https://github.com/MRISS-Projects/dsh/actions/runs/36638594571), green. The
+      parent-poms fix had already been proven against its PR branch before the merge (`parent-poms#97`
+      review round 1, spec Tasks 7 and 8), so this is the confirming run against merged `master`.
+      §7.2 point by point:
+  1. Prepare's fork ran 146 tests: 127 unit and 19 integration, with 13
+     `failsafe:integration-test`. That fork is the tree the site step builds from, since
+     `parent-poms#95` moved the site to the workspace, detached at the tag. The site step ran no
+     tests.
+  2. The site step logged 21 × `Loading execution data file` (`jacoco.exec` ×8,
+     `jacoco-it.exec` ×5). Its only 5 skips are the modules without production classes. T1 had
+     13 skips and no loads.
+  3. `jacoco-badge:badge` ran in `dsh-coverage-report`, and the scm-publish set lists
+     `addition releases/products/dsh/dsh-coverage-report/badges/jacoco.svg`.
+  4. `all 6 declared write point(s) announced exactly once`, and
+     `the remote is byte-for-byte as it was before the run`.
+  5. `merge-to-develop: carried 1 path(s) from v0.3.1 into DEVELOP; 0 lost`.
+  6. The parent was `3.9.2-SNAPSHOT`. The log has no download line for it: its first resolution
+     is in `Read hotfix release number`'s `-q` `help:evaluate`. The proof is item 1: failsafe runs
+     only under `-DintegrationTests`, which reaches prepare's fork only through `3.9.2-SNAPSHOT`'s
+     `release.forked.test.arguments`. T1, on `3.9.0`, had no failsafe execution.
+
+  Remote before and after: `master` `7647692ab`, `DEVELOP` `b3a65eaa9`, `0.3.x` `6932be686`,
+  `gh-pages` `b818352ed`, and no `v0.3.1` tag.
 - [ ] **T4 — re-pin to `3.9.2`.** After P4. Edit §5.1. Run gate 1 again (`-U`, logged). Commit
       `build(#146): pin the parent to the released 3.9.2`. Record AC003.
 - [ ] **T5 — ship.** `dsh-ship-story`, then `dsh-pr-cycle`, into `0.3.x`. You merge.
@@ -244,10 +270,14 @@ spec. Remote refs before the run: `master` `7647692ab`, `DEVELOP` `b3a65eaa9`, `
 
 From the issue:
 
-- [ ] **AC001** — Before the rehearsal, this branch's root `pom.xml` names `3.9.2-SNAPSHOT`, which is
+- [x] **AC001** — Before the rehearsal, this branch's root `pom.xml` names `3.9.2-SNAPSHOT`, which is
       deployed to GitHub Packages before the pin. Why: §4.1 (1). The fix line is parent-poms `master`
       re-versioned, and `3.9.2` is released whether or not the fix touches a POM. Evidence: P3's
       deploy run and T2's commit.
+      P3: [run 36636958954](https://github.com/MRISS-Projects/parent-poms/actions/runs/36636958954). T2:
+      `e36d7c612`. As it turned out, the fix does touch a POM (`products/pom.xml`,
+      `release.forked.test.arguments`), so the pin is load-bearing and not only a matter of
+      consistency.
 - [ ] **AC002** — A `hotfix.yml` dispatch on `0.3.x` with `dry_run=true` (T6) meets every point of §7.2.
       The same check on this branch against `3.9.2-SNAPSHOT` (T3) precedes it.
 - [ ] **AC003** — Before the real release, the root `pom.xml` names the released `3.9.2`, with no
