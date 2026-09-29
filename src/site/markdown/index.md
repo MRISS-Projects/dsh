@@ -2,16 +2,22 @@
 
 ## Document Smart Highlights
 
-Document Smart Highlights aims to provide a set of web services to allow uploading
-of PDF and HTML files and return a list of keywords and most relevant sentences.
-This system applies state of the art algorithms, using NLP techniques to produce
-both the list of keywords and most relevant sentences. This last one, using
-automatic document summarization techniques.
+Document Smart Highlights aims to provide web services that accept PDF and HTML files and return
+a list of keywords and the most relevant sentences, extracted with NLP techniques; the sentences
+through automatic document summarization.
 
-## Overall Process Description
+## What DSH Does Today
 
-The overall process of file submission and keywords/relevant sentence extraction is
-described as follows:
+Version 0.3.0 accepts a PDF document, stores it in a NoSQL store, puts its id on a queue for
+indexing, and reports the document's processing status. Nothing consumes that queue yet, so 0.3.0
+does not index documents and does not extract keywords or sentences. The REST API has two
+operations: submit a document and receive a token, and ask for the status of the document a token
+was issued for.
+
+## Planned Process
+
+The design DSH is being built towards. It is not the behaviour of 0.3.0, which covers the first two
+steps of file submission and stops there.
 
 ### File Submission
 
@@ -26,12 +32,12 @@ A web service is established in a way that:
    - A list of keywords
    - A list of most relevant sentences
 
+   Retrieving the results is not available yet.
+
 ### File Indexing
 
-1. The first processing task is to submit files to a database where it will
-   be indexed and processed to be able to identify individual terms or tokens
-   inside the file context. This is done by submitting the files to be stored at
-   a database provided by [Apache SOLR](http://lucene.apache.org/solr/).
+1. The first processing task is to send the file to an indexer, which identifies the individual
+   terms or tokens in the file's text.
 
 ### File Keyword Extraction
 
