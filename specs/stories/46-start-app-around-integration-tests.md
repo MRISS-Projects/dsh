@@ -235,9 +235,26 @@ Mongo read. `QUEUED_FOR_INDEXING_SUCCESS` is only reached when
 No consumer is needed: the broker acks once the message is routed to `si.test.queue`, which
 `rabbit:admin` declares.
 
-**Known hazard, not fixed here.** `DocumentSubmissionServiceImpl` is a singleton holding the
-in-flight `document` in a field, so concurrent submissions race. The IT submits once and never in
-parallel; failsafe runs the classes of this module in one JVM, sequentially.
+**Known hazard, not fixed here.** *Corrected at PR review:* this first called
+`DocumentSubmissionServiceImpl` a singleton. It is not.
+
+- **The per-submission state is isolated.** The service is
+  `@RequestScope(proxyMode = TARGET_CLASS)` (`DocumentSubmissionServiceImpl.java:18`), and the
+  response handler it hands the document to is `@Scope("prototype")`
+  (`DocumentEnqueueResponseMessageHandler.java:17`). Each request gets its own `document` and its
+  own handler.
+- **The broker acks are not.** `DocumentQueueServiceImpl.java:26` subscribes every request's handler
+  to `toRabbitResponse`, a `publish-subscribe-channel`, and `handleMessage`
+  (`DocumentEnqueueResponseMessageHandler.java:31-41`) never checks that an ack is its own. Each
+  ack carries the document id (`confirm-correlation-expression="payload"`), but the handler
+  transitions its document whichever id arrives, then unsubscribes.
+- **So overlapping submissions cross.** The first ack updates every document then in flight. A
+  nack for one marks the others `QUEUED_FOR_INDEXING_ERROR`, and the later acks reach no handler.
+  This is from reading the code, not reproduced. It is consistent with §7.5's collateral red under
+  mutation 1.
+
+The IT submits once and never in parallel. Failsafe runs the classes of this module in one JVM,
+sequentially.
 
 ### 4.4 Known limits, recorded rather than engineered around
 
