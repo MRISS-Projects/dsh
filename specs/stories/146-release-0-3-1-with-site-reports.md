@@ -171,8 +171,15 @@ unfixed workflow is the failing test, and T3's is green. Every local Maven run f
 
   Remote before and after: `master` `7647692ab`, `DEVELOP` `b3a65eaa9`, `0.3.x` `6932be686`,
   `gh-pages` `b818352ed`, and no `v0.3.1` tag.
-- [ ] **T4 — re-pin to `3.9.2`.** After P4. Edit §5.1. Run gate 1 again (`-U`, logged). Commit
+- [x] **T4 — re-pin to `3.9.2`.** After P4. Edit §5.1. Run gate 1 again (`-U`, logged). Commit
       `build(#146): pin the parent to the released 3.9.2`. Record AC003.
+      `4eb55bae3`. P4 was parent-poms
+      [run 36642378743](https://github.com/MRISS-Projects/parent-poms/actions/runs/36642378743), which
+      tagged `mriss-parent-3.9.2` and moved parent-poms `master` to `3.10.0-SNAPSHOT` (`2ffe1a9c`).
+      `#95` and `#96` were closed on the rehearsal evidence, and the `3.9.2` milestone was closed.
+      §4.3's revision of their ACs was skipped at the human's direction. Gate 1 downloaded the
+      released `products-3.9.2.pom`, which carries `release.forked.test.arguments`: `maven exit=0`,
+      coverage checks met in all 8 code modules. AC003 is ticked once the merge puts this on `0.3.x`.
 - [ ] **T5 — ship.** `dsh-ship-story`, then `dsh-pr-cycle`, into `0.3.x`. You merge.
 - [ ] **T6 — confirming rehearsal on `0.3.x`.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`. Check
       §7.2. This is AC002 as the issue words it.
