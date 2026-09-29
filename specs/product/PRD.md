@@ -105,8 +105,9 @@ reconciliation that rediscovers them should leave them out.
 | `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
 | `#124` | **closed** — PR #133 | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
 | `#139` | **closed** — PR #141 | `dsh-data` connects to MongoDB unauthenticated, with connection settings fixed at build time |
+| `#143` | open | Make the README and the site index describe what DSH does today |
 
-**One task has no issue yet**, added by the re-plan of 2026-09-28 (§4, "The 2026-09-28 re-plan"):
+`#143` was added by the re-plan of 2026-09-28 (§4, "The 2026-09-28 re-plan"):
 
 - **Make the README and the site index true for 0.3.0.** The 0.3.0 release regenerates `README.md`
   from `src/site/markdown/README.md`, and that source describes a product that does not exist yet.
@@ -763,6 +764,10 @@ RabbitMQ enqueue path, and Wave 2 deletes that path.
    also decides whether the wiki's source moves into `docs/wiki/`, published to the wiki rather
    than synced from it, so its pages get review and markdownlint.
 6. **Wiki page on Spring Integration**, with a diagram of the flow. It follows task 2.
+
+   The diagrams in tasks 5 and 6 are drawn by hand from ADR-003, because no flow exists yet to
+   generate them from. They are interim: Wave 2 task 1 generates the pipeline diagram from the flow
+   and keeps it in sync.
 7. **Reference papers.** The keyword paper is committed under `specs/` only if its licence permits
    redistribution; otherwise it is cited by DOI. The sentence paper is paid: it stays in a gitignored
    local folder and is cited by DOI. The owner is a co-author, so whether the publisher allows posting
@@ -788,6 +793,15 @@ in-memory channels, with no RabbitMQ and no Solr. Every task depends on ADR-003.
    the gateway, and the RabbitMQ enqueue path is deleted: `enqueue-docId-context.xml`,
    `DocumentQueueServiceImpl`, its handlers, the AMQP dependencies, and the RabbitMQ container that
    `-DintegrationTests` starts.
+
+   **The pipeline diagram is generated from the flow from here on.** An integration test reads the
+   running flow's channels and endpoints from Spring Integration's `IntegrationGraphServer`, renders
+   them as Mermaid, and fails with the regenerated text when they differ from a committed
+   `specs/architecture/document-pipeline-flow.md`. It is the same pattern as Wave 1 task 1's status
+   diagram, but it must be an `*IT`: the graph exists only in a running Spring context, and a unit
+   test never starts one. So it runs under `-DintegrationTests` and on every staging build, not on
+   pull-request CI. The wiki pages from Wave 1 tasks 5 and 6 then link to this file, and their
+   hand-drawn diagrams are retired.
 2. **A results endpoint.** Retrieve a document's keywords and sentences by token. The API has
    `/submit` and `/status/{token}` and nothing that returns a result. It returns empty lists until
    Wave 3 fills them, but its contract is fixed here.
