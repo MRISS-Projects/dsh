@@ -251,7 +251,7 @@ No consumer is needed: the broker acks once the message is routed to `si.test.qu
 - **So overlapping submissions cross.** The first ack updates every document then in flight. A
   nack for one marks the others `QUEUED_FOR_INDEXING_ERROR`, and the later acks reach no handler.
   This is from reading the code, not reproduced. It is consistent with §7.5's collateral red under
-  mutation 1.
+  mutation 1. Recorded as bug #142 (§8).
 
 The IT submits once and never in parallel. Failsafe runs the classes of this module in one JVM,
 sequentially.
@@ -958,6 +958,9 @@ Created on 2026-09-28 during the build:
 - [#140](https://github.com/MRISS-Projects/dsh/issues/140): *Remove the unused
   `spring.data.mongodb.*` settings from dsh-rest-api*, label `task`, no milestone. From the code
   review, §7.7.
+- [#142](https://github.com/MRISS-Projects/dsh/issues/142): *Enqueue acks are applied to every
+  in-flight document, not the one they confirm*, label `bug`, no milestone. Pre-existing; found in
+  PR #141's review, §4.3.
 
 ## 9. Acceptance criteria
 
