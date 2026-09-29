@@ -75,7 +75,7 @@ reconciliation that rediscovers them should leave them out.
 | `#86` | **closed** — PR #108 | Pin Maven 3.9.9 in all GitHub Actions workflows that invoke Maven |
 | `#87` | **closed** — PR #126 | Update Maven pinned version from 3.9.9 to 3.9.16 in documentation and GitHub Actions |
 | `#43` | **closed** — no PR; already met by parent-poms `3.9.0` | Configure surefire, jacoco and other useful reports for the maven generated docs |
-| `#46` | open | Implement integration tests using embedded tomcat server |
+| `#46` | **closed** — PR #141 | Implement integration tests using embedded tomcat server |
 | `#70` | **closed** — PR #130 | Project link not working at maven generated site |
 | `#90` | **closed** — PR #129 | index.html missing from published site on gh-pages (root + all submodules) |
 | `#92` | **closed** — PR #96 | Remove the dead Travis build estate |
@@ -96,6 +96,7 @@ reconciliation that rediscovers them should leave them out.
 | `#122` | **closed** — PR #134 | Close the file streams that test fixtures leave open |
 | `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
 | `#124` | **closed** — PR #133 | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
+| `#139` | **closed** — PR #141 | `dsh-data` connects to MongoDB unauthenticated, with connection settings fixed at build time |
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -208,11 +209,20 @@ opened them. It found 20 sites, not the issue's 18, because two spelled the clas
 `#46` was written up in the same session rather than retitled. It is the *other* half of `#112`,
 and the two are not the same shape: `#112` moves in-process Spring-context tests, while `#46` binds
 `spring-boot:start` and `spring-boot:stop` to `pre-integration-test` and `post-integration-test` so
-integration tests run against the packaged artifact over real HTTP. Its title was accurate all
+integration tests run against the application over real HTTP. Its title was accurate all
 along; what it lacked was a body, which it had never had. Scoping it turned up that
 `api-testing.yml` is a green no-op — `specs/api/postman/` holds only a `README.md`, so the Postman
 step skips and the job passes after building the reactor and booting the application to assert
-nothing.
+nothing. Shipped in PR #141. The application is forked from `target/classes` rather than from the
+repackaged jar, and it runs against MongoDB and RabbitMQ started in Docker by the same profile. The
+story also set out the four test layers now in `testing-patterns.md`.
+
+`#139` was found while building `#46` and fixed in the same pull request, yet kept as its own issue.
+The forked application could not reach the test MongoDB. `dsh-data`'s context XML had been filtered
+at build time, fixing its host and port, and its `credentials` attribute was never read, so every
+environment had connected unauthenticated. The fix was unavoidable for `#46`, but the defect is a
+production behaviour change in another module, and it deserved its own record. PR #141 referenced
+it rather than closing it, so it was closed by hand after the merge.
 
 `#113` came out of that same scoping and was deliberately not folded into `#46`. Two workflows
 listed `main`, a branch this repository has never had, as a push trigger; a dead trigger has
@@ -303,9 +313,8 @@ gate reads. A second JaCoCo agent writing `jacoco-it.exec` is what keeps the gat
 `project-staging.yml` passes the flag, so integration tests are mandatory on every staging build of
 every inheriting product rather than opt-in per project — parent-poms supplies the `-D` and nothing
 more, leaving what an integration test *starts* to each product. DSH `#46` and `#112` both depend
-on it: `#112` has since shipped on it, and `#46` is unblocked, since this repository already names
-`3.9.0-SNAPSHOT`. Closing `#67` does not advance Wave 0's own condition, which is the **3.9.0
-release** and the re-pin. That no longer waits on any issue: `#59` closed with DSH `#87` (see the
+on it, and both have shipped on it: `#112` in PR #121 and `#46` in PR #141. Closing `#67` does
+not advance Wave 0's own condition, which is the **3.9.0 release** and the re-pin. That no longer waits on any issue: `#59` closed with DSH `#87` (see the
 third pair below), and `#70`, the last one on the milestone, closed on 2026-09-27.
 
 `parent-poms#69` was raised from `#97` and deliberately left there rather than folded into it.
@@ -619,6 +628,19 @@ anything is deprecated today.
   site reports that parent-poms `3.9.0` already ships, so it closed as met instead of being
   repurposed. The analysers it did not cover became this new issue. Their configuration belongs
   in parent-poms, which is why it waits for 0.3.0.
+- `#137` — Run the Postman collections against a lifecycle-managed server.
+- `#140` — Remove the unused `spring.data.mongodb.*` settings from `dsh-rest-api`.
+- `#142` — Enqueue acks are applied to every in-flight document, not the one they confirm.
+
+  None is an ADR-001 phase task. All three came out of `#46` on 2026-09-28.
+  - **`#137`** is the open question `#46`'s spec deferred rather than answered: whether newman
+    joins the Maven lifecycle, and what becomes of `api-testing.yml`. It is layer 4 of the test
+    layers in `testing-patterns.md`.
+  - **`#140`** came from `#46`'s code review.
+  - **`#142`** came from Copilot's review of PR #141. It is a pre-existing production defect, kept
+    out of `#46` because that story fixed only what its tests needed. It touches the enqueue path
+    that Phase 1 task 3 below converts to `@Configuration`, so fixing it first saves carrying the
+    defect across.
 
 **Tasks (ADR-001 §4 Phase 1):**
 
@@ -768,6 +790,10 @@ scheduled after it so the migration lands first.
   migration.
 - `#53` — Make the `DocumentStatus` enumeration dynamic by reading descriptions and messages from
   properties files, per locale
+- `#138` — Return 4xx for document submission and lookup failures. Came out of `#46` on 2026-09-28:
+  its over-the-wire IT asserts the API's current contract, `200` with an `ERROR` token for a
+  failed submission. That contract is a product decision, so the IT pinned it rather than changing
+  it.
 
 ## 5. Won't-fix
 
