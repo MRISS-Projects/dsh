@@ -15,8 +15,9 @@ milestone to set on that issue. Step 8's `dsh-reconcile-prd` closes the loop the
 reconciling this document against GitHub once a story has merged and its issue is closed.
 
 ADR-001 itself is **Status: Proposed**. No migration code exists yet — the codebase has no GCP
-dependencies and no code marked `@Deprecated`. Waves 1-5 below describe the work ADR-001 proposes,
-not work already in progress.
+dependencies and no code marked `@Deprecated`. Nor does the document pipeline ADR-001 would migrate:
+§4's "The 2026-09-28 re-plan", between Wave 0 and Wave 1, records what exists, what does not, and
+the decisions that reordered the waves around building it.
 
 ## 2. How to read a wave
 
@@ -26,17 +27,20 @@ not work already in progress.
   large for one task branch gets split into more than one story at that point, not written as a
   single oversized story.
 - An issue number next to a task (e.g. `#48`) means a GitHub issue exists for it and should be
-  referenced from the resulting story. Wave 0's items all have issues; waves 1-6 mostly do not yet,
-  and their tasks become issues via `dsh-new-story` when they are picked up.
+  referenced from the resulting story. Wave 0's items all have issues; later waves' tasks mostly do
+  not yet, and become issues via `dsh-new-story` when they are picked up.
 - Where an item has an issue, **the issue is the source of truth** for its rationale and acceptance
   criteria — this document should not restate them, so the two cannot drift apart.
 - Where a wave lists its issues in a table, the `Status` column carries only what GitHub says:
   `open`, or `closed` naming the pull request that delivered it. It is maintained by step 8
   (`dsh-reconcile-prd`) after a merge, never hand-edited ahead of one. Titles in that column are
   the GitHub titles, normalised to sentence case with any `[STORY]` prefix dropped.
-- Waves 1-5 mirror the five migration phases in ADR-001 §4 one-for-one. Their task lists are drawn
-  directly from those phase tables — no tasks were invented here that ADR-001 does not already
-  enumerate.
+- Waves 1-5 used to mirror the five migration phases in ADR-001 §4 one for one. Since the re-plan of
+  2026-09-28 they do not: a task still drawn from an ADR-001 phase table says so, and ADR-003
+  (Wave 1) revises ADR-001 to match.
+- A wave can list issues in other repositories (parent-poms, the `maven-changes-plugin` fork,
+  maven-repo) when DSH's work depends on them. They are linked in full, since a bare `#n` here means
+  a DSH issue.
 
 ## 3. Wave-to-milestone mapping
 
@@ -45,13 +49,17 @@ not work already in progress.
 | 0 | `0.3.0-SNAPSHOT` |
 | 1 | `0.4.0-SNAPSHOT` |
 | 2 | `0.4.0-SNAPSHOT` |
-| 3 | `0.4.0-SNAPSHOT` |
+| 3 | `0.5.0-SNAPSHOT` |
 | 4 | `1.0.0-SNAPSHOT` |
 | 5 | `1.0.0-SNAPSHOT` |
 | 6 | `1.0.0-SNAPSHOT` |
+| 7 | `1.0.0-SNAPSHOT` |
+| 8 | `1.0.0-SNAPSHOT` |
+| 9 | `1.0.0-SNAPSHOT` |
 
-These three milestones already exist in GitHub. `dsh-new-story` sets `--milestone` on
-`gh issue create` from this table, keyed by the wave the task came from.
+`0.5.0-SNAPSHOT` does not exist in GitHub yet; the others do. It is created when Wave 3's first
+issue is. `dsh-new-story` sets `--milestone` on `gh issue create` from this table, keyed by
+the wave the task came from.
 
 ## 4. The waves
 
@@ -97,6 +105,17 @@ reconciliation that rediscovers them should leave them out.
 | `#123` | **closed** — PR #125 | Stop passing the Mongo setup inputs to `project-staging.yml` |
 | `#124` | **closed** — PR #133 | Keep `dsh-test-dataset` fixtures and test classes out of production artifacts |
 | `#139` | **closed** — PR #141 | `dsh-data` connects to MongoDB unauthenticated, with connection settings fixed at build time |
+
+**One task has no issue yet**, added by the re-plan of 2026-09-28 (§4, "The 2026-09-28 re-plan"):
+
+- **Make the README and the site index true for 0.3.0.** The 0.3.0 release regenerates `README.md`
+  from `src/site/markdown/README.md`, and that source describes a product that does not exist yet.
+  It says DSH ships as a WAR for Tomcat 8, when `dsh-rest-api` is packaged as a jar. It lists
+  MongoDB 3.4 and RabbitMQ 3.6 as prerequisites. Its `dsh-doc-processor-worker` entry repeats the
+  keyword extractor's text. And nothing in it says that only submission works today. The fix states
+  that status, corrects the prerequisites and module descriptions, and uses generic terms (indexer,
+  NoSQL store, queue) in the overview. `src/site/markdown/index.md` gets the same status statement.
+  The larger rewrite of both files is Wave 1 task 5 and Wave 8 task 5.
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -252,7 +271,7 @@ spec did not mention `#124`, and the overlap went unnoticed until a reconciliati
 `#124` then shipped the rest in PR #133. The investigation found nothing that relied on the
 main-side attachment. The two Solr modules, which never read a fixture, lost their unpack, and the
 setting now carries a comment saying why it must stay `false`. What the dataset lacks for the
-ADR-001 waves is recorded under Wave 2.
+later waves is recorded under Wave 3, and the 1 MiB fixture under Wave 4.
 
 **Two findings from the same review are deliberately *not* issues:**
 
@@ -285,7 +304,7 @@ so it is not mistaken for part of the goal:
 |---|---|---|
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
 | `3.9.0` | none | **Released 2026-09-27** — cleared by `#70`, tagged `mriss-parent-3.9.0` |
-| `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0 |
+| `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86`, `#88`, `#89` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0; cleared and released at the start of Wave 1 |
 
 **This goal is met.** `3.9.0-SNAPSHOT` was renamed to `3.9.0` before the release, as `3.8.0` was,
 released on 2026-09-27 and closed. DSH's root `pom.xml` names the released `3.9.0`, and a staging
@@ -551,7 +570,8 @@ DSH `#86`, below. In the meantime the six affected issues were labelled, DSH `#1
 the current READMEs correct themselves on their next generation. That is why `parent-poms#86` does
 not gate 3.9.0.
 
-**`parent-poms#89` was spun off from `#70`, and it has no milestone.** Scoping `#70` found a second
+**`parent-poms#89` was spun off from `#70`, and on 2026-09-28 it joined `3.10.0-SNAPSHOT`** (Wave
+1's upstream block). Scoping `#70` found a second
 dead navigation link: the "Products" entry in the site's parent menu resolves to
 `dsh/rcs/products/index.html`, which 404s. The link is computed from `<url>` values defined in
 parent-poms, so the fix belongs there rather than in an override in DSH's `site.xml`. It was not
@@ -591,28 +611,76 @@ points it at the milestones page instead.
 The root `pom.xml`'s SNAPSHOT parent pin was a related item, deliberately *not* actionable until
 the above completed. It has: the pin is the released `3.9.0` since 2026-09-27 — see §6.
 
-### Wave 1 — ADR-001 Phase 1: interface extraction and deprecation
+### The 2026-09-28 re-plan
 
-Milestone: `0.4.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 1 — Interface Extraction &
-Deprecation". This wave's theme legitimately involves deprecation as the work to be performed —
-marking current implementations `@Deprecated` as new interfaces are extracted — not a claim that
-anything is deprecated today.
+Waves 1 onward were rewritten on 2026-09-28, in a brainstorm held before closing 0.3.0. It covered
+three things: documentation, delivery to an end user, and how Spring Integration carries the
+pipeline. One finding reshaped all three, and it is recorded here because every wave below rests on
+it.
+
+**DSH does not process documents yet.** `dsh-rest-api` accepts a document, stores it and enqueues
+its id, and nothing consumes the queue. `dsh-doc-indexer-worker`, `dsh-doc-processor-worker`,
+`dsh-keyword-extractor` and `dsh-top-sentences-extractor` each hold a 17-line `Application` class
+and nothing else. No keyword or sentence extraction code exists, here or anywhere else; it is
+written from scratch against the two papers the wiki cites. `DocumentStatus` models all 18 states of
+the pipeline, and only the first few are reachable. ADR-001's Context table says the workers
+"dequeue and process", and it names a `dequeue-docId-context.xml` that does not exist.
+
+The owner's decisions from that session:
+
+1. **The pipeline is built on the new interfaces.** Nothing new is built on RabbitMQ or Solr, and
+   neither is refactored again. ADR-001's plan to wrap and deprecate them assumed consumers that
+   were never written.
+2. **The pipeline's flow is Spring Integration's Java DSL.** One flow definition is the bus, and the
+   stage beans are plain Java classes with no messaging code. There is no XML for the main flow.
+3. **Maven Central is ruled out.** Anyone building DSH without a GitHub token needs the MRISS
+   artifacts from GitHub Packages shipped to them, the `maven-changes-plugin` fork included.
+4. **Algorithms before GCP.** The pipeline produces results on the infrastructure that already
+   exists, and GCP then becomes a swap behind interfaces that already exist.
+
+So waves 1-7 no longer mirror ADR-001's phases one for one. Where a task is still drawn from an
+ADR-001 phase table, it says so.
+
+### Wave 1 — Pipeline design, documentation and upstream catch-up
+
+Milestone: `0.4.0-SNAPSHOT`.
+
+**Upstream catch-up comes first.** Nothing upstream starts before 0.3.0 is released and work is back
+on `DEVELOP` (Wave 0). From that point, this block goes before anything else in the wave, in order:
+
+1. [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36) and
+   [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37), on the fork's
+   `2.12.10-SNAPSHOT`, then release **2.12.10**. The fork's process is the last section of its
+   README.
+2. parent-poms `3.10.0-SNAPSHOT`: `#86` (bump the changes plugin to 2.12.10), `#74`, `#81`, `#88`
+   and `#89`. `#89` joined the milestone on 2026-09-28, because its 404 is on DSH's own site. Clear
+   the milestone, then release **3.10.0** by the full round trip in `CLAUDE.md`.
+3. DSH: re-pin the root `pom.xml` to the released `3.10.0`, and remove the issue-labelling rule
+   from `CLAUDE.md` and `dsh-new-story`. `CLAUDE.md` names that removal as the exit condition for
+   `parent-poms#86`. No issue yet.
+4. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
+   still committed to `master`. It depends on nothing above, but its first criterion, finding what
+   last deployed by committing there, may lead back into parent-poms.
+
+`parent-poms#85` keeps no milestone. `parent-poms#90`, `#91` and `#92` belong to Wave 8.
 
 **Triaged issues:**
 
-- `#48` — Investigate how to use profiles (dev, staging, production) with Spring and Maven. This
-  underpins the `@Profile`-based selection ADR-001 Phase 1 calls for throughout.
+- `#48` — Investigate how to use profiles (dev, staging, production) with Spring and Maven. It
+  underpins selecting a transport or a persistence implementation by profile, which ADR-003 (task 2
+  below) relies on.
 - `#119` — Migrate every test to JUnit 5 and drop the vintage engine.
 - `#120` — Upgrade Spring Boot to a supported line, version chosen by analysis.
 
   Like `#48`, neither is an ADR-001 phase task. Both were raised on 2026-09-25, while
   specifying `#112`, and they are ordered: `#119` lands first, because Spring Boot 3's
   `spring-boot-starter-test` drops the vintage engine and JUnit 4 tests would stop running
-  without failing anything. `#120` belongs in this wave rather than later because Wave 2's
-  `spring-cloud-gcp-starter-*` release line is tied to the Spring Boot line, and choosing Boot after
-  the GCP code exists would mean migrating that code twice. Neither issue names a target version.
-  Both leave it to their spec's analysis, and for `#120` that includes whether the version moves in
-  parent-poms `products/pom.xml`, where it is managed today for every product.
+  without failing anything. `#120` belongs in this wave because Wave 4's
+  `spring-cloud-gcp-starter-*` release line is tied to the Spring Boot line, and because the
+  pipeline written in Waves 2 and 3 should be written once, against the Boot line it will ship on.
+  Neither issue names a target version. Both leave it to their spec's analysis, and for `#120` that
+  includes whether the version moves in parent-poms `products/pom.xml`, where it is managed today
+  for every product.
 - `#127` — Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does.
 - `#128` — Point the wiki's release link at releases/products/dsh once 0.3.0 is released.
 
@@ -630,64 +698,138 @@ anything is deprecated today.
   in parent-poms, which is why it waits for 0.3.0.
 - `#137` — Run the Postman collections against a lifecycle-managed server.
 - `#140` — Remove the unused `spring.data.mongodb.*` settings from `dsh-rest-api`.
-- `#142` — Enqueue acks are applied to every in-flight document, not the one they confirm.
 
-  None is an ADR-001 phase task. All three came out of `#46` on 2026-09-28.
-  - **`#137`** is the open question `#46`'s spec deferred rather than answered: whether newman
-    joins the Maven lifecycle, and what becomes of `api-testing.yml`. It is layer 4 of the test
-    layers in `testing-patterns.md`.
-  - **`#140`** came from `#46`'s code review.
-  - **`#142`** came from Copilot's review of PR #141. It is a pre-existing production defect, kept
-    out of `#46` because that story fixed only what its tests needed. It touches the enqueue path
-    that Phase 1 task 3 below converts to `@Configuration`, so fixing it first saves carrying the
-    defect across.
+  Neither is an ADR-001 phase task. Both came out of `#46` on 2026-09-28. `#137` is the open
+  question `#46`'s spec deferred rather than answered: whether newman joins the Maven lifecycle,
+  and what becomes of `api-testing.yml`. It is layer 4 of the test layers in `testing-patterns.md`.
+  `#140` came from `#46`'s code review.
+- `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
+  task 5 below is written as its body, so no new issue is opened for that task.
 
-**Tasks (ADR-001 §4 Phase 1):**
+`#142`, which came from the same `#46` review, left this wave on 2026-09-28 for §5: it fixes the
+RabbitMQ enqueue path, and Wave 2 deletes that path.
 
-1. `dsh-data` — Create `DocumentPersistenceRepository` interface. Wrap the existing
+**Tasks:**
+
+1. **Keep the document-status diagram generated from code.** `src/site/resources/images/workflow.jpg`
+   draws `DocumentStatus`'s state machine by hand. `transition(TransitionType)` is a pure function
+   over three transition types, so the whole graph can be derived. A context-free unit test in
+   `dsh-data` renders a Mermaid `stateDiagram-v2` from `DocumentStatus` × `TransitionType`,
+   dropping self-loops and ending every state that returns itself for all three types at `[*]`. It
+   compares the result with a committed `specs/architecture/document-status-workflow.md`, and on a
+   mismatch fails with the regenerated text. There is one generator, the test, so the diagram and
+   the code cannot disagree without the build going red. `workflow.jpg` is deleted, and the wiki's
+   Workflow page links to the file, because a wiki page cannot include a repository file. **This
+   task comes before tasks 2 and 3 of Wave 2**, which will change the statuses: the queued and
+   dequeued states come from the RabbitMQ design.
+2. **ADR-003 — the document pipeline.** Decides:
+   - The flow: one Java DSL `IntegrationFlow` as the bus, with stages as POJO endpoints and one
+     interceptor or advice that records each `DocumentStatus` transition, so no stage touches
+     persistence for status.
+   - The deployables: one application running the whole pipeline, with channels between stages that
+     can later be split into separate services by profile. What becomes of the four stub worker
+     modules follows from this.
+   - The transports: in-memory channels by default, with transport adapters (Pub/Sub, Wave 5)
+     selected by profile.
+   - Where corpus document-frequency statistics live. IDF needs them across every document, and
+     Solr supplied them until now.
+   - **Whether Vertex AI Search has any role.** DSH extracts keywords and sentences; it offers no
+     search, and Vertex AI Search exposes no term vectors. Wave 6's contents follow from the answer.
+   - The statuses, if the design changes them. Task 1 keeps the diagram in step.
+
+   ADR-003 also revises ADR-001 in place, which its **Proposed** status allows: the Context table is
+   corrected, Phase 1 tasks 3-6 and the Phase 2 migration utility are dropped, and Phases 3-5 are
+   rewritten to match the waves below.
+3. **ADR-004 — distribution.** Decides:
+   - A run path and a build path. Running DSH needs a container image, and a public GHCR image pulls
+     without credentials. Cloud Run cannot deploy from ghcr.io directly, so the deploy script copies
+     the image into the user's Artifact Registry or configures a remote repository there.
+   - The release zip, attached to the GitHub Release rather than published as a package: sources,
+     binaries, the deploy script, and an offline Maven repository of the MRISS artifacts the build
+     resolves (`parent-poms#92`). Its acceptance test is a build from the zip with an empty local
+     repository and no GitHub credentials.
+   - What local mode can and cannot do. Firestore and Pub/Sub have emulators. GCS has only
+     third-party fakes, and Vertex AI Search has none, so from Wave 6 a local run may still need a
+     real GCP project, depending on task 2's answer.
+4. **Documentation map.** `CLAUDE.md` is the root of the developer documentation tree. A CI check,
+   like `check-spec-references`, fails when a Markdown file under `docs/`, `specs/` or `.github/`
+   cannot be reached from `CLAUDE.md` by links. The same task deletes the empty scaffolding READMEs
+   (`specs/testing/*`, `specs/requirements/*`, `docs/user-guides`).
+5. **Wiki restructure** (`#44`). Home carries the overview and a Mermaid diagram of the pipeline's
+   stages, marking stages not yet built as planned. It adds an Architecture page, and a Developers
+   page that points at `CLAUDE.md` rather than restating it. `src/site/markdown/index.md` shrinks to
+   one paragraph and links, so the overview exists once. User-facing and overview pages use generic
+   terms (indexer, NoSQL store, queue); ADRs and developer pages keep the product names. The task
+   also decides whether the wiki's source moves into `docs/wiki/`, published to the wiki rather
+   than synced from it, so its pages get review and markdownlint.
+6. **Wiki page on Spring Integration**, with a diagram of the flow. It follows task 2.
+7. **Reference papers.** The keyword paper is committed under `specs/` only if its licence permits
+   redistribution; otherwise it is cited by DOI. The sentence paper is paid: it stays in a gitignored
+   local folder and is cited by DOI. The owner is a co-author, so whether the publisher allows posting
+   the accepted manuscript is worth checking. Wave 3's stories cite these.
+8. `dsh-data` — Create a `DocumentPersistenceRepository` interface. Wrap the existing
    `DocumentRepository` (Mongo) as `MongoDocumentPersistenceRepository implements
-   DocumentPersistenceRepository`, marked `@Deprecated`.
-2. `dsh-data` — Refactor `MongoDocumentDao` to depend on `DocumentPersistenceRepository` instead of
-   `DocumentRepository` directly. Mark `MongoDocumentDao` `@Deprecated`.
-3. `dsh-rest-api` — Convert `enqueue-docId-context.xml` / `dequeue-docId-context.xml` to Java
-   `@Configuration` classes. Create `RabbitMqIntegrationConfig` (`@Profile("rabbitmq")`), marked
-   `@Deprecated`.
-4. `dsh-rest-api` — Mark `DocumentQueueServiceImpl` (RabbitMQ) `@Deprecated`, assign
-   `@Profile("rabbitmq")`.
-5. `dsh-solr` — Extract a `TermVectorOrderingService` interface from
-   `OrderedTermVectorComponent`'s sorting logic (accepts term-vector entries and order options,
-   returns the sorted list). Mark the Solr adapter `@Deprecated`.
-6. `dsh-solr` — Evaluate `AdvancedNumberFilter`. If expressible as a pre-indexing step, extract a
-   `NumberFilterService` interface. Mark the Solr implementation `@Deprecated`.
-7. `dsh-data` — Refactor the `Document` entity: extract `byte[] originalFileContents` into a
-   `FileStorageService` interface with `store(byte[]) → URI` and `retrieve(URI) → byte[]`. Create
-   `LocalFileStorageService` (deprecated, for backward compatibility); `GcsFileStorageService`
-   follows in Wave 2.
+   DocumentPersistenceRepository`, marked `@Deprecated`. (ADR-001 Phase 1 task 1.)
+9. `dsh-data` — Refactor `MongoDocumentDao` to depend on `DocumentPersistenceRepository` instead of
+   `DocumentRepository` directly. Mark `MongoDocumentDao` `@Deprecated`. (ADR-001 Phase 1 task 2.)
+10. `dsh-data` — Extract `byte[] originalFileContents` from the `Document` entity into a
+    `FileStorageService` interface with `store(byte[]) → URI` and `retrieve(URI) → byte[]`. Create
+    `LocalFileStorageService`; `GcsFileStorageService` follows in Wave 4. (ADR-001 Phase 1 task 7.)
 
-### Wave 2 — ADR-001 Phase 2: Firestore + GCS
+### Wave 2 — Pipeline walking skeleton
 
-Milestone: `0.4.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 2 — GCP Implementation:
-Firestore + GCS (MongoDB Replacement)". No existing GitHub issue was triaged into this wave.
+Milestone: `0.4.0-SNAPSHOT`. It runs on the existing persistence layer (`DocumentDao`) and on
+in-memory channels, with no RabbitMQ and no Solr. Every task depends on ADR-003.
 
-**Test fixtures for Waves 2–4.** `dsh-test-dataset` holds four PDFs and nothing else (`#124` §3).
-A module unpacks them with a `maven-remote-resources-plugin:process` execution into
-`target/test-classes`, with `attachToMain=false` — copy the block from `dsh-data/pom.xml`. The
-dataset has three gaps these waves will meet, each for the story that first needs it:
+**Tasks:**
 
-1. **No HTML fixtures**, although `#12` and `README.md` promise PDF and HTML.
-2. **No expected outputs.** No reference keywords or top sentences exist to assert against, which
-   Wave 4 needs to compare Vertex AI Search's results with Solr's.
-3. **Sizes against the 1 MiB Firestore limit.** ADR-001 moves file bytes to GCS because Firestore
-   caps a document at 1 MiB (1,048,576 bytes). The largest fixture, `The-Categories.pdf`, is
-   262 KiB (268,696 bytes), so none reaches it: add one above 1 MiB with the story that implements
-   `GcsFileStorageService`.
+1. **The flow, end to end.** A gateway receives a submitted document id, and pass-through stages carry
+   it through every status to `SENTENCES_PROCESSED_SUCCESS`. Submission in `dsh-rest-api` moves to
+   the gateway, and the RabbitMQ enqueue path is deleted: `enqueue-docId-context.xml`,
+   `DocumentQueueServiceImpl`, its handlers, the AMQP dependencies, and the RabbitMQ container that
+   `-DintegrationTests` starts.
+2. **A results endpoint.** Retrieve a document's keywords and sentences by token. The API has
+   `/submit` and `/status/{token}` and nothing that returns a result. It returns empty lists until
+   Wave 3 fills them, but its contract is fixed here.
+3. **The worker modules, per ADR-003.** Consolidate, keep or remove the four stub worker modules as
+   the ADR decides.
+
+### Wave 3 — Analysis algorithms
+
+Milestone: `0.5.0-SNAPSHOT`, which does not exist yet (§3). Everything here is written from scratch against the two papers (Wave 1 task 7). Each
+story brings its expected-output fixtures.
+
+**Test fixtures.** `dsh-test-dataset` holds four PDFs and nothing else (`#124` §3). A module unpacks
+them with a `maven-remote-resources-plugin:process` execution into `target/test-classes`, with
+`attachToMain=false` — copy the block from `dsh-data/pom.xml`. This wave meets two of its gaps:
+
+1. **No HTML fixtures**, although `#12` and `README.md` promise PDF and HTML. Task 1 adds them.
+2. **No expected outputs.** No reference keywords or top sentences exist to assert against. Each
+   task adds the ones it needs, derived from the papers.
 
 The bundle is a plugin parameter, not a dependency, so `mvn -pl <module> -am` does not build
 `dsh-test-dataset`, and the plugin resolves it from the local repository or GitHub Packages
 instead. That copy can be missing or older than the source. Run a full `mvn -B install` first, or
 add `dsh-test-dataset` to `-pl`.
 
-**Tasks (ADR-001 §4 Phase 2):**
+**Tasks:**
+
+1. **Text extraction.** PDF and HTML into title, paragraphs, sentences and terms. The library is the
+   spec's choice.
+2. **Corpus term statistics.** Term frequency per document and document frequency across the corpus,
+   stored where ADR-003 decides.
+3. **TF and IDF variants**, as the keyword paper defines them.
+4. **Keyword ranking** by the meta-algorithmic combination of task 3's variants.
+5. **Sentence similarity to the title**, by the sentence paper's algorithm.
+6. **Sentence ranking.** Combine task 5 with task 3's scores, and return the top sentences with their
+   paragraph numbers.
+
+### Wave 4 — GCP: Firestore and GCS
+
+Milestone: `1.0.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 2". The migration utility, task 5
+there, is dropped: no deployment holds data to migrate.
+
+**Tasks:**
 
 1. `dsh-data` — Add `spring-cloud-gcp-starter-data-firestore` and
    `spring-cloud-gcp-starter-storage` dependencies.
@@ -696,91 +838,86 @@ add `dsh-test-dataset` to `-pl`.
 3. `dsh-data` — Create `FirestoreDocumentDao implements DocumentDao` (`@Profile("gcp")`). Wire to
    `FirestoreDocumentPersistenceRepository`.
 4. `dsh-data` — Create `GcsFileStorageService implements FileStorageService` (`@Profile("gcp")`).
-   Upload/download file bytes to a GCS bucket; the `Document` entity stores a `fileStorageUri`
-   instead of raw bytes.
-5. `dsh-data` — Write a migration utility to bulk-copy existing MongoDB documents to Firestore and
-   upload `originalFileContents` blobs to GCS, replacing the field with the resulting URI.
+   Upload and download file bytes to a GCS bucket; the `Document` entity stores a `fileStorageUri`
+   instead of raw bytes. Add a fixture above Firestore's 1 MiB document limit: the largest today,
+   `The-Categories.pdf`, is 262 KiB.
 
-### Wave 3 — ADR-001 Phase 3: Cloud Pub/Sub
+### Wave 5 — GCP: Pub/Sub
 
-Milestone: `0.4.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 3 — GCP Implementation: Cloud
-Pub/Sub (RabbitMQ Replacement)".
+Milestone: `1.0.0-SNAPSHOT`. ADR-001 Phase 3, rewritten by ADR-003 for the flow Wave 2 builds.
 
 **Triaged issue:** `#49` — re-scoped. Originally titled "Create docker structure based on docker
 files to have all servers configured as docker containers to run tests and/or the application" —
 i.e., Docker containers for MongoDB/RabbitMQ/Solr. It is re-scoped to **Firestore and Pub/Sub
-emulators** for local and CI testing, which is why it sits in Wave 3 (alongside the Pub/Sub work
-it will exercise) rather than Wave 0.
+emulators** for local and CI testing, which is why it sits here, beside the Pub/Sub work it will
+exercise. Wave 8's local mode reuses it. Its GitHub milestone is still `0.4.0-SNAPSHOT` and moves to
+`1.0.0-SNAPSHOT`.
 
-**Tasks (ADR-001 §4 Phase 3):**
+**Tasks:**
 
-1. `dsh-rest-api` — Add `spring-cloud-gcp-starter-pubsub` and `spring-integration-gcp`
-   dependencies.
-2. `dsh-rest-api` — Create `PubSubIntegrationConfig` (`@Profile("gcp")`) — defines a
-   `PubSubTemplate` and outbound channel adapter to a `document-tasks` topic.
-3. `dsh-rest-api` — Create `PubSubDocumentQueueServiceImpl implements DocumentQueueService`
-   (`@Profile("gcp")`). Publishes document IDs to the Pub/Sub topic.
-4. `dsh-doc-indexer-worker` — Replace `spring-boot-starter-amqp` with
-   `spring-cloud-gcp-starter-pubsub`. Create a Pub/Sub subscriber (pull or push via a Cloud Run
-   HTTP endpoint) that invokes the existing processing pipeline.
-5. `dsh-doc-analyser` / `dsh-doc-processor-worker` — Replace the `spring-boot-starter-amqp`
-   dependency. Wire a Pub/Sub subscriber analogously to task 4.
+1. Add `spring-cloud-gcp-starter-pubsub` and `spring-integration-gcp`.
+2. Pub/Sub channel adapters for the channels between stages, under `@Profile("gcp")`, as ADR-003
+   decides.
 
-### Wave 4 — ADR-001 Phase 4: Vertex AI Search
+### Wave 6 — GCP: term statistics and search
 
-Milestone: `1.0.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 4 — GCP Implementation: Vertex AI
-Search (Solr Replacement)". No existing GitHub issue was triaged into this wave.
+Milestone: `1.0.0-SNAPSHOT`. **Its contents wait on ADR-003.** ADR-001 Phase 4 replaces Solr with
+Vertex AI Search. But Wave 3 computes term statistics in Java, and DSH offers no search, so this wave
+may shrink to storing those statistics in Firestore, or disappear. Phase 4's tasks stay recorded in
+ADR-001 until ADR-003 decides.
 
-**Tasks (ADR-001 §4 Phase 4):**
+### Wave 7 — Validation and cutover
 
-1. `dsh-solr` (or a new `dsh-search` module) — Add `google-cloud-discoveryengine` dependency.
-2. New module / `dsh-solr` — Create `VertexAiSearchIndexingService`, indexing document content in
-   a Vertex AI Search data store via the Document AI / ingestion APIs.
-3. New module / `dsh-solr` — Create `VertexAiSearchQueryService`, executing full-text search
-   queries via the Vertex AI Search serving API.
-4. **`OrderedTermVectorComponent` migration.** Vertex AI Search does not expose raw term vectors
-   (TF, DF, TF-IDF) the way Solr's `TermVectorComponent` does:
-   - At indexing time, compute TF/DF/TF-IDF statistics in the application layer (Java) from the
-     extracted document text, before sending it to Vertex AI Search. Store these statistics as
-     structured metadata on the Vertex AI Search document or in Firestore.
-   - Extract the sorting logic currently in `SortedNamedList` / `TermsVectorComparator` / `Order`
-     into the new `TermVectorOrderingService` implementation (`VertexAiTermVectorOrderingService`).
-     It retrieves the pre-computed term statistics from Firestore or Vertex AI Search metadata and
-     applies the same ascending/descending sort by the requested field.
-   - The `order` query parameter format (`order=tv.tf;desc`) is preserved in the REST API;
-     `dsh-rest-api` delegates to `TermVectorOrderingService`, now infrastructure-agnostic.
-   - `Order` (enum), `OrderOptions` (POJO), and `TermsVectorComparator` (a generic
-     `Comparator<Object>` depending only on `OrderOptions`) are reusable as-is. Only
-     `OrderedTermVectorComponent` and `SortedNamedList` are Solr-coupled and need replacement.
-5. **`AdvancedNumberFilter` migration.** Evaluate Vertex AI Search's built-in
-   tokenisation/filtering. If number filtering is not natively supported, implement a
-   `NumberFilterPreProcessor` in the indexing pipeline that strips or normalises numeric tokens
-   before content is sent to Vertex AI Search.
+Milestone: `1.0.0-SNAPSHOT`. ADR-001 Phase 5, less its parity comparison: there is no old pipeline to
+compare with.
 
-### Wave 5 — ADR-001 Phase 5: validation and cutover
+**Tasks:**
 
-Milestone: `1.0.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 5 — Validation & Cutover". No
-existing GitHub issue was triaged into this wave.
+1. Run the integration tests against the `gcp` profile.
+2. Performance-test against `specs/testing/performance-benchmarks/` (FR004: 95% of documents under
+   10 MB processed within 30 s).
+3. Make `gcp` the default profile.
+4. Remove `dsh-solr` and whatever remains of the legacy implementations, as ADR-003 decides.
 
-**Tasks (ADR-001 §4 Phase 5):**
+### Wave 8 — Distribution
 
-1. Run both profiles (`rabbitmq`/`mongodb` and `gcp`) in parallel in a staging environment.
-   Compare results for functional parity.
-2. Execute integration tests from `specs/testing/test-plans/` against the `gcp` profile.
-3. Performance-test against benchmarks in `specs/testing/performance-benchmarks/` (FR004: 95% of
-   documents under 10 MB processed within 30 s).
-4. Switch the default Spring profile to `gcp`. Deprecated implementations remain available via
-   `@Profile("legacy")`.
+Milestone: `1.0.0-SNAPSHOT`. Delivers ADR-004. An end user downloads one zip from a GitHub Release
+and runs a script; the root `README.md` describes exactly that.
 
-### Wave 6 — Product backlog
+**Upstream issues:**
+
+- [`parent-poms#90`](https://github.com/MRISS-Projects/parent-poms/issues/90) — manage
+  docker-maven-plugin's version. Needed by task 1.
+- [`parent-poms#91`](https://github.com/MRISS-Projects/parent-poms/issues/91) — expose the release
+  tag and version as outputs of the reusable release and hotfix workflows. A DSH job after the
+  reusable workflow cannot otherwise know which release to attach to.
+- [`parent-poms#92`](https://github.com/MRISS-Projects/parent-poms/issues/92) — export the MRISS
+  build artifacts a consumer needs as an offline Maven repository.
+
+All three are unmilestoned upstream. They take the next parent-poms minor that this wave opens.
+
+**Tasks:**
+
+1. A Dockerfile, and a public container image published on every release.
+2. The release zip: sources, binaries, the offline Maven repository and a build-from-sources script.
+   It passes ADR-004's acceptance test.
+3. The deploy script. It checks its prerequisites (gcloud installed, authenticated, a project
+   chosen) and tells the user what is missing. It creates each resource only if absent, so a second
+   run is safe, and it deploys the image to the user's own GCP project.
+4. Local mode: the application in Docker on localhost, with each service on GCP or on an emulator,
+   by configuration. It reuses `#49`.
+5. Rewrite the root `README.md` (its source is `src/site/markdown/README.md`) as the user guide for
+   the zip and the script: prerequisites, credentials, deploy, local mode.
+6. Access through IAP for named Google accounts, which needs no Workspace domain. It waits for a
+   front end, which no wave yet plans.
+
+### Wave 9 — Product backlog
 
 Milestone: `1.0.0-SNAPSHOT`. Existing backlog issues with no dependency on the GCP migration,
 scheduled after it so the migration lands first.
 
 **Triaged issues:**
 
-- `#44` — Add architecture and components diagrams and description following the three
-  architecture patterns at content.pivotal.io/blog/agile-architecture
 - `#45` — Document, configure and test Spring Boot actuators for the REST API module
 - `#50` — Add extra Swagger documentation using annotations
 - `#51` — Investigate and add support for `spring-boot-starter-hateoas`
@@ -795,6 +932,8 @@ scheduled after it so the migration lands first.
   failed submission. That contract is a product decision, so the IT pinned it rather than changing
   it.
 
+`#44` moved to Wave 1 on 2026-09-28.
+
 ## 5. Won't-fix
 
 Two issues were superseded by the ADR-001 migration itself and will not be built as written. Both
@@ -803,10 +942,21 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
 
 | Issue | Reason | Superseded by |
 |---|---|---|
-| `#65` (closed) — Implement indexer-worker daemon | Its body specifies enqueuing via RabbitMQ and storing results in Solr — both surfaces this migration replaces. | Wave 3 (Cloud Pub/Sub) and Wave 4 (Vertex AI Search) |
-| `#47` (closed) — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour belongs on the new repository, not the one being replaced. | Wave 2 (Firestore + GCS) |
+| `#65` (closed) — Implement indexer-worker daemon | Its body specifies enqueuing via RabbitMQ and storing results in Solr — both surfaces this migration replaces. | Wave 2 (pipeline skeleton), Wave 3 (algorithms) and Wave 5 (Pub/Sub) |
+| `#47` (closed) — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour belongs on the new repository, not the one being replaced. | Wave 4 (Firestore + GCS) |
 
-`#52` is explicitly **not** in this table — see Wave 6 above for why it was reviewed and kept.
+The *Superseded by* column was renumbered by the re-plan of 2026-09-28. The comments on both closed
+issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: Wave 3 and Wave 4 for
+`#65`, Wave 2 for `#47`.
+
+**`#142` is proposed for won't-fix, and is still open.** It fixes enqueue acks being applied to every
+in-flight document rather than the one they confirm. The defect is real, but it lives in
+`DocumentQueueServiceImpl`, which Wave 2 task 1 deletes along with the rest of the RabbitMQ enqueue
+path. The re-plan of 2026-09-28 rules out further work on RabbitMQ. Closing it as `not planned` is
+the owner's call. Its lesson carries over: in the new flow, a stage's acknowledgement must correlate
+to one document.
+
+`#52` is explicitly **not** in this table — see Wave 9 above for why it was reviewed and kept.
 
 ## 6. Known risks / accepted decisions
 
