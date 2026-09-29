@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -41,6 +42,11 @@ public class DocumentResourceHttpIT {
 
 	private static final long STATUS_POLL_MILLIS = 250;
 
+	private static final int CONNECT_TIMEOUT_MILLIS = 5_000;
+
+	/** Above the MongoDB driver's 30 s server-selection timeout, so that failure still reports as a 500. */
+	private static final int READ_TIMEOUT_MILLIS = 60_000;
+
 	private static final ParameterizedTypeReference<Map<String, Object>> JSON =
 			new ParameterizedTypeReference<Map<String, Object>>() { };
 
@@ -55,7 +61,11 @@ public class DocumentResourceHttpIT {
 			fail(BASE_URL_PROPERTY + " is not set. Run this class under "
 					+ "'mvn -B install -DintegrationTests', which starts the server it calls.");
 		}
-		rest = new RestTemplate();
+		// Without timeouts, a server that hangs would hang the staging build with it.
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
+		requestFactory.setReadTimeout(READ_TIMEOUT_MILLIS);
+		rest = new RestTemplate(requestFactory);
 		rest.setErrorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			public boolean hasError(ClientHttpResponse response) {
