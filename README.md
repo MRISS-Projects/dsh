@@ -414,6 +414,12 @@ The API description, in Swagger 2 format, is served at
 
 ## Release Notes
 
+### Version 0.3.2
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [146](https://github.com/MRISS-Projects/dsh/issues/146) | bug | [STORY] Release DSH 0.3.1 with a release site that carries its test reports and coverage badge | null | mriss | 9/30/26 |
+
 ### Version 0.3.0
 
 | # | Type | Summary | Assignee | Reporter | Updated |
