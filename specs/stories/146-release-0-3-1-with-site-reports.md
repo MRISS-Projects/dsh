@@ -186,39 +186,39 @@ unfixed workflow is the failing test, and T3's is green. Every local Maven run f
 - [x] **T6 — confirming rehearsal on `0.3.x`.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`. Check
       §7.2. This is AC002 as the issue words it.
       [Run 36648331265](https://github.com/MRISS-Projects/dsh/actions/runs/36648331265), green.
-      - Prepare ran 146 tests (127 unit and 19 integration). The site step ran none, and logged 21
-        loads and 5 skips.
-      - The badge was in the publish set.
-      - 6 of 6 write points were announced, and the remote was unchanged.
+  - Prepare ran 146 tests (127 unit and 19 integration). The site step ran none, and logged 21
+    loads and 5 skips.
+  - The badge was in the publish set.
+  - 6 of 6 write points were announced, and the remote was unchanged.
 - [x] **T7 — release.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`, without `dry_run`. Then check
       §7.3 and record AC004 to AC006.
       **It released 0.3.2, not 0.3.1**, after three dispatches:
-      1. [Run 36708887393](https://github.com/MRISS-Projects/dsh/actions/runs/36708887393) failed in
-         `release:prepare`'s forked build.
-         - `dsh-rest-api`'s `spring-boot:start` failed 0.95 s in with `Could not contact Spring Boot
-           application over JMX on port 40139. Please make sure that no other process is using that
-           port`, and the app printed nothing.
-         - Nothing was written.
-         - The suspected cause is a race between `reserve-network-port` and the containers'
-           Docker-published host ports. Not proven, and not reproduced in six other runs of the same
-           configuration. No issue was raised, by agreement, because it did not recur.
-      2. [Run 36712998895](https://github.com/MRISS-Projects/dsh/actions/runs/36712998895) passed
-         prepare. `release:perform` then got HTTP 500 from GitHub Packages on the last module,
-         `dsh-coverage-report:pom:0.3.1`. The result is a partial 0.3.1:
-         - tag `v0.3.1` (`d04438299`);
-         - 12 of 13 artifacts;
-         - `0.3.x` at `0.3.2-SNAPSHOT`;
-         - no `master`, site or `DEVELOP` write.
+  1. [Run 36708887393](https://github.com/MRISS-Projects/dsh/actions/runs/36708887393) failed in
+     `release:prepare`'s forked build.
+     - `dsh-rest-api`'s `spring-boot:start` failed 0.95 s in with `Could not contact Spring Boot
+       application over JMX on port 40139. Please make sure that no other process is using that
+       port`, and the app printed nothing.
+     - Nothing was written.
+     - The suspected cause is a race between `reserve-network-port` and the containers'
+       Docker-published host ports. Not proven, and not reproduced in six other runs of the same
+       configuration. No issue was raised, by agreement, because it did not recur.
+  2. [Run 36712998895](https://github.com/MRISS-Projects/dsh/actions/runs/36712998895) passed
+     prepare. `release:perform` then got HTTP 500 from GitHub Packages on the last module,
+     `dsh-coverage-report:pom:0.3.1`. The result is a partial 0.3.1:
+     - tag `v0.3.1` (`d04438299`);
+     - 12 of 13 artifacts;
+     - `0.3.x` at `0.3.2-SNAPSHOT`;
+     - no `master`, site or `DEVELOP` write.
 
-         The line moved on to 0.3.2 rather than delete the tag, force-push `0.3.x` and delete
-         packages, and `v0.3.1` stays as an incomplete release. The missing retry is
-         [`parent-poms#98`](https://github.com/MRISS-Projects/parent-poms/issues/98), to be addressed
-         later.
-      3. [Run 36715711599](https://github.com/MRISS-Projects/dsh/actions/runs/36715711599), green,
-         released **0.3.2**.
+     The line moved on to 0.3.2 rather than delete the tag, force-push `0.3.x` and delete
+     packages, and `v0.3.1` stays as an incomplete release. The missing retry is
+     [`parent-poms#98`](https://github.com/MRISS-Projects/parent-poms/issues/98), to be addressed
+     later.
+  3. [Run 36715711599](https://github.com/MRISS-Projects/dsh/actions/runs/36715711599), green,
+     released **0.3.2**.
 
-      The DSH milestone `0.3.1-SNAPSHOT` was renamed to `0.3.2`. Evidence is also on
-      [#146](https://github.com/MRISS-Projects/dsh/issues/146#issuecomment-5911760247).
+  The DSH milestone `0.3.1-SNAPSHOT` was renamed to `0.3.2`. Evidence is also on
+  [#146](https://github.com/MRISS-Projects/dsh/issues/146#issuecomment-5911760247).
 
 Gate 3 does not apply: no code touching an external system or a REST entry point changes. The parent
 change does alter the build, and the rehearsals run the integration tests under `-DintegrationTests`,
@@ -330,13 +330,13 @@ From the issue:
       `dsh-coverage-report/jacoco-aggregate` reports more than 0% line coverage.
       **Met by 0.3.2**, tagged `v0.3.2` (`47c26fe9`), with all 13 artifacts in GitHub Packages (T7
       explains why 0.3.2):
-      - root `surefire.html` reports **127 tests, 100%**, where it had 0;
-      - `failsafe.html`, `dsh-rest-api/jacoco/index.html` and `dsh-data/jacoco/index.html` return
-        **200**, where they returned 404;
-      - the aggregate reports **98%** lines (30 of 2,028 missed), where it had 0%.
+  - root `surefire.html` reports **127 tests, 100%**, where it had 0;
+  - `failsafe.html`, `dsh-rest-api/jacoco/index.html` and `dsh-data/jacoco/index.html` return
+    **200**, where they returned 404;
+  - the aggregate reports **98%** lines (30 of 2,028 missed), where it had 0%.
 
-      Checked live with a cache-busting query. For a few minutes after the Pages build of
-      `38a701903`, the CDN kept serving 0.3.0.
+  Checked live with a cache-busting query. For a few minutes after the Pages build of
+  `38a701903`, the CDN kept serving 0.3.0.
 - [x] **AC005** — `…/dsh-coverage-report/badges/jacoco.svg` returns 200, and the badge renders on
       `master`'s README.
       It returns **200** and reads `jacoco 98%`. `master`'s README (`1e476e64b`) links it.
