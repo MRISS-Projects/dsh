@@ -703,10 +703,12 @@ the wave, in order:
    `parent-poms#98`, the missing retry on a transient registry error during `release:perform`, came
    out of that second dispatch. It is not folded into `#95`: it is a separate failure mode of the
    same step, and is deferred, with no milestone yet.
-1. [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36) and
-   [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37), on the fork's
+1. [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36),
+   [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37) and
+   [`#38`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/38), on the fork's
    `2.12.10-SNAPSHOT`, then release **2.12.10**. The fork's process is the last section of its
-   README.
+   README. `#38` joined on 2026-09-30. It renders a closed milestone that has no issues, such as
+   DSH's `0.3.1`, and is opt-in, so parent-poms enables it in step 2.
 2. parent-poms `3.10.0-SNAPSHOT`: `#86` (bump the changes plugin to 2.12.10), `#74`, `#81`, `#88`
    and `#89`. `#89` joined the milestone on 2026-09-28, because its 404 is on DSH's own site. `#95`
    and `#96` left it for step 0 on 2026-09-29. Clear the milestone, then release **3.10.0** by the
@@ -747,6 +749,8 @@ Wave 8.
   (`products/dsh`) will send 0.3.0's site to `releases/products/dsh`, leaving the wiki's release link
   on 0.2.x. `#128` could only start once 0.3.0 was out, which it was on 2026-09-29. `#90`'s fix held
   on the release: `releases/products/dsh/` serves the root `index.html` and all 13 modules' pages.
+  The wiki's release row was moved to `releases/products/dsh/` on 2026-09-30, after 0.3.2, ahead of
+  the story. `#128` stays open for what to do with the legacy `releases/dsh/` and `rcs/dsh/` trees.
 - `#132` — Enforce SpotBugs and Checkstyle in the build and publish their reports.
 
   Not an ADR-001 phase task. It came from triaging Wave 0's `#43` on 2026-09-27. `#43` asked for
@@ -770,6 +774,15 @@ Wave 8.
   the UI is not served. It sits in this wave rather than Wave 2 because it does not depend on
   ADR-003, and because the choice it leaves open, Springfox's starter or springdoc-openapi, turns on
   the Spring Boot line `#120` settles.
+
+- `#148` — A dsh-release skill that runs a DSH release or hotfix end to end, with the checks 0.3.0
+  and 0.3.2 taught us.
+
+  Not an ADR-001 phase task. It was raised on 2026-09-30, after `#146`'s release. That release
+  shipped without its release-notes section, because the story closed after the README was
+  generated. It also took three dispatches and left a partial 0.3.1. `#148` was not folded into
+  `#146`, which was a release, not tooling. It belongs in this wave because the next release is
+  0.4.0, and the skill should exist before it.
 
 `#142`, which came from the same `#46` review, moved to Wave 2 on 2026-09-28.
 
