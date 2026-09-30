@@ -15,7 +15,7 @@
     <!-- THE BASICS -->
     <groupId>com.mriss.products</groupId>
     <artifactId>dsh</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- FR006: DSH-internal cross-module versions remain here; third-party versions are in products/pom.xml -->
@@ -281,7 +281,7 @@
         <connection>scm:git:https://github.com/MRISS-Projects/dsh.git</connection>
         <developerConnection>scm:git:https://github.com/MRISS-Projects/dsh.git</developerConnection>
         <url>https://github.com/MRISS-Projects/dsh</url>
-        <tag>v0.3.2</tag>
+        <tag>v0.3.0</tag>
     </scm>
     <repositories>
         <repository>
