@@ -57,8 +57,9 @@ the decisions that reordered the waves around building it.
 | 8 | `1.0.0-SNAPSHOT` |
 | 9 | `1.0.0-SNAPSHOT` |
 
-Wave 1's upstream step 0 is the exception: its DSH issue, `#146`, goes on `0.3.1-SNAPSHOT`, because it is
-built on the `0.3.x` hotfix line and ships as the `0.3.1` release, not in `0.4.0`.
+Wave 1's upstream step 0 was the exception. Its DSH issue, `#146`, was built on the `0.3.x` hotfix line
+and shipped as a patch release, not in `0.4.0`. It went on `0.3.1-SNAPSHOT`, which was renamed `0.3.2`,
+because the release shipped as 0.3.2 (§4, Wave 1, step 0). The milestone was closed on 2026-09-30.
 
 `0.5.0-SNAPSHOT` does not exist in GitHub yet; the others do. It is created when Wave 3's first
 issue is. `dsh-new-story` sets `--milestone` on `gh issue create` from this table, keyed by
@@ -311,7 +312,7 @@ so it is not mistaken for part of the goal:
 | `3.8.0` | none | **Released 2026-09-19** — cleared by `#13` |
 | `3.9.0` | none | **Released 2026-09-27** — cleared by `#70`, tagged `mriss-parent-3.9.0` |
 | `3.9.1` | none | **Closed 2026-09-29 without a release** — held only `#93`, a fix to the `@master`-pinned `commit-readme` action, raised by DSH `#143`'s staging run. No artifact changed, so DSH stays on `3.9.0` |
-| `3.9.2-SNAPSHOT` | `#95`, `#96` | Opened 2026-09-29 as a hotfix line for DSH 0.3.0's release site; `#95` and `#96` moved here from `3.10.0-SNAPSHOT`. Wave 1, upstream step 0 |
+| `3.9.2` | none | **Released 2026-09-29**, tagged `mriss-parent-3.9.2`, as the hotfix line for DSH 0.3.0's release site. It was cleared by `#95` and `#96`, which were fixed together by PR #97 and moved here from `3.10.0-SNAPSHOT`. DSH `0.3.x` names it, and `DEVELOP` inherits it through the 0.3.2 merge-back. Wave 1, upstream step 0 |
 | `3.10.0-SNAPSHOT` | `#74`, `#81`, `#86`, `#88`, `#89` | Opened 2026-09-20 to hold deferred work. Does **not** gate Wave 0; cleared and released at the start of Wave 1 |
 
 **This goal is met.** `3.9.0-SNAPSHOT` was renamed to `3.9.0` before the release, as `3.8.0` was,
@@ -659,7 +660,8 @@ Milestone: `0.4.0-SNAPSHOT`.
 was back on `DEVELOP` (Wave 0). Both held on 2026-09-29, so this block goes before anything else in
 the wave, in order:
 
-0. **Hotfix DSH 0.3.1, to repair 0.3.0's release site.** `parent-poms#95` and `#96` came out of DSH
+0. **Done on 2026-09-30, shipped as DSH 0.3.2. Hotfix DSH 0.3.1, to repair 0.3.0's release site.**
+   The plan as written is kept below. Its outcome follows it. `parent-poms#95` and `#96` came out of DSH
    0.3.0's release on 2026-09-29. The release site's test and coverage reports are empty (`#95`)
    and it has no coverage badge (`#96`), so the badge on `master`'s README is broken. Both have one
    cause: `project-release.yml` deletes `target/checkout`, where `release:perform` ran the tests,
@@ -682,13 +684,25 @@ the wave, in order:
       site from `v0.3.0` that `#95` originally asked for, and `#96` AC003 with it; both issues'
       criteria are corrected to match before they are built.
 
-   Two things are settled by building it, not now. **Whether the pin is needed at all:** §6 says a
-   fix confined to the reusable workflows reaches DSH at `@master` with no pin and no release, as
-   `3.9.1` did. The pin, and the 3.9.2 release, earn their place only if the fix touches the POM —
-   the site or badge profiles, for instance. **What the merge-back carries:** the hotfix merges
-   `v0.3.1` into `DEVELOP`, aligning the project version but not the parent's, so `DEVELOP` is
-   expected to inherit the `3.9.2` parent. That is harmless, and step 3's re-pin to `3.10.0`
-   supersedes it.
+   **Outcome.** `#146` is closed. Its spec, `specs/stories/146-release-0-3-1-with-site-reports.md`,
+   holds the evidence.
+   - **The pin was needed.** The fix, parent-poms PR #97, touches `products/pom.xml`. It makes
+     `release:prepare`'s forked build a release's single test run, integration tests included, and
+     builds the site from that tree. A workflow-only fix would not have needed the pin.
+   - **Proven before merging.** parent-poms 3.9.2 was proven by DSH rehearsals of both workflows
+     against the PR branch before it merged, and was released on 2026-09-29.
+   - **0.3.1 was abandoned.** The first real dispatch failed before any write. The second left a
+     partial 0.3.1: tag `v0.3.1`, 12 of 13 artifacts, and `0.3.x` moved on. That was caused by a
+     transient HTTP 500 from GitHub Packages in `release:perform`.
+   - **Shipped as 0.3.2.** Rather than delete the tag and force-push `0.3.x`, the line released
+     **0.3.2** on 2026-09-30. Its site carries the reports (127 tests, 98% aggregate coverage) and the
+     badge, and `master`'s README shows it.
+   - **The merge-back** left `DEVELOP` at `0.4.0-SNAPSHOT` naming parent `3.9.2`, as expected. Step
+     3's re-pin to `3.10.0` supersedes that.
+
+   `parent-poms#98`, the missing retry on a transient registry error during `release:perform`, came
+   out of that second dispatch. It is not folded into `#95`: it is a separate failure mode of the
+   same step, and is deferred, with no milestone yet.
 1. [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36) and
    [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37), on the fork's
    `2.12.10-SNAPSHOT`, then release **2.12.10**. The fork's process is the last section of its
@@ -704,7 +718,8 @@ the wave, in order:
    still committed to `master`. It depends on nothing above, but its first criterion, finding what
    last deployed by committing there, may lead back into parent-poms.
 
-`parent-poms#85` keeps no milestone. `parent-poms#90`, `#91` and `#92` belong to Wave 8.
+`parent-poms#85` and `parent-poms#98` keep no milestone. `parent-poms#90`, `#91` and `#92` belong to
+Wave 8.
 
 **Triaged issues:**
 
@@ -1072,10 +1087,10 @@ issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: W
   - **A workflow-only fix needs no pin.** parent-poms' reusable workflows and its `commit-readme`
     action are called `@master`, so a fix to them reaches DSH when it merges. The hotfix milestone
     still tracks the issue, but nothing is deployed, pinned or released. `parent-poms#93` was the
-    first: milestone `3.9.1`, closed on 2026-09-29 without a release. `3.9.2-SNAPSHOT`, opened the
-    same day for `parent-poms#95` and `#96`, is the first hotfix line planned to be pinned. Its pin
-    is on DSH's `0.3.x`, not `DEVELOP`, because what it fixes ships as DSH 0.3.1 (Wave 1, upstream
-    step 0).
+    first: milestone `3.9.1`, closed on 2026-09-29 without a release. `3.9.2`, opened the same day
+    for `parent-poms#95` and `#96`, was the first hotfix line pinned. Its fix touched
+    `products/pom.xml`, so the pin was required. The pin was on DSH's `0.3.x`, not `DEVELOP`, because
+    what it fixed shipped as a DSH patch release, 0.3.2 (Wave 1, upstream step 0).
 
   This applies from Wave 1, the first wave after DSH 0.3.0 shipped on 2026-09-29. Until then, no
   parent-poms work was picked up at all (entry above), with one exception granted on 2026-09-26: an
@@ -1134,4 +1149,5 @@ issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: W
   into `DEVELOP` (`e6cccf502`, after `f0d1931e7` aligned it to `0.4.0-SNAPSHOT`). The RC's commits,
   315 of them not on `DEVELOP` before, are reachable from it, and `#69`'s check found all 13 modules
   at `0.3.1-SNAPSHOT` on `0.3.x`. The release did surface two defects outside `#65` and `#69`,
-  both in its site: `parent-poms#95` and `#96` (Wave 1, upstream step 0, hotfix 0.3.1).
+  both in its site: `parent-poms#95` and `#96` (Wave 1, upstream step 0). Both were fixed in 3.9.2
+  and shipped by DSH 0.3.2.
