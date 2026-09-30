@@ -3,7 +3,7 @@ issue: 146
 slug: release-0-3-1-with-site-reports
 parent_branch: 0.3.x
 wave: 1
-milestone: 0.3.1-SNAPSHOT
+milestone: 0.3.2
 ---
 
 # Story 146 — Release DSH 0.3.1 with a release site that carries its test reports and coverage badge
@@ -180,11 +180,45 @@ unfixed workflow is the failing test, and T3's is green. Every local Maven run f
       §4.3's revision of their ACs was skipped at the human's direction. Gate 1 downloaded the
       released `products-3.9.2.pom`, which carries `release.forked.test.arguments`: `maven exit=0`,
       coverage checks met in all 8 code modules. AC003 is ticked once the merge puts this on `0.3.x`.
-- [ ] **T5 — ship.** `dsh-ship-story`, then `dsh-pr-cycle`, into `0.3.x`. You merge.
-- [ ] **T6 — confirming rehearsal on `0.3.x`.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`. Check
+- [x] **T5 — ship.** `dsh-ship-story`, then `dsh-pr-cycle`, into `0.3.x`. You merge.
+      [PR #147](https://github.com/MRISS-Projects/dsh/pull/147), merged as `49e899855`. The local
+      review raised nothing, and all CI checks were green.
+- [x] **T6 — confirming rehearsal on `0.3.x`.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`. Check
       §7.2. This is AC002 as the issue words it.
-- [ ] **T7 — release.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`, without `dry_run`. Then check
+      [Run 36648331265](https://github.com/MRISS-Projects/dsh/actions/runs/36648331265), green.
+      - Prepare ran 146 tests (127 unit and 19 integration). The site step ran none, and logged 21
+        loads and 5 skips.
+      - The badge was in the publish set.
+      - 6 of 6 write points were announced, and the remote was unchanged.
+- [x] **T7 — release.** §7.1 with `--ref 0.3.x -f branch_name=0.3.x`, without `dry_run`. Then check
       §7.3 and record AC004 to AC006.
+      **It released 0.3.2, not 0.3.1**, after three dispatches:
+      1. [Run 36708887393](https://github.com/MRISS-Projects/dsh/actions/runs/36708887393) failed in
+         `release:prepare`'s forked build.
+         - `dsh-rest-api`'s `spring-boot:start` failed 0.95 s in with `Could not contact Spring Boot
+           application over JMX on port 40139. Please make sure that no other process is using that
+           port`, and the app printed nothing.
+         - Nothing was written.
+         - The suspected cause is a race between `reserve-network-port` and the containers'
+           Docker-published host ports. Not proven, and not reproduced in six other runs of the same
+           configuration. No issue was raised, by agreement, because it did not recur.
+      2. [Run 36712998895](https://github.com/MRISS-Projects/dsh/actions/runs/36712998895) passed
+         prepare. `release:perform` then got HTTP 500 from GitHub Packages on the last module,
+         `dsh-coverage-report:pom:0.3.1`. The result is a partial 0.3.1:
+         - tag `v0.3.1` (`d04438299`);
+         - 12 of 13 artifacts;
+         - `0.3.x` at `0.3.2-SNAPSHOT`;
+         - no `master`, site or `DEVELOP` write.
+
+         The line moved on to 0.3.2 rather than delete the tag, force-push `0.3.x` and delete
+         packages, and `v0.3.1` stays as an incomplete release. The missing retry is
+         [`parent-poms#98`](https://github.com/MRISS-Projects/parent-poms/issues/98), to be addressed
+         later.
+      3. [Run 36715711599](https://github.com/MRISS-Projects/dsh/actions/runs/36715711599), green,
+         released **0.3.2**.
+
+      The DSH milestone `0.3.1-SNAPSHOT` was renamed to `0.3.2`. Evidence is also on
+      [#146](https://github.com/MRISS-Projects/dsh/issues/146#issuecomment-5911760247).
 
 Gate 3 does not apply: no code touching an external system or a REST entry point changes. The parent
 change does alter the build, and the rehearsals run the integration tests under `-DintegrationTests`,
@@ -285,25 +319,42 @@ From the issue:
       `e36d7c612`. As it turned out, the fix does touch a POM (`products/pom.xml`,
       `release.forked.test.arguments`), so the pin is load-bearing and not only a matter of
       consistency.
-- [ ] **AC002** — A `hotfix.yml` dispatch on `0.3.x` with `dry_run=true` (T6) meets every point of §7.2.
+- [x] **AC002** — A `hotfix.yml` dispatch on `0.3.x` with `dry_run=true` (T6) meets every point of §7.2.
       The same check on this branch against `3.9.2-SNAPSHOT` (T3) precedes it.
-- [ ] **AC003** — Before the real release, the root `pom.xml` names the released `3.9.2`, with no
-      `-SNAPSHOT` (T4), and that is what `0.3.x` carries after the merge.
-- [ ] **AC004** — The real dispatch (T7) releases `0.3.1`, tagged `v0.3.1`. The site checks in §7.3
+      T6, [run 36648331265](https://github.com/MRISS-Projects/dsh/actions/runs/36648331265).
+- [x] **AC003** — Before the real release, the root `pom.xml` names the released `3.9.2`, with no
+      `-SNAPSHOT` (T4), and that is what `0.3.x` carries after the merge. `49e899855`.
+- [x] **AC004** — The real dispatch (T7) releases `0.3.1`, tagged `v0.3.1`. The site checks in §7.3
       hold: root `surefire.html` reports a non-zero test count, and `failsafe.html`,
       `dsh-rest-api/jacoco/index.html` and `dsh-data/jacoco/index.html` return 200.
       `dsh-coverage-report/jacoco-aggregate` reports more than 0% line coverage.
-- [ ] **AC005** — `…/dsh-coverage-report/badges/jacoco.svg` returns 200, and the badge renders on
+      **Met by 0.3.2**, tagged `v0.3.2` (`47c26fe9`), with all 13 artifacts in GitHub Packages (T7
+      explains why 0.3.2):
+      - root `surefire.html` reports **127 tests, 100%**, where it had 0;
+      - `failsafe.html`, `dsh-rest-api/jacoco/index.html` and `dsh-data/jacoco/index.html` return
+        **200**, where they returned 404;
+      - the aggregate reports **98%** lines (30 of 2,028 missed), where it had 0%.
+
+      Checked live with a cache-busting query. For a few minutes after the Pages build of
+      `38a701903`, the CDN kept serving 0.3.0.
+- [x] **AC005** — `…/dsh-coverage-report/badges/jacoco.svg` returns 200, and the badge renders on
       `master`'s README.
-- [ ] **AC006** — `DEVELOP` is at `0.4.0-SNAPSHOT` with `v0.3.1` reachable from it. Record the parent
+      It returns **200** and reads `jacoco 98%`. `master`'s README (`1e476e64b`) links it.
+- [x] **AC006** — `DEVELOP` is at `0.4.0-SNAPSHOT` with `v0.3.1` reachable from it. Record the parent
       version `DEVELOP` names afterwards, expected to be `3.9.2`.
+      With `v0.3.2`: `DEVELOP` `714d3c27e` is at `0.4.0-SNAPSHOT`, `v0.3.2` is reachable from it, and
+      it names parent **`3.9.2`**, as expected. Wave 1 upstream step 3's re-pin to `3.10.0` supersedes
+      that.
 
 Added by this spec:
 
 - [x] **AC007** — T1's rehearsal against the unfixed workflow shows no test or coverage execution
       before the site step and no badge written. This proves T3 is green because of the upstream fix.
       [Run 36614968935](https://github.com/MRISS-Projects/dsh/actions/runs/36614968935), §7.4.
-- [ ] **AC008** — `0.3.x` never names a `-SNAPSHOT` parent: its `pom.xml` history goes from `3.9.0` to
+- [x] **AC008** — `0.3.x` never names a `-SNAPSHOT` parent: its `pom.xml` history goes from `3.9.0` to
       `3.9.2` in one merge.
-- [ ] **AC009** — CI is green on the PR into `0.3.x`. No `.java` is in the diff, so the coverage gate
-      is unaffected.
+      On `0.3.x`'s first-parent history: `6932be686` names `3.9.0`, and every commit from
+      `49e899855` (the merge of #147) to `1960098f0` names `3.9.2`.
+- [x] **AC009** — CI is green on the PR into `0.3.x`. No `.java` is in the diff, so the coverage gate
+      is unaffected. PR #147: `Build, Test and Coverage Gate`, `Check Spec File References`,
+      `Validate Markdown Files` and `Validate OpenAPI Specification` all passed.
