@@ -13,17 +13,17 @@ import java.util.Map;
  * @author riss
  *
  */
-<span class="nc" id="L16">public enum Order {</span>
+<span class="fc" id="L16">public enum Order {</span>
 
     /**
      * Ascending order.
      */
-<span class="nc" id="L21">    ASC(&quot;asc&quot;),</span>
+<span class="fc" id="L21">    ASC(&quot;asc&quot;),</span>
 
     /**
      * Descending order.
      */
-<span class="nc" id="L26">    DESC(&quot;desc&quot;);</span>
+<span class="fc" id="L26">    DESC(&quot;desc&quot;);</span>
 
     /**
      * Order name (asc or desc).
@@ -42,7 +42,7 @@ import java.util.Map;
         /**
          * Stores orders per order name.
          */
-<span class="nc" id="L45">        private static Map&lt;String, Order&gt; orderNames = new HashMap&lt;String, Order&gt;();</span>
+<span class="fc" id="L45">        private static Map&lt;String, Order&gt; orderNames = new HashMap&lt;String, Order&gt;();</span>
 
         /**
          * Puts an order using its order name as a key.
@@ -51,8 +51,8 @@ import java.util.Map;
          * @param order     the order instance.
          */
         public static void put(String orderName, Order order) {
-<span class="nc" id="L54">            orderNames.put(orderName, order);</span>
-<span class="nc" id="L55">        }</span>
+<span class="fc" id="L54">            orderNames.put(orderName, order);</span>
+<span class="fc" id="L55">        }</span>
 
         /**
          * Gets an order by its order name.
@@ -61,7 +61,7 @@ import java.util.Map;
          * @return the order.
          */
         public static Order get(String orderName) {
-<span class="nc" id="L64">            return orderNames.get(orderName);</span>
+<span class="fc" id="L64">            return orderNames.get(orderName);</span>
         }
 
     }
@@ -72,10 +72,10 @@ import java.util.Map;
      * 
      * @param orderName the order name (asc or desc)
      */
-<span class="nc" id="L75">    private Order(String orderName) {</span>
-<span class="nc" id="L76">        this.orderName = orderName;</span>
-<span class="nc" id="L77">        OrderNamesHolder.put(this.orderName, this);</span>
-<span class="nc" id="L78">    }</span>
+<span class="fc" id="L75">    private Order(String orderName) {</span>
+<span class="fc" id="L76">        this.orderName = orderName;</span>
+<span class="fc" id="L77">        OrderNamesHolder.put(this.orderName, this);</span>
+<span class="fc" id="L78">    }</span>
 
     /**
      * Gets an order by its order name.
@@ -84,7 +84,7 @@ import java.util.Map;
      * @return the order
      */
     public static Order getOrderByName(String orderName) {
-<span class="nc" id="L87">        return OrderNamesHolder.get(orderName);</span>
+<span class="fc" id="L87">        return OrderNamesHolder.get(orderName);</span>
     }
 
     /**
@@ -103,10 +103,10 @@ import java.util.Map;
      *         (&lt;code&gt;&amp;lt;=&lt;/code&gt;).
      */
     public int compare(int paramValueO1, int paramValueO2) {
-<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (this == ASC) {</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">            return paramValueO1 &lt; paramValueO2 ? -1 : 1;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (this == ASC) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            return paramValueO1 &lt; paramValueO2 ? -1 : 1;</span>
         } else {
-<span class="nc bnc" id="L109" title="All 2 branches missed.">            return paramValueO1 &gt; paramValueO2 ? -1 : 1;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            return paramValueO1 &gt; paramValueO2 ? -1 : 1;</span>
         }
     }
 

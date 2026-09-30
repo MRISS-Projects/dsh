@@ -6,52 +6,52 @@ public class Keyword implements Comparable&lt;Keyword&gt; {
 	
 	private double score;
 	
-<span class="nc" id="L9">	public Keyword(String value, double score) {</span>
-<span class="nc" id="L10">		this.value = value;</span>
-<span class="nc" id="L11">		this.score = score;</span>
-<span class="nc" id="L12">	}</span>
+<span class="fc" id="L9">	public Keyword(String value, double score) {</span>
+<span class="fc" id="L10">		this.value = value;</span>
+<span class="fc" id="L11">		this.score = score;</span>
+<span class="fc" id="L12">	}</span>
 
 	public String getValue() {
-<span class="nc" id="L15">		return value;</span>
+<span class="fc" id="L15">		return value;</span>
 	}
 
 	public double getScore() {
-<span class="nc" id="L19">		return score;</span>
+<span class="fc" id="L19">		return score;</span>
 	}
 
 	@Override
 	public int hashCode() {
-<span class="nc" id="L24">		final int prime = 31;</span>
-<span class="nc" id="L25">		int result = 1;</span>
-<span class="nc bnc" id="L26" title="All 2 branches missed.">		result = prime * result + ((value == null) ? 0 : value.hashCode());</span>
-<span class="nc" id="L27">		return result;</span>
+<span class="fc" id="L24">		final int prime = 31;</span>
+<span class="fc" id="L25">		int result = 1;</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		result = prime * result + ((value == null) ? 0 : value.hashCode());</span>
+<span class="fc" id="L27">		return result;</span>
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-<span class="nc bnc" id="L32" title="All 2 branches missed.">		if (this == obj)</span>
-<span class="nc" id="L33">			return true;</span>
-<span class="nc bnc" id="L34" title="All 2 branches missed.">		if (obj == null)</span>
-<span class="nc" id="L35">			return false;</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
-<span class="nc" id="L37">			return false;</span>
-<span class="nc" id="L38">		Keyword other = (Keyword) obj;</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">		if (value == null) {</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">			if (other.value != null)</span>
-<span class="nc" id="L41">				return false;</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">		} else if (!value.equals(other.value))</span>
-<span class="nc" id="L43">			return false;</span>
-<span class="nc" id="L44">		return true;</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L33">			return true;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		if (obj == null)</span>
+<span class="fc" id="L35">			return false;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		if (getClass() != obj.getClass())</span>
+<span class="fc" id="L37">			return false;</span>
+<span class="fc" id="L38">		Keyword other = (Keyword) obj;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (value == null) {</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">			if (other.value != null)</span>
+<span class="fc" id="L41">				return false;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		} else if (!value.equals(other.value))</span>
+<span class="fc" id="L43">			return false;</span>
+<span class="fc" id="L44">		return true;</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="nc" id="L49">		return &quot;Keyword [value=&quot; + value + &quot;, score=&quot; + score + &quot;]&quot;;</span>
+<span class="fc" id="L49">		return &quot;Keyword [value=&quot; + value + &quot;, score=&quot; + score + &quot;]&quot;;</span>
 	}
 
 	@Override
 	public int compareTo(Keyword o) {
-<span class="nc" id="L54">		return KeywordSorter.getInstance().compare(this, o);</span>
+<span class="fc" id="L54">		return KeywordSorter.getInstance().compare(this, o);</span>
 	}
 
 }

@@ -8,61 +8,61 @@ public class Sentence implements Comparable&lt;Sentence&gt; {
 	
 	private int paragraph;
 	
-<span class="nc" id="L11">	public Sentence(String value, double score, int paragraph) {</span>
-<span class="nc" id="L12">		this.value = value;</span>
-<span class="nc" id="L13">		this.score = score;</span>
-<span class="nc" id="L14">		this.paragraph = paragraph;</span>
-<span class="nc" id="L15">	}</span>
+<span class="fc" id="L11">	public Sentence(String value, double score, int paragraph) {</span>
+<span class="fc" id="L12">		this.value = value;</span>
+<span class="fc" id="L13">		this.score = score;</span>
+<span class="fc" id="L14">		this.paragraph = paragraph;</span>
+<span class="fc" id="L15">	}</span>
 
 	public String getValue() {
-<span class="nc" id="L18">		return value;</span>
+<span class="fc" id="L18">		return value;</span>
 	}
 
 	public double getScore() {
-<span class="nc" id="L22">		return score;</span>
+<span class="fc" id="L22">		return score;</span>
 	}
 
 	public int getParagraph() {
-<span class="nc" id="L26">		return paragraph;</span>
+<span class="fc" id="L26">		return paragraph;</span>
 	}
 
 	@Override
 	public int hashCode() {
-<span class="nc" id="L31">		final int prime = 31;</span>
-<span class="nc" id="L32">		int result = 1;</span>
-<span class="nc" id="L33">		result = prime * result + paragraph;</span>
-<span class="nc bnc" id="L34" title="All 2 branches missed.">		result = prime * result + ((value == null) ? 0 : value.hashCode());</span>
-<span class="nc" id="L35">		return result;</span>
+<span class="fc" id="L31">		final int prime = 31;</span>
+<span class="fc" id="L32">		int result = 1;</span>
+<span class="fc" id="L33">		result = prime * result + paragraph;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		result = prime * result + ((value == null) ? 0 : value.hashCode());</span>
+<span class="fc" id="L35">		return result;</span>
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-<span class="nc bnc" id="L40" title="All 2 branches missed.">		if (this == obj)</span>
-<span class="nc" id="L41">			return true;</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">		if (obj == null)</span>
-<span class="nc" id="L43">			return false;</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
-<span class="nc" id="L45">			return false;</span>
-<span class="nc" id="L46">		Sentence other = (Sentence) obj;</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">		if (paragraph != other.paragraph)</span>
-<span class="nc" id="L48">			return false;</span>
-<span class="nc bnc" id="L49" title="All 2 branches missed.">		if (value == null) {</span>
-<span class="nc bnc" id="L50" title="All 2 branches missed.">			if (other.value != null)</span>
-<span class="nc" id="L51">				return false;</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">		} else if (!value.equals(other.value))</span>
-<span class="nc" id="L53">			return false;</span>
-<span class="nc" id="L54">		return true;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L41">			return true;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (obj == null)</span>
+<span class="fc" id="L43">			return false;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (getClass() != obj.getClass())</span>
+<span class="fc" id="L45">			return false;</span>
+<span class="fc" id="L46">		Sentence other = (Sentence) obj;</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (paragraph != other.paragraph)</span>
+<span class="fc" id="L48">			return false;</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (value == null) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (other.value != null)</span>
+<span class="fc" id="L51">				return false;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		} else if (!value.equals(other.value))</span>
+<span class="fc" id="L53">			return false;</span>
+<span class="fc" id="L54">		return true;</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="nc" id="L59">		return &quot;Sentence [value=&quot; + value + &quot;, score=&quot; + score + &quot;, paragraph=&quot;</span>
+<span class="fc" id="L59">		return &quot;Sentence [value=&quot; + value + &quot;, score=&quot; + score + &quot;, paragraph=&quot;</span>
 				+ paragraph + &quot;]&quot;;
 	}
 
 	@Override
 	public int compareTo(Sentence o) {
-<span class="nc" id="L65">		return SentenceSorter.getInstance().compare(this, o);</span>
+<span class="fc" id="L65">		return SentenceSorter.getInstance().compare(this, o);</span>
 	}
 
 	

@@ -26,10 +26,10 @@ public class OrderOptions {
      * @param orderField the field to be used when ordering.
      */
     public OrderOptions(Order order, String orderField) {
-<span class="nc" id="L29">        super();</span>
-<span class="nc" id="L30">        this.order = order;</span>
-<span class="nc" id="L31">        this.termVectorParam = orderField;</span>
-<span class="nc" id="L32">    }</span>
+<span class="fc" id="L29">        super();</span>
+<span class="fc" id="L30">        this.order = order;</span>
+<span class="fc" id="L31">        this.termVectorParam = orderField;</span>
+<span class="fc" id="L32">    }</span>
 
     /**
      * Gets the order.
@@ -37,7 +37,7 @@ public class OrderOptions {
      * @return the order.
      */
     public Order getOrder() {
-<span class="nc" id="L40">        return order;</span>
+<span class="fc" id="L40">        return order;</span>
     }
 
     /**
@@ -46,12 +46,12 @@ public class OrderOptions {
      * @return the param/field.
      */
     public String getTermVectorParam() {
-<span class="nc" id="L49">        return termVectorParam;</span>
+<span class="fc" id="L49">        return termVectorParam;</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L54">        return &quot;OrderOptions [order=&quot; + order + &quot;, orderField=&quot; + termVectorParam + &quot;]&quot;;</span>
+<span class="fc" id="L54">        return &quot;OrderOptions [order=&quot; + order + &quot;, orderField=&quot; + termVectorParam + &quot;]&quot;;</span>
     }
 
 }

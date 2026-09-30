@@ -13,17 +13,17 @@ public class AdvancedNumberFilterFactory extends TokenFilterFactory {
     public static final String NAME = &quot;advancedNumberFilter&quot;;
 
     public AdvancedNumberFilterFactory(Map&lt;String, String&gt; args) {
-<span class="nc" id="L16">        super(args);</span>
-<span class="nc" id="L17">    }</span>
+<span class="fc" id="L16">        super(args);</span>
+<span class="fc" id="L17">    }</span>
 
     @Override
     public TokenStream create(TokenStream input) {
-<span class="nc" id="L21">        return new AdvancedNumberFilter(input);</span>
+<span class="fc" id="L21">        return new AdvancedNumberFilter(input);</span>
     }
 
     @Override
     public TokenStream normalize(TokenStream input) {
-<span class="nc" id="L26">        return create(input);</span>
+<span class="fc" id="L26">        return create(input);</span>
     }
 
 }

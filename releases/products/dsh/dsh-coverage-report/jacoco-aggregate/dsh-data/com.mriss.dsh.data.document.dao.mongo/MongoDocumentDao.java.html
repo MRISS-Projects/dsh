@@ -10,43 +10,43 @@ import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
 
 @Component
-<span class="nc" id="L13">public class MongoDocumentDao implements DocumentDao {</span>
+<span class="fc" id="L13">public class MongoDocumentDao implements DocumentDao {</span>
 	
 	@Autowired
 	DocumentRepository repository;
 
 	@Override
 	public String storeDocument(Document document) {
-<span class="nc" id="L20">		Document d = repository.save(document);</span>
-<span class="nc bnc" id="L21" title="All 2 branches missed.">		if (!d.equals(Optional.empty()))</span>
-<span class="nc" id="L22">			return d.getId();</span>
+<span class="fc" id="L20">		Document d = repository.save(document);</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">		if (!d.equals(Optional.empty()))</span>
+<span class="fc" id="L22">			return d.getId();</span>
 		else 
 <span class="nc" id="L24">			return null;</span>
 	}
 
 	@Override
 	public Document findDocumentById(String id) {
-<span class="nc" id="L29">		Optional&lt;Document&gt; d = repository.findById(id);</span>
-<span class="nc bnc" id="L30" title="All 2 branches missed.">		if (!d.equals(Optional.empty()))</span>
-<span class="nc" id="L31">			return d.get();</span>
+<span class="fc" id="L29">		Optional&lt;Document&gt; d = repository.findById(id);</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">		if (!d.equals(Optional.empty()))</span>
+<span class="fc" id="L31">			return d.get();</span>
 		else 
-<span class="nc" id="L33">			return null;</span>
+<span class="fc" id="L33">			return null;</span>
 	}
 
 	@Override
 	public List&lt;Document&gt; findDocumentsByHash(String documentHash) {
-<span class="nc" id="L38">		return repository.findByFileHash(documentHash);</span>
+<span class="fc" id="L38">		return repository.findByFileHash(documentHash);</span>
 	}
 
 	@Override
 	public Document findDocumentByToken(String token) {
-<span class="nc" id="L43">		return repository.findByToken(token);</span>
+<span class="fc" id="L43">		return repository.findByToken(token);</span>
 	}
 
 	@Override
 	public void clearDocuments() {
-<span class="nc" id="L48">		repository.deleteAll();</span>
-<span class="nc" id="L49">	}</span>
+<span class="fc" id="L48">		repository.deleteAll();</span>
+<span class="fc" id="L49">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

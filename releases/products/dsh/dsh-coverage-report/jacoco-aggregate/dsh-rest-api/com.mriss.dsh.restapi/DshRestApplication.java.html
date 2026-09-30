@@ -16,18 +16,18 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan(basePackages={&quot;com.mriss.dsh&quot;})
 @ImportResource(locations = { &quot;classpath:/enqueue-docId-context.xml&quot;})
 @EnableAsync
-<span class="nc" id="L19">public class DshRestApplication extends SpringBootServletInitializer {</span>
+<span class="fc" id="L19">public class DshRestApplication extends SpringBootServletInitializer {</span>
 	
-<span class="nc" id="L21">	final static Logger logger = LoggerFactory.getLogger(DshRestApplication.class);</span>
+<span class="fc" id="L21">	final static Logger logger = LoggerFactory.getLogger(DshRestApplication.class);</span>
 
 	public static void main(String[] args) {
-<span class="nc" id="L24">		SpringApplication.run(DshRestApplication.class, args);</span>
-<span class="nc" id="L25">		logger.info(&quot;Main application run!!!&quot;);</span>
-<span class="nc" id="L26">	}</span>
+<span class="fc" id="L24">		SpringApplication.run(DshRestApplication.class, args);</span>
+<span class="fc" id="L25">		logger.info(&quot;Main application run!!!&quot;);</span>
+<span class="fc" id="L26">	}</span>
 	
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-<span class="nc" id="L30">		return application.sources(DshRestApplication.class);</span>
+<span class="fc" id="L30">		return application.sources(DshRestApplication.class);</span>
 	}
 	
 }

@@ -16,9 +16,9 @@ import com.mriss.dsh.data.models.TransitionType;
 
 @Service
 @RequestScope(proxyMode=ScopedProxyMode.TARGET_CLASS)
-<span class="nc" id="L19">public class DocumentSubmissionServiceImpl implements DocumentSubmissionService {</span>
+<span class="fc" id="L19">public class DocumentSubmissionServiceImpl implements DocumentSubmissionService {</span>
 	
-<span class="nc" id="L21">	final static Logger logger = LoggerFactory.getLogger(DocumentSubmissionServiceImpl.class);</span>
+<span class="fc" id="L21">	final static Logger logger = LoggerFactory.getLogger(DocumentSubmissionServiceImpl.class);</span>
 	
 	private Document document;
 	
@@ -31,30 +31,30 @@ import com.mriss.dsh.data.models.TransitionType;
 	@Autowired
 	private DocumentEnqueueMessageHandler messageHandler;
 
-<span class="nc" id="L34">	private boolean storeDocument = false;</span>
+<span class="fc" id="L34">	private boolean storeDocument = false;</span>
 	
 	@Override
 	public String getTokenFromDocument(InputStream originalDocumentContents, String documentTitle,
 			boolean useCache) throws DocumentSubmissionException {
-<span class="nc" id="L39">		logger.info(&quot;DocumentSubmissionServiceImpl.this(): &quot; + this);</span>
+<span class="fc" id="L39">		logger.info(&quot;DocumentSubmissionServiceImpl.this(): &quot; + this);</span>
 		try {
-<span class="nc" id="L41">			this.document = new Document(originalDocumentContents, documentTitle);</span>
-<span class="nc" id="L42">			messageHandler.setDocument(this.document);			</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">			if (useCache) {</span>
-<span class="nc" id="L44">				Document doc = docHandlingService.getDocumentByHash(this.document.getFileHash());</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">				if (doc != null) {</span>
-<span class="nc" id="L46">					return doc.getToken();</span>
+<span class="fc" id="L41">			this.document = new Document(originalDocumentContents, documentTitle);</span>
+<span class="fc" id="L42">			messageHandler.setDocument(this.document);			</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			if (useCache) {</span>
+<span class="fc" id="L44">				Document doc = docHandlingService.getDocumentByHash(this.document.getFileHash());</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">				if (doc != null) {</span>
+<span class="fc" id="L46">					return doc.getToken();</span>
 				} else {
-<span class="nc" id="L48">					storeDocument = true;</span>
-<span class="nc" id="L49">					return this.document.getToken();</span>
+<span class="fc" id="L48">					storeDocument = true;</span>
+<span class="fc" id="L49">					return this.document.getToken();</span>
 				}
 			} else {
-<span class="nc" id="L52">				storeDocument = true;</span>
-<span class="nc" id="L53">				return document.getToken();</span>
+<span class="fc" id="L52">				storeDocument = true;</span>
+<span class="fc" id="L53">				return document.getToken();</span>
 			}
-<span class="nc" id="L55">		} catch (Exception e) {</span>
+<span class="fc" id="L55">		} catch (Exception e) {</span>
 			try {
-<span class="nc bnc" id="L57" title="All 2 branches missed.">				throw new DocumentSubmissionException(e.getMessage(), e, this.document != null ? document : new Document(documentTitle));</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">				throw new DocumentSubmissionException(e.getMessage(), e, this.document != null ? document : new Document(documentTitle));</span>
 <span class="nc" id="L58">			} catch (NoSuchAlgorithmException e1) {</span>
 <span class="nc" id="L59">				logger.error(e1.getMessage(), e1);</span>
 <span class="nc" id="L60">				return null;</span>
@@ -65,25 +65,25 @@ import com.mriss.dsh.data.models.TransitionType;
 	@Override
 	@Async
 	public void storeDocumentAndQueueForProcessing() {
-<span class="nc bnc" id="L68" title="All 4 branches missed.">		if (document != null &amp;&amp; storeDocument) {</span>
-<span class="nc" id="L69">			document.transitionStatus(TransitionType.NEUTRAL);</span>
-<span class="nc" id="L70">			docHandlingService.storeDocument(this.document);			</span>
+<span class="fc bfc" id="L68" title="All 4 branches covered.">		if (document != null &amp;&amp; storeDocument) {</span>
+<span class="fc" id="L69">			document.transitionStatus(TransitionType.NEUTRAL);</span>
+<span class="fc" id="L70">			docHandlingService.storeDocument(this.document);			</span>
 			try {
-<span class="nc" id="L72">				docQueueService.enqueueDocumentId(document.getId(), messageHandler);</span>
-<span class="nc" id="L73">			} catch (Exception e) {</span>
-<span class="nc" id="L74">				logger.error(e.getMessage(), e);</span>
-<span class="nc" id="L75">				document.transitionStatus(TransitionType.ERROR);</span>
-<span class="nc" id="L76">				docHandlingService.storeDocument(document);</span>
-<span class="nc" id="L77">			}</span>
+<span class="fc" id="L72">				docQueueService.enqueueDocumentId(document.getId(), messageHandler);</span>
+<span class="fc" id="L73">			} catch (Exception e) {</span>
+<span class="fc" id="L74">				logger.error(e.getMessage(), e);</span>
+<span class="fc" id="L75">				document.transitionStatus(TransitionType.ERROR);</span>
+<span class="fc" id="L76">				docHandlingService.storeDocument(document);</span>
+<span class="fc" id="L77">			}</span>
 		}
-<span class="nc" id="L79">		synchronized (this) {</span>
-<span class="nc" id="L80">			this.notifyAll();</span>
-<span class="nc" id="L81">		}</span>
-<span class="nc" id="L82">	}</span>
+<span class="fc" id="L79">		synchronized (this) {</span>
+<span class="fc" id="L80">			this.notifyAll();</span>
+<span class="fc" id="L81">		}</span>
+<span class="fc" id="L82">	}</span>
 
 	public void setMessageHandler(DocumentEnqueueMessageHandler messageHandler) {
-<span class="nc" id="L85">		this.messageHandler = messageHandler;</span>
-<span class="nc" id="L86">	}</span>
+<span class="fc" id="L85">		this.messageHandler = messageHandler;</span>
+<span class="fc" id="L86">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

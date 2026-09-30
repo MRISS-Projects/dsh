@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
  * @see TermsVectorComparator
  *
  */
-<span class="nc" id="L23">public class SortedNamedList extends NamedList&lt;Object&gt; {</span>
+<span class="fc" id="L23">public class SortedNamedList extends NamedList&lt;Object&gt; {</span>
 
-<span class="nc" id="L25">    Logger LOGGER = LoggerFactory.getLogger(SortedNamedList.class);</span>
+<span class="fc" id="L25">    Logger LOGGER = LoggerFactory.getLogger(SortedNamedList.class);</span>
 
     /**
      * Serial id.
@@ -36,10 +36,10 @@ import org.slf4j.LoggerFactory;
      * @param orderOptions the order options to get order information.
      */
     public void sort(OrderOptions orderOptions) {
-<span class="nc" id="L39">        Map&lt;String, Object&gt; sortedMap = copyToSortedMap(orderOptions);</span>
-<span class="nc" id="L40">        this.clear();</span>
-<span class="nc" id="L41">        this.addAll(sortedMap);</span>
-<span class="nc" id="L42">    }</span>
+<span class="fc" id="L39">        Map&lt;String, Object&gt; sortedMap = copyToSortedMap(orderOptions);</span>
+<span class="fc" id="L40">        this.clear();</span>
+<span class="fc" id="L41">        this.addAll(sortedMap);</span>
+<span class="fc" id="L42">    }</span>
 
     /**
      * Copy this list content to a sorted map, in order to order it.
@@ -48,13 +48,13 @@ import org.slf4j.LoggerFactory;
      * @return a sorted map with all contents sorted.
      */
     private Map&lt;String, Object&gt; copyToSortedMap(OrderOptions orderOptions) {
-<span class="nc" id="L51">        Map&lt;String, Object&gt; fastTreeMap = new FastTreeMap(new TermsVectorComparator(orderOptions, this));</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">        for (Iterator iterator = nvPairs.iterator(); iterator.hasNext();) {</span>
-<span class="nc" id="L53">            String key = (String) iterator.next();</span>
-<span class="nc" id="L54">            Object value = iterator.next();</span>
-<span class="nc" id="L55">            fastTreeMap.put(key, value);</span>
-<span class="nc" id="L56">        }</span>
-<span class="nc" id="L57">        return fastTreeMap;</span>
+<span class="fc" id="L51">        Map&lt;String, Object&gt; fastTreeMap = new FastTreeMap(new TermsVectorComparator(orderOptions, this));</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (Iterator iterator = nvPairs.iterator(); iterator.hasNext();) {</span>
+<span class="fc" id="L53">            String key = (String) iterator.next();</span>
+<span class="fc" id="L54">            Object value = iterator.next();</span>
+<span class="fc" id="L55">            fastTreeMap.put(key, value);</span>
+<span class="fc" id="L56">        }</span>
+<span class="fc" id="L57">        return fastTreeMap;</span>
     }
 
 }

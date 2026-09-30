@@ -35,20 +35,20 @@ public class TermsVectorComparator implements Comparator&lt;Object&gt; {
      */
     private NamedList&lt;Object&gt; originalNamedList;
 
-<span class="nc" id="L38">    public TermsVectorComparator(OrderOptions orderOptions, NamedList&lt;Object&gt; originalNamedList) {</span>
-<span class="nc" id="L39">        this.orderOptions = orderOptions;</span>
-<span class="nc" id="L40">        this.originalNamedList = originalNamedList;</span>
-<span class="nc" id="L41">        this.strippedTermVectorParam = orderOptions.getTermVectorParam().replaceAll(TermVectorParams.TV_PREFIX, &quot;&quot;);</span>
-<span class="nc" id="L42">    }</span>
+<span class="fc" id="L38">    public TermsVectorComparator(OrderOptions orderOptions, NamedList&lt;Object&gt; originalNamedList) {</span>
+<span class="fc" id="L39">        this.orderOptions = orderOptions;</span>
+<span class="fc" id="L40">        this.originalNamedList = originalNamedList;</span>
+<span class="fc" id="L41">        this.strippedTermVectorParam = orderOptions.getTermVectorParam().replaceAll(TermVectorParams.TV_PREFIX, &quot;&quot;);</span>
+<span class="fc" id="L42">    }</span>
 
     /**
      * For this implementation the objects are strings.
      */
     @Override
     public int compare(Object o1, Object o2) {
-<span class="nc" id="L49">        int paramValueO1 = getParamValue((String) o1);</span>
-<span class="nc" id="L50">        int paramValueO2 = getParamValue((String) o2);</span>
-<span class="nc" id="L51">        return orderOptions.getOrder().compare(paramValueO1, paramValueO2);</span>
+<span class="fc" id="L49">        int paramValueO1 = getParamValue((String) o1);</span>
+<span class="fc" id="L50">        int paramValueO2 = getParamValue((String) o2);</span>
+<span class="fc" id="L51">        return orderOptions.getOrder().compare(paramValueO1, paramValueO2);</span>
     }
 
     /**
@@ -60,19 +60,19 @@ public class TermsVectorComparator implements Comparator&lt;Object&gt; {
      *         specific term.
      */
     private int getParamValue(String o) {
-<span class="nc" id="L63">        Object value = this.originalNamedList.get(o);</span>
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (value instanceof NamedList) {</span>
-<span class="nc" id="L65">            NamedList&lt;Object&gt; nl = (NamedList&lt;Object&gt;) value;</span>
-<span class="nc" id="L66">            Object tf = nl.get(strippedTermVectorParam);</span>
-<span class="nc bnc" id="L67" title="All 4 branches missed.">            if (tf != null &amp;&amp; tf instanceof Long) {</span>
-<span class="nc" id="L68">                return ((Long) tf).intValue();</span>
-<span class="nc bnc" id="L69" title="All 4 branches missed.">            } else if (tf != null &amp;&amp; tf instanceof Integer) {</span>
-<span class="nc" id="L70">                return (Integer) tf;</span>
+<span class="fc" id="L63">        Object value = this.originalNamedList.get(o);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (value instanceof NamedList) {</span>
+<span class="fc" id="L65">            NamedList&lt;Object&gt; nl = (NamedList&lt;Object&gt;) value;</span>
+<span class="fc" id="L66">            Object tf = nl.get(strippedTermVectorParam);</span>
+<span class="fc bfc" id="L67" title="All 4 branches covered.">            if (tf != null &amp;&amp; tf instanceof Long) {</span>
+<span class="fc" id="L68">                return ((Long) tf).intValue();</span>
+<span class="fc bfc" id="L69" title="All 4 branches covered.">            } else if (tf != null &amp;&amp; tf instanceof Integer) {</span>
+<span class="fc" id="L70">                return (Integer) tf;</span>
             } else {
-<span class="nc" id="L72">                return 0;</span>
+<span class="fc" id="L72">                return 0;</span>
             }
         } else {
-<span class="nc" id="L75">            return 0;</span>
+<span class="fc" id="L75">            return 0;</span>
         }
 
     }

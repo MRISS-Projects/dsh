@@ -4,24 +4,24 @@ import java.util.Comparator;
 
 public class KeywordSorter implements Comparator&lt;Keyword&gt; {
 	
-<span class="nc" id="L7">	private static KeywordSorter INSTANCE = null;</span>
+<span class="fc" id="L7">	private static KeywordSorter INSTANCE = null;</span>
 	
 	private KeywordSorter() {
 		
 	}
 	
 	public static KeywordSorter getInstance() {
-<span class="nc bnc" id="L14" title="All 2 branches missed.">		if (INSTANCE == null) {</span>
-<span class="nc" id="L15">			INSTANCE = new KeywordSorter();</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">		if (INSTANCE == null) {</span>
+<span class="fc" id="L15">			INSTANCE = new KeywordSorter();</span>
 		}
-<span class="nc" id="L17">		return INSTANCE;</span>
+<span class="fc" id="L17">		return INSTANCE;</span>
 	}
 
 	@Override
 	public int compare(Keyword o1, Keyword o2) {
-<span class="nc bnc" id="L22" title="All 2 branches missed.">		if (o1.getScore() &gt; o2.getScore()) return -1;</span>
-<span class="nc bnc" id="L23" title="All 2 branches missed.">		else if (o1.getScore() &lt; o2.getScore()) return 1;</span>
-<span class="nc" id="L24">		else return 0;</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">		if (o1.getScore() &gt; o2.getScore()) return -1;</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">		else if (o1.getScore() &lt; o2.getScore()) return 1;</span>
+<span class="fc" id="L24">		else return 0;</span>
 	}
 
 }

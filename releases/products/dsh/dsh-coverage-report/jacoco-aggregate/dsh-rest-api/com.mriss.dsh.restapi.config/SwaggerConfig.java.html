@@ -33,16 +33,16 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @EnableSwagger2
 @Configuration
-<span class="nc" id="L36">public class SwaggerConfig {</span>
+<span class="fc" id="L36">public class SwaggerConfig {</span>
 
     @Bean
     public Docket newsApi() {
-<span class="nc" id="L40">        return new Docket(DocumentationType.SWAGGER_2)</span>
-<span class="nc" id="L41">                .groupName(&quot;dsh-app&quot;)</span>
-<span class="nc" id="L42">                .apiInfo(apiInfo())</span>
-<span class="nc" id="L43">                .select()</span>
-<span class="nc" id="L44">                .paths(regex(&quot;/v1/dsh.*&quot;))</span>
-<span class="nc" id="L45">                .build();</span>
+<span class="fc" id="L40">        return new Docket(DocumentationType.SWAGGER_2)</span>
+<span class="fc" id="L41">                .groupName(&quot;dsh-app&quot;)</span>
+<span class="fc" id="L42">                .apiInfo(apiInfo())</span>
+<span class="fc" id="L43">                .select()</span>
+<span class="fc" id="L44">                .paths(regex(&quot;/v1/dsh.*&quot;))</span>
+<span class="fc" id="L45">                .build();</span>
     }
 
     /**
@@ -61,17 +61,17 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
             List&lt;RequestMappingInfoHandlerMapping&gt; handlerMappings) {
         // Filter out mappings that use PathPatternParser (patternParser != null).
         // Springfox only supports AntPathMatcher-based mappings.
-<span class="nc" id="L64">        List&lt;RequestMappingInfoHandlerMapping&gt; filtered = handlerMappings.stream()</span>
-<span class="nc bnc" id="L65" title="All 2 branches missed.">                .filter(m -&gt; m.getPatternParser() == null)</span>
-<span class="nc" id="L66">                .collect(Collectors.toList());</span>
-<span class="nc" id="L67">        return new WebMvcRequestHandlerProvider(servletContext, methodResolver, filtered);</span>
+<span class="fc" id="L64">        List&lt;RequestMappingInfoHandlerMapping&gt; filtered = handlerMappings.stream()</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                .filter(m -&gt; m.getPatternParser() == null)</span>
+<span class="fc" id="L66">                .collect(Collectors.toList());</span>
+<span class="fc" id="L67">        return new WebMvcRequestHandlerProvider(servletContext, methodResolver, filtered);</span>
     }
 
     private ApiInfo apiInfo() {
-<span class="nc" id="L71">        return new ApiInfoBuilder()</span>
-<span class="nc" id="L72">                .title(&quot;DSH - Document Smart Hightlights API&quot;)</span>
-<span class="nc" id="L73">                .description(&quot;DSH - Document Smart Hightlights Application&quot;)</span>
-<span class="nc" id="L74">                .build();</span>
+<span class="fc" id="L71">        return new ApiInfoBuilder()</span>
+<span class="fc" id="L72">                .title(&quot;DSH - Document Smart Hightlights API&quot;)</span>
+<span class="fc" id="L73">                .description(&quot;DSH - Document Smart Hightlights Application&quot;)</span>
+<span class="fc" id="L74">                .build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
