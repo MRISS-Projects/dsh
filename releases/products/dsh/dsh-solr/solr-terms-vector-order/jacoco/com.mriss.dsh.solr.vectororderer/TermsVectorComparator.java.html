@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TermsVectorComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SOLR - Terms Vector Orderer</a> &gt; <a href="index.source.html" class="el_package">com.mriss.dsh.solr.vectororderer</a> &gt; <span class="el_source">TermsVectorComparator.java</span></div><h1>TermsVectorComparator.java</h1><pre class="source lang-java linenums">package com.mriss.dsh.solr.vectororderer;
+
+import java.util.Comparator;
+
+import org.apache.solr.common.params.TermVectorParams;
+import org.apache.solr.common.util.NamedList;
+
+/**
+ * A comparator class to compare two instances of {@link NamedList}. Those lists
+ * represent terms information (TF, DF, TF-IDF, etc) in a terms vector. This
+ * class assumes to be ordering keys in a sorted map where the key is a
+ * {@link String}. This string is used to get the field information from
+ * {@link #originalNamedList}.
+ * 
+ * @author riss
+ *
+ */
+public class TermsVectorComparator implements Comparator&lt;Object&gt; {
+
+    /**
+     * The order information to be used to order.
+     */
+    private OrderOptions orderOptions;
+
+    /**
+     * A striped version of the field/parameter to be used. The prefix
+     * &lt;code&gt;.tv&lt;/code&gt; will be removed from the original field name at
+     * {@link #orderOptions}.
+     */
+    private String strippedTermVectorParam;
+
+    /**
+     * The original named list to be sorted. This list will be used to get the
+     * original value of the objects having field information.
+     */
+    private NamedList&lt;Object&gt; originalNamedList;
+
+<span class="fc" id="L38">    public TermsVectorComparator(OrderOptions orderOptions, NamedList&lt;Object&gt; originalNamedList) {</span>
+<span class="fc" id="L39">        this.orderOptions = orderOptions;</span>
+<span class="fc" id="L40">        this.originalNamedList = originalNamedList;</span>
+<span class="fc" id="L41">        this.strippedTermVectorParam = orderOptions.getTermVectorParam().replaceAll(TermVectorParams.TV_PREFIX, &quot;&quot;);</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * For this implementation the objects are strings.
+     */
+    @Override
+    public int compare(Object o1, Object o2) {
+<span class="fc" id="L49">        int paramValueO1 = getParamValue((String) o1);</span>
+<span class="fc" id="L50">        int paramValueO2 = getParamValue((String) o2);</span>
+<span class="fc" id="L51">        return orderOptions.getOrder().compare(paramValueO1, paramValueO2);</span>
+    }
+
+    /**
+     * Search the field information (TF, DF, etc) based on the term. Executes the
+     * search at list in {@link #originalNamedList}.
+     * 
+     * @param o the term.
+     * @return the value for the field configured at {@link #orderOptions}, for the
+     *         specific term.
+     */
+    private int getParamValue(String o) {
+<span class="fc" id="L63">        Object value = this.originalNamedList.get(o);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (value instanceof NamedList) {</span>
+<span class="fc" id="L65">            NamedList&lt;Object&gt; nl = (NamedList&lt;Object&gt;) value;</span>
+<span class="fc" id="L66">            Object tf = nl.get(strippedTermVectorParam);</span>
+<span class="fc bfc" id="L67" title="All 4 branches covered.">            if (tf != null &amp;&amp; tf instanceof Long) {</span>
+<span class="fc" id="L68">                return ((Long) tf).intValue();</span>
+<span class="fc bfc" id="L69" title="All 4 branches covered.">            } else if (tf != null &amp;&amp; tf instanceof Integer) {</span>
+<span class="fc" id="L70">                return (Integer) tf;</span>
+            } else {
+<span class="fc" id="L72">                return 0;</span>
+            }
+        } else {
+<span class="fc" id="L75">            return 0;</span>
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
