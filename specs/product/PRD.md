@@ -575,7 +575,7 @@ generated `README.md`'s release notes silently dropped closed issues that had no
 `github-text-list` takes an issue's type from its first label and skips an issue with none. The fix
 belongs in the fork, as
 [`MRISS-Projects/maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36)
-on its milestone `2.12.10-SNAPSHOT`. `parent-poms#86` is the consuming half: bump
+on its milestone `2.12.10`, released on 2026-09-30. `parent-poms#86` is the consuming half: bump
 `changes.plugin.version` to the released `2.12.10` and verify a README generated with it. It is not
 DSH `#86`, below. In the meantime the six affected issues were labelled, DSH `#114` among them, so
 the current READMEs correct themselves on their next generation. That is why `parent-poms#86` does
@@ -703,13 +703,22 @@ the wave, in order:
    `parent-poms#98`, the missing retry on a transient registry error during `release:perform`, came
    out of that second dispatch. It is not folded into `#95`: it is a separate failure mode of the
    same step, and is deferred, with no milestone yet.
-1. [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36),
+1. **Done on 2026-09-30: maven-changes-plugin 2.12.10 released.**
+   [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36),
    [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37) and
-   [`#38`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/38), on the fork's
-   `2.12.10-SNAPSHOT`, then release **2.12.10**. The fork's process is the last section of its
-   README. `#38` joined on 2026-09-30. It renders a closed milestone that has no issues, such as
-   DSH's `0.3.1`, and is opt-in, so parent-poms enables it in step 2.
-2. parent-poms `3.10.0-SNAPSHOT`: `#86` (bump the changes plugin to 2.12.10), `#74`, `#81`, `#88`
+   [`#38`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/38) are **closed**,
+   merged by the fork's PRs #39, #40 and #41. The fork's milestone `2.12.10` is closed too. The
+   release followed the last section of the fork's README: its PR #43, tag `maven-changes-plugin-2.12.10`,
+   and `DEVELOP` moved on to `2.12.11-SNAPSHOT`. Each issue's spec is in the fork's `specs/`.
+   `#38` renders a closed milestone that has no issues, such as DSH's `0.3.1`. It is opt-in, through
+   `includeEmptyMilestones`, so parent-poms turns it on in step 2.
+
+   [`maven-changes-plugin#42`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/42)
+   came out of `#38`: `github-text-list` with the APT formatter throws an NPE on every GitHub issue.
+   It was not folded into `#38`, because it is an older, separate defect. No MRISS project uses
+   the APT formatter, so it has no milestone and no wave.
+2. parent-poms `3.10.0-SNAPSHOT`: `#86` (bump the changes plugin to 2.12.10 and turn on
+   `includeEmptyMilestones`), `#74`, `#81`, `#88`
    and `#89`. `#89` joined the milestone on 2026-09-28, because its 404 is on DSH's own site. `#95`
    and `#96` left it for step 0 on 2026-09-29. Clear the milestone, then release **3.10.0** by the
    full round trip in `CLAUDE.md`.
