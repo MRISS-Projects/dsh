@@ -698,7 +698,7 @@ the wave, in order:
      **0.3.2** on 2026-09-30. Its site carries the reports (127 tests, 98% aggregate coverage) and the
      badge, and `master`'s README shows it.
    - **The merge-back** left `DEVELOP` at `0.4.0-SNAPSHOT` naming parent `3.9.2`, as expected. Step
-     3's re-pin to `3.10.0` supersedes that.
+     5's re-pin to `3.10.0` supersedes that.
 
    `parent-poms#98`, the missing retry on a transient registry error during `release:perform`, came
    out of that second dispatch. It is not folded into `#95`: it is a separate failure mode of the
@@ -711,21 +711,47 @@ the wave, in order:
    release followed the last section of the fork's README: its PR #43, tag `maven-changes-plugin-2.12.10`,
    and `DEVELOP` moved on to `2.12.11-SNAPSHOT`. Each issue's spec is in the fork's `specs/`.
    `#38` renders a closed milestone that has no issues, such as DSH's `0.3.1`. It is opt-in, through
-   `includeEmptyMilestones`, so parent-poms turns it on in step 2.
+   `includeEmptyMilestones`, so parent-poms turned it on in step 2.
 
    [`maven-changes-plugin#42`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/42)
    came out of `#38`: `github-text-list` with the APT formatter throws an NPE on every GitHub issue.
    It was not folded into `#38`, because it is an older, separate defect. No MRISS project uses
    the APT formatter, so it has no milestone and no wave.
-2. parent-poms `3.10.0-SNAPSHOT`: `#86` (bump the changes plugin to 2.12.10 and turn on
-   `includeEmptyMilestones`), `#74`, `#81`, `#88`
-   and `#89`. `#89` joined the milestone on 2026-09-28, because its 404 is on DSH's own site. `#95`
-   and `#96` left it for step 0 on 2026-09-29. Clear the milestone, then release **3.10.0** by the
-   full round trip in `CLAUDE.md`.
-3. DSH: re-pin the root `pom.xml` to the released `3.10.0`, and remove the issue-labelling rule
+2. **Built on 2026-10-01 and 2026-10-02: parent-poms `3.10.0-SNAPSHOT`.** The milestone held five
+   issues. `#89` had joined it on 2026-09-28, because its 404 is on DSH's own site. `#95` and `#96`
+   left it for step 0 on 2026-09-29. The release itself moved to step 4 on 2026-10-02.
+   - `#86` — **closed**, parent-poms PR #99. The changes plugin is at 2.12.10, and `includeEmptyMilestones` is on
+     in both `github-text-list` executions.
+   - `#81` — **closed**, parent-poms PR #100. No `run:` body interpolates an expression any more, and a guard in
+     parent-poms' `build.yml` keeps it so.
+   - `#88` — **closed**, parent-poms PR #101. Site publication is three steps: stage, verify, publish. One
+     `gh-pages` commit per run replaces one per module.
+   - `#74` — **closed**, parent-poms PR #103. The parent-poms site has a real landing page.
+   - `#89` — **open**. Its fix is merged, parent-poms PR #102: a redirect page at `<type>/products/index.html`
+     in the consumer's own site, because the link cannot be changed from parent-poms. The issue
+     closes when step 3 shows the live link working.
+
+   `3.10.0-SNAPSHOT` was deployed with all five on 2026-10-02. Two things stay unproven until a
+   consumer runs them. `project-staging.yml` has no dry run, so its first run of the new site steps
+   is DSH's 0.4.0 RC. A real push through those steps from a consumer comes with step 3.
+3. **DSH `#127`, against a temporary `3.10.0-SNAPSHOT` pin, before 3.10.0 is released.** `#127`
+   deploys DSH's snapshot site from `DEVELOP`. It moved here from the triaged issues on 2026-10-02,
+   because it is a real publish from a consumer that needs no RC. It proves three things live:
+   - `parent-poms#89`: the "Products" link on `snapshots/products/dsh/` resolves through the
+     redirect page;
+   - `parent-poms#88`: the stage, verify and publish steps, with a real push from a consumer;
+   - `parent-poms#86`: a DSH README and site report from changes plugin 2.12.10.
+
+   It comes before the release so that anything needing adjustment is fixed in the `-SNAPSHOT`, not
+   in a 3.10.1. The pin is temporary. `#127`'s spec decides whether it stays on the task branch or
+   reaches `DEVELOP` until step 5. `parent-poms#89` closes when the link is seen working.
+4. Release parent-poms **3.10.0** by the full round trip in `CLAUDE.md`, once `#89` is closed and the
+   milestone is clear. The release run also checks that `3.10.0` sorts above `3.9.x` in the README
+   and the site report, the last open check of `#86`.
+5. DSH: re-pin the root `pom.xml` to the released `3.10.0`, and remove the issue-labelling rule
    from `CLAUDE.md` and `dsh-new-story`. `CLAUDE.md` names that removal as the exit condition for
    `parent-poms#86`. No issue yet.
-4. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
+6. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
    still committed to `master`. It depends on nothing above, but its first criterion, finding what
    last deployed by committing there, may lead back into parent-poms.
 
@@ -760,6 +786,9 @@ Wave 8.
   on the release: `releases/products/dsh/` serves the root `index.html` and all 13 modules' pages.
   The wiki's release row was moved to `releases/products/dsh/` on 2026-09-30, after 0.3.2, ahead of
   the story. `#128` stays open for what to do with the legacy `releases/dsh/` and `rcs/dsh/` trees.
+
+  `#127` runs as step 3 of the upstream block above, not in the order of this list. Since 2026-10-02
+  it is also the live proof of three parent-poms fixes, before 3.10.0 is released.
 - `#132` — Enforce SpotBugs and Checkstyle in the build and publish their reports.
 
   Not an ADR-001 phase task. It came from triaging Wave 0's `#43` on 2026-09-27. `#43` asked for
