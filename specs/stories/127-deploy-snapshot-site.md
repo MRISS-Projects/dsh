@@ -129,9 +129,9 @@ gate, is run too: the new parent changes how every module is built, `dsh-rest-ap
 - [x] **D1.** Pin the root `pom.xml` to `3.10.0-SNAPSHOT` in its own commit, and run gates 1 to 3 on
       it, logged. Add `deploy.yml`, calling `project-staging.yml` at the parent-poms task branch.
 - [x] **D2.** Dispatch `deploy.yml` on this branch, and check §6.1.
-- [ ] **P2.** After D2 is green, the parent-poms PR is merged by the owner.
-- [ ] **D3.** Point `deploy.yml` at `@master`.
-- [ ] **D4.** Update `docs/devops/README.md`, the parent pin included. Edit the wiki row. Remove
+- [x] **P2.** After D2 is green, the parent-poms PR is merged by the owner.
+- [x] **D3.** Point `deploy.yml` at `@master`.
+- [x] **D4.** Update `docs/devops/README.md`, the parent pin included. Edit the wiki row. Remove
       `snapshots/dsh/` from `gh-pages`.
 - [ ] **D5.** After the PR merges: dispatch `deploy.yml` on `DEVELOP`, and check §6.2.
 
@@ -223,3 +223,19 @@ this branch at `5fd5e5f58`, through `project-staging.yml` at parent-poms' `#104`
   build number, with no `RC` prefix, and the site is under `snapshots/`.
 - **The plugin's delete count.** It logged `13507 delete(s)`. None was applied, as item 6 shows.
   `skipDeletedFiles` is on in the profile.
+
+### 8.4 After the proof run (P2, D3, D4), 2026-10-02
+
+- **P2.** parent-poms PR #105 merged, `bdbe8c35`, and `parent-poms#104` closed with it.
+- **D3.** `deploy.yml` calls `project-staging.yml@master` (`e451c7401`). The pin commit and the
+  README commit from the proof run both stay on the branch.
+- **D4, the docs.** `docs/devops/README.md` (`80e28c31b`): `deploy.yml` in both workflow tables, the
+  snapshot case in the README placeholder rows, and the "Parent POM" section. That section named a
+  stale `3.8.0-SNAPSHOT`. It now names `3.10.0-SNAPSHOT`, why it is there and what ends it.
+  `CLAUDE.md` needed no change: it says nothing that the new workflow or the pin contradicts.
+- **D4, AC004.** `gh-pages` commit `2e468ccf2` removes `snapshots/dsh/`: 2,142 deletions, and no
+  path outside that tree. `snapshots/products/` still holds its 2,609 files.
+  `https://mriss-projects.github.io/dsh/snapshots/dsh/index.html` now answers 404.
+- **D4, AC003.** The wiki's Snapshots row, which said "TBD", links to
+  `https://mriss-projects.github.io/dsh/snapshots/products/dsh/` (wiki commit `6d392ed`). The link
+  answers 200. `docs/wiki/` picks the change up at the next `wiki-sync.yml` run.
