@@ -1,0 +1,20 @@
+name: Deploy Snapshot
+
+# #127: a placeholder, on master only. GitHub starts a workflow_dispatch workflow only if a file of
+# this name exists on the default branch, and master receives code only at a release. The real
+# workflow lives on DEVELOP: dispatch "Deploy Snapshot" there and GitHub runs that branch's version
+# of this file. Dispatched on master, this one refuses, so a snapshot is never deployed from
+# released code. The next release replaces it with the real file.
+#
+# Committed straight to master, as a one-off exception to "master is release automation only".
+on:
+  workflow_dispatch:
+
+jobs:
+  refuse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse to deploy a snapshot from master
+        run: |
+          echo "::error::Deploy Snapshot was dispatched on master. Dispatch it on DEVELOP instead."
+          exit 1
