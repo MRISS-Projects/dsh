@@ -13,6 +13,14 @@ name: Deploy Snapshot
 on:
   workflow_dispatch:
 
+# Every run publishes to the same place, snapshots/products/dsh/ on gh-pages, whichever branch
+# it is dispatched on. One fixed group makes a second dispatch wait for the first, so a
+# task-branch proof and a DEVELOP deploy cannot race on that push. Not cancel-in-progress: a
+# run cancelled after its artifacts are deployed would leave a partial deployment.
+concurrency:
+  group: deploy-snapshot
+  cancel-in-progress: false
+
 jobs:
   # master is released code, and it is the branch the Actions page offers first. The placeholder
   # on master refuses to run, but the first release replaces it with this file, so the refusal
