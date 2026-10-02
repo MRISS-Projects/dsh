@@ -1,10 +1,10 @@
 # Document Smart Highlights
 
-![Coverage](https://mriss-projects.github.io/dsh/rcs/products/dsh/dsh-coverage-report/badges/jacoco.svg)
+![Coverage](https://mriss-projects.github.io/dsh/snapshots/products/dsh/dsh-coverage-report/badges/jacoco.svg)
 
 ## Version
 
-0.3.0-SNAPSHOT - RC26 - 20260929-144401
+0.4.0-SNAPSHOT - 1 - 20261002-162717
 
 ## Introduction
 
@@ -414,7 +414,19 @@ The API description, in Swagger 2 format, is served at
 
 ## Release Notes
 
-### Version 0.3.0-SNAPSHOT
+### Version 0.3.2
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [146](https://github.com/MRISS-Projects/dsh/issues/146) | bug | [STORY] Release DSH 0.3.1 with a release site that carries its test reports and coverage badge | null | mriss | 10/1/26 |
+
+### Version 0.3.1
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| - | - | No issues | - | - | - |
+
+### Version 0.3.0
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
