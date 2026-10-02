@@ -743,8 +743,8 @@ the wave, in order:
    - `parent-poms#86`: a DSH README and site report from changes plugin 2.12.10.
 
    It comes before the release so that anything needing adjustment is fixed in the `-SNAPSHOT`, not
-   in a 3.10.1. The pin is temporary. `#127`'s spec decides whether it stays on the task branch or
-   reaches `DEVELOP` until step 5. `parent-poms#89` closes when the link is seen working.
+   in a 3.10.1. The pin is temporary. It reaches `DEVELOP` with `#127` and stays until step 5, as
+   `#127`'s spec decided on 2026-10-02. `parent-poms#89` closes when the link is seen working.
 4. Release parent-poms **3.10.0** by the full round trip in `CLAUDE.md`, once `#89` is closed and the
    milestone is clear. The release run also checks that `3.10.0` sorts above `3.9.x` in the README
    and the site report, the last open check of `#86`.

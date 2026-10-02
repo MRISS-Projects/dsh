@@ -1,0 +1,62 @@
+name: Deploy Snapshot
+
+# #127: deploys DSH's snapshot artifacts and site. Dispatch it on DEVELOP: the site lands at
+# https://mriss-projects.github.io/dsh/snapshots/products/dsh/, and the generated README.md is
+# committed back to the branch.
+#
+# It deploys the branch it is dispatched on, as parent-poms' own deploy.yml does. Dispatched on a
+# task branch it publishes that branch as the snapshot, which is how a change to the pipeline is
+# proved before it merges; anywhere else, run it from DEVELOP.
+#
+# GitHub dispatches a workflow only if its file exists on the default branch. Until a release
+# carries this file to master, master holds a placeholder of the same name that refuses to run.
+on:
+  workflow_dispatch:
+
+# Every run publishes to the same place, snapshots/products/dsh/ on gh-pages, whichever branch
+# it is dispatched on. One fixed group makes a second dispatch wait for the first, so a
+# task-branch proof and a DEVELOP deploy cannot race on that push. Not cancel-in-progress: a
+# run cancelled after its artifacts are deployed would leave a partial deployment.
+concurrency:
+  group: deploy-snapshot
+  cancel-in-progress: false
+
+jobs:
+  # master is released code, and it is the branch the Actions page offers first. The placeholder
+  # on master refuses to run, but the first release replaces it with this file, so the refusal
+  # has to live here too. Without it, a dispatch on master would publish a release as the
+  # snapshot site and commit a generated README.md to master. A failing job rather than an `if:`
+  # on the deploy: a skipped job would show a green run that did nothing.
+  refuse-master:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse to deploy a snapshot from master
+        run: |
+          if [ "$GITHUB_REF_NAME" = "master" ]; then
+            echo "::error::Deploy Snapshot was dispatched on master. Dispatch it on DEVELOP instead."
+            exit 1
+          fi
+          echo "Deploying the snapshot of '$GITHUB_REF_NAME'."
+
+  deploy:
+    needs: refuse-master
+    # parent-poms#104: project-staging.yml is also the snapshot deploy. release_type 'snapshots'
+    # puts the site under snapshots/ and drops the RC prefix from the build number; everything
+    # else - the build with integration tests, the README check, staging, verifying and publishing
+    # the site, the README commit - is what staging.yml gets for a release candidate.
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@master
+    with:
+      git_project: dsh
+      branch_name: ${{ github.ref_name }}
+      release_type: snapshots
+      # #114: the build's Mongo settings, which dsh-data's mongo.properties is filtered from.
+      # Without them every dsh-rest-api context fails on an unresolved placeholder. No MongoDB
+      # runs behind them: parent-poms#78 removed the service containers, and no test connects.
+      # staging.yml carries the same four values.
+      maven_properties: |
+        mongo.host=localhost
+        mongo.port=27017
+        mongo.user=dshuser
+        mongo.password=dshpass
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

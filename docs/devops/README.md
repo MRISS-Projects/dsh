@@ -78,6 +78,7 @@ table below) and matches it; no trigger shown here is invented.
 | `wiki-sync.yml` | `schedule` (`0 2 * * *`, daily 02:00 UTC); `workflow_dispatch` | Because the cron fires on the default branch (`master`), a `redispatch` job re-triggers the workflow on `DEVELOP` when it isn't already running there; the `sync-wiki` job then copies the GitHub wiki's Markdown pages into `docs/wiki/` via a pull request. |
 | `stage.yml` | `workflow_dispatch` only | Delegates to the reusable `project-stage.yml` workflow in `MRISS-Projects/parent-poms` to cut a `staging-<version>-SNAPSHOT-RC` branch from `DEVELOP`. |
 | `staging.yml` | `workflow_dispatch` only | Delegates to `project-staging.yml` in `parent-poms` to stabilise/build an existing RC branch. Passes this repository's build properties as `maven_properties` and nothing else project-specific; no MongoDB runs behind them — see below. |
+| `deploy.yml` | `workflow_dispatch` only | Deploys the snapshot artifacts and site of the branch it is dispatched on, normally `DEVELOP`, to `snapshots/products/dsh/`. Delegates to the same `project-staging.yml`, with `release_type: snapshots` (parent-poms#104): the build number has no `RC` prefix, and the generated `README.md` is committed back to the branch. A placeholder of this file sits on `master`, because GitHub dispatches a workflow only if its file exists on the default branch; that placeholder refuses to run (`#127`). |
 | `release.yml` | `workflow_dispatch` only | Delegates to `project-release.yml` in `parent-poms` to promote an RC branch to a tagged release on `master` and open the next hotfix line, then merge the release tag back into `DEVELOP`. Takes a `dry_run` checkbox, and passes `maven_properties` and `development_branch: DEVELOP`. |
 | `hotfix.yml` | `workflow_dispatch` only | Delegates to `project-hotfix.yml` in `parent-poms` to build/release a patch from an existing `<version>.x` hotfix branch. Ends by merging the release tag back into `DEVELOP`. Takes the same `dry_run` checkbox, `maven_properties` and `development_branch: DEVELOP`. |
 
@@ -124,7 +125,7 @@ Each build path supplies them its own way:
 | --- | --- | --- |
 | Local `mvn install` | **your own `~/.m2/settings.xml`** — see below | yours, if you run one |
 | `ci.yml` | the `github-packages` profile of the `settings.xml` it writes | yes, service container |
-| `staging.yml` | `maven_properties`, rendered upstream into the generated `settings.xml` | no — nothing connects on this path (`#123`, parent-poms#78) |
+| `staging.yml`, `deploy.yml` | `maven_properties`, rendered upstream into the generated `settings.xml` | no — nothing connects on this path (`#123`, parent-poms#78) |
 | `release.yml`, `hotfix.yml` | the same `maven_properties` block | no — nothing connects on this path |
 
 Precedence is **command line > active settings profile > POM `<properties>`**, measured on Maven
@@ -183,11 +184,11 @@ Three placeholders are filled during generation:
 
 | Placeholder | Filled by |
 | --- | --- |
-| `${project.build.version}` | the `deployment` profile, as `<version> - <build number> - <timestamp>`; `project-staging.yml` passes `-Dbuild.number=RC<n>`, so an RC build renders `0.3.0-SNAPSHOT - RC7 - 20260918-002853`. `release-deployment` resets the property to the bare version, so a released README carries neither build number nor timestamp |
+| `${project.build.version}` | the `deployment` profile, as `<version> - <build number> - <timestamp>`; `project-staging.yml` passes `-Dbuild.number=RC<n>` for a release candidate, so an RC build renders `0.3.0-SNAPSHOT - RC7 - 20260918-002853`, and a plain `<n>` for a snapshot deploy, which renders `0.4.0-SNAPSHOT - 1 - 20261002-162717`. `release-deployment` resets the property to the bare version, so a released README carries neither build number nor timestamp |
 | `${issues.text.list}` | `maven-changes-plugin:github-text-list`, which reads each milestone's closed issues from GitHub using the `github.com` server id |
-| `${release.type}` | the site path segment of the coverage badge's URL: `rcs` from `project-staging.yml`'s `-Drelease.type=rcs`, `releases` from the `release-deployment` profile, `snapshots` by default. See "Coverage badge" below |
+| `${release.type}` | the site path segment of the coverage badge's URL: `rcs` from `staging.yml`, `snapshots` from `deploy.yml` (both through `project-staging.yml`'s `release_type`), `releases` from the `release-deployment` profile. See "Coverage badge" below |
 
-The runs that regenerate it are `staging.yml` (during `project-staging.yml`'s `clean deploy`) and
+The runs that regenerate it are `staging.yml` and `deploy.yml` (during `project-staging.yml`'s `clean deploy`) and
 `release.yml` / `hotfix.yml` (in their `Update README.md on Master` step). The generated file is
 committed as `Auto-generated README.md [skip jenkins]` by `github-actions[bot]`.
 
@@ -323,15 +324,17 @@ builds with `mvn -B -U install`, as does `api-testing.yml`. Parent version upgra
 deliberate, manual edit to the root `pom.xml`, not something a workflow does automatically; `-U`
 only refreshes the `SNAPSHOT` that `pom.xml` already names.
 
-The current pin to `com.mriss.mriss-parent:products:3.8.0-SNAPSHOT` carries a known reproducibility
-cost: the same commit in this repository can resolve a different parent POM — and therefore build
-differently — from one run to the next.
+The current pin is `com.mriss.mriss-parent:products:3.10.0-SNAPSHOT`, since `#127`. A `SNAPSHOT`
+pin carries a known reproducibility cost: the same commit in this repository can resolve a
+different parent POM — and therefore build differently — from one run to the next.
 
-**The SNAPSHOT pin is an accepted decision, not an oversight — do not "fix" it.** Upcoming work on
-the `MRISS-Projects/parent-poms` project will change this repository, and tracking a `SNAPSHOT` is
-how those changes reach it without cutting a parent release per iteration. Pinning a released
-parent version is worth revisiting only once the `parent-poms` work has settled — it is Wave 0's
-closing goal in `specs/product/PRD.md` §4.
+**This SNAPSHOT pin is temporary and deliberate — do not "fix" it ahead of its exit.** `DEVELOP`
+was on the released `3.9.2`. `#127` moved it to `3.10.0-SNAPSHOT` so that the snapshot site deploy
+runs on parent-poms' unreleased fixes, and proves them from a consumer before 3.10.0 is released:
+the "Products" parent link (parent-poms#89), the stage, verify and publish site steps (#88) and
+the README from changes plugin 2.12.10 (#86). The exit is upstream step 5 of Wave 1 in
+`specs/product/PRD.md` §4: once parent-poms 3.10.0 is released, the root `pom.xml` is re-pinned to
+it.
 
 **`-U` is how that decision is stated, not a mitigation of it.** Omitting the flag never bought
 reproducibility, for two reasons: Maven refreshes `SNAPSHOT` metadata on its own daily schedule, so
