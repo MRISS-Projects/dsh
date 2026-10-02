@@ -239,3 +239,26 @@ this branch at `5fd5e5f58`, through `project-staging.yml` at parent-poms' `#104`
 - **D4, AC003.** The wiki's Snapshots row, which said "TBD", links to
   `https://mriss-projects.github.io/dsh/snapshots/products/dsh/` (wiki commit `6d392ed`). The link
   answers 200. `docs/wiki/` picks the change up at the next `wiki-sync.yml` run.
+
+### 8.5 Local code review (step 5), 2026-10-02
+
+`/code-review` on the branch against `DEVELOP` raised two findings, both on `deploy.yml`.
+
+1. **Nothing stopped a deploy from `master` after the first release. Valid, and fixed.** The
+   refusal existed only in the placeholder on `master`, which the 0.4.0 release replaces with this
+   file. A dispatch on `master`, the branch the Actions page offers first, would then have
+   published released code as the snapshot site and committed a generated `README.md` to `master`.
+   - **The fix.** A first job, `refuse-master`, fails on `master` with "Dispatch it on DEVELOP
+     instead", and the deploy job needs it. It is a failing job, not an `if:` on the deploy, because
+     a skipped job shows a green run that did nothing.
+   - **Checked.** The guard's script, extracted from the workflow file, exits 1 for `master` and 0
+     for `DEVELOP`, the task branch and `0.3.x`. Its first run in a workflow is D5.
+2. **The placeholder on `master` might make the release merge conflict. Not valid.** The reviewer
+   marked it unverified. A scratch repository was given the real placeholder on `master` and the
+   real `deploy.yml` on a tag, and the command `project-release.yml` uses was run:
+   `git merge -s recursive -X theirs <tag>`. It exits 0 with no conflict, and the result is
+   byte-for-byte the tag's file. It was run again after the fix above, with the same result.
+
+Gates 1 and 2 were run again on the branch head `224eeb0ad`, before this fix: 13 modules, 127 tests
+with no failure, and the coverage checks met in all 8 modules with production code. The fix
+changes a workflow file only.
