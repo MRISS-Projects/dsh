@@ -7,6 +7,9 @@ name: Deploy Snapshot
 # It deploys the branch it is dispatched on, as parent-poms' own deploy.yml does. Dispatched on a
 # task branch it publishes that branch as the snapshot, which is how a change to the pipeline is
 # proved before it merges; anywhere else, run it from DEVELOP.
+#
+# GitHub dispatches a workflow only if its file exists on the default branch. Until a release
+# carries this file to master, master holds a placeholder of the same name that refuses to run.
 on:
   workflow_dispatch:
 
@@ -16,7 +19,7 @@ jobs:
     # puts the site under snapshots/ and drops the RC prefix from the build number; everything
     # else - the build with integration tests, the README check, staging, verifying and publishing
     # the site, the README commit - is what staging.yml gets for a release candidate.
-    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@issue-104-staging-release-type
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@master
     with:
       git_project: dsh
       branch_name: ${{ github.ref_name }}
