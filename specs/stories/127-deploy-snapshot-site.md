@@ -262,3 +262,20 @@ this branch at `5fd5e5f58`, through `project-staging.yml` at parent-poms' `#104`
 Gates 1 and 2 were run again on the branch head `224eeb0ad`, before this fix: 13 modules, 127 tests
 with no failure, and the coverage checks met in all 8 modules with production code. The fix
 changes a workflow file only.
+
+### 8.6 Review round 1 on the PR, 2026-10-02
+
+Copilot reviewed `e272eccc5` and raised one finding. The review arrived automatically, so it ran at
+the repository's default effort level. It was valid.
+
+- **The finding.** Nothing serialised the workflow. A deploy from a task branch and one from
+  `DEVELOP` could overlap, and both publish to `snapshots/products/dsh/` on `gh-pages`. The second
+  push could be rejected after its artifacts were deployed, or the later run could replace the
+  other's site.
+- **Checked.** `deploy.yml` had no `concurrency`, and neither has `project-staging.yml`, which it
+  calls. `project-release.yml` and `project-hotfix.yml` each have a group.
+- **The fix.** A workflow-level `concurrency` with the fixed group `deploy-snapshot` and
+  `cancel-in-progress: false`. A second dispatch waits. It does not cancel, because a run cancelled
+  after its artifact deploy would leave a partial deployment.
+- **The shared gap.** `project-staging.yml` lacks the group its siblings have, so an RC staging run
+  has the same exposure. That is raised in parent-poms as its own issue, with no milestone.
