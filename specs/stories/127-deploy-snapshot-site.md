@@ -124,11 +124,11 @@ gate, is run too: the new parent changes how every module is built, `dsh-rest-ap
 
 ## 5. Tasks
 
-- [ ] **P1.** Open the parent-poms issue for `release_type`, on `3.10.0-SNAPSHOT`, after its text is
+- [x] **P1.** Open the parent-poms issue for `release_type`, on `3.10.0-SNAPSHOT`, after its text is
       approved. Write its spec and build it on a parent-poms task branch.
-- [ ] **D1.** Pin the root `pom.xml` to `3.10.0-SNAPSHOT` in its own commit, and run gates 1 to 3 on
+- [x] **D1.** Pin the root `pom.xml` to `3.10.0-SNAPSHOT` in its own commit, and run gates 1 to 3 on
       it, logged. Add `deploy.yml`, calling `project-staging.yml` at the parent-poms task branch.
-- [ ] **D2.** Dispatch `deploy.yml` on this branch, and check §6.1.
+- [x] **D2.** Dispatch `deploy.yml` on this branch, and check §6.1.
 - [ ] **P2.** After D2 is green, the parent-poms PR is merged by the owner.
 - [ ] **D3.** Point `deploy.yml` at `@master`.
 - [ ] **D4.** Update `docs/devops/README.md`, the parent pin included. Edit the wiki row. Remove
@@ -179,4 +179,47 @@ Every item of §6.1 holds again, because `DEVELOP` carries the pin (§3.1, decis
 
 ## 8. Verification results
 
-To be filled in during the build.
+### 8.1 The gates, on the branch with the pin (D1), 2026-10-02
+
+- **Gates 1 and 2.** `mvn -B -U clean install`: all 13 modules succeed, 127 tests run with no
+  failure, and "All coverage checks have been met" in each of the 8 modules with production code.
+  The parent resolved to `products-3.10.0-20261002.123547-2`, the deployed snapshot.
+- **Gate 3.** `mvn -B clean verify -DintegrationTests`, over the whole reactor because the pin
+  changes every module's parent: all 13 modules succeed, with failsafe running in each.
+
+### 8.2 A finding the spec missed: a dispatched workflow must exist on the default branch
+
+The first dispatch of `deploy.yml` on this branch was refused:
+`HTTP 404: workflow deploy.yml not found on the default branch`.
+
+- **The rule.** GitHub starts a `workflow_dispatch` workflow only if a file of that name is on the
+  repository's default branch. DSH's is `master`, which receives code only at a release. Once the
+  file is there, a dispatch on any other ref runs that ref's version.
+- **So a new workflow file is not dispatchable from `DEVELOP` until the next release**, which is
+  where AC001 says it runs. §3.1 did not see this.
+- **Options weighed.** Folding the snapshot deploy into `staging.yml`, which is already on `master`.
+  Waiting for 0.4.0. Putting `deploy.yml` on `master` now.
+- **Decided by the owner, 2026-10-02: a direct commit to `master`, as a one-off exception** to
+  "master is release automation only". Commit `ea2c5e444` adds one file and changes nothing else.
+- **What is on `master` is a placeholder**, not the wrapper. Dispatched on `master` it fails with
+  "Dispatch it on DEVELOP instead", so a snapshot is never deployed from released code. The 0.4.0
+  release replaces it with the real file.
+
+### 8.3 The proof run (D2), 2026-10-02
+
+[Run 37032819476](https://github.com/MRISS-Projects/dsh/actions/runs/37032819476): `deploy.yml` on
+this branch at `5fd5e5f58`, through `project-staging.yml` at parent-poms' `#104` branch. Green.
+
+| §6.1 item | Result |
+|---|---|
+| 1. Artifacts | `0.4.0-SNAPSHOT` POMs uploaded for all 13 modules |
+| 2. `parent-poms#88` | `Skipping site deployment` logged 13 times. `verify-staged-site: all 13 module site(s) under '/tmp/sites' have an index.html.` One real publish, and `gh-pages` gained exactly one commit, `fbc5e0e68` |
+| 3. AC002 | `snapshots/products/dsh/index.html` answers 200, and so do the module pages checked: `dsh-data`, `dsh-rest-api`, `dsh-keyword-extractor`, `dsh-coverage-report`. `gh-pages` holds 13 module sites under `snapshots/products/` |
+| 4. `parent-poms#89` | `snapshots/products/index.html` answers 200 and carries `http-equiv="refresh" content="0; url=https://mriss-projects.github.io/parent-poms/releases/products/"`. That target answers 200. The home page links `<a href="../index.html">Products</a>` |
+| 5. `parent-poms#86` | The README committed to the branch (`502d32f7e`) has `### Version 0.3.1` with `\| - \| - \| No issues \| - \| - \| - \|`, between `0.3.2` and `0.3.0`. The site report runs `0.3.2 0.3.0 0.2.4 … 0.0.1`, the README's order. `0.3.1` is in the README only, by design: the empty-milestone row is a text-list feature |
+| 6. Nothing else moved | `rcs/` (4,469 files), `releases/` (4,380) and `snapshots/dsh/` (2,142) are unchanged. No file outside `snapshots/products/` changed |
+
+- **`parent-poms#104`.** The README's version line is `0.4.0-SNAPSHOT - 1 - 20261002-162717`: a plain
+  build number, with no `RC` prefix, and the site is under `snapshots/`.
+- **The plugin's delete count.** It logged `13507 delete(s)`. None was applied, as item 6 shows.
+  `skipDeletedFiles` is on in the profile.
