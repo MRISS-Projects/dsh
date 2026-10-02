@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"com.mriss.dsh.analyser.topsentences","c":"DshTopSentencesExtractorApplication","l":"DshTopSentencesExtractorApplication()","u":"%3Cinit%3E()"},{"p":"com.mriss.dsh.analyser.topsentences","c":"DshTopSentencesExtractorApplication","l":"main(String[])","u":"main(java.lang.String[])"}];updateSearchResults();
