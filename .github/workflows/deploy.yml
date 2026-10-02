@@ -1,0 +1,34 @@
+name: Deploy Snapshot
+
+# #127: deploys DSH's snapshot artifacts and site. Dispatch it on DEVELOP: the site lands at
+# https://mriss-projects.github.io/dsh/snapshots/products/dsh/, and the generated README.md is
+# committed back to the branch.
+#
+# It deploys the branch it is dispatched on, as parent-poms' own deploy.yml does. Dispatched on a
+# task branch it publishes that branch as the snapshot, which is how a change to the pipeline is
+# proved before it merges; anywhere else, run it from DEVELOP.
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    # parent-poms#104: project-staging.yml is also the snapshot deploy. release_type 'snapshots'
+    # puts the site under snapshots/ and drops the RC prefix from the build number; everything
+    # else - the build with integration tests, the README check, staging, verifying and publishing
+    # the site, the README commit - is what staging.yml gets for a release candidate.
+    uses: MRISS-Projects/parent-poms/.github/workflows/project-staging.yml@issue-104-staging-release-type
+    with:
+      git_project: dsh
+      branch_name: ${{ github.ref_name }}
+      release_type: snapshots
+      # #114: the build's Mongo settings, which dsh-data's mongo.properties is filtered from.
+      # Without them every dsh-rest-api context fails on an unresolved placeholder. No MongoDB
+      # runs behind them: parent-poms#78 removed the service containers, and no test connects.
+      # staging.yml carries the same four values.
+      maven_properties: |
+        mongo.host=localhost
+        mongo.port=27017
+        mongo.user=dshuser
+        mongo.password=dshpass
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
