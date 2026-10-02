@@ -65,6 +65,20 @@ because the release shipped as 0.3.2 (§4, Wave 1, step 0). The milestone was cl
 issue is. `dsh-new-story` sets `--milestone` on `gh issue create` from this table, keyed by
 the wave the task came from.
 
+**parent-poms has its own milestones, one per wave that carries parent-poms work.** A wave's
+upstream issues go on the milestone below, so that a parent-poms release clears one wave's work and
+does not wait for a later wave's. Decided on 2026-10-02, when every open parent-poms issue was given
+a milestone.
+
+| Wave | parent-poms milestone | Issues on 2026-10-02 |
+|---|---|---|
+| 1, through upstream step 5 | `3.10.0-SNAPSHOT` | all six closed; to be released as 3.10.0 |
+| 1, upstream step 6 | `3.11.0-SNAPSHOT` | `#98`, `#106` |
+| 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92` |
+| 9 | `3.13.0-SNAPSHOT` | `#85` |
+
+A wave with no row has no parent-poms work planned. When one gains some, it gets the next minor.
+
 ## 4. The waves
 
 ### Wave 0 — Engineering foundation
@@ -319,7 +333,7 @@ so it is not mistaken for part of the goal:
 released on 2026-09-27 and closed. DSH's root `pom.xml` names the released `3.9.0`, and a staging
 run against it on `staging-0.3.0-SNAPSHOT-RC` passed, with the README complete and every coverage
 report regenerated. **From here no parent-poms issue is picked up until DSH 0.3.0 is released and
-work is back on `DEVELOP`.** That includes `3.10.0-SNAPSHOT` and the unmilestoned
+work is back on `DEVELOP`.** That included `3.10.0-SNAPSHOT` and the then unmilestoned
 `parent-poms#85`. What was left of Wave 0 was DSH's own `0.3.0-SNAPSHOT` issues. The last of them,
 `#143`, closed on 2026-09-29, and the milestone has no open issue. DSH 0.3.0 was released the same
 day, and work is back on `DEVELOP`.
@@ -554,7 +568,8 @@ as APT, which also made the issue's own file list true. Closing `#57` clears eve
   [`parent-poms#85`](https://github.com/MRISS-Projects/parent-poms/issues/85) — not DSH `#85` — for
   the content question: five images never committed, empty link targets, and pages about
   Subversion, Tomcat 8 and the retired APT format, for both consuming projects and parent-poms
-  contributors. It has **no milestone**, so it does not gate 3.9.0.
+  contributors. It had **no milestone** then, so it did not gate 3.9.0. Since 2026-10-02 it is on
+  parent-poms `3.13.0-SNAPSHOT`, Wave 9.
 - `parent-poms#71` — `commit-readme-md` runs three times per staging run, and one of those commits
   carries an unresolved `${timestamp}` into the published `README.md`. A later execution repairs
   it, so a *successful* run ends correct; a run that fails inside that window leaves the consuming
@@ -702,7 +717,8 @@ the wave, in order:
 
    `parent-poms#98`, the missing retry on a transient registry error during `release:perform`, came
    out of that second dispatch. It is not folded into `#95`: it is a separate failure mode of the
-   same step, and is deferred, with no milestone yet.
+   same step. It was deferred then, with no milestone. Since 2026-10-02 it is step 6 below, on
+   parent-poms `3.11.0-SNAPSHOT`.
 1. **Done on 2026-09-30: maven-changes-plugin 2.12.10 released.**
    [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36),
    [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37) and
@@ -717,46 +733,73 @@ the wave, in order:
    came out of `#38`: `github-text-list` with the APT formatter throws an NPE on every GitHub issue.
    It was not folded into `#38`, because it is an older, separate defect. No MRISS project uses
    the APT formatter, so it has no milestone and no wave.
-2. **Built on 2026-10-01 and 2026-10-02: parent-poms `3.10.0-SNAPSHOT`.** The milestone held five
-   issues. `#89` had joined it on 2026-09-28, because its 404 is on DSH's own site. `#95` and `#96`
-   left it for step 0 on 2026-09-29. The release itself moved to step 4 on 2026-10-02.
-   - `#86` — **closed**, parent-poms PR #99. The changes plugin is at 2.12.10, and `includeEmptyMilestones` is on
-     in both `github-text-list` executions.
-   - `#81` — **closed**, parent-poms PR #100. No `run:` body interpolates an expression any more, and a guard in
-     parent-poms' `build.yml` keeps it so.
-   - `#88` — **closed**, parent-poms PR #101. Site publication is three steps: stage, verify, publish. One
-     `gh-pages` commit per run replaces one per module.
+2. **Done on 2026-10-02: parent-poms `3.10.0-SNAPSHOT` is built, and its milestone is clear.** It
+   held six issues, all closed. `#89` had joined it on 2026-09-28, because its 404 is on DSH's own
+   site. `#95` and `#96` left it for step 0 on 2026-09-29. `#104` joined on 2026-10-02. The release
+   itself is step 4.
+   - `#86` — **closed**, parent-poms PR #99. The changes plugin is at 2.12.10, and
+     `includeEmptyMilestones` is on in both `github-text-list` executions.
+   - `#81` — **closed**, parent-poms PR #100. No `run:` body interpolates an expression any more,
+     and a guard in parent-poms' `build.yml` keeps it so.
+   - `#88` — **closed**, parent-poms PR #101. Site publication is three steps: stage, verify,
+     publish. One `gh-pages` commit per run replaces one per module.
    - `#74` — **closed**, parent-poms PR #103. The parent-poms site has a real landing page.
-   - `#89` — **open**. Its fix is merged, parent-poms PR #102: a redirect page at `<type>/products/index.html`
-     in the consumer's own site, because the link cannot be changed from parent-poms. The issue
-     closes when step 3 shows the live link working.
+   - `#89` — **closed**, parent-poms PR #102. A redirect page at `<type>/products/index.html` in
+     the consumer's own site, because the link cannot be changed from parent-poms. It stayed open
+     until step 3 showed the live link working.
+   - `#104` — **closed**, parent-poms PR #105. `project-staging.yml` takes a `release_type` input,
+     so it is also a consumer's snapshot deploy.
 
-   `3.10.0-SNAPSHOT` was deployed with all five on 2026-10-02. Two things stay unproven until a
-   consumer runs them. `project-staging.yml` has no dry run, so its first run of the new site steps
-   is DSH's 0.4.0 RC. A real push through those steps from a consumer comes with step 3.
-3. **DSH `#127`, against a temporary `3.10.0-SNAPSHOT` pin, before 3.10.0 is released.** `#127`
-   deploys DSH's snapshot site from `DEVELOP`. It moved here from the triaged issues on 2026-10-02,
-   because it is a real publish from a consumer that needs no RC. It proves three things live:
-   - `parent-poms#89`: the "Products" link on `snapshots/products/dsh/` resolves through the
-     redirect page;
-   - `parent-poms#88`: the stage, verify and publish steps, with a real push from a consumer;
-   - `parent-poms#86`: a DSH README and site report from changes plugin 2.12.10.
+     `#104` came out of DSH `#127`: the snapshot deploy needed everything `project-staging.yml`
+     does, but for two literals that tied it to a release candidate. It was not folded into `#127`,
+     because the change is to parent-poms' reusable workflow, not to DSH.
 
-   It comes before the release so that anything needing adjustment is fixed in the `-SNAPSHOT`, not
-   in a 3.10.1. The pin is temporary. It reaches `DEVELOP` with `#127` and stays until step 5, as
-   `#127`'s spec decided on 2026-10-02. `parent-poms#89` closes when the link is seen working.
-4. Release parent-poms **3.10.0** by the full round trip in `CLAUDE.md`, once `#89` is closed and the
-   milestone is clear. The release run also checks that `3.10.0` sorts above `3.9.x` in the README
-   and the site report, the last open check of `#86`.
+   One thing stays unproven. `project-staging.yml` has no dry run, so its first run in `rcs` mode
+   since `#88` and `#104` is DSH's 0.4.0 RC. Its `snapshots` mode ran for real in step 3.
+3. **Done on 2026-10-02: DSH `#127`, against a temporary `3.10.0-SNAPSHOT` pin, before 3.10.0 is
+   released.** `#127` is **closed**, PR #149. Its spec,
+   `specs/stories/127-deploy-snapshot-site.md`, holds the evidence. It moved here from the triaged
+   issues on 2026-10-02, because it is a real publish from a consumer that needs no RC.
+   - **The snapshot site is live** at `snapshots/products/dsh/`, deployed by the `Deploy Snapshot`
+     workflow (`deploy.yml`), a wrapper over `project-staging.yml`. The 2020 site at
+     `snapshots/dsh/` is removed.
+   - **It proved three parent-poms fixes from a consumer**, in the proof run on the task branch and
+     again from `DEVELOP`: `#89`'s "Products" link through the redirect page, `#88`'s stage, verify
+     and publish steps with a real push, and `#86`'s README, which shows `0.3.1` with a `No issues`
+     row.
+   - **A placeholder `deploy.yml` sits on `master`**, by a one-off exception the owner approved.
+     GitHub dispatches a workflow only if its file exists on the default branch, and `master`
+     receives code only at a release. The placeholder refuses to run there, and the 0.4.0 release
+     replaces it.
+   - **`DEVELOP` is on a `-SNAPSHOT` parent** since this merge. The pin is temporary: step 5 ends
+     it.
+4. Release parent-poms **3.10.0** by the full round trip in `CLAUDE.md`. Its two conditions held on
+   2026-10-02: `#89` is closed and the milestone is clear. The release run also checks that
+   `3.10.0` sorts above `3.9.x` in the README and the site report, the last open check of `#86`.
 5. DSH: re-pin the root `pom.xml` to the released `3.10.0`, and remove the issue-labelling rule
    from `CLAUDE.md` and `dsh-new-story`. `CLAUDE.md` names that removal as the exit condition for
    `parent-poms#86`. No issue yet.
-6. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
+6. parent-poms `3.11.0-SNAPSHOT`, before DSH's 0.4.0 RC and release. Both issues harden a workflow
+   that the 0.4.0 pipeline runs:
+   - [`parent-poms#98`](https://github.com/MRISS-Projects/parent-poms/issues/98) — `release:perform`
+     fails the whole release on a transient GitHub Packages 500, with no retry. It is the failure
+     that left 0.3.1 half released (step 0). It goes with DSH `#148`, the release skill, which this
+     wave already wants before 0.4.0.
+   - [`parent-poms#106`](https://github.com/MRISS-Projects/parent-poms/issues/106) —
+     `project-staging.yml` has no concurrency group, unlike `project-release.yml` and
+     `project-hotfix.yml`. The next real staging run is the 0.4.0 RC.
+
+     `#106` came out of the review of DSH PR #149. It was not folded into `#127`, because the gap is
+     in parent-poms' workflow, and DSH's `deploy.yml` carries its own group meanwhile.
+
+   A workflow change reaches DSH on merge, because its wrappers call `@master`. So this step needs a
+   3.11.0 release only if one of the two turns out to need a POM change.
+7. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
    still committed to `master`. It depends on nothing above, but its first criterion, finding what
    last deployed by committing there, may lead back into parent-poms.
 
-`parent-poms#85` and `parent-poms#98` keep no milestone. `parent-poms#90`, `#91` and `#92` belong to
-Wave 8.
+Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-poms#90`, `#91` and
+`#92` belong to Wave 8, and `parent-poms#85` to Wave 9.
 
 **Triaged issues:**
 
@@ -775,7 +818,7 @@ Wave 8.
   Neither issue names a target version. Both leave it to their spec's analysis, and for `#120` that
   includes whether the version moves in parent-poms `products/pom.xml`, where it is managed today
   for every product.
-- `#127` — Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does.
+- `#127` — **closed** — PR #149. Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does.
 - `#128` — Point the wiki's release link at releases/products/dsh once 0.3.0 is released.
 
   Neither is an ADR-001 phase task either. Both came from reworking the wiki's
@@ -787,8 +830,8 @@ Wave 8.
   The wiki's release row was moved to `releases/products/dsh/` on 2026-09-30, after 0.3.2, ahead of
   the story. `#128` stays open for what to do with the legacy `releases/dsh/` and `rcs/dsh/` trees.
 
-  `#127` runs as step 3 of the upstream block above, not in the order of this list. Since 2026-10-02
-  it is also the live proof of three parent-poms fixes, before 3.10.0 is released.
+  `#127` ran as step 3 of the upstream block above, not in the order of this list. It was also
+  the live proof of three parent-poms fixes, ahead of the 3.10.0 release.
 - `#132` — Enforce SpotBugs and Checkstyle in the build and publish their reports.
 
   Not an ADR-001 phase task. It came from triaging Wave 0's `#43` on 2026-09-27. `#43` asked for
@@ -1032,7 +1075,7 @@ and runs a script; the root `README.md` describes exactly that.
 - [`parent-poms#92`](https://github.com/MRISS-Projects/parent-poms/issues/92) — export the MRISS
   build artifacts a consumer needs as an offline Maven repository.
 
-All three are unmilestoned upstream. They take the next parent-poms minor that this wave opens.
+All three are on parent-poms `3.12.0-SNAPSHOT`, this wave's milestone there (§3).
 
 **Tasks:**
 
@@ -1071,6 +1114,13 @@ scheduled after it so the migration lands first.
   it.
 
 `#44` moved to Wave 1 on 2026-09-28.
+
+**Upstream issues:**
+
+- [`parent-poms#85`](https://github.com/MRISS-Projects/parent-poms/issues/85) — decide whether the
+  infrastructure site pages are still worth keeping, and what replaces them. On parent-poms
+  `3.13.0-SNAPSHOT`. It depends on nothing in DSH's plan and blocks nothing, so it is scheduled with
+  the backlog. It had no milestone until 2026-10-02.
 
 ## 5. Won't-fix
 
