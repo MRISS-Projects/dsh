@@ -91,13 +91,13 @@ Both labelling paragraphs name this story's pin as their own exit condition. `#8
 
 ## 6. Tasks
 
-- [ ] **T1.** Pin `3.10.0` in its own commit. Compare the released parent POMs with the snapshot
+- [x] **T1.** Pin `3.10.0` in its own commit. Compare the released parent POMs with the snapshot
       (§4).
-- [ ] **T2.** Run gates 1 and 2, logged.
-- [ ] **T3.** Drop `-U` from both workflows.
-- [ ] **T4.** Remove or reword the labelling rule in `CLAUDE.md` and `dsh-new-story`.
-- [ ] **T5.** Update `docs/devops/README.md` and `CLAUDE.md`'s `-U` line. Run markdownlint.
-- [ ] **T6.** AC003's check: unlabel `#146` for one local README generation, then relabel it.
+- [x] **T2.** Run gates 1 and 2, logged.
+- [x] **T3.** Drop `-U` from both workflows.
+- [x] **T4.** Remove or reword the labelling rule in `CLAUDE.md` and `dsh-new-story`.
+- [x] **T5.** Update `docs/devops/README.md` and `CLAUDE.md`'s `-U` line. Run markdownlint.
+- [x] **T6.** AC003's check: unlabel `#146` for one local README generation, then relabel it.
       Record the result, and restore the README.
 - [ ] **T7.** Record the results in §8. Hand over to `dsh-ship-story`.
 
@@ -113,4 +113,23 @@ Both labelling paragraphs name this story's pin as their own exit condition. `#8
 
 ## 8. Verification results
 
-To be filled in during the build.
+All on 2026-10-02, on the development machine.
+
+- **AC001, the pin** (`f1127f75f`). The root `pom.xml` names `3.10.0`. The build downloaded
+  `products-3.10.0.pom` and `mriss-parent-3.10.0.pom` from GitHub Packages.
+- **AC002, gates 1 and 2.** `mvn -B clean install`: all 13 modules succeed, 127 tests run with no
+  failure, and "All coverage checks have been met" in each of the 8 modules with production code.
+- **Gate 3 is not needed, checked.** The released `products-3.10.0.pom` and `mriss-parent-3.10.0.pom`
+  were compared with `products-3.10.0-20261002.123547-2` and `mriss-parent-3.10.0-20261002.123547-2`,
+  the snapshot `#127`'s gate 3 passed on. With the version lines ignored, there are 0 differing
+  lines in either.
+- **AC003, the labelling rule.** `CLAUDE.md` loses the paragraph; `dsh-new-story` keeps a plain
+  instruction (`31488ccf5`), as decided at review. The check: DSH `#146` had its `bug` label removed
+  for one run of `mvn -B -N -Ddeployment process-resources` on this branch, against the released
+  parent. The log shows `changes:2.12.10:github-text-list (generate-list-of-issues)`. The README
+  listed `#146` under `### Version 0.3.2` with Type `n/a`. The label was restored straight after,
+  and the generated README was discarded; the tree was clean.
+- **AC004, `-U`** (`3dbe7657e`). Gone from `ci.yml` and `api-testing.yml`. `ci.yml`'s comment says to
+  add it back to both for the next `SNAPSHOT` pin.
+- **AC005, the docs** (`31488ccf5`, `47560dfb9`). `CLAUDE.md`'s "Commands" and the devops guide's
+  "Parent POM" describe the released pin, and say what a `SNAPSHOT` pin needs.
