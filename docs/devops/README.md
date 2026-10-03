@@ -71,7 +71,7 @@ table below) and matches it; no trigger shown here is invented.
 
 | Workflow | Trigger(s) | What it gates / does |
 | --- | --- | --- |
-| `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B -U install`). That single command *is* the coverage gate: `jacoco:check` enforces a 95% LINE and BRANCH minimum per module, and `enforce-coverage-data-exists` fails a module that produced no coverage data at all. Both are bound to `verify` and inherited from `parent-poms` rather than declared here. This is the primary correctness gate. |
+| `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B install`). That single command *is* the coverage gate: `jacoco:check` enforces a 95% LINE and BRANCH minimum per module, and `enforce-coverage-data-exists` fails a module that produced no coverage data at all. Both are bound to `verify` and inherited from `parent-poms` rather than declared here. This is the primary correctness gate. |
 | `spec-validation.yml` | `push` and `pull_request`, both scoped to paths `specs/**`, `docs/**`, `.github/copilot-instructions.md`, `.github/copilot/**`, `.github/roles.md`, `.github/scripts/**`, `.github/skills/**`, `.github/workflows/spec-validation.yml`, `.markdownlint.json`, `CLAUDE.md`, `.claude/**` | Lints the OpenAPI spec with Redocly, lints Markdown under `specs/`, `.github/`, `docs/` (excluding `docs/wiki/**`), `CLAUDE.md` and `.claude/` with markdownlint, and verifies that every path referenced from `copilot-instructions.md` resolves. That last check is enforcing: it fails the job on an unresolved reference, on a source file it cannot read, and when it extracts no references at all. Its logic is covered by `.github/scripts/check-spec-references.test.sh`, which the same job runs first. |
 | `api-testing.yml` | `push` to `DEVELOP` and `pull_request`, both scoped to paths `dsh-rest-api/**`, `specs/api/**`; `workflow_dispatch` | Builds the full project, boots `dsh-rest-api` against MongoDB/RabbitMQ service containers, and runs the Postman collections in `specs/api/postman/` via Newman. |
 | `documentation-sync.yml` | `push` to `DEVELOP`, scoped to paths `specs/api/openapi/**`, `specs/architecture/**`, `specs/features/**`, `docs/wiki/**`; `workflow_dispatch` | Two jobs: regenerates HTML API docs from the OpenAPI spec into `docs/api/`, and refreshes the table of contents in `specs/features/*.md` and `specs/architecture/*.md`. Both auto-commit with `[skip ci]`. |
@@ -320,26 +320,23 @@ registry.
 Every module in this repository inherits from `com.mriss.mriss-parent:products`, resolved from
 the `MRISS-Projects/maven-repo` GitHub Packages registry (see the `<parent>` block in the root
 `pom.xml`). CI (`ci.yml`) configures a Maven `settings.xml` with credentials for that registry and
-builds with `mvn -B -U install`, as does `api-testing.yml`. Parent version upgrades are a
-deliberate, manual edit to the root `pom.xml`, not something a workflow does automatically; `-U`
-only refreshes the `SNAPSHOT` that `pom.xml` already names.
+builds with `mvn -B install`, as does `api-testing.yml`. Parent version upgrades are a deliberate,
+manual edit to the root `pom.xml`, not something a workflow does automatically.
 
-The current pin is `com.mriss.mriss-parent:products:3.10.0-SNAPSHOT`, since `#127`. A `SNAPSHOT`
-pin carries a known reproducibility cost: the same commit in this repository can resolve a
-different parent POM — and therefore build differently — from one run to the next.
+The current pin is the released `com.mriss.mriss-parent:products:3.10.0`, since `#150`. A released
+parent resolves to the same POM on every run, so the build is reproducible, and neither workflow
+passes `-U`.
 
-**This SNAPSHOT pin is temporary and deliberate — do not "fix" it ahead of its exit.** `DEVELOP`
-was on the released `3.9.2`. `#127` moved it to `3.10.0-SNAPSHOT` so that the snapshot site deploy
-runs on parent-poms' unreleased fixes, and proves them from a consumer before 3.10.0 is released:
-the "Products" parent link (parent-poms#89), the stage, verify and publish site steps (#88) and
-the README from changes plugin 2.12.10 (#86). The exit is upstream step 5 of Wave 1 in
-`specs/product/PRD.md` §4: once parent-poms 3.10.0 is released, the root `pom.xml` is re-pinned to
-it.
+**A temporary `SNAPSHOT` pin is how parent-poms work is validated end to end.** `CLAUDE.md`'s round
+trip points the root `pom.xml` at parent-poms' `-SNAPSHOT` before parent-poms releases. `#127` did so
+with `3.10.0-SNAPSHOT`: DSH's snapshot site deploy proved parent-poms' unreleased fixes from a
+consumer, and `#150` re-pinned to the release. Such a pin is deliberate: do not "fix" it ahead of
+the exit its story names.
 
-**`-U` is how that decision is stated, not a mitigation of it.** Omitting the flag never bought
+**While a `SNAPSHOT` pin lasts, both workflows pass `-U`.** Add it back to `ci.yml` and
+`api-testing.yml` when the pin is taken, and drop it again with the re-pin. `-U` states the decision
+to track the current `SNAPSHOT`; it is not a mitigation of it. Omitting the flag never bought
 reproducibility, for two reasons: Maven refreshes `SNAPSHOT` metadata on its own daily schedule, so
-the parent re-resolved anyway at a moment nobody chose; and `actions/setup-java` restores `~/.m2`
-from a cache whose age varies run to run, so *whether* a given run saw a new parent depended on
-state invisible in the build log. Passing `-U` everywhere makes the drift consistent and legible
-instead of accidental. **When the parent is pinned to a released version, drop `-U`** — at that
-point resolution is genuinely reproducible and the flag no longer earns its place.
+the parent re-resolves anyway at a moment nobody chose; and `actions/setup-java` restores `~/.m2`
+from a cache whose age varies run to run, so *whether* a given run saw a new parent depends on state
+invisible in the build log. With `-U` the drift is consistent and legible instead of accidental.

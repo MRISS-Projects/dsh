@@ -225,7 +225,7 @@ jobs:
 
       - name: Build entire project (all modules must be installed first)
         run: |
-          mvn -B -U install -DskipTests \
+          mvn -B install -DskipTests \
             --file pom.xml
 
       - name: Start DSH REST API
