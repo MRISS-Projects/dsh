@@ -70,11 +70,11 @@ status. `.logs/` is gitignored; never commit a build log. In `ci.yml` do **not**
 GitHub Actions already captures the output.
 
 Upgrading the parent version is a deliberate, manual edit to the root `pom.xml`. CI never
-rebuilds `parent-poms`, and both Maven invocations in this repository's workflows pass `-U` —
-while the parent is a `SNAPSHOT`, tracking the current one on every run is the intended contract.
-The release wrappers build through reusable workflows in `parent-poms`, which set their own flags.
-See
-`docs/devops/README.md`, "Parent POM", for why, and for when to drop the flag.
+rebuilds `parent-poms`. The parent is the released `3.10.0`, so the two Maven invocations in this
+repository's workflows (`ci.yml`, `api-testing.yml`) do not pass `-U`. Whenever the parent is pinned
+to a `SNAPSHOT` again, to validate parent-poms work end to end, both get `-U` back for as long as
+the pin lasts. The release wrappers build through reusable workflows in `parent-poms`, which set
+their own flags. See `docs/devops/README.md`, "Parent POM", for why.
 
 ## Branch rules
 
@@ -173,11 +173,6 @@ invocable on its own.
 
 **Two things Claude never does:** close a GitHub issue, or merge a pull request. Both are
 yours. Claude creates issues and PRs only after you approve the content.
-
-**Every new issue carries a label** (`bug`, `enhancement` or `task`), however it is raised. Until
-`MRISS-Projects/parent-poms#86` ships, `README.md`'s release notes silently drop unlabelled issues
-— the defect is `MRISS-Projects/maven-changes-plugin#36`. Remove this rule, and its twin in
-`dsh-new-story`, once DSH is pinned to a parent-poms release that includes `#86`.
 
 ## Shared build infrastructure lives in another repo
 
