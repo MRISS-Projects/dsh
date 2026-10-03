@@ -73,7 +73,7 @@ a milestone.
 | Wave | parent-poms milestone | Issues on 2026-10-02 |
 |---|---|---|
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
-| 1, upstream step 6 | `3.11.0-SNAPSHOT` | `#98`, `#106` |
+| 1, upstream step 6 | `3.11.0-SNAPSHOT` | `#98`, `#106`; `#106` closed on 2026-10-03 |
 | 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92` |
 | 9 | `3.13.0-SNAPSHOT` | `#85` |
 
@@ -796,10 +796,13 @@ the wave, in order:
      wave already wants before 0.4.0.
    - [`parent-poms#106`](https://github.com/MRISS-Projects/parent-poms/issues/106) —
      `project-staging.yml` has no concurrency group, unlike `project-release.yml` and
-     `project-hotfix.yml`. The next real staging run is the 0.4.0 RC.
+     `project-hotfix.yml`. **closed** — parent-poms PR #107, merged on 2026-10-03 with no POM
+     change. Staging, release and hotfix now share one group per consumer, `dsh-site` for DSH. Its
+     first release-path exercise should be a release dry run on the 0.4.0 RC branch.
 
      `#106` came out of the review of DSH PR #149. It was not folded into `#127`, because the gap is
-     in parent-poms' workflow, and DSH's `deploy.yml` carries its own group meanwhile.
+     in parent-poms' workflow. DSH's own `deploy-snapshot` group in `deploy.yml` is now redundant,
+     but harmless.
 
    A workflow change reaches DSH on merge, because its wrappers call `@master`. So this step needs a
    3.11.0 release only if one of the two turns out to need a POM change.
