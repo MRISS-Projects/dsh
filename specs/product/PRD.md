@@ -72,7 +72,7 @@ a milestone.
 
 | Wave | parent-poms milestone | Issues on 2026-10-02 |
 |---|---|---|
-| 1, through upstream step 5 | `3.10.0-SNAPSHOT` | all six closed; to be released as 3.10.0 |
+| 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
 | 1, upstream step 6 | `3.11.0-SNAPSHOT` | `#98`, `#106` |
 | 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92` |
 | 9 | `3.13.0-SNAPSHOT` | `#85` |
@@ -771,14 +771,23 @@ the wave, in order:
      GitHub dispatches a workflow only if its file exists on the default branch, and `master`
      receives code only at a release. The placeholder refuses to run there, and the 0.4.0 release
      replaces it.
-   - **`DEVELOP` is on a `-SNAPSHOT` parent** since this merge. The pin is temporary: step 5 ends
-     it.
-4. Release parent-poms **3.10.0** by the full round trip in `CLAUDE.md`. Its two conditions held on
-   2026-10-02: `#89` is closed and the milestone is clear. The release run also checks that
-   `3.10.0` sorts above `3.9.x` in the README and the site report, the last open check of `#86`.
-5. DSH: re-pin the root `pom.xml` to the released `3.10.0`, and remove the issue-labelling rule
-   from `CLAUDE.md` and `dsh-new-story`. `CLAUDE.md` names that removal as the exit condition for
-   `parent-poms#86`. No issue yet.
+   - **`DEVELOP` was on a `-SNAPSHOT` parent** from this merge until step 5 re-pinned it to the
+     released `3.10.0` on 2026-10-03.
+4. **Done on 2026-10-03: parent-poms 3.10.0 released**, by the full round trip in `CLAUDE.md`, after
+   `#89` was closed and the milestone cleared.
+   [Run 37080121832](https://github.com/MRISS-Projects/parent-poms/actions/runs/37080121832) tagged
+   `mriss-parent-3.10.0`, published `mriss-parent` and `products` at `3.10.0`, and moved parent-poms
+   `master` to `3.11.0-SNAPSHOT`. The milestone was renamed `3.10.0` first, so the release notes say
+   `### Version 3.10.0`.
+   - **`#86`'s last check passed:** the released README and site report both list `3.10.0` first,
+     with all six issues, then `3.9.2` downward.
+5. **Done on 2026-10-03: DSH re-pinned to the released `3.10.0`.** `#150` — **closed**, PR #151. Its
+   spec, `specs/stories/150-repin-parent-3-10-0.md`, holds the evidence.
+   - **`-U` is dropped from `ci.yml` and `api-testing.yml`.** The docs say to add it back for the
+     next `SNAPSHOT` pin.
+   - **The issue-labelling rule is retired**, as both copies named. `CLAUDE.md` lost it, and
+     `dsh-new-story` keeps a plain labelling instruction. An unlabelled issue is listed with Type
+     `n/a`, shown on a README generated against the released parent.
 6. parent-poms `3.11.0-SNAPSHOT`, before DSH's 0.4.0 RC and release. Both issues harden a workflow
    that the 0.4.0 pipeline runs:
    - [`parent-poms#98`](https://github.com/MRISS-Projects/parent-poms/issues/98) — `release:perform`
