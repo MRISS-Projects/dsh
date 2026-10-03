@@ -5,7 +5,9 @@
 
     <!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <!-- FR001: parent updated to products SNAPSHOT so all parent-poms changes are immediately testable -->
+    <!-- #150: the released parent-poms version. To validate parent-poms work end to end, the parent is
+         pinned to its -SNAPSHOT for a while, and CI passes -U while it is; see docs/devops/README.md,
+         "Parent POM". -->
     <parent>
         <groupId>com.mriss.mriss-parent</groupId>
         <artifactId>products</artifactId>
