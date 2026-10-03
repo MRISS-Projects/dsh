@@ -4,7 +4,7 @@
 
 ## Version
 
-0.4.0-SNAPSHOT - 2 - 20261002-213147
+0.4.0-SNAPSHOT - 3 - 20261003-131752
 
 ## Introduction
 
@@ -414,11 +414,18 @@ The API description, in Swagger 2 format, is served at
 
 ## Release Notes
 
+### Version 0.4.0-SNAPSHOT
+
+| # | Type | Summary | Assignee | Reporter | Updated |
+| --- | ---- | ------- | -------- | -------- | ------- |
+| [150](https://github.com/MRISS-Projects/dsh/issues/150) | task | Re-pin the parent to the released parent-poms 3.10.0, and retire what the SNAPSHOT pin needed | null | mriss | 10/3/26 |
+| [127](https://github.com/MRISS-Projects/dsh/issues/127) | enhancement | Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does | null | mriss | 10/2/26 |
+
 ### Version 0.3.2
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
-| [146](https://github.com/MRISS-Projects/dsh/issues/146) | bug | [STORY] Release DSH 0.3.1 with a release site that carries its test reports and coverage badge | null | mriss | 10/1/26 |
+| [146](https://github.com/MRISS-Projects/dsh/issues/146) | bug | [STORY] Release DSH 0.3.1 with a release site that carries its test reports and coverage badge | null | mriss | 10/3/26 |
 
 ### Version 0.3.1
 
