@@ -133,3 +133,20 @@ All on 2026-10-02, on the development machine.
   add it back to both for the next `SNAPSHOT` pin.
 - **AC005, the docs** (`31488ccf5`, `47560dfb9`). `CLAUDE.md`'s "Commands" and the devops guide's
   "Parent POM" describe the released pin, and say what a `SNAPSHOT` pin needs.
+
+### 8.1 Review round 1 on the PR, 2026-10-03
+
+Copilot reviewed `9786be031` and raised two findings. The review arrived automatically, so it ran at
+the repository's default effort level. Both were valid, both were wording, and neither changed
+behaviour.
+
+1. **`docs/devops/README.md:74`.** The workflow table still said `ci.yml` runs `mvn -B -U install`,
+   contradicting the workflow and the "Parent POM" section. The search for leftover `-U` text during
+   the build was malformed and missed it. Fixed in `611dcf83a`.
+2. **`pom.xml:8`.** The comment above `<parent>`, from `FR001`, still said the parent was a
+   `SNAPSHOT` so that every parent-poms change is immediately testable, above a released `3.10.0`.
+   It now names the released pin and points at the temporary `SNAPSHOT` pin and its `-U`. Fixed in
+   `170354a14`. `mvn -B validate` passes on it.
+
+The only `-U` text left in the repository is in older story specs, which record what was true when
+they were written.
