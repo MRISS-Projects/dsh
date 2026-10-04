@@ -73,7 +73,7 @@ a milestone.
 | Wave | parent-poms milestone | Issues on 2026-10-02 |
 |---|---|---|
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
-| 1, upstream step 6 | `3.11.0-SNAPSHOT` | `#98`, `#106`; both closed, `#106` on 2026-10-03 and `#98` on 2026-10-04 |
+| 1, upstream step 6 | `3.11.0-SNAPSHOT`, now `3.11.0` | `#98`, `#106`; both closed; released on 2026-10-04, DSH not re-pinned |
 | 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92` |
 | 9 | `3.13.0-SNAPSHOT` | `#85` |
 
@@ -810,9 +810,13 @@ the wave, in order:
      in parent-poms' workflow. DSH's own `deploy-snapshot` group in `deploy.yml` is now redundant,
      but harmless.
 
-   A workflow change reaches DSH on merge, because its wrappers call `@master`. So this step needed a
-   3.11.0 release only if one of the two needed a POM change, and neither did. The milestone has no
-   open issues.
+   A workflow change reaches DSH on merge, because its wrappers call `@master`, and neither issue
+   changed a POM. parent-poms 3.11.0 was released on 2026-10-04 anyway, to record them, by
+   [run 37210362198](https://github.com/MRISS-Projects/parent-poms/actions/runs/37210362198). It
+   tagged `mriss-parent-3.11.0`, its release notes list both issues, and it moved parent-poms
+   `master` to `3.12.0-SNAPSHOT`. The milestone was renamed `3.11.0` first and closed after it.
+   **DSH stays pinned to
+   `3.10.0`**, by decision: `products:3.11.0` holds the same POM, so a re-pin would change nothing.
 7. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
    still committed to `master`. It depends on nothing above, but its first criterion, finding what
    last deployed by committing there, may lead back into parent-poms.
