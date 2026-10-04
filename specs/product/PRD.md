@@ -73,7 +73,7 @@ a milestone.
 | Wave | parent-poms milestone | Issues on 2026-10-02 |
 |---|---|---|
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
-| 1, upstream step 6 | `3.11.0-SNAPSHOT` | `#98`, `#106`; `#106` closed on 2026-10-03 |
+| 1, upstream step 6 | `3.11.0-SNAPSHOT` | `#98`, `#106`; both closed, `#106` on 2026-10-03 and `#98` on 2026-10-04 |
 | 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92` |
 | 9 | `3.13.0-SNAPSHOT` | `#85` |
 
@@ -718,7 +718,7 @@ the wave, in order:
    `parent-poms#98`, the missing retry on a transient registry error during `release:perform`, came
    out of that second dispatch. It is not folded into `#95`: it is a separate failure mode of the
    same step. It was deferred then, with no milestone. Since 2026-10-02 it is step 6 below, on
-   parent-poms `3.11.0-SNAPSHOT`.
+   parent-poms `3.11.0-SNAPSHOT`, and it was closed on 2026-10-04.
 1. **Done on 2026-09-30: maven-changes-plugin 2.12.10 released.**
    [`maven-changes-plugin#36`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/36),
    [`#37`](https://github.com/MRISS-Projects/maven-changes-plugin/issues/37) and
@@ -788,24 +788,31 @@ the wave, in order:
    - **The issue-labelling rule is retired**, as both copies named. `CLAUDE.md` lost it, and
      `dsh-new-story` keeps a plain labelling instruction. An unlabelled issue is listed with Type
      `n/a`, shown on a README generated against the released parent.
-6. parent-poms `3.11.0-SNAPSHOT`, before DSH's 0.4.0 RC and release. Both issues harden a workflow
-   that the 0.4.0 pipeline runs:
+6. **Done on 2026-10-04: parent-poms `3.11.0-SNAPSHOT`'s two issues are closed**, before DSH's
+   0.4.0 RC and release. Both harden a workflow that the 0.4.0 pipeline runs:
    - [`parent-poms#98`](https://github.com/MRISS-Projects/parent-poms/issues/98) — `release:perform`
-     fails the whole release on a transient GitHub Packages 500, with no retry. It is the failure
-     that left 0.3.1 half released (step 0). It goes with DSH `#148`, the release skill, which this
-     wave already wants before 0.4.0.
+     fails the whole release on a transient GitHub Packages 500, with no retry. **closed** —
+     parent-poms PR #108, merged on 2026-10-04 with no POM change. It is the failure that left 0.3.1
+     half released (step 0). The release and hotfix workflows now retry an upload that GitHub
+     Packages answers with 429 or a transient 5xx. DSH dry runs of both workflows passed after the
+     merge: hotfix
+     [run 37201685895](https://github.com/MRISS-Projects/dsh/actions/runs/37201685895) and release
+     [run 37201688263](https://github.com/MRISS-Projects/dsh/actions/runs/37201688263). It goes
+     with DSH `#148`, the release skill, which this wave already wants before 0.4.0.
    - [`parent-poms#106`](https://github.com/MRISS-Projects/parent-poms/issues/106) —
      `project-staging.yml` has no concurrency group, unlike `project-release.yml` and
      `project-hotfix.yml`. **closed** — parent-poms PR #107, merged on 2026-10-03 with no POM
      change. Staging, release and hotfix now share one group per consumer, `dsh-site` for DSH. Its
-     first release-path exercise should be a release dry run on the 0.4.0 RC branch.
+     first release-path exercise was `#98`'s two dry runs on 2026-10-04. The release job waited in
+     the group for the whole hotfix job and started two seconds after it ended.
 
      `#106` came out of the review of DSH PR #149. It was not folded into `#127`, because the gap is
      in parent-poms' workflow. DSH's own `deploy-snapshot` group in `deploy.yml` is now redundant,
      but harmless.
 
-   A workflow change reaches DSH on merge, because its wrappers call `@master`. So this step needs a
-   3.11.0 release only if one of the two turns out to need a POM change.
+   A workflow change reaches DSH on merge, because its wrappers call `@master`. So this step needed a
+   3.11.0 release only if one of the two needed a POM change, and neither did. The milestone has no
+   open issues.
 7. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
    still committed to `master`. It depends on nothing above, but its first criterion, finding what
    last deployed by committing there, may lead back into parent-poms.
