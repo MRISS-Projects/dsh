@@ -817,9 +817,17 @@ the wave, in order:
    `master` to `3.12.0-SNAPSHOT`. The milestone was renamed `3.11.0` first and closed after it.
    **DSH stays pinned to
    `3.10.0`**, by decision: `products:3.11.0` holds the same POM, so a re-pin would change nothing.
-7. [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9): remove the Maven artifacts
-   still committed to `master`. It depends on nothing above, but its first criterion, finding what
-   last deployed by committing there, may lead back into parent-poms.
+7. **Done on 2026-10-04: maven-repo holds no artifacts in git.**
+   [`maven-repo#9`](https://github.com/MRISS-Projects/maven-repo/issues/9) — remove the Maven artifacts
+   committed to master. **closed** — maven-repo PR #10. Its description holds the evidence.
+   - **It did not lead back into parent-poms.** The last committer was a `maven-scm-publish-plugin`
+     execution in parent-poms `products/pom.xml`, already removed by `cde78fd2` on 2026-05-21.
+   - **The loss is accepted.** 116 SNAPSHOTs and 45 DSH releases, 0.0.1 to 0.2.4 of the uppercase
+     `DSH-*` modules, existed only in git and are gone. The SNAPSHOTs include `mail-processor-service`'s,
+     which the issue had not listed. That project stalls until it moves to the current parent-poms
+     structure.
+
+**The upstream block is complete.** The wave continues with the tasks below.
 
 Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-poms#90`, `#91` and
 `#92` belong to Wave 8, and `parent-poms#85` to Wave 9.
