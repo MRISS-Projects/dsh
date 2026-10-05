@@ -556,4 +556,27 @@ git commit -m "docs: replace the hand-drawn workflow image with the generated di
 
 ## 8. Verification results
 
-To be recorded during the build.
+Recorded on 2026-10-05, on `issue-152-generate-document-status-diagram`.
+
+- **TDD.** Task 1 red: `generatedDiagramFollowsTheRules` failed on `missing entry edge`; green after
+  `generate()`. Task 2 red: `committedDiagramMatchesTheCode` failed with
+  `document-status-workflow.md does not exist. It is generated from DocumentStatus; replace its
+  mermaid block with:`. The block in that message was diffed against §3.2: identical. Green with
+  `Tests run: 2, Failures: 0` once the file was committed.
+- **Gates 1 and 2.** `mvn -B clean install` (`.logs/mvn-clean-install.log`): `maven exit=0`, all 13
+  reactor modules `SUCCESS`, `jacoco:check` passed in every module.
+- **Gate 3.** Not applicable (§4).
+- **AC003.** With `CREATED` returning `INDEXING`, `mvn -B clean install -pl dsh-data`
+  (`.logs/mvn-ac003-red.log`) gave `maven exit=1`. `committedDiagramMatchesTheCode` failed with
+  `document-status-workflow.md is out of date. It is generated from DocumentStatus; replace its
+  mermaid block with:`, and the block held `CREATED --> INDEXING : SUCCESS, ERROR, NEUTRAL`.
+  `generatedDiagramFollowsTheRules` passed. `DocumentStatusTest.testTransition` failed as expected.
+  So did `DocumentTest.testTransitionStatus`, which §4 did not list. It also asserts the real
+  transition, so it is expected and unrelated. Reverted; `git diff --quiet -- dsh-data/src/main`
+  succeeded.
+- **AC005.** `check-unit-tests-context-free.sh`: "Every unit test is free of a Spring context."
+- **AC006.** `git grep -n workflow.jpg` lists only `docs/wiki/Workflow.md` (cleared by the
+  post-merge sync), `specs/product/PRD.md` (history) and this spec.
+- **Markdown lint.** The `CLAUDE.md` command exited 0.
+- **Pending.** AC001 rendering on GitHub after the push; AC007 and the rest of AC006 after the merge
+  (Task 5).
