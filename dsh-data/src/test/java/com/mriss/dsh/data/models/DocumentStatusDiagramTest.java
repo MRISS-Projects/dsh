@@ -5,7 +5,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -29,6 +35,26 @@ public class DocumentStatusDiagramTest {
     private static final String ARROW = " --> ";
     private static final String LABEL_SEPARATOR = " : ";
     private static final String END = "[*]";
+    static final String DIAGRAM_FILE = "specs/architecture/document-status-workflow.md";
+    private static final String OPENING_FENCE = "```mermaid";
+    private static final String CLOSING_FENCE = "```";
+
+    @Test
+    public void committedDiagramMatchesTheCode() throws IOException {
+        String generated = generate();
+        Path file = diagramFile();
+        if (!Files.exists(file)) {
+            fail(mismatch(file, "does not exist", generated));
+        }
+        String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8).replace("\r\n", "\n");
+        List<String> blocks = mermaidBlocks(content);
+        if (blocks.size() != 1) {
+            fail(mismatch(file, "has " + blocks.size() + " mermaid blocks, not exactly one", generated));
+        }
+        if (!blocks.get(0).equals(generated)) {
+            fail(mismatch(file, "is out of date", generated));
+        }
+    }
 
     @Test
     public void generatedDiagramFollowsTheRules() {
@@ -100,5 +126,33 @@ public class DocumentStatusDiagramTest {
             }
         }
         return out.toString();
+    }
+
+    static Path diagramFile() {
+        Path moduleDir = Paths.get(System.getProperty("basedir", "")).toAbsolutePath();
+        return moduleDir.getParent().resolve(DIAGRAM_FILE);
+    }
+
+    static List<String> mermaidBlocks(String content) {
+        List<String> blocks = new ArrayList<>();
+        StringBuilder block = null;
+        for (String line : content.split("\n", -1)) {
+            if (block == null) {
+                if (line.trim().equals(OPENING_FENCE)) {
+                    block = new StringBuilder();
+                }
+            } else if (line.trim().equals(CLOSING_FENCE)) {
+                blocks.add(block.toString());
+                block = null;
+            } else {
+                block.append(line).append('\n');
+            }
+        }
+        return blocks;
+    }
+
+    private static String mismatch(Path file, String problem, String generated) {
+        return file + " " + problem + ". It is generated from DocumentStatus; replace its mermaid block with:\n\n"
+                + OPENING_FENCE + "\n" + generated + CLOSING_FENCE + "\n";
     }
 }
