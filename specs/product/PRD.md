@@ -827,7 +827,36 @@ the wave, in order:
      which the issue had not listed. That project stalls until it moves to the current parent-poms
      structure.
 
-**The upstream block is complete.** The wave continues with the tasks below.
+**The upstream block is complete.** Task 1 is done too. The rest of the wave runs in this order,
+agreed on 2026-10-06. It interleaves the triaged issues with the tasks, because the wave has two
+critical paths that do not wait on each other: design, which Wave 2 waits on, and the platform,
+which new code waits on. Items are named by their issue or task number below, which stay as they
+are.
+
+1. `#128` — only AC003 is left: what happens to the legacy `releases/dsh/` and `rcs/dsh/` trees.
+   `#127` set the precedent when it removed `snapshots/dsh/`.
+2. `#48`, then task 2 (ADR-003). `#48`'s findings on profiles feed the ADR's choice of transport
+   and persistence by profile. The ADR comes before the Spring Boot upgrade: it decides structure,
+   not API detail, and more of the wave waits on it than on anything else.
+3. `#140`, then `#119`. Mechanical work, done while ADR-003 is in review. `#140` first, so `#120`
+   carries fewer settings.
+4. `#120`, after `#119` for the reason given with the triaged issues.
+5. Task 3 (ADR-004). It needs ADR-003's answers on Vertex AI Search and on local mode.
+6. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
+   settles.
+7. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
+   the wiki's source moves into `docs/wiki/`, and task 4's reachability check needs that answer.
+   That move would also retire `wiki-sync.yml`, so its disabling for inactivity (task 1's outcome)
+   waits on task 5 rather than getting an issue now.
+8. Tasks 8 to 10, the `dsh-data` interfaces. They come after ADR-003, which may reshape them, and
+   after `#120`, so that new code is written on the final Spring Boot line.
+9. `#148`, last, before the 0.4.0 release candidate. It should learn from everything this wave
+   changes in the build.
+
+Task 7 and `#132` have no fixed step. They fill gaps, such as an ADR in review, but each has a
+latest point. `#132` lands before tasks 8 to 10, so that the new `dsh-data` code is written to the
+analysers' rules, and before `#148` in any case, because it changes the build. Task 7 lands before
+`#148`, inside the wave, because Wave 3's stories cite the papers.
 
 Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-poms#90`, `#91` and
 `#92` belong to Wave 8, and `parent-poms#85` to Wave 9.
