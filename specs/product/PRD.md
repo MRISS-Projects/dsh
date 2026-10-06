@@ -900,17 +900,27 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-pom
 
 **Tasks:**
 
-1. **Keep the document-status diagram generated from code.** `src/site/resources/images/workflow.jpg`
-   draws `DocumentStatus`'s state machine by hand. `transition(TransitionType)` is a pure function
-   over three transition types, so the whole graph can be derived. A context-free unit test in
-   `dsh-data` renders a Mermaid `stateDiagram-v2` from `DocumentStatus` × `TransitionType`,
-   dropping self-loops and ending every state that returns itself for all three types at `[*]`. It
+1. **Done on 2026-10-06: keep the document-status diagram generated from code.** `#152` —
+   **closed** — PR #153. Generate the document-status diagram from DocumentStatus and fail the build
+   when it drifts. Its spec, `specs/stories/152-generate-document-status-diagram.md`, holds the
+   evidence. The plan as written is kept below.
+
+   `src/site/resources/images/workflow.jpg` drew `DocumentStatus`'s state machine by hand.
+   `transition(TransitionType)` is a pure function over three transition types, so the whole graph
+   can be derived. A context-free unit test in `dsh-data` renders a Mermaid `stateDiagram-v2` from
+   `DocumentStatus` × `TransitionType`, dropping self-loops and ending every state that returns itself for all three types at `[*]`. It
    compares the result with a committed `specs/architecture/document-status-workflow.md`, and on a
    mismatch fails with the regenerated text. There is one generator, the test, so the diagram and
    the code cannot disagree without the build going red. `workflow.jpg` is deleted, and the wiki's
    Workflow page links to the file, because a wiki page cannot include a repository file. **This
    task comes before tasks 2 and 3 of Wave 2**, which will change the statuses: the queued and
    dequeued states come from the RabbitMQ design.
+
+   **Outcome.** The diagram is `specs/architecture/document-status-workflow.md`, generated and
+   checked by `DocumentStatusDiagramTest`. The wiki's Workflow page links to it, and the sync PR,
+   #154, brought that page into `docs/wiki/`. `wiki-sync.yml` had been disabled by GitHub for
+   inactivity since 2026-07-21. It was re-enabled on 2026-10-06 to run that sync, and it will be
+   disabled again after 60 days without activity on `master`. No issue is open for that yet.
 2. **ADR-003 — the document pipeline.** Decides:
    - The flow: one Java DSL `IntegrationFlow` as the bus, with stages as POJO endpoints and one
      interceptor or advice that records each `DocumentStatus` transition, so no stage touches

@@ -580,4 +580,10 @@ Recorded on 2026-10-05, on `issue-152-generate-document-status-diagram`.
 - **Markdown lint.** The `CLAUDE.md` command exited 0.
 - **AC001.** After the push, the developer opened `specs/architecture/document-status-workflow.md`
   on GitHub on the task branch (PR #153) and confirmed the diagram renders, on 2026-10-06.
-- **Pending.** AC007 and the rest of AC006 after the merge (Task 5).
+- **Task 5, on 2026-10-06, after PR #153 merged.** The wiki's `Workflow.md` was replaced with
+  §3.3, wiki commit `c033419`. `wiki-sync.yml` was disabled by GitHub for inactivity, so it was
+  re-enabled, then dispatched on `DEVELOP`: run 37480948243, success. The sync PR, #154, merged.
+- **AC007.** `docs/wiki/Workflow.md` on `DEVELOP` (`babbcd22d`) holds the link to
+  `specs/architecture/document-status-workflow.md`.
+- **AC006.** On `DEVELOP` (`babbcd22d`), `workflow.jpg` is absent from `src/site/resources/images/`,
+  and `git grep -n workflow.jpg` lists only `specs/product/PRD.md` (history) and this spec.
