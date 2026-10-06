@@ -38,10 +38,10 @@ All against `origin/gh-pages` on 2026-10-06.
 | Two legacy trees remain: `releases/dsh/` and `rcs/dsh/`, 1,772 files each | `git ls-tree -r origin/gh-pages <tree> \| wc -l` |
 | `releases/dsh/` serves 0.2.4. It was last published on 2019-04-26, in commit `5a4bc0e8` | `Version: 0.2.4` in its `index.html`, and `git log -1 -- releases/dsh` |
 | `rcs/dsh/` serves 0.2.4-SNAPSHOT. It was last published on 2019-04-26, in commit `f69affba` | the same checks |
-| Nothing publishes to either tree again. `group.id.path` is `products/dsh` (`pom.xml:95`), and `publish-scm` runs with `skipDeletedFiles`, so no publish cleans them up either | `#127` §3.1 decision 7 |
+| Nothing publishes to either tree again. `group.id.path` is `products/dsh` (`pom.xml:97`), and `publish-scm` runs with `skipDeletedFiles`, so no publish cleans them up either | `#127` §3.1 decision 7 |
 | Nothing in this repository links to either tree. The only mentions are the PRD's notes about this issue, and `#90`'s spec, which compares against 0.2.4 as history | `git grep -E "(releases\|rcs)/dsh\b"` on `DEVELOP` |
 | The wiki's release row still points readers at `releases/dsh`. It calls the tree legacy, says it "still serves 0.2.4", and links `#128` | `docs/wiki/Code-Based-Site-and-Reports.md` |
-| Nothing in the legacy trees is unique. The pages that are missing from the new site are either renamed reports (`#90` spec §4) or empty templates (`user-guide`, `features`, `install`, `use`, `configure`, `vision`), each with only a "0.0.1-SNAPSHOT" heading. The one page with text, `vision-html`, is a 2010 RUP vision outline. Its source is in the `dsh-0.2.4` tag | the rendered bodies, and `pdf/site.tmp/apt/` in the tree |
+| Nothing in the legacy trees is unique. The pages that are missing from the new site are either renamed reports (`#90` spec §4) or empty templates (`user-guide`, `features`, `install`, `use`, `configure`, `vision`), each with only a "0.0.1-SNAPSHOT" heading. The one page with text, `vision-html`, is a 2010 RUP vision outline, and it is not DSH content: it comes from the parent-poms archetype templates (`infrastructure/maven-archetypes/*/archetype-resources/src/site/apt/vision-html.apt`). DSH deleted its copies in `6c69738d5` (2019-04-12), before 0.2.4 | the rendered bodies, `pdf/site.tmp/apt/` in the tree, and `git show --stat 6c69738d5` |
 | GitHub Pages builds from the `gh-pages` branch root (`build_type: legacy`). There is no custom 404, so a removed path returns GitHub's default 404 | `gh api repos/MRISS-Projects/dsh/pages` |
 
 ## 3. Design
@@ -51,8 +51,9 @@ All against `origin/gh-pages` on 2026-10-06.
 `releases/dsh/` and `rcs/dsh/` are removed from `gh-pages` in one commit, as `snapshots/dsh/` was
 in `#127`.
 
-- **Nothing is lost.** The `gh-pages` history keeps every file (`5a4bc0e8`, `f69affba`), and the
-  `dsh-0.2.4` tag keeps the sources.
+- **Nothing is lost.** The `gh-pages` history keeps every rendered file (`5a4bc0e8`, `f69affba`).
+  The one page with text, `vision-html`, was a parent-poms archetype template, which parent-poms
+  still holds.
 - **Nothing links there.** The wiki row moved on 2026-09-30, and nothing in this repository links
   either tree.
 - **One rule for all three trees.** `snapshots/dsh/` went without a pointer. Keeping the other two
