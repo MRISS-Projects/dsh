@@ -111,11 +111,11 @@ spec.
 
 ## 5. Tasks
 
-- [ ] **T1.** Re-check AC001 and AC002 against the live site and the wiki (§6.1).
-- [ ] **T2.** Remove `releases/dsh/` and `rcs/dsh/` from `gh-pages` in one commit, and push it.
-- [ ] **T3.** Once Pages reports the commit `built`, check §6.2.
-- [ ] **T4.** Edit the wiki row (§3.2), and check §6.3 once `wiki-sync.yml` has run.
-- [ ] **T5.** Record the results in §8. Lint the spec.
+- [x] **T1.** Re-check AC001 and AC002 against the live site and the wiki (§6.1).
+- [x] **T2.** Remove `releases/dsh/` and `rcs/dsh/` from `gh-pages` in one commit, and push it.
+- [x] **T3.** Once Pages reports the commit `built`, check §6.2.
+- [x] **T4.** Edit the wiki row (§3.2), and check §6.3 once `wiki-sync.yml` has run.
+- [x] **T5.** Record the results in §8. Lint the spec.
 
 ## 6. Verification
 
@@ -149,4 +149,41 @@ spec.
 
 ## 8. Verification results
 
-To be filled in during the build.
+### 8.1 T1, AC001 and AC002 re-checked, 2026-10-06
+
+- `releases/products/dsh/` answers 200, and its `index.html` shows `Version: 0.3.2`.
+  `rcs/products/dsh/` and `snapshots/products/dsh/` answer 200.
+- The wiki's "Current Official Release" row links `…/dsh/releases/products/dsh/`.
+- The baseline before T2: `releases/dsh/`, `rcs/dsh/` and `releases/dsh/DSH-rest-api/index.html`
+  all answer 200.
+
+### 8.2 T2, the removal tree
+
+Built from `origin/gh-pages` at `fd4d322e6` with a temporary index, without checking the branch
+out. The tree is `2b0a910df`. `git diff-tree` against the parent shows 3,544 deletions and no
+other change, and no path outside `releases/dsh/` and `rcs/dsh/`.
+
+The commit is `9c1316b79`, pushed as a fast-forward of `gh-pages` from `fd4d322e6`. `git show
+--stat` reports `3544 files changed, 408271 deletions(-)`.
+
+### 8.3 T3, the live site, 2026-10-06
+
+Pages reported `9c1316b79` as `built`. Then:
+
+| Address | Before | After |
+|---|---|---|
+| `releases/dsh/` | 200 | 404 |
+| `rcs/dsh/` | 200 | 404 |
+| `releases/dsh/DSH-rest-api/index.html` | 200 | 404 |
+| `releases/products/dsh/` | 200 | 200 |
+| `rcs/products/dsh/` | 200 | 200 |
+| `snapshots/products/dsh/` | 200 | 200 |
+
+### 8.4 T4, the wiki, 2026-10-06
+
+- Wiki commit `a7f5ae9`. The release row's note now says the legacy `releases/dsh` and `rcs/dsh`
+  trees, 0.2.x leftovers, were removed (#128). No link on the page points at either tree.
+- `wiki-sync.yml`'s schedule has not run since 2026-07-21, so it was dispatched by hand, in run
+  [`37508413576`](https://github.com/MRISS-Projects/dsh/actions/runs/37508413576). That opened
+  [#155](https://github.com/MRISS-Projects/dsh/pull/155), whose diff is that one row. §6.3's
+  `DEVELOP` check holds once #155 merges.
