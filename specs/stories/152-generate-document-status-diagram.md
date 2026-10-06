@@ -578,5 +578,6 @@ Recorded on 2026-10-05, on `issue-152-generate-document-status-diagram`.
 - **AC006.** `git grep -n workflow.jpg` lists only `docs/wiki/Workflow.md` (cleared by the
   post-merge sync), `specs/product/PRD.md` (history) and this spec.
 - **Markdown lint.** The `CLAUDE.md` command exited 0.
-- **Pending.** AC001 rendering on GitHub after the push; AC007 and the rest of AC006 after the merge
-  (Task 5).
+- **AC001.** After the push, the developer opened `specs/architecture/document-status-workflow.md`
+  on GitHub on the task branch (PR #153) and confirmed the diagram renders, on 2026-10-06.
+- **Pending.** AC007 and the rest of AC006 after the merge (Task 5).
