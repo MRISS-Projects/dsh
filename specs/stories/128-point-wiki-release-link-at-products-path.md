@@ -117,8 +117,10 @@ results are in §8.5. Markdown lint runs on the spec.
 - [x] **T1.** Re-check AC001 and AC002 against the live site and the wiki (§6.1).
 - [x] **T2.** Remove `releases/dsh/` and `rcs/dsh/` from `gh-pages` in one commit, and push it.
 - [x] **T3.** Once Pages reports the commit `built`, check §6.2.
-- [x] **T4.** Edit the wiki row (§3.2), and check §6.3 once `wiki-sync.yml` has run.
+- [x] **T4.** Edit the wiki row (§3.2), check §6.3's wiki side, and dispatch `wiki-sync.yml`.
 - [x] **T5.** Record the results in §8. Lint the spec.
+- [ ] **T6.** Once the sync pull request (#155) merges, check §6.3's `DEVELOP` side:
+      `docs/wiki/Code-Based-Site-and-Reports.md` on `DEVELOP` carries the new release row.
 
 ## 6. Verification
 
@@ -147,7 +149,7 @@ results are in §8.5. Markdown lint runs on the spec.
 | AC | Covered by |
 |---|---|
 | AC001: after the 0.3.0 release, the site is confirmed under `releases/products/dsh/` | done on 2026-09-30 (0.3.2), and re-checked by T1 and §6.1 |
-| AC002: the wiki row is updated, linking `project-info.html` if `#90` is still open | done on 2026-09-30. `#90` is closed, so the conditional does not apply. Re-checked by T1, and finished by T4 |
+| AC002: the wiki row is updated, linking `project-info.html` if `#90` is still open | done on 2026-09-30. `#90` is closed, so the conditional does not apply. Re-checked by T1, finished by T4, and synced into `docs/wiki/` by T6 |
 | AC003: a decision on the legacy `releases/dsh/` and `rcs/dsh/` trees: keep, remove, or leave a pointer page | §3.1, removed. T2, T3, §6.2 |
 
 ## 8. Verification results
