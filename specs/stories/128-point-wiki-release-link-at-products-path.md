@@ -191,4 +191,13 @@ Pages reported `9c1316b79` as `built`. Then:
 - `wiki-sync.yml`'s schedule has not run since 2026-07-21, so it was dispatched by hand, in run
   [`37508413576`](https://github.com/MRISS-Projects/dsh/actions/runs/37508413576). That opened
   [#155](https://github.com/MRISS-Projects/dsh/pull/155), whose diff is that one row. §6.3's
-  `DEVELOP` check holds once #155 merges.
+  `DEVELOP` check holds once #155 merges. That check is T6.
+
+### 8.5 Gates 1 and 2, 2026-10-06
+
+- **CI on #156**, at `b38c306f2`: "Build, Test and Coverage Gate" passed, in run
+  [`37510009840`](https://github.com/MRISS-Projects/dsh/actions/runs/37510009840).
+- **Locally, before the first review round's push**: `mvn -B clean install`, logged to
+  `.logs/mvn-clean-install.log`, exited 0. All 13 modules succeeded, 129 tests ran with no failure,
+  error or skip, and "All coverage checks have been met" in each of the 8 modules with production
+  code.
