@@ -107,8 +107,10 @@ this branch does not edit `docs/wiki/` by hand: the file is auto-generated.
 | `specs/product/PRD.md` | nothing on this branch. `dsh-reconcile-prd` marks `#128` closed after the merge |
 | `specs/stories/128-point-wiki-release-link-at-products-path.md` | this spec, plus its verification results |
 
-There is no Java, POM or workflow change, so gates 1 to 3 do not apply. Markdown lint runs on the
-spec.
+There is no Java, POM or workflow change, so gate 3, the local integration gate, does not apply:
+nothing here touches an external system or a REST API entry point. Gates 1 and 2 apply as on every
+pull request. CI runs them, and so does the local `mvn -B clean install` before each push. Their
+results are in §8.5. Markdown lint runs on the spec.
 
 ## 5. Tasks
 
