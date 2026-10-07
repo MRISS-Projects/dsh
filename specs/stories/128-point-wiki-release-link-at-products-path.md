@@ -119,7 +119,7 @@ results are in §8.5. Markdown lint runs on the spec.
 - [x] **T3.** Once Pages reports the commit `built`, check §6.2.
 - [x] **T4.** Edit the wiki row (§3.2), check §6.3's wiki side, and dispatch `wiki-sync.yml`.
 - [x] **T5.** Record the results in §8. Lint the spec.
-- [ ] **T6.** Once the sync pull request (#155) merges, check §6.3's `DEVELOP` side:
+- [x] **T6.** Once the sync pull request (#155) merges, check §6.3's `DEVELOP` side:
       `docs/wiki/Code-Based-Site-and-Reports.md` on `DEVELOP` carries the new release row.
 
 ## 6. Verification
@@ -192,6 +192,9 @@ Pages reported `9c1316b79` as `built`. Then:
   [`37508413576`](https://github.com/MRISS-Projects/dsh/actions/runs/37508413576). That opened
   [#155](https://github.com/MRISS-Projects/dsh/pull/155), whose diff is that one row. §6.3's
   `DEVELOP` check holds once #155 merges. That check is T6.
+- **T6.** #155 merged as `03459d260`. On `DEVELOP` at that commit,
+  `docs/wiki/Code-Based-Site-and-Reports.md`'s release row says the legacy `releases/dsh` and
+  `rcs/dsh` trees were removed (#128), as the wiki does.
 
 ### 8.5 Gates 1 and 2, 2026-10-06
 

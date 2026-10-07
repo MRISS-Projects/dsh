@@ -833,8 +833,10 @@ critical paths that do not wait on each other: design, which Wave 2 waits on, an
 which new code waits on. Items are named by their issue or task number below, which stay as they
 are.
 
-1. `#128` — only AC003 is left: what happens to the legacy `releases/dsh/` and `rcs/dsh/` trees.
-   `#127` set the precedent when it removed `snapshots/dsh/`.
+1. **Done on 2026-10-06: the legacy release and RC sites are gone.** `#128` — **closed** — PR
+   #156. Both trees were removed, with no pointer page, following `#127`'s precedent for
+   `snapshots/dsh/`. Its spec, `specs/stories/128-point-wiki-release-link-at-products-path.md`,
+   holds the evidence.
 2. `#48`, then task 2 (ADR-003). `#48`'s findings on profiles feed the ADR's choice of transport
    and persistence by profile. The ADR comes before the Spring Boot upgrade: it decides structure,
    not API detail, and more of the wave waits on it than on anything else.
@@ -879,16 +881,17 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-pom
   includes whether the version moves in parent-poms `products/pom.xml`, where it is managed today
   for every product.
 - `#127` — **closed** — PR #149. Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does.
-- `#128` — Point the wiki's release link at releases/products/dsh once 0.3.0 is released.
+- `#128` — **closed** — PR #156. Point the wiki's release link at releases/products/dsh once 0.3.0 is released.
 
   Neither is an ADR-001 phase task either. Both came from reworking the wiki's
   [Code Based Site and Reports](https://github.com/MRISS-Projects/dsh/wiki/Code-Based-Site-and-Reports)
-  page on 2026-09-27. `snapshots/dsh` still serves a site from 2020, and `group.id.path`
-  (`products/dsh`) will send 0.3.0's site to `releases/products/dsh`, leaving the wiki's release link
-  on 0.2.x. `#128` could only start once 0.3.0 was out, which it was on 2026-09-29. `#90`'s fix held
-  on the release: `releases/products/dsh/` serves the root `index.html` and all 13 modules' pages.
-  The wiki's release row was moved to `releases/products/dsh/` on 2026-09-30, after 0.3.2, ahead of
-  the story. `#128` stays open for what to do with the legacy `releases/dsh/` and `rcs/dsh/` trees.
+  page on 2026-09-27. At the time, `snapshots/dsh` served a site from 2020, and `group.id.path`
+  (`products/dsh`) was about to send 0.3.0's site to `releases/products/dsh`, which would leave the
+  wiki's release link on 0.2.x. `#128` could only start once 0.3.0 was out, which it was on
+  2026-09-29. `#90`'s fix held on the release: `releases/products/dsh/` serves the root `index.html`
+  and all 13 modules' pages. The wiki's release row was moved to `releases/products/dsh/` on
+  2026-09-30, after 0.3.2, ahead of the story. All three legacy trees are now gone: `#127` removed
+  `snapshots/dsh/`, and `#128` removed `releases/dsh/` and `rcs/dsh/`.
 
   `#127` ran as step 3 of the upstream block above, not in the order of this list. It was also
   the live proof of three parent-poms fixes, ahead of the 3.10.0 release.
