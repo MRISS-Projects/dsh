@@ -143,6 +143,20 @@ enforcer execution inherited from parent-poms; Mockito, `mockStatic` included, i
 A unit test never starts a Spring context, enforced by `.github/scripts/check-unit-tests-context-free.sh`
 in CI. Both are stated in full in `.github/copilot/rules/testing-patterns.md`.
 
+## Cost rule for GCP
+
+**Nothing stays alive when it is not in use.** Costs are restricted. Any GCP configuration written
+or proposed in this repository, for any tier, takes the setting that costs nothing while idle
+wherever the service offers one.
+
+- **Cloud Run: minimum instances is 0, always.** Cold starts are accepted. Reduce them with Cloud
+  Run's own options, never by keeping an instance warm.
+- **Every other service follows the same rule.** Prefer what is billed by use over what is billed
+  by the hour.
+- **An exception needs the owner's approval before it is written down.** That covers a service
+  with no such setting, and anything with a fixed cost while idle. Say what it costs and why it
+  cannot be avoided.
+
 ## The development process
 
 Eight steps. Full detail in `docs/process/ai-driven-development.md`.
