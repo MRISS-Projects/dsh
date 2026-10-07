@@ -838,34 +838,34 @@ P22 and P24 to P26 read the report from the build log, where surefire prints the
 There is no Java under test in this repository. The red check for each finding is its prediction
 in §3.2, written before the probe ran.
 
-- [ ] **T1 — build the harness and prove it.**
+- [x] **T1 — build the harness and prove it.**
       1. Create `$PROBES` in the session scratchpad from §5.2, with `env.sh` from §5.1. `git init`,
          and commit the base.
       2. `mvn -version`; record the Maven and JDK lines.
       3. Run P0. Expected: §5.3's baseline, line for line.
       4. If it differs, stop and resolve it before T2. Record the difference either way.
-- [ ] **T2 — run P1 to P13.** For each, save the output to `logs/p<n>.txt`. Mark each prediction
+- [x] **T2 — run P1 to P13.** For each, save the output to `logs/p<n>.txt`. Mark each prediction
       of §3.2 confirmed or refuted as it comes in. Do not adjust a probe to make a prediction pass;
       a probe changes only if it failed to ask its question, and the change is recorded.
-- [ ] **T3 — run P14 to P27.** One at a time, each from a clean tree, reverting after. Save each
+- [x] **T3 — run P14 to P27.** One at a time, each from a clean tree, reverting after. Save each
       output. After the last, `git status` in `$PROBES` shows a clean tree.
-- [ ] **T4 — establish G1 to G8.** Read the documentation pages. Record for each the URL, the date
+- [x] **T4 — establish G1 to G8.** Read the documentation pages. Record for each the URL, the date
       and the quoted constraint. Anything the documentation does not settle is recorded as open.
-- [ ] **T5 — write `specs/architecture/profiles-and-configuration.md`**, in §3.1's order.
+- [x] **T5 — write `specs/architecture/profiles-and-configuration.md`**, in §3.1's order.
       1. Sections 2 to 4 and the appendix first, from the saved outputs.
       2. Then section 5, the comparison of §3.3, citing probes in every cell.
       3. Then sections 6 to 9, from §3.4 to §3.7.
       4. Section 1, the summary, last.
       5. Run the checks of §7.1 and §7.2. Expected: all hold.
       6. Commit: `docs(#48): findings on Spring and Maven profiles, with a proposed convention`.
-- [ ] **T6 — `CLAUDE.md`.**
+- [x] **T6 — `CLAUDE.md`.**
       1. Add the row to the router table. Commit:
          `docs(#48): route CLAUDE.md to the profile findings`.
       2. Add §3.9's section, word for word, after "Quality gates". Commit:
          `docs(#48): state the GCP cost rule in CLAUDE.md`.
       3. Run markdownlint with `export PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH"` and the
          command in `CLAUDE.md`. Expected: no findings.
-- [ ] **T7 — gates and record.**
+- [x] **T7 — gates and record.**
       1. `mvn -B clean install`, logged to `.logs/mvn-clean-install.log` as `CLAUDE.md` requires.
          Expected: exit 0. Gate 3 does not apply: no code changed.
       2. Run §7.3's check.
@@ -937,3 +937,93 @@ To be posted on `#48` in T8, after approval:
 | AC007: consequences and follow-ups listed; no issue opened, PRD untouched | §3.7, T5, T8, §7.3 |
 | AC008: no production code, POM or workflow changes | §3.8, T7, §7.3 |
 | AC009: `CLAUDE.md` states the GCP cost rule | decision 12, §3.9, T6 |
+
+## 10. Verification results
+
+Built on `issue-48-investigate-spring-and-maven-profiles`, from `d3d607871` (the spec commit), on
+2026-10-07.
+
+### 10.1 T1, the harness and its baseline
+
+- Apache Maven 3.9.16, JDK 17.0.20.1 (Eclipse Adoptium), Spring Boot 2.7.18, Windows 11.
+- The harness was created in the session scratchpad from §5.2, unchanged, as its own git
+  repository. Nothing was installed into `D:\.m2\repository`.
+- **P0 printed §5.3's baseline line for line**, all 25 lines. No difference to resolve.
+
+### 10.2 T2 and T3, the predictions
+
+| Id | Prediction of §3.2 | Outcome | Probes |
+|---|---|---|---|
+| S1 | activation order; a later source replaces; a default in the jar works | confirmed | P1 to P4, P3b, P4b, P14, P15 |
+| S2 | a profile's file overrides; the last listed wins; `on-profile` documents; no activation from a profile's file | confirmed | P0, P1, P5, P16 |
+| S3 | a group activates its members, and the member's file wins | confirmed | P6 |
+| S4 | `@Profile` leaves one bean; a property selects per service; a wrong value fails only where injected | confirmed | P0, P1, P7, P8 |
+| S5 | XML honours a nested profile; the environment beats the located file; that file never reaches the `Environment` | confirmed | P0, P1, P9 |
+| S6 | files of one name are not merged; an import brings its profile variant and overrides its importer; `@PropertySource` has no variant and loses | confirmed | P0, P1, P13, P17, P30 |
+| S7 | an environment variable drives the derived names; an argument wins; a missing value stops the startup; both variable forms reach a dashed key | confirmed | P10 to P13, P28 |
+| S8 | a test `application.properties` hides the main one; a profile's file merges; `@TestPropertySource` wins; `@ActiveProfiles` beats a leak | confirmed | P22 to P26, P29 |
+| M1 | a placeholder survives without a Maven property and is baked with one; the self-reference fails as DSH's does; `@…@` only stops it | confirmed | P18, P19, P20 |
+| M2 | the build stamps the version and a commit, and the application reads both | confirmed | P21 |
+| M3 | a profile on the `mvn` command line or in the shell reaches the test JVM | confirmed | P22, P23 |
+| M4 | a Maven profile per tier gives two different jars; one jar and two values give the same behaviours | confirmed | P27 |
+
+No prediction was refuted. Four results were not predicted, and the findings report each:
+
+- A build with no tier succeeds and ships the unresolved token (P27c).
+- An empty `@ActiveProfiles` does not protect a test from a leaked profile (P29).
+- A profile's file that is broken passes the build unless a test activates that profile (P16).
+- A profile name that matches nothing is accepted in silence (P31).
+
+After the last probe, `git status` in the harness showed a clean tree.
+
+### 10.3 Departures from the plan
+
+- **Six probes were added:** P3b, P4b, P28, P29, P30 and P31. The appendix of the findings
+  document says why for each. P30 mattered most: no planned probe showed `application.properties`
+  beating a `@PropertySource` file directly, and the prediction for S6 claims it.
+- **P19 needed `-DskipTests`** for its run-time steps, because its first build failed on the
+  circular placeholder, which is the finding.
+- **P20 configured the plugin in the root POM**, inherited by both modules, not in each module.
+- **The findings' appendix does not repeat the harness sources.** §3.1 and §3.8 said it would hold
+  them. It names this spec's §5.2 instead, and lists every probe with what was run. Copying 370
+  lines into a second file in the same repository added nothing a reader needs.
+- **The findings were not checked against the Spring Boot 3 documentation.** §3.1 said each finding
+  that it contradicts would say so. The document states this limit at the head of its section 3,
+  and lists a re-run on `#120`'s Boot line as a follow-up candidate.
+
+### 10.4 T4, the GCP facts
+
+G1 to G8 are in the findings' section 8, each with its URL, read on 2026-10-07, under the label
+"Not verified by a run". `cloud.google.com` documentation now redirects to `docs.cloud.google.com`.
+
+Five points the documentation did not settle are listed there as open (§8.3): reusing a revision
+name, a traffic tag's first character, named databases in the Firestore emulator, GHCR's tag
+rules, and the idle cost of Pub/Sub and Artifact Registry. One claim about the traffic tag came
+from a search result whose page could not be read; it is reported as unconfirmed, not as a fact.
+
+Two facts changed the plan, and both are in the findings:
+
+- **`dsh` is too short to be a Firestore database id**, which needs four characters. The proposed
+  rule is the base name with `-db`.
+- **The Firestore free tier covers one database per project.** Two of the three tiers are billed
+  from their first operation.
+
+### 10.5 T5 and T6, the checks of §7
+
+- §7.1: every one of S1 to S8 and M1 to M4 has its five parts, counted by script. The loop over
+  P0 to P27 prints nothing.
+- §7.2: section 8 carries the label and the date; the convention's heading says "Proposed, not in
+  force". The GCP statements outside section 8 each carry a G id or point at §8.4.
+- `CLAUDE.md`'s "Cost rule for GCP" section matches §3.9 word for word, checked with `diff`.
+- markdownlint, with the command in `CLAUDE.md`: no findings.
+
+### 10.6 T7, the gates and §7.3
+
+- **Gates 1 and 2:** `mvn -B clean install` at `bf875f81a`, logged to
+  `.logs/mvn-clean-install.log`. Exit 0, `BUILD SUCCESS`, all 13 modules, in 1 min 5 s. The log
+  holds "All coverage checks have been met" eight times, once for each module with production
+  sources.
+- **Gate 3 does not apply.** No code changed.
+- **§7.3:** `git diff --stat DEVELOP...HEAD` lists three files: `CLAUDE.md`,
+  `specs/architecture/profiles-and-configuration.md` and this spec. No POM, workflow, properties
+  file, XML context or Java class appears.
