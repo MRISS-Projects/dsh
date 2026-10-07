@@ -21,6 +21,7 @@ agent in this repo: commands, branch rules, gates, and the development process.
 | Who owns what | `.github/roles.md` |
 | Target architecture and migration phases | `specs/architecture/ADR-001-GCP-based-components.md` |
 | Current architecture | `specs/architecture/system-design.md` |
+| Proposed profile and configuration convention | `specs/architecture/profiles-and-configuration.md` |
 | The development process, in full | `docs/process/ai-driven-development.md` |
 | Branching, CI/CD and release pipeline | `docs/devops/README.md` |
 | What we are building next | `specs/product/PRD.md` |
