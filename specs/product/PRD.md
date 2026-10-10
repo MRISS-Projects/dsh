@@ -74,7 +74,7 @@ a milestone.
 |---|---|---|
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
 | 1, upstream step 6 | `3.11.0-SNAPSHOT`, now `3.11.0` | `#98`, `#106`; both closed; released on 2026-10-04, DSH not re-pinned |
-| 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92` |
+| 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92`; `#109` joined on 2026-10-10 |
 | 9 | `3.13.0-SNAPSHOT` | `#85` |
 
 A wave with no row has no parent-poms work planned. When one gains some, it gets the next minor.
@@ -837,9 +837,12 @@ are.
    #156. Both trees were removed, with no pointer page, following `#127`'s precedent for
    `snapshots/dsh/`. Its spec, `specs/stories/128-point-wiki-release-link-at-products-path.md`,
    holds the evidence.
-2. `#48`, then task 2 (ADR-003). `#48`'s findings on profiles feed the ADR's choice of transport
-   and persistence by profile. The ADR comes before the Spring Boot upgrade: it decides structure,
-   not API detail, and more of the wave waits on it than on anything else.
+2. `#48`, then task 2 (ADR-003). **The `#48` half was done on 2026-10-10:** `#48` — **closed** —
+   PR #159. Its findings are `specs/architecture/profiles-and-configuration.md`, and its spec,
+   `specs/stories/48-investigate-spring-and-maven-profiles.md`, holds the evidence. The findings
+   feed the ADR's choice of transport and persistence by profile. The ADR comes before the Spring
+   Boot upgrade: it decides structure, not API detail, and more of the wave waits on it than on
+   anything else.
 3. `#140`, then `#119`. Mechanical work, done while ADR-003 is in review. `#140` first, so `#120`
    carries fewer settings.
 4. `#120`, after `#119` for the reason given with the triaged issues.
@@ -860,14 +863,14 @@ latest point. `#132` lands before tasks 8 to 10, so that the new `dsh-data` code
 analysers' rules, and before `#148` in any case, because it changes the build. Task 7 lands before
 `#148`, inside the wave, because Wave 3's stories cite the papers.
 
-Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-poms#90`, `#91` and
-`#92` belong to Wave 8, and `parent-poms#85` to Wave 9.
+Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-poms#90`, `#91`, `#92`
+and `#109` belong to Wave 8, and `parent-poms#85` to Wave 9.
 
 **Triaged issues:**
 
-- `#48` — Investigate how to use profiles (dev, staging, production) with Spring and Maven. It
-  underpins selecting a transport or a persistence implementation by profile, which ADR-003 (task 2
-  below) relies on.
+- `#48` — **closed** — PR #159. Investigate how to use profiles (dev, staging, production) with
+  Spring and Maven. It underpins selecting a transport or a persistence implementation by profile,
+  which ADR-003 (task 2 below) relies on.
 - `#119` — Migrate every test to JUnit 5 and drop the vintage engine.
 - `#120` — Upgrade Spring Boot to a supported line, version chosen by analysis.
 
@@ -927,6 +930,19 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-pom
   generated. It also took three dispatches and left a partial 0.3.1. `#148` was not folded into
   `#146`, which was a release, not tooling. It belongs in this wave because the next release is
   0.4.0, and the skill should exist before it.
+
+- `#157` — Give `mongo.*` its values at run time, not through build-time filtering.
+- `#158` — Stop Maven from filtering `${…}` in Spring configuration.
+
+  Neither is an ADR-001 phase task. Both came out of `#48` on 2026-10-10, as follow-ups 2 and 1 of
+  its findings (`specs/architecture/profiles-and-configuration.md`, §9.2). They were not folded
+  into `#48`, which was an investigation and changed no code. Their milestone, `0.4.0-SNAPSHOT`, is
+  shared by Waves 1 and 2. They sit in this wave because neither depends on ADR-003. Neither has a
+  step in the order of work above yet.
+
+  The findings' other four follow-ups went into issues that existed or belong elsewhere: `#137`
+  gained AC005, `#120` gained AC007, `#140` gained a second change to make, and
+  `parent-poms#109` is in Wave 8.
 
 `#142`, which came from the same `#46` review, moved to Wave 2 on 2026-09-28.
 
@@ -1147,8 +1163,15 @@ and runs a script; the root `README.md` describes exactly that.
   reusable workflow cannot otherwise know which release to attach to.
 - [`parent-poms#92`](https://github.com/MRISS-Projects/parent-poms/issues/92) — export the MRISS
   build artifacts a consumer needs as an offline Maven repository.
+- [`parent-poms#109`](https://github.com/MRISS-Projects/parent-poms/issues/109) — expose the
+  version and the build number as outputs of the reusable staging workflow.
 
-All three are on parent-poms `3.12.0-SNAPSHOT`, this wave's milestone there (§3).
+  `#109` came out of DSH `#48` on 2026-10-10. It was not folded into `#91`, which covers the
+  release and hotfix workflows; `#109` is the staging one. It is in this wave because its milestone
+  is this wave's. The job that needs it deploys a build to a development or staging tier, and the
+  findings (§9.1) propose moving a minimal deploy forward to Wave 4. `dsh-plan-wave` decides that.
+
+All four are on parent-poms `3.12.0-SNAPSHOT`, this wave's milestone there (§3).
 
 **Tasks:**
 
