@@ -3,8 +3,9 @@
 - **What this is.** The findings of [#48](https://github.com/MRISS-Projects/dsh/issues/48): how
   Spring profiles, Maven and deploy-time values should share the work of configuring DSH by
   capability and by tier. Its spec is `specs/stories/48-investigate-spring-and-maven-profiles.md`.
-- **What is measured.** Sections 3 and 4. Every statement there was observed by running a probe on
-  2026-10-07, and the output is shown.
+- **What is measured.** Sections 3 and 4. Every Answer there was observed by running a probe on
+  2026-10-07, and the output is shown. Where an Answer or a Consequence goes past the output, it
+  says so.
 - **What is proposed.** Section 6, the convention. **It is proposed, not in force.** ADR-003 and
   ADR-004 decide. Nothing in this document has been implemented.
 - **What is only cited.** Section 8, the GCP facts. No GCP project exists yet, so each is taken
@@ -14,7 +15,8 @@
 
 1. **A Spring profile should name a capability, not a tier.** One jar then serves every tier. A
    Maven profile per tier produces a different jar for each (P27), and a Spring profile per tier
-   needs the jar changed for every new name (section 5).
+   needs a new file for every new name, which is a change to the jar when the files are kept in it
+   (section 5).
 2. **The tier is one value, a base name, set where the application is deployed.** With
    `PROBE_NAME=dsh-dev` in the environment, every name derived from it followed at run time, from
    an unchanged jar (P10, P27).
@@ -45,8 +47,8 @@
     by a request, which points at Pub/Sub delivering by push.
 
 All 12 predictions in the spec were confirmed. Six probes were added during the run, and two were
-run differently from the plan; the appendix lists them. Three points the documentation does not
-settle need a first deploy (section 8.3).
+run differently from the plan; the appendix lists them. Six points the documentation does not
+settle are open (section 8.3). Two of them need a first deploy.
 
 ## 2. DSH today
 
@@ -60,6 +62,7 @@ On `DEVELOP` at `a760552f8`.
 | Environment values are fixed at build time: `mongo.properties` holds `mongo.host=${mongo.host}` and three more, filled by resource filtering from `settings.xml` | `dsh-data/src/main/resources/mongo.properties`; `docs/devops/README.md`, "How build properties reach a release build" |
 | Six workflows carry dummy `mongo.*` values so that the build does not fail | `ci.yml`, `api-testing.yml`, `deploy.yml`, `staging.yml`, `release.yml`, `hotfix.yml` |
 | Every module filters `src/main/resources` with both default delimiters, `${…}` and `@…@` | `dsh-rest-api/pom.xml:113-120`; no `delimiter` in either parent POM |
+| One Spring placeholder already sits in a filtered file: `${spring.rabbitmq.host:localhost}`, and the port beside it. `dsh-data` takes its own XML context out of filtering | `dsh-rest-api/src/main/resources/enqueue-docId-context.xml:45`; `dsh-data/pom.xml:46-64`. Why the two survive filtering was not probed; presumably no Maven property has a name that includes the `:default` part |
 | Spring Boot is `2.7.18`, managed in parent-poms | `products-3.10.0.pom:80` |
 | MongoDB and RabbitMQ are wired in XML through `@ImportResource`, unconditionally | `dshApplicationContext.xml`, `enqueue-docId-context.xml` |
 | `dsh-rest-api`'s test `application.properties` repeats the main one | the two files; P24 explains why it has to |
@@ -75,9 +78,11 @@ from one property, so re-running it there is cheap, and section 9 lists it as a 
 
 ### S1. How is a profile activated, and which source wins?
 
-**Answer.** An argument beats a system property, which beats an environment variable, which beats
-a value in the jar. A later source replaces the list; it does not add to it. A default written in
-the jar works, is replaced by any activation, and also applies to every test that names no profile.
+**Answer.** An argument beats a system property, which beats an environment variable. An argument
+also beats a value in the jar. The environment variable against the jar's value was not run for a
+profile; P13 shows that order for an ordinary property. A later source replaces the list; it does
+not add to it. A default written in the jar works, is replaced by any activation, and also applies
+to every test that names no profile.
 
 **Probe.** P1 to P4, P3b, P4b, P14, P15.
 
@@ -356,7 +361,8 @@ Update your application's configuration
 
 **Answer.** A test `application.properties` hides the main one entirely, including its imports. A
 profile's file under `src/test/resources`, with `@ActiveProfiles`, merges with the main file
-instead. `@TestPropertySource` beats both. A test that names a profile is immune to a profile
+instead. `@TestPropertySource` beats the main file and the profile's file. A test that names a
+profile is immune to a profile
 leaked from outside; a test that names none, or uses an empty `@ActiveProfiles`, is not.
 
 **Probe.** P22 to P26, P29. The lines are the context test's, read from the build log.
@@ -490,9 +496,11 @@ PROBE build.commit=abc1234
 **Prediction.** Confirmed.
 
 **Consequence for DSH.** The release gate compares a commit, and the production smoke check reads
-a version and a commit. Both can come from this stamp, exposed through the actuator's `info`
-endpoint. `build.time` makes two builds of the same sources differ (P27d), which is why a checksum
-of the jar proves nothing about what is in it.
+a version and a commit. Both can come from this stamp. The probe read it inside the application;
+exposing it through the actuator's `info` endpoint is Spring Boot's documented use for it and was
+not run. Two builds of the same sources gave two different jars (P27d), so a checksum of the jar
+proves nothing about what is in it. `build.time` is one cause. The probe did not separate it from
+the timestamps of the archive's own entries.
 
 ### M3. How does a Maven run choose a profile without baking it in?
 
@@ -556,14 +564,26 @@ Three approaches, compared on the criteria the spec set.
 | Criterion | A | B | C |
 |---|---|---|---|
 | One artifact for every tier | **No.** The configuration inside differs (P27a, P27b) | Yes (P6) | Yes (P27e) |
-| An end user deploys under a name of their own without rebuilding | **No.** A baked name ignores the run-time one (P18) | **No.** A new name needs a new file in the jar, or falls back on C (P10) | Yes (P10a) |
+| An end user deploys under a name of their own without rebuilding | **No.** A baked name ignores the run-time one (P18) | **No**, as B is defined. A new name needs a new file in the jar, or falls back on C (P10). Spring Boot can also read a profile's file from outside the jar; that was not probed | Yes (P10a) |
 | Each resource name is defined once | Yes, in the POM | Partly. Each tier file repeats every key, and it cannot adjust a `gcp` default (P6) | Yes. The derivations are one file (P10a) |
-| A missing value fails at startup and names the key | **No.** The build succeeds with the token unresolved (P27c), or every context fails with a circular-placeholder error (P19) | **No.** A profile that matches no file is accepted in silence (P31) | Yes, with a validated class (P28a) |
-| A new tier needs no change to the jar | **No** | **No** | Yes |
+| A missing value fails at startup and names the key | **No.** The build succeeds with the token unresolved (P27c), or every context fails with a circular-placeholder error (P19) | **No.** A profile that matches no file is accepted in silence (P31) | Partly. A value with no default does, with a validated class (P28a). The base name and the `gcp` profile are not covered; see below |
+| A new tier needs no change to the jar | **No** | **No**, with the tier's file in the jar | Yes |
 | Works the same for a release and a hotfix | Yes, but each build must be given the tier | Yes | Yes |
 
 **Recommendation: C.** It is the only approach that keeps one artifact, lets an end user choose a
-name, and fails loudly when a value is missing.
+name, and can fail loudly when a value is missing.
+
+**What C does not catch.** Two omissions start cleanly, and both matter on an operated tier:
+
+- **A deployment that leaves out the base name.** It defaults to `dsh` (R5), as the harness's did
+  (P0), and `dsh` is production's name. A `dsh-dev` deploy without `DSH_NAME` derives production's
+  database, topics and prefix.
+- **A deployment that leaves out `gcp`, or mistypes it.** It runs in memory (R2), and Spring says
+  nothing about a profile that matches nothing (P31).
+
+The default is what lets an end user deploy with no name at all, so it is not removed here. The
+deploy has to set both values every time, and something has to check them: the service name
+against the base name the application reports, for one. That is left to ADR-004.
 
 What approach A was valued for, one switch that names everything consistently, is kept. The switch
 moves from the build to the deployment, and the derivations move from the POM to one properties
@@ -581,7 +601,7 @@ the ADRs to settle; the rules are what the findings support.
 | R1 | A profile names a capability, never a tier. There is no `dev`, `staging` or `production` profile, in Spring or in Maven | section 5 |
 | R2 | With no profile, the application runs everything in memory and reaches nothing on GCP. `gcp` selects the GCP implementations. The jar does not set a default profile; the deployment sets `SPRING_PROFILES_ACTIVE=gcp` | S1 |
 | R3 | A profile's file sets defaults. A property per service selects the implementation, and may be overridden alone | S4 |
-| R4 | An emulator is `gcp` with the endpoint values pointed at it. It is not a third set of beans | S7, G2 |
+| R4 | An emulator is `gcp` with the endpoint values pointed at it. It is not a third set of beans. Only Firestore's emulator properties were read (G2). Cloud Storage has no emulator (G6), and named databases in the Firestore emulator are open (§8.3) | S7, G2, G6 |
 | R5 | The tier is one value, the base name. It defaults to `dsh`. Every resource name derives from it in one file, at run time | S7 |
 | R6 | A required value is bound through a validated `@ConfigurationProperties` class. It has no default, and its absence stops the startup | S7 |
 | R7 | Only the deployable module has `application*.properties`. A library module's defaults are in a file named after the module, loaded by `@PropertySource`, and do not vary by profile | S6 |
@@ -613,7 +633,7 @@ dsh-data (a library)
 | `dsh.name` | `dsh` | the deployment, as `DSH_NAME` | the tier: `dsh-dev`, `dsh-staging`, `dsh` |
 | `dsh.firestore.database-id` | `${dsh.name}-db` | derived | a suffix is needed: an id has at least four characters (G2) |
 | `dsh.pubsub.prefix` | `${dsh.name}-` | derived | topics and subscriptions are `<prefix><channel>` (G3) |
-| `dsh.storage.bucket` | none, required under `gcp` | the deployment | bucket names are global, so DSH cannot choose it (G4) |
+| `dsh.storage.bucket` | none, required when `dsh.file-store` is `gcs` | the deployment | bucket names are global, so DSH cannot choose it (G4) |
 | `dsh.storage.prefix` | `${dsh.name}/` | derived | the tier's sub-folder in the one bucket |
 | `dsh.persistence` | `memory`; `gcp` sets `firestore` | profile, or alone | one property per service (R3) |
 | `dsh.transport` | `memory`; `gcp` sets `pubsub` | profile, or alone | |
@@ -628,7 +648,9 @@ Spring Cloud GCP's own keys take their values from these, for example
   that is worth doing before the wave that removes MongoDB is a follow-up candidate (section 9).
 - **The `test` profile in `api-testing.yml`.** It selects nothing. Under R10 `test` gains a
   meaning for context tests, and a forked server started for external tests should not carry it.
-- **The XML contexts.** They can be placed under a profile as they are (S5).
+- **The XML contexts.** They can be placed under a profile as they are (S5). Today they load with
+  no profile, and R2 gives that mode to the in-memory implementations. Which profile or property
+  keeps the MongoDB and RabbitMQ wiring until it is removed is for ADR-003 to name.
 - **Wave 7, "make `gcp` the default profile".** Under R2 this becomes "the deployment sets `gcp`",
   and nothing in the jar changes.
 
@@ -642,6 +664,10 @@ Spring Cloud GCP's own keys take their values from these, for example
 | 4. External client | the same forked server | the same | the base URL only |
 | 5a. Acceptance, deployed | `dsh-dev` after a `DEVELOP` deploy; `dsh-staging` after a staging deploy | `gcp`, set by the deployment | the layer-3 or layer-4 tests with their base URL pointed at the deployment; they write data |
 | 5b. Smoke, production | `dsh`, after a release or hotfix deploy | `gcp`, set by the deployment | health, and the released version and commit (M2). It reads and writes no document |
+
+Rows 1 to 4 show each layer as the convention would have it, not as it is. Today no layer-2 test
+has `@ActiveProfiles`, no profile is passed to the forked server, and layer 4 has no collection:
+`api-testing.yml` starts the application with `java -jar`, not through Maven (`#137`).
 
 Rows 5a and 5b start from a stopped service, so their first request is a cold start, and their
 timeouts must allow for one (G8).
@@ -660,11 +686,14 @@ Left open, for `#148` and ADR-004:
 - How a hotfix branch reaches `dsh-staging` while a release candidate may occupy it.
 - How layer 5 authenticates to a Cloud Run service.
 - How the tests clean up what they write on `dsh-dev` and `dsh-staging`.
+- Whether the commit is also recorded as a label on the revision. The gate above reads it from the
+  build stamp (M2), which means calling the service. The label was not weighed here.
 
 ## 8. GCP naming in one project
 
-**Not verified by a run.** No GCP project exists yet. Every fact below is quoted from the page
-named, read on 2026-10-07. `cloud.google.com` documentation now redirects to
+**Not verified by a run.** No GCP project exists yet. Every fact below is taken from the page
+named, read on 2026-10-07. The words in quotation marks are the page's; the rest is a paraphrase.
+`cloud.google.com` documentation now redirects to
 `docs.cloud.google.com`.
 
 | Id | Fact | Source |
@@ -676,7 +705,7 @@ named, read on 2026-10-07. `cloud.google.com` documentation now redirects to
 | G2 | "You can create multiple Firestore databases per project", to "a maximum of 100" | <https://docs.cloud.google.com/firestore/docs/manage-databases> |
 | G2 | A database id has lowercase letters, numbers and hyphens only; "The first character must be a letter"; "Minimum of 4 characters"; "Maximum of 63 characters" | the same page |
 | G2 | "The free tier applies to only one Firestore database per project." | <https://docs.cloud.google.com/firestore/quotas> |
-| G2 | `spring.cloud.gcp.firestore.database-id`: "You can specify which database will be used. If not specified, the database id will be '(default)'." The emulator is selected by `spring.cloud.gcp.firestore.emulator.enabled` and `host-port` | <https://googlecloudplatform.github.io/spring-cloud-gcp/reference/html/firestore.html> |
+| G2 | `spring.cloud.gcp.firestore.database-id`: "You can specify which database will be used. If not specified, the database id will be '(default)'." The emulator is selected by `spring.cloud.gcp.firestore.emulator.enabled` and `host-port`. The page carries no version; whether the Spring Cloud GCP line that pairs with Spring Boot 2.7 has `database-id` was not checked | <https://googlecloudplatform.github.io/spring-cloud-gcp/reference/html/firestore.html> |
 | G3 | A Pub/Sub id has 3 to 255 characters, must "Start with a letter", and must "Not begin with the string `goog`" | <https://docs.cloud.google.com/pubsub/docs/pubsub-basics> |
 | G4 | "Every bucket name must be globally unique." 3 to 63 characters; lowercase letters, numbers, dashes, underscores and dots | <https://docs.cloud.google.com/storage/docs/buckets> |
 | G4 | "Managed folders are a type of folder on which you can grant IAM roles", and the access "applies to any object within the bucket that uses the managed folder path as a prefix". They "can only be created in buckets that have uniform bucket-level access enabled." | <https://docs.cloud.google.com/storage/docs/managed-folders> |
@@ -732,24 +761,30 @@ named, read on 2026-10-07. `cloud.google.com` documentation now redirects to
 - **Named databases in the Firestore emulator.** `gcloud emulators firestore start` documents no
   option for them and does not say whether a database id is honoured. Local mode depends on this.
 - **GHCR's tag rules.** Only the common grammar was read (G7), not GitHub's own page.
-- **What an unused tier costs in Pub/Sub and Artifact Registry.** Not established here.
+- **What an unused tier costs in Firestore, Pub/Sub and Artifact Registry.** Not established here.
+  For Firestore only the free-tier sentence was read (G2), not what an idle database costs beyond
+  what it stores.
+- **Removing old revisions.** No page read says what limits or removes old Cloud Run revisions.
 
 ### 8.4 Constraints these facts put on the plan
 
-- **Three tiers in one bucket are isolated only by a managed folder.** Access granted on the bucket
-  covers every prefix. Granting each tier's service account its role on its own managed folder
-  needs uniform bucket-level access on the bucket (G4). Without it, the `dsh-dev` service can
-  overwrite production's objects.
+- **Three tiers in one bucket are isolated only by a managed folder.** A role granted on the bucket
+  is not limited to a prefix. That is an inference: the managed folder is what the documentation
+  offers for granting by prefix (G4), and no page read states the first half in those words.
+  Granting each tier's service account its role on its own managed folder needs uniform
+  bucket-level access on the bucket (G4). Without it, the `dsh-dev` service can overwrite
+  production's objects.
 - **Only one of the three Firestore databases is free.** The free tier covers one database per
-  project (G2). An idle database still costs only its storage, which the cost rule allows, but the
-  two others are billed from their first operation. Which tier holds the free one is a choice.
+  project (G2), so the two others are billed from their first operation. What an idle database
+  costs is open (§8.3). Which tier holds the free one is a choice.
 - **The `gcp` transport must be driven by requests.** With zero minimum instances and request-based
   billing, work that continues after the response has no CPU (G8), and instance-based billing is
   the documented way to get it, at the cost the rule forbids. A push subscription delivers each
   message as a request and takes the response code as the acknowledgement (G8), which fits. A
   subscriber that polls does not. In-memory channels stay right for the mode with no profile.
 - **Old `dev` and `rc` artifacts can be removed automatically.** Cleanup policies by tag prefix
-  cover the images, and a lifecycle rule by prefix and age covers the test objects (G4, G8).
+  cover the images, and a lifecycle rule by prefix and age covers the test objects (G4, G8). Old
+  revisions are not covered (§8.3).
 
 ## 9. Consequences for the waves, and follow-up candidates
 
@@ -764,9 +799,10 @@ in §9.2 were opened or changed on 2026-10-10, after the owner approved them.
 | ADR-003 | On GCP each stage is driven by a request: Pub/Sub by push. Wave 5's "Pub/Sub channel adapters" is restated once the ADR decides | G8, §8.4 |
 | ADR-003 | The XML contexts can be put under a profile where they stand | S5 |
 | ADR-004 | The operated tiers are three runs of one deploy, in one project, each given a base name | section 5 |
-| ADR-004 | The naming table of §8.1, and the three open points of §8.3 that need a first deploy to settle | section 8 |
+| ADR-004 | The naming table of §8.1, and the six open points of §8.3. A first deploy settles two of them: reusing a revision name, and a traffic tag's first character | section 8 |
+| ADR-004 | The deploy sets the base name and `gcp` every time, and something checks both. A deployment that leaves either out starts cleanly: the first as production, the second in memory | section 5 |
 | ADR-004 | The bucket needs uniform bucket-level access and a managed folder per tier | §8.4 |
-| ADR-004 | The cost rule, service by service, with the retention that removes old artifacts; and which tier holds the free Firestore database | §8.4 |
+| ADR-004 | The cost rule, service by service, with the retention that removes old artifacts; and which tier holds the free Firestore database. Anything with a fixed hourly cost, such as a load balancer in front of the service, has to be justified against the rule | §8.4 |
 | ADR-004 | One image, tagged with the dotted version; revisions named with dashes | §8.2 |
 | Wave 4 | Its first `gcp` code needs somewhere real to run. The image and a minimal deploy move forward from Wave 8, which keeps the end-user packaging | decision 2 of the spec |
 | Wave 7 | Task 3, "make `gcp` the default profile", becomes "the deployment sets `gcp`". Task 1 becomes layer 5a | R2, section 7 |
@@ -779,8 +815,8 @@ in §9.2 were opened or changed on 2026-10-10, after the owner approved them.
 Each was a draft for the owner to accept, change or drop. The owner accepted all six on
 2026-10-10, and each names the issue that now carries it.
 
-1. **Stop filtering Spring configuration with `${…}`.** Restrict `application*.properties` and the
-   files the XML contexts read to `@…@`, or leave them unfiltered. It has to be scoped to those
+1. **Stop filtering Spring configuration with `${…}`.** Restrict `application*.properties`, the XML
+   contexts and the files they read to `@…@`, or leave them unfiltered. It has to be scoped to those
    files: other filtered resources in DSH use `${…}` on purpose, the site Markdown among them. It
    comes before any `${dsh.name}` is written (M1). Now `#158`.
 2. **Move `mongo.*` to run-time configuration.** Remove the four self-referring lines from

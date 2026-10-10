@@ -10,7 +10,7 @@ Proposed, no implementation work has started yet.
 
 Coding standards live in `.github/copilot-instructions.md` and `.github/copilot/rules/`.
 **Do not duplicate them here.** This file covers only what is specific to working as an
-agent in this repo: commands, branch rules, gates, and the development process.
+agent in this repo: commands, branch rules, gates, the GCP cost rule, and the development process.
 
 | I need... | Read |
 |---|---|
@@ -153,6 +153,8 @@ wherever the service offers one.
   Run's own options, never by keeping an instance warm.
 - **Every other service follows the same rule.** Prefer what is billed by use over what is billed
   by the hour.
+- **Stored data is in use.** Storage billed by what is kept is allowed. Set a retention, so that
+  test data does not accumulate.
 - **An exception needs the owner's approval before it is written down.** That covers a service
   with no such setting, and anything with a fixed cost while idle. Say what it costs and why it
   cannot be avoided.

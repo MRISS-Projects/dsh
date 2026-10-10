@@ -340,6 +340,8 @@ wherever the service offers one.
   Run's own options, never by keeping an instance warm.
 - **Every other service follows the same rule.** Prefer what is billed by use over what is billed
   by the hour.
+- **Stored data is in use.** Storage billed by what is kept is allowed. Set a retention, so that
+  test data does not accumulate.
 - **An exception needs the owner's approval before it is written down.** That covers a service
   with no such setting, and anything with a fixed cost while idle. Say what it costs and why it
   cannot be avoided.
@@ -1051,3 +1053,29 @@ The three issues that already existed were only added to; no line of them was re
 `#158` are on `0.4.0-SNAPSHOT`, and `parent-poms#109` is on `3.12.0-SNAPSHOT`. `#148` was not
 changed: its commit gate and smoke check need a deployment that ADR-004 has yet to describe. The
 PRD lists none of this yet; `dsh-plan-wave` and `dsh-reconcile-prd` bring it in.
+
+### 10.8 The local review
+
+An independent review of `a760552f8..c067c100c` on 2026-10-10 compared every finding's quoted
+output with the saved logs, and the repository facts with the files, and found them correct. It
+raised no critical finding, five important ones and a list of minor ones. Each was checked against
+the text and all were fixed, on the owner's instruction.
+
+| Finding | Fix |
+|---|---|
+| The tier comparison said approach C fails loudly on a missing value. The base name has a default, which is production's name, and a missing `gcp` runs in memory | The cell is qualified. Section 5 gains "What C does not catch", and section 9 a row handing the check to ADR-004 |
+| "A Spring profile per tier needs the jar changed" was not probed against a file outside the jar | The summary and the table say so |
+| "An idle database still costs only its storage" had no source, against §7.2 | Removed. Firestore joins the idle-cost point in §8.3. The statement about bucket-level access is marked as an inference |
+| The cost rule did not say whether stored data is allowed | The owner added a bullet to the rule. §3.9 holds the new text, and `CLAUDE.md` matches it |
+| "Three open points need a first deploy" disagreed with §8.3 | §8.3 lists six, and a first deploy settles two. The summary and section 9 say so |
+| Answers that went past their output: S1, S8 and M2's consequence | Each is narrowed to what was run |
+| Section 2 did not name the placeholder that already sits in a filtered file | A row for `enqueue-docId-context.xml`. Follow-up 1 names the XML contexts |
+| The test-layer table showed layers 1 to 4 as proposed | A sentence under it says what differs today |
+| R4 cited fewer sources than it needs; the bucket was "required under `gcp`"; R2 left today's wiring unnamed | R4 cites G6 and §8.3. The bucket is required when the file store is `gcs`. §6.4 hands the wiring to ADR-003 |
+| §3.6's label on the revision, and §3.7's retention of revisions and load-balancer example, were missing | The label is an open point of section 7. Revisions are a sixth open point of §8.3. The example is in section 9 |
+| "Every fact is quoted"; the Spring Cloud GCP reference carries no version | The section says what is quoted and what is paraphrased. The G2 row states the limit |
+| `CLAUDE.md` did not list the cost rule among what it covers | It does now |
+
+§10.4's count of five open points was true when written; there are six now. Decision 12 says that
+an idle tier costs its storage and nothing else. That is the plan's assumption, and for Firestore
+the findings now list it as open.
