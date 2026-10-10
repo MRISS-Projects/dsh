@@ -10,7 +10,7 @@ Proposed, no implementation work has started yet.
 
 Coding standards live in `.github/copilot-instructions.md` and `.github/copilot/rules/`.
 **Do not duplicate them here.** This file covers only what is specific to working as an
-agent in this repo: commands, branch rules, gates, and the development process.
+agent in this repo: commands, branch rules, gates, the GCP cost rule, and the development process.
 
 | I need... | Read |
 |---|---|
@@ -21,6 +21,7 @@ agent in this repo: commands, branch rules, gates, and the development process.
 | Who owns what | `.github/roles.md` |
 | Target architecture and migration phases | `specs/architecture/ADR-001-GCP-based-components.md` |
 | Current architecture | `specs/architecture/system-design.md` |
+| Proposed profile and configuration convention | `specs/architecture/profiles-and-configuration.md` |
 | The development process, in full | `docs/process/ai-driven-development.md` |
 | Branching, CI/CD and release pipeline | `docs/devops/README.md` |
 | What we are building next | `specs/product/PRD.md` |
@@ -141,6 +142,22 @@ halves verified by running it.
 enforcer execution inherited from parent-poms; Mockito, `mockStatic` included, is the sanctioned tool.
 A unit test never starts a Spring context, enforced by `.github/scripts/check-unit-tests-context-free.sh`
 in CI. Both are stated in full in `.github/copilot/rules/testing-patterns.md`.
+
+## Cost rule for GCP
+
+**Nothing stays alive when it is not in use.** Costs are restricted. Any GCP configuration written
+or proposed in this repository, for any tier, takes the setting that costs nothing while idle
+wherever the service offers one.
+
+- **Cloud Run: minimum instances is 0, always.** Cold starts are accepted. Reduce them with Cloud
+  Run's own options, never by keeping an instance warm.
+- **Every other service follows the same rule.** Prefer what is billed by use over what is billed
+  by the hour.
+- **Stored data is in use.** Storage billed by what is kept is allowed. Set a retention, so that
+  test data does not accumulate.
+- **An exception needs the owner's approval before it is written down.** That covers a service
+  with no such setting, and anything with a fixed cost while idle. Say what it costs and why it
+  cannot be avoided.
 
 ## The development process
 
