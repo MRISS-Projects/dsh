@@ -578,7 +578,7 @@ name, and can fail loudly when a value is missing.
 - **A deployment that leaves out the base name.** It defaults to `dsh` (R5), as the harness's did
   (P0), and `dsh` is production's name. A `dsh-dev` deploy without `DSH_NAME` derives production's
   database, topics and prefix.
-- **A deployment that leaves out `gcp`, or mistypes it.** It runs in memory (R2), and Spring says
+- **A deployment that leaves out `gcp`, or mistypes it.** It runs without GCP (R2), and Spring says
   nothing about a profile that matches nothing (P31).
 
 The default is what lets an end user deploy with no name at all, so it is not removed here. The
@@ -599,7 +599,7 @@ the ADRs to settle; the rules are what the findings support.
 | # | Rule | From |
 |---|---|---|
 | R1 | A profile names a capability, never a tier. There is no `dev`, `staging` or `production` profile, in Spring or in Maven | section 5 |
-| R2 | With no profile, the application runs everything in memory and reaches nothing on GCP. `gcp` selects the GCP implementations. The jar does not set a default profile; the deployment sets `SPRING_PROFILES_ACTIVE=gcp` | S1 |
+| R2 | With no profile, the application reaches nothing on GCP. Each service uses the implementation the plan already has outside GCP (§6.3). `gcp` selects the GCP implementations. The jar does not set a default profile; the deployment sets `SPRING_PROFILES_ACTIVE=gcp` | S1 |
 | R3 | A profile's file sets defaults. A property per service selects the implementation, and may be overridden alone | S4 |
 | R4 | An emulator is `gcp` with the endpoint values pointed at it. It is not a third set of beans. Only Firestore's emulator properties were read (G2). Cloud Storage has no emulator (G6), and named databases in the Firestore emulator are open (§8.3) | S7, G2, G6 |
 | R5 | The tier is one value, the base name. It defaults to `dsh`. Every resource name derives from it in one file, at run time | S7 |
@@ -635,12 +635,18 @@ dsh-data (a library)
 | `dsh.pubsub.prefix` | `${dsh.name}-` | derived | topics and subscriptions are `<prefix><channel>` (G3) |
 | `dsh.storage.bucket` | none, required when `dsh.file-store` is `gcs` | the deployment | bucket names are global, so DSH cannot choose it (G4) |
 | `dsh.storage.prefix` | `${dsh.name}/` | derived | the tier's sub-folder in the one bucket |
-| `dsh.persistence` | `memory`; `gcp` sets `firestore` | profile, or alone | one property per service (R3) |
-| `dsh.transport` | `memory`; `gcp` sets `pubsub` | profile, or alone | |
-| `dsh.file-store` | `memory`; `gcp` sets `gcs` | profile, or alone | no official emulator exists (G6) |
+| `dsh.persistence` | `mongo`; `gcp` sets `firestore` | profile, or alone | one property per service (R3). `mongo` is `MongoDocumentDao`, the only implementation today, which Wave 2 keeps |
+| `dsh.transport` | `memory`; `gcp` sets `pubsub` | profile, or alone | the in-memory channels of Wave 2 |
+| `dsh.file-store` | `local`; `gcp` sets `gcs` | profile, or alone | `local` is `LocalFileStorageService`, Wave 1 task 10. No official emulator exists (G6) |
 
 Spring Cloud GCP's own keys take their values from these, for example
 `spring.cloud.gcp.firestore.database-id=${dsh.firestore.database-id}` (G2).
+
+The defaults name implementations the plan already has (`specs/product/PRD.md`, Waves 1 and 2).
+No in-memory persistence and no in-memory file store is planned, and this convention adds none.
+That leaves one question for ADR-003. Wave 7 removes what remains of the legacy implementations,
+and a run with no profile then has no persistence. The candidates are an in-memory implementation,
+which no wave plans, and the Firestore emulator, which R4 makes a `gcp` run.
 
 ### 6.4 What changes for what exists today
 
@@ -648,9 +654,10 @@ Spring Cloud GCP's own keys take their values from these, for example
   that is worth doing before the wave that removes MongoDB is a follow-up candidate (section 9).
 - **The `test` profile in `api-testing.yml`.** It selects nothing. Under R10 `test` gains a
   meaning for context tests, and a forked server started for external tests should not carry it.
-- **The XML contexts.** They can be placed under a profile as they are (S5). Today they load with
-  no profile, and R2 gives that mode to the in-memory implementations. Which profile or property
-  keeps the MongoDB and RabbitMQ wiring until it is removed is for ADR-003 to name.
+- **The XML contexts.** They can be placed under a profile as they are (S5). Today both load with
+  no profile. Under R2 MongoDB stays the default persistence, so its context still loads then.
+  RabbitMQ does not stay: the default transport is in memory, and ADR-001's task 1.3 already puts
+  RabbitMQ under a `rabbitmq` profile. ADR-003 names how each is selected.
 - **Wave 7, "make `gcp` the default profile".** Under R2 this becomes "the deployment sets `gcp`",
   and nothing in the jar changes.
 
@@ -798,9 +805,10 @@ in §9.2 were opened or changed on 2026-10-10, after the owner approved them.
 | ADR-003 | Selection is a property per service, with `gcp` as the profile that sets them together | S4, R3 |
 | ADR-003 | On GCP each stage is driven by a request: Pub/Sub by push. Wave 5's "Pub/Sub channel adapters" is restated once the ADR decides | G8, §8.4 |
 | ADR-003 | The XML contexts can be put under a profile where they stand | S5 |
+| ADR-003 | The defaults with no profile are the implementations the plan has: MongoDB, the local file store, in-memory channels. What a run with no profile persists to once Wave 7 removes MongoDB is open: an in-memory implementation, which no wave plans, or the Firestore emulator | §6.3 |
 | ADR-004 | The operated tiers are three runs of one deploy, in one project, each given a base name | section 5 |
 | ADR-004 | The naming table of §8.1, and the six open points of §8.3. A first deploy settles two of them: reusing a revision name, and a traffic tag's first character | section 8 |
-| ADR-004 | The deploy sets the base name and `gcp` every time, and something checks both. A deployment that leaves either out starts cleanly: the first as production, the second in memory | section 5 |
+| ADR-004 | The deploy sets the base name and `gcp` every time, and something checks both. A deployment that leaves either out starts cleanly: the first as production, the second without GCP | section 5 |
 | ADR-004 | The bucket needs uniform bucket-level access and a managed folder per tier | §8.4 |
 | ADR-004 | The cost rule, service by service, with the retention that removes old artifacts; and which tier holds the free Firestore database. Anything with a fixed hourly cost, such as a load balancer in front of the service, has to be justified against the rule | §8.4 |
 | ADR-004 | One image, tagged with the dotted version; revisions named with dashes | §8.2 |
