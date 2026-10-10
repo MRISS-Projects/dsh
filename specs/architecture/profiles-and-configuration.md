@@ -47,7 +47,7 @@
     by a request, which points at Pub/Sub delivering by push.
 
 All 12 predictions in the spec were confirmed. Six probes were added during the run, and two were
-run differently from the plan; the appendix lists them. Six points the documentation does not
+run differently from the plan; the appendix lists them. Five points the documentation does not
 settle are open (section 8.3). Two of them need a first deploy.
 
 ## 2. DSH today
@@ -727,6 +727,8 @@ named, read on 2026-10-07. The words in quotation marks are the page's; the rest
 | G8 | `--cpu-boost`: "allocate extra CPU to containers on startup to reduce the perceived latency of a cold start request. Enabled by default when unspecified on new services." | <https://docs.cloud.google.com/sdk/gcloud/reference/run/deploy> |
 | G8 | A Pub/Sub push subscription posts each message to the service's URL, and "Success codes, such as HTTP `200` or `204`, acknowledge complete processing" | <https://docs.cloud.google.com/run/docs/triggering/pubsub-push> |
 | G8 | Artifact Registry cleanup policies "automate artifact retention and removal", by tag state, tag prefix and age, or by keeping the most recent versions | <https://docs.cloud.google.com/artifact-registry/docs/repositories/cleanup-policy> |
+| G8 | "Revisions that are not receiving requests don't consume any resources and are not billed." The page adds that a revision with minimum instances configured has billing considerations. Read on 2026-10-10 | <https://docs.cloud.google.com/run/docs/managing/revisions> |
+| G8 | "There is a maximum of 1000 revisions per service: If you exceed that limit, older revisions are automatically deleted." A revision cannot be deleted while it is able to receive traffic, or is the latest or the only one of its service. Deleting one does not delete its container image. Read on 2026-10-10 | the same page |
 
 ### 8.1 The names, for one project
 
@@ -771,7 +773,6 @@ named, read on 2026-10-07. The words in quotation marks are the page's; the rest
 - **What an unused tier costs in Firestore, Pub/Sub and Artifact Registry.** Not established here.
   For Firestore only the free-tier sentence was read (G2), not what an idle database costs beyond
   what it stores.
-- **Removing old revisions.** No page read says what limits or removes old Cloud Run revisions.
 
 ### 8.4 Constraints these facts put on the plan
 
@@ -790,8 +791,11 @@ named, read on 2026-10-07. The words in quotation marks are the page's; the rest
   message as a request and takes the response code as the acknowledgement (G8), which fits. A
   subscriber that polls does not. In-memory channels stay right for the mode with no profile.
 - **Old `dev` and `rc` artifacts can be removed automatically.** Cleanup policies by tag prefix
-  cover the images, and a lifecycle rule by prefix and age covers the test objects (G4, G8). Old
-  revisions are not covered (§8.3).
+  cover the images, and a lifecycle rule by prefix and age covers the test objects (G4, G8).
+- **Old revisions need no retention for the cost rule.** A revision that receives no requests is
+  not billed, and Cloud Run deletes the oldest once a service has more than 1,000 (G8). Whether to
+  delete them sooner is a choice for ADR-004. Deleting a revision does not delete its image (G8),
+  which the cleanup policy above covers.
 
 ## 9. Consequences for the waves, and follow-up candidates
 
@@ -807,7 +811,7 @@ in §9.2 were opened or changed on 2026-10-10, after the owner approved them.
 | ADR-003 | The XML contexts can be put under a profile where they stand | S5 |
 | ADR-003 | The defaults with no profile are the implementations the plan has: MongoDB, the local file store, in-memory channels. What a run with no profile persists to once Wave 7 removes MongoDB is open: an in-memory implementation, which no wave plans, or the Firestore emulator | §6.3 |
 | ADR-004 | The operated tiers are three runs of one deploy, in one project, each given a base name | section 5 |
-| ADR-004 | The naming table of §8.1, and the six open points of §8.3. A first deploy settles two of them: reusing a revision name, and a traffic tag's first character | section 8 |
+| ADR-004 | The naming table of §8.1, and the five open points of §8.3. A first deploy settles two of them: reusing a revision name, and a traffic tag's first character | section 8 |
 | ADR-004 | The deploy sets the base name and `gcp` every time, and something checks both. A deployment that leaves either out starts cleanly: the first as production, the second without GCP | section 5 |
 | ADR-004 | The bucket needs uniform bucket-level access and a managed folder per tier | §8.4 |
 | ADR-004 | The cost rule, service by service, with the retention that removes old artifacts; and which tier holds the free Firestore database. Anything with a fixed hourly cost, such as a load balancer in front of the service, has to be justified against the rule | §8.4 |
