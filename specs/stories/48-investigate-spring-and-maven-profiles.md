@@ -871,7 +871,7 @@ in §3.2, written before the probe ran.
       2. Run §7.3's check.
       3. Add §10 to this spec: the versions, the baseline result, a table of every prediction with
          its outcome, and the gate results. Lint. Commit: `docs(#48): record the verification`.
-- [ ] **T8 — hand over.** Show the owner the follow-up candidates of §3.7 and the issue body of §8.
+- [x] **T8 — hand over.** Show the owner the follow-up candidates of §3.7 and the issue body of §8.
       Post the body, and open any issue, only after the owner approves the text.
 
 ## 7. Verification
@@ -898,7 +898,7 @@ spec. No POM, workflow, properties file, XML context or Java class appears.
 
 ## 8. Proposed issue body
 
-To be posted on `#48` in T8, after approval:
+Posted on `#48` in T8, on 2026-10-10, after approval:
 
 > **As a** developer about to write ADR-003 (the pipeline) and ADR-004 (distribution)
 > **I want** measured evidence of how Spring profiles, Maven and deploy-time values should share
@@ -917,7 +917,7 @@ To be posted on `#48` in T8, after approval:
 >   and hotfix gate is stated once, for both.
 > - AC006: Every GCP fact cites its documentation and is labelled as not verified by a run.
 > - AC007: The consequences for the waves and the follow-up candidates are listed. No issue is
->   opened and the PRD is not edited by this story.
+>   opened or changed before the owner approves it, and the PRD is not edited by this story.
 > - AC008: No production code, POM or workflow changes.
 > - AC009: `CLAUDE.md` states the GCP cost rule: nothing stays alive when it is not in use, and
 >   Cloud Run's minimum instances is always 0.
@@ -934,7 +934,7 @@ To be posted on `#48` in T8, after approval:
 | AC004: a convention proposed for one project and three tiers, nothing implemented | §3.4, §3.6, T5, §7.2, §7.3 |
 | AC005: five layers mapped to configuration; one gate for release and hotfix | §3.5, T5 |
 | AC006: GCP facts cited and labelled | §3.6, T4, §7.2 |
-| AC007: consequences and follow-ups listed; no issue opened, PRD untouched | §3.7, T5, T8, §7.3 |
+| AC007: consequences and follow-ups listed; no issue opened or changed before approval, PRD untouched | §3.7, T5, T8, §7.3, §10.7 |
 | AC008: no production code, POM or workflow changes | §3.8, T7, §7.3 |
 | AC009: `CLAUDE.md` states the GCP cost rule | decision 12, §3.9, T6 |
 
@@ -1027,3 +1027,27 @@ Two facts changed the plan, and both are in the findings:
 - **§7.3:** `git diff --stat DEVELOP...HEAD` lists three files: `CLAUDE.md`,
   `specs/architecture/profiles-and-configuration.md` and this spec. No POM, workflow, properties
   file, XML context or Java class appears.
+
+### 10.7 T8, the hand-over
+
+On 2026-10-10 the owner approved the issue body and asked for every follow-up candidate to become
+an issue, added to one that exists wherever one fits.
+
+- **`#48`** carries the body of §8.
+- **AC007 was reworded before it was posted.** It said that no issue is opened by this story. The
+  owner's decision made that false, so it now says that none is opened or changed before the owner
+  approves it. §8 and §9 hold the posted text.
+
+| Candidate, by its number in the findings' §9.2 | Where it went |
+|---|---|
+| 1. Stop filtering Spring configuration with `${…}` | new: `#158` |
+| 2. Move `mongo.*` to run-time configuration | new: `#157` |
+| 3. Remove the `test` profile from `api-testing.yml` | added to `#137`: a context bullet and AC005 |
+| 4. Rename `dsh-rest-api`'s test `application.properties` | added to `#140`: a second paragraph |
+| 5. Workflow outputs for the build number and the version | new: `parent-poms#109`, beside `parent-poms#91` |
+| 6. Re-run the harness on the Boot line `#120` chooses | added to `#120`: a context bullet and AC007 |
+
+The three issues that already existed were only added to; no line of them was removed. `#157` and
+`#158` are on `0.4.0-SNAPSHOT`, and `parent-poms#109` is on `3.12.0-SNAPSHOT`. `#148` was not
+changed: its commit gate and smoke check need a deployment that ADR-004 has yet to describe. The
+PRD lists none of this yet; `dsh-plan-wave` and `dsh-reconcile-prd` bring it in.

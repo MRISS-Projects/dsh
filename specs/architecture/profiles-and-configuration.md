@@ -753,8 +753,8 @@ named, read on 2026-10-07. `cloud.google.com` documentation now redirects to
 
 ## 9. Consequences for the waves, and follow-up candidates
 
-**This story edits neither the PRD nor any issue.** The PRD changes go through `dsh-plan-wave`, and
-an issue is opened only after the owner approves its text.
+**This story does not edit the PRD.** The PRD changes go through `dsh-plan-wave`. The issues named
+in §9.2 were opened or changed on 2026-10-10, after the owner approved them.
 
 ### 9.1 Consequences
 
@@ -772,29 +772,31 @@ an issue is opened only after the owner approves its text.
 | Wave 7 | Task 3, "make `gcp` the default profile", becomes "the deployment sets `gcp`". Task 1 becomes layer 5a | R2, section 7 |
 | `testing-patterns.md` | Gains layer 5, and R10's rule for context tests, when ADR-004 lands | section 7 |
 | `#148` | The release skill gains the commit gate and the production smoke check, for release and hotfix alike | section 7 |
-| parent-poms | None of `project-staging.yml`, `project-release.yml` and `project-hotfix.yml` declares an output, at `ae7aaf83`. A DSH deploy job that runs after one needs the build number and the version. `parent-poms#91` covers the release tag and version; the staging build number is not covered | a grep for `outputs:` in the three files |
+| parent-poms | None of `project-staging.yml`, `project-release.yml` and `project-hotfix.yml` declares an output, at `ae7aaf83`. A DSH deploy job that runs after one needs the build number and the version. `parent-poms#91` covers the release tag and version, and `parent-poms#109` the staging build number and version | a grep for `outputs:` in the three files |
 
 ### 9.2 Follow-up candidates
 
-Each is a draft for the owner to accept, change or drop.
+Each was a draft for the owner to accept, change or drop. The owner accepted all six on
+2026-10-10, and each names the issue that now carries it.
 
 1. **Stop filtering Spring configuration with `${…}`.** Restrict `application*.properties` and the
    files the XML contexts read to `@…@`, or leave them unfiltered. It has to be scoped to those
    files: other filtered resources in DSH use `${…}` on purpose, the site Markdown among them. It
-   comes before any `${dsh.name}` is written (M1).
+   comes before any `${dsh.name}` is written (M1). Now `#158`.
 2. **Move `mongo.*` to run-time configuration.** Remove the four self-referring lines from
    `mongo.properties`, bind the values through a validated class, and delete the dummy values from
    six workflows and from the README's `settings.xml` instructions. The alternative is to leave it
-   for the wave that removes MongoDB, and record that.
+   for the wave that removes MongoDB, and record that. Now `#157`, whose spec decides how far to
+   go.
 3. **Remove `--spring.profiles.active=test` from `api-testing.yml`**, or fold it into `#137`,
-   which reworks that workflow.
+   which reworks that workflow. Added to `#137`, as its AC005.
 4. **Rename `dsh-rest-api`'s test `application.properties` to `application-test.properties`**,
    keeping only what differs, and give its context tests `@ActiveProfiles("test")`. `#140` already
-   edits both files and could carry it.
+   edits both files and could carry it. Added to `#140`.
 5. **parent-poms: expose the build number and the version as workflow outputs**, beside
-   `parent-poms#91`.
+   `parent-poms#91`. Now `parent-poms#109`, for the staging workflow.
 6. **Re-run the harness on the Spring Boot line `#120` chooses.** One property selects the
-   version. P28's validation import changes package on Boot 3.
+   version. P28's validation import changes package on Boot 3. Added to `#120`, as its AC007.
 
 ## 10. Appendix: the probe harness
 
