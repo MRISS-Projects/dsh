@@ -1079,3 +1079,16 @@ the text and all were fixed, on the owner's instruction.
 §10.4's count of five open points was true when written; there are six now. Decision 12 says that
 an idle tier costs its storage and nothing else. That is the plan's assumption, and for Firestore
 the findings now list it as open.
+
+### 10.9 Review rounds on the pull request
+
+**Round 1.** Copilot reviewed PR `#159` at `4b37615ce` on 2026-10-10, at effort `Balanced`, and
+left two findings. Both were checked and both were valid.
+
+| Finding | Verdict | Fix |
+|---|---|---|
+| The convention's defaults named an in-memory persistence and an in-memory file store, which neither the code nor the PRD provides (medium) | Valid. The only `DocumentDao` is `MongoDocumentDao`; the PRD plans `LocalFileStorageService` and keeps the Mongo layer in Wave 2 | `d9baf5432`. The owner chose to align the defaults with the plan: `mongo`, `local`, and `memory` for the transport alone. R2 promises only that a run with no profile reaches nothing on GCP. What such a run persists to after Wave 7 is open for ADR-003 |
+| "Removing old revisions" was listed as open, though Cloud Run's documentation settles it (low) | Valid, checked against the page | `0ee986b93`. Two G8 facts added, read on 2026-10-10. §8.3 is back to five open points |
+
+The first changes a line of §3.4, which said that no profile means everything in memory. The second
+corrects a point that §10.8's fixes had added without reading the page.
