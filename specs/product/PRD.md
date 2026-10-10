@@ -17,7 +17,8 @@ reconciling this document against GitHub once a story has merged and its issue i
 ADR-001 itself is **Status: Proposed**. No migration code exists yet — the codebase has no GCP
 dependencies and no code marked `@Deprecated`. Nor does the document pipeline ADR-001 would migrate:
 §4's "The 2026-09-28 re-plan", between Wave 0 and Wave 1, records what exists, what does not, and
-the decisions that reordered the waves around building it.
+the decisions that reordered the waves around building it. "The 2026-10-10 re-plan", after it,
+records the operated tiers on GCP and the `0.6.0` milestone that first releases through them.
 
 ## 2. How to read a wave
 
@@ -50,20 +51,26 @@ the decisions that reordered the waves around building it.
 | 1 | `0.4.0-SNAPSHOT` |
 | 2 | `0.4.0-SNAPSHOT` |
 | 3 | `0.5.0-SNAPSHOT` |
-| 4 | `1.0.0-SNAPSHOT` |
-| 5 | `1.0.0-SNAPSHOT` |
-| 6 | `1.0.0-SNAPSHOT` |
-| 7 | `1.0.0-SNAPSHOT` |
+| 4 | `0.6.0-SNAPSHOT` |
+| 5 | `0.6.0-SNAPSHOT` |
+| 6 | `0.6.0-SNAPSHOT` |
+| 7 | `0.6.0-SNAPSHOT` |
 | 8 | `1.0.0-SNAPSHOT` |
 | 9 | `1.0.0-SNAPSHOT` |
+| 10 | `1.0.0-SNAPSHOT` |
+| 11 | `1.0.0-SNAPSHOT` |
+
+Waves 4 to 11 carry the numbers and milestones of the re-plan of 2026-10-10 (§4, "The 2026-10-10
+re-plan"), which added Waves 4 and 7 and the `0.6.0` milestone.
 
 Wave 1's upstream step 0 was the exception. Its DSH issue, `#146`, was built on the `0.3.x` hotfix line
 and shipped as a patch release, not in `0.4.0`. It went on `0.3.1-SNAPSHOT`, which was renamed `0.3.2`,
 because the release shipped as 0.3.2 (§4, Wave 1, step 0). The milestone was closed on 2026-09-30.
 
 `0.5.0-SNAPSHOT` does not exist in GitHub yet; the others do. It is created when Wave 3's first
-issue is. `dsh-new-story` sets `--milestone` on `gh issue create` from this table, keyed by
-the wave the task came from.
+issue is. `0.6.0-SNAPSHOT` was created on 2026-10-10, ahead of its first new issue, because `#45`
+and `#49` moved onto it that day. `dsh-new-story` sets `--milestone` on `gh issue create` from this
+table, keyed by the wave the task came from.
 
 **parent-poms has its own milestones, one per wave that carries parent-poms work.** A wave's
 upstream issues go on the milestone below, so that a parent-poms release clears one wave's work and
@@ -74,10 +81,17 @@ a milestone.
 |---|---|---|
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
 | 1, upstream step 6 | `3.11.0-SNAPSHOT`, now `3.11.0` | `#98`, `#106`; both closed; released on 2026-10-04, DSH not re-pinned |
-| 8 | `3.12.0-SNAPSHOT` | `#90`, `#91`, `#92`; `#109` joined on 2026-10-10 |
-| 9 | `3.13.0-SNAPSHOT` | `#85` |
+| 4 | `3.12.0-SNAPSHOT` | `#90`; `#109` joined on 2026-10-10 |
+| 7 | `3.13.0-SNAPSHOT` | `#91`, since 2026-10-10 |
+| 10 | `3.14.0-SNAPSHOT` | `#92`, since 2026-10-10 |
+| 11 | `3.15.0-SNAPSHOT` | `#85`, since 2026-10-10 |
 
 A wave with no row has no parent-poms work planned. When one gains some, it gets the next minor.
+
+The last four rows were re-keyed by the re-plan of 2026-10-10. Until then `3.12.0-SNAPSHOT` was the
+distribution wave's and held `#90`, `#91` and `#92`, and `3.13.0-SNAPSHOT` was the backlog's and
+held `#85`. The distribution work was split across three waves, so `#91` moved to
+`3.13.0-SNAPSHOT`, and `#92` and `#85` moved to two milestones created that day.
 
 ## 4. The waves
 
@@ -136,7 +150,7 @@ reconciliation that rediscovers them should leave them out.
   keyword extractor's text. And nothing in it says that only submission works today. The fix states
   that status, corrects the prerequisites and module descriptions, and uses generic terms (indexer,
   NoSQL store, queue) in the overview. `src/site/markdown/index.md` gets the same status statement.
-  The larger rewrite of both files is Wave 1 task 5 and Wave 8 task 5.
+  The larger rewrite of both files is Wave 1 task 5 and Wave 10 task 5.
 
 Issues `#92`, `#93`, `#94` and `#95` were raised from findings made while writing this PRD and
 while reviewing the branch that introduced it; each carries its full rationale and acceptance
@@ -292,7 +306,7 @@ spec did not mention `#124`, and the overlap went unnoticed until a reconciliati
 `#124` then shipped the rest in PR #133. The investigation found nothing that relied on the
 main-side attachment. The two Solr modules, which never read a fixture, lost their unpack, and the
 setting now carries a comment saying why it must stay `false`. What the dataset lacks for the
-later waves is recorded under Wave 3, and the 1 MiB fixture under Wave 4.
+later waves is recorded under Wave 3, and the 1 MiB fixture under Wave 5.
 
 **Two findings from the same review are deliberately *not* issues:**
 
@@ -568,8 +582,9 @@ as APT, which also made the issue's own file list true. Closing `#57` clears eve
   [`parent-poms#85`](https://github.com/MRISS-Projects/parent-poms/issues/85) — not DSH `#85` — for
   the content question: five images never committed, empty link targets, and pages about
   Subversion, Tomcat 8 and the retired APT format, for both consuming projects and parent-poms
-  contributors. It had **no milestone** then, so it did not gate 3.9.0. Since 2026-10-02 it is on
-  parent-poms `3.13.0-SNAPSHOT`, Wave 9.
+  contributors. It had **no milestone** then, so it did not gate 3.9.0. It went on
+  parent-poms `3.13.0-SNAPSHOT` on 2026-10-02, and since 2026-10-10 it is on `3.15.0-SNAPSHOT`,
+  Wave 11.
 - `parent-poms#71` — `commit-readme-md` runs three times per staging run, and one of those commits
   carries an unresolved `${timestamp}` into the published `README.md`. A later execution repairs
   it, so a *successful* run ends correct; a run that fails inside that window leaves the consuming
@@ -666,6 +681,61 @@ The owner's decisions from that session:
 
 So waves 1-7 no longer mirror ADR-001's phases one for one. Where a task is still drawn from an
 ADR-001 phase table, it says so.
+
+### The 2026-10-10 re-plan
+
+Waves 4 onward were re-planned on 2026-10-10, after `#48` closed. Its findings,
+`specs/architecture/profiles-and-configuration.md`, plan three operated tiers in one GCP project:
+`dsh-dev`, `dsh-staging` and `dsh`. Until then no wave built any of them, and the only deploy in
+the plan was the end user's, in the distribution wave. Where a wave below cites "the findings", it
+means that document.
+
+The owner's decisions from that session:
+
+1. **A new Wave 4 builds the foundation and the development tier.** The findings (§9.1) say that
+   the first `gcp` code needs somewhere real to run. So the image and a minimal deploy move forward
+   from the distribution wave, which keeps the end-user packaging, and Firestore starts on a tier
+   that already exists. Two alternatives were rejected. Folding the work into the Firestore wave
+   mixed deploy plumbing with persistence. Building all three tiers at once put the staging and
+   production deploys several waves ahead of any release candidate that could exercise them.
+2. **A `0.6.0` milestone carries the GCP swap, and a new Wave 7 closes it.** With everything on
+   `1.0.0-SNAPSHOT`, the first `dsh-staging` deploy, the first `dsh` deploy, the commit gate and
+   the smoke check would all have run for the first time on the 1.0.0 release. 0.3.0 and 0.3.1
+   showed what the first run of a release path costs (Wave 1, upstream step 0). So Waves 4 to 7 are
+   on `0.6.0-SNAPSHOT`, and 0.6.0's release candidate and release are the first real run. Pub/Sub
+   is inside 0.6.0 on purpose: with zero minimum instances, in-memory channels are not sound on
+   Cloud Run (findings §8.4), and the first production deployment should have a pipeline that
+   finishes.
+
+The waves were renumbered:
+
+| Wave | Before 2026-10-10 | Theme | Milestone |
+|---|---|---|---|
+| 0 to 3 | 0 to 3 | unchanged | unchanged |
+| 4 | new | GCP foundation and the development tier | `0.6.0-SNAPSHOT` |
+| 5 | 4 | GCP: Firestore and GCS | `0.6.0-SNAPSHOT`, was `1.0.0-SNAPSHOT` |
+| 6 | 5 | GCP: Pub/Sub | `0.6.0-SNAPSHOT`, was `1.0.0-SNAPSHOT` |
+| 7 | new | The release path on GCP | `0.6.0-SNAPSHOT` |
+| 8 | 6 | GCP: term statistics and search | `1.0.0-SNAPSHOT` |
+| 9 | 7 | Validation and cutover | `1.0.0-SNAPSHOT` |
+| 10 | 8 | Distribution | `1.0.0-SNAPSHOT` |
+| 11 | 9 | Product backlog | `1.0.0-SNAPSHOT` |
+
+The session also found three things the findings do not list:
+
+- **`#45`, the actuators, sat in the product backlog.** The smoke check reads health, the version
+  and the commit, so it moves to Wave 4.
+- **`#49`, the emulators, sat with the Pub/Sub work.** The Firestore code needs the Firestore
+  emulator for its layer 3 tests, so `#49` moves to Wave 5, narrowed to that emulator.
+- **`#148`, the release skill, is built before the 0.4.0 release candidate, when no tier exists.**
+  The findings give it the commit gate and the production smoke check. Those cannot be part of it
+  then, and are Wave 7 task 3.
+
+**Documents that keep old wave numbers.** These are dated records and are not corrected. The
+findings, `#48`'s spec and `specs/stories/143-readme-describes-dsh-today.md` keep the numbers of
+before 2026-10-10: read them against the table above.
+`specs/stories/124-keep-test-fixtures-out-of-production-artifacts.md` and
+`scripts/close-wontfix-issues.sh` keep the numbers of 2026-09-16, from before both re-plans.
 
 ### Wave 1 — Pipeline design, documentation and upstream catch-up
 
@@ -843,8 +913,10 @@ are.
    feed the ADR's choice of transport and persistence by profile. The ADR comes before the Spring
    Boot upgrade: it decides structure, not API detail, and more of the wave waits on it than on
    anything else.
-3. `#140`, then `#119`. Mechanical work, done while ADR-003 is in review. `#140` first, so `#120`
-   carries fewer settings.
+3. `#157`, `#158`, `#140`, then `#119`. Mechanical work, done while ADR-003 is in review. `#157`
+   and `#158` joined this step on 2026-10-10. `#157` goes first, so that `#158` can cover
+   `mongo.properties` too, which it otherwise has to leave filtered. `#140` comes before `#120`, so
+   `#120` carries fewer settings.
 4. `#120`, after `#119` for the reason given with the triaged issues.
 5. Task 3 (ADR-004). It needs ADR-003's answers on Vertex AI Search and on local mode.
 6. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
@@ -856,15 +928,17 @@ are.
 8. Tasks 8 to 10, the `dsh-data` interfaces. They come after ADR-003, which may reshape them, and
    after `#120`, so that new code is written on the final Spring Boot line.
 9. `#148`, last, before the 0.4.0 release candidate. It should learn from everything this wave
-   changes in the build.
+   changes in the build. The commit gate and the production smoke check that the findings (§9.1)
+   give the skill are not part of it: no tier exists before Wave 4. They are Wave 7 task 3.
 
 Task 7 and `#132` have no fixed step. They fill gaps, such as an ADR in review, but each has a
 latest point. `#132` lands before tasks 8 to 10, so that the new `dsh-data` code is written to the
 analysers' rules, and before `#148` in any case, because it changes the build. Task 7 lands before
 `#148`, inside the wave, because Wave 3's stories cite the papers.
 
-Every open parent-poms issue has a milestone since 2026-10-02 (§3). `parent-poms#90`, `#91`, `#92`
-and `#109` belong to Wave 8, and `parent-poms#85` to Wave 9.
+Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the re-plan of
+2026-10-10, `parent-poms#90` and `#109` belong to Wave 4, `#91` to Wave 7, `#92` to Wave 10, and
+`#85` to Wave 11.
 
 **Triaged issues:**
 
@@ -877,7 +951,7 @@ and `#109` belong to Wave 8, and `parent-poms#85` to Wave 9.
   Like `#48`, neither is an ADR-001 phase task. Both were raised on 2026-09-25, while
   specifying `#112`, and they are ordered: `#119` lands first, because Spring Boot 3's
   `spring-boot-starter-test` drops the vintage engine and JUnit 4 tests would stop running
-  without failing anything. `#120` belongs in this wave because Wave 4's
+  without failing anything. `#120` belongs in this wave because Wave 5's
   `spring-cloud-gcp-starter-*` release line is tied to the Spring Boot line, and because the
   pipeline written in Waves 2 and 3 should be written once, against the Boot line it will ship on.
   Neither issue names a target version. Both leave it to their spec's analysis, and for `#120` that
@@ -937,12 +1011,12 @@ and `#109` belong to Wave 8, and `parent-poms#85` to Wave 9.
   Neither is an ADR-001 phase task. Both came out of `#48` on 2026-10-10, as follow-ups 2 and 1 of
   its findings (`specs/architecture/profiles-and-configuration.md`, §9.2). They were not folded
   into `#48`, which was an investigation and changed no code. Their milestone, `0.4.0-SNAPSHOT`, is
-  shared by Waves 1 and 2. They sit in this wave because neither depends on ADR-003. Neither has a
-  step in the order of work above yet.
+  shared by Waves 1 and 2. They sit in this wave because neither depends on ADR-003. Both are in
+  step 3 of the order of work above since 2026-10-10.
 
   The findings' other four follow-ups went into issues that existed or belong elsewhere: `#137`
   gained AC005, `#120` gained AC007, `#140` gained a second change to make, and
-  `parent-poms#109` is in Wave 8.
+  `parent-poms#109` is in Wave 4.
 
 `#142`, which came from the same `#46` review, moved to Wave 2 on 2026-09-28.
 
@@ -976,13 +1050,26 @@ and `#109` belong to Wave 8, and `parent-poms#85` to Wave 9.
    - The deployables: one application running the whole pipeline, with channels between stages that
      can later be split into separate services by profile. What becomes of the four stub worker
      modules follows from this.
-   - The transports: in-memory channels by default, with transport adapters (Pub/Sub, Wave 5)
+   - The transports: in-memory channels by default, with transport adapters (Pub/Sub, Wave 6)
      selected by profile.
    - Where corpus document-frequency statistics live. IDF needs them across every document, and
      Solr supplied them until now.
    - **Whether Vertex AI Search has any role.** DSH extracts keywords and sentences; it offers no
-     search, and Vertex AI Search exposes no term vectors. Wave 6's contents follow from the answer.
+     search, and Vertex AI Search exposes no term vectors. Wave 8's contents follow from the answer.
    - The statuses, if the design changes them. Task 1 keeps the diagram in step.
+
+   Four more, added on 2026-10-10 from `#48`'s findings (§9.1):
+   - **How an implementation is selected.** The findings propose a property per service, with
+     `gcp` as the profile that sets them together (R3). Waves 5 and 6 are written against the
+     answer.
+   - **The `gcp` transport is driven by requests.** With zero minimum instances, each stage on
+     Cloud Run has to be started by a request, which points at Pub/Sub delivering by push (§8.4).
+     Wave 6 task 2 follows from this.
+   - **Whether the XML contexts go under a profile where they stand**, which the findings show is
+     possible (S5), or are rewritten in Java first.
+   - **What a run with no profile persists to once the legacy implementations are removed**
+     (Wave 9 task 2). The candidates are an in-memory implementation, which no wave plans, and the
+     Firestore emulator (§6.3).
 
    ADR-003 also revises ADR-001 in place, which its **Proposed** status allows: the Context table is
    corrected, Phase 1 tasks 3-6 and the Phase 2 migration utility are dropped, and Phases 3-5 are
@@ -996,8 +1083,27 @@ and `#109` belong to Wave 8, and `parent-poms#85` to Wave 9.
      resolves (`parent-poms#92`). Its acceptance test is a build from the zip with an empty local
      repository and no GitHub credentials.
    - What local mode can and cannot do. Firestore and Pub/Sub have emulators. GCS has only
-     third-party fakes, and Vertex AI Search has none, so from Wave 6 a local run may still need a
+     third-party fakes, and Vertex AI Search has none, so from Wave 8 a local run may still need a
      real GCP project, depending on task 2's answer.
+
+   More, added on 2026-10-10 from `#48`'s findings (§9.1). Waves 4 and 7 deliver this part, and
+   Wave 10 the part above:
+   - **The operated tiers.** `dsh-dev`, `dsh-staging` and `dsh` are three runs of one deploy, in
+     one GCP project, each given a base name. Whether that deploy and the end user's script are
+     one script.
+   - **The names**, from the table in the findings (§8.1), and the points the documentation leaves
+     open (§8.3). One image, tagged with the dotted version; revisions named with dashes.
+   - **The check on the base name and on `gcp`.** A deployment that leaves either out starts
+     cleanly: the first as production, the second without GCP.
+   - **The bucket.** Uniform bucket-level access and a managed folder per tier, or one tier can
+     overwrite another's objects.
+   - **The cost rule, service by service**: the setting that costs nothing while idle, the
+     retention that removes old `dev` and `rc` artifacts and test objects, and which tier holds
+     the one free Firestore database.
+   - **Layer 5.** How the tests authenticate to a Cloud Run service, and how they clean up what
+     they write on `dsh-dev` and `dsh-staging`.
+   - **The release gate.** Where it runs, whether the commit is also a label on the revision, and
+     how a hotfix branch reaches `dsh-staging` while a release candidate occupies it.
 4. **Documentation map.** `CLAUDE.md` is the root of the developer documentation tree. A CI check,
    like `check-spec-references`, fails when a Markdown file under `docs/`, `specs/` or `.github/`
    cannot be reached from `CLAUDE.md` by links. The same task deletes the empty scaffolding READMEs
@@ -1025,7 +1131,7 @@ and `#109` belong to Wave 8, and `parent-poms#85` to Wave 9.
    `DocumentRepository` directly. Mark `MongoDocumentDao` `@Deprecated`. (ADR-001 Phase 1 task 2.)
 10. `dsh-data` — Extract `byte[] originalFileContents` from the `Document` entity into a
     `FileStorageService` interface with `store(byte[]) → URI` and `retrieve(URI) → byte[]`. Create
-    `LocalFileStorageService`; `GcsFileStorageService` follows in Wave 4. (ADR-001 Phase 1 task 7.)
+    `LocalFileStorageService`; `GcsFileStorageService` follows in Wave 5. (ADR-001 Phase 1 task 7.)
 
 ### Wave 2 — Pipeline walking skeleton
 
@@ -1094,10 +1200,82 @@ add `dsh-test-dataset` to `-pl`.
 6. **Sentence ranking.** Combine task 5 with task 3's scores, and return the top sentences with their
    paragraph numbers.
 
-### Wave 4 — GCP: Firestore and GCS
+### Wave 4 — GCP foundation and the development tier
 
-Milestone: `1.0.0-SNAPSHOT`. Tasks drawn from ADR-001 §4, "Phase 2". The migration utility, task 5
-there, is dropped: no deployment holds data to migrate.
+Milestone: `0.6.0-SNAPSHOT`. Added by the re-plan of 2026-10-10. It delivers the part of ADR-004
+(Wave 1 task 3) that the operated tiers need, and every task depends on that ADR. No GCP project
+exists before this wave.
+
+**At the end of this wave `dsh-dev` proves only that the image starts and reports itself.** No
+`gcp` implementation exists yet, so no document test runs there until Wave 5. The deployment sets
+`gcp` from the first deploy all the same, so that the deploy does not change when Wave 5 gives the
+profile something to select.
+
+**Triaged issue:** `#45` — Document, configure and test Spring Boot actuators for the REST API
+module. It moves here from the product backlog, because the smoke check reads health, the version
+and the commit. The issue has no body, so task 1 below is written as its body, as was done for
+`#44`. Its GitHub milestone moved from `1.0.0-SNAPSHOT` to `0.6.0-SNAPSHOT` on 2026-10-10.
+
+**Upstream issues:**
+
+- [`parent-poms#90`](https://github.com/MRISS-Projects/parent-poms/issues/90) — manage
+  docker-maven-plugin's version. Needed by task 2.
+- [`parent-poms#109`](https://github.com/MRISS-Projects/parent-poms/issues/109) — expose the
+  version and the build number as outputs of the reusable staging workflow. Needed by task 4.
+
+  `#109` came out of DSH `#48` on 2026-10-10. It was not folded into `#91`, which covers the
+  release and hotfix workflows; `#109` is the staging one.
+
+Both are on parent-poms `3.12.0-SNAPSHOT`, this wave's milestone there (§3). They were listed under
+the distribution wave until 2026-10-10.
+
+**Tasks:**
+
+1. **Version, commit and health** (`#45`). The build stamps the version and the commit into the jar
+   with `spring-boot:build-info`, and stamps nothing else (findings M2, R8). The application serves
+   health, and info carrying both values. Other actuator endpoints stay off. What health reports
+   while the default persistence is still MongoDB, which no tier has, is the spec's to settle.
+2. **The container image.** A Dockerfile, and an image named `dsh` and tagged with the dotted
+   version (findings §8.2), built as ADR-004 decides. One image serves every tier and local mode.
+   It runs locally before anything is deployed. Publishing it for end users is Wave 10 task 1.
+3. **The GCP project bootstrap.** The owner creates the project and its billing, with a budget
+   alert. A script that is safe to run twice creates the rest: the APIs, the image repository with
+   a cleanup policy for `dev` and `rc` tags (findings §8.4), and the identity GitHub Actions
+   deploys with. Every setting follows the cost rule in `CLAUDE.md`.
+4. **Deploy `dsh-dev` from `deploy.yml`.** A DSH job after the reusable workflow pushes the image
+   and deploys revision `dsh-dev-<version>-dev-<n>` (findings §8.1), with zero minimum instances,
+   `DSH_NAME=dsh-dev` and `SPRING_PROFILES_ACTIVE=gcp`. It takes the version and the build number
+   from `parent-poms#109`'s outputs. The first deploy settles two points the documentation leaves
+   open (findings §8.3): what a deploy does when the revision name already exists, and whether a
+   traffic tag may start with a digit.
+5. **The smoke check, layer 5b, against `dsh-dev`.** After each deploy it asks for health, the
+   version and the commit, and compares them with what was built. It also checks that the base name
+   the application reports is the service's, which is the check the findings (section 5) leave to
+   ADR-004. That introduces `dsh.name` (R5), so `#158` comes first (Wave 1). The check reads and
+   writes no document, and Wave 7 reuses it for production. The same story adds layer 5 and rule
+   R10 to `.github/copilot/rules/testing-patterns.md`.
+
+### Wave 5 — GCP: Firestore and GCS
+
+Milestone: `0.6.0-SNAPSHOT`, moved from `1.0.0-SNAPSHOT` on 2026-10-10. It was Wave 4 until then.
+Tasks 1 to 4 are drawn from ADR-001 §4, "Phase 2". The migration utility, task 5 there, is dropped:
+no deployment holds data to migrate.
+
+Where ADR-001 says `@Profile("gcp")`, the selection is whatever ADR-003 decides. The findings
+propose a property per service, `dsh.persistence` and `dsh.file-store`, with `gcp` as the profile
+that sets them together (R3).
+
+**Triaged issue:** `#49` — re-scoped twice. Originally titled "Create docker structure based on
+docker files to have all servers configured as docker containers to run tests and/or the
+application" — i.e., Docker containers for MongoDB/RabbitMQ/Solr. On 2026-09-28 it was re-scoped to
+Firestore and Pub/Sub emulators for local and CI testing, and placed with the Pub/Sub work. On
+2026-10-10 it was narrowed to the **Firestore emulator** and moved here, because this wave's
+Firestore code needs it for layer 3 (findings §7). Wave 6 task 3 adds the Pub/Sub emulator to the
+same structure, and Wave 10's local mode reuses both. Its GitHub milestone moved from
+`0.4.0-SNAPSHOT` to `1.0.0-SNAPSHOT` on 2026-09-28, and to `0.6.0-SNAPSHOT` on 2026-10-10.
+
+Cloud Storage has no official emulator (findings G6). So task 4 is verified on `dsh-dev`, by
+task 6.
 
 **Tasks:**
 
@@ -1105,97 +1283,142 @@ there, is dropped: no deployment holds data to migrate.
    `spring-cloud-gcp-starter-storage` dependencies.
 2. `dsh-data` — Create `FirestoreDocumentPersistenceRepository implements
    DocumentPersistenceRepository`. Map `Document` fields to Firestore collections.
-3. `dsh-data` — Create `FirestoreDocumentDao implements DocumentDao` (`@Profile("gcp")`). Wire to
-   `FirestoreDocumentPersistenceRepository`.
-4. `dsh-data` — Create `GcsFileStorageService implements FileStorageService` (`@Profile("gcp")`).
-   Upload and download file bytes to a GCS bucket; the `Document` entity stores a `fileStorageUri`
-   instead of raw bytes. Add a fixture above Firestore's 1 MiB document limit: the largest today,
-   `The-Categories.pdf`, is 262 KiB.
+3. `dsh-data` — Create `FirestoreDocumentDao implements DocumentDao`, selected as ADR-003 decides.
+   Wire to `FirestoreDocumentPersistenceRepository`.
+4. `dsh-data` — Create `GcsFileStorageService implements FileStorageService`, selected as ADR-003
+   decides. Upload and download file bytes to a GCS bucket; the `Document` entity stores a
+   `fileStorageUri` instead of raw bytes. Add a fixture above Firestore's 1 MiB document limit: the
+   largest today, `The-Categories.pdf`, is 262 KiB.
+5. **The tier's data resources.** The deploy creates the Firestore database `dsh-dev-db`, the
+   bucket with uniform bucket-level access, the `dsh-dev/` managed folder with the tier's service
+   account granted on it alone, and a lifecycle rule that removes test objects (findings §8.1,
+   §8.4). Which tier holds the one free Firestore database is ADR-004's choice.
+6. **Layer 5a begins.** The layer 3 tests run over the wire against `dsh-dev` after each deploy:
+   submission and status, with the document in Firestore and its file in the bucket. How they
+   authenticate, and how they clean up what they write, is ADR-004's to decide (findings §7). The
+   pipeline finishing on Cloud Run is asserted from Wave 6, not here.
 
-### Wave 5 — GCP: Pub/Sub
+### Wave 6 — GCP: Pub/Sub
 
-Milestone: `1.0.0-SNAPSHOT`. ADR-001 Phase 3, rewritten by ADR-003 for the flow Wave 2 builds.
+Milestone: `0.6.0-SNAPSHOT`, moved from `1.0.0-SNAPSHOT` on 2026-10-10. It was Wave 5 until then.
+ADR-001 Phase 3, rewritten by ADR-003 for the flow Wave 2 builds.
 
-**Triaged issue:** `#49` — re-scoped. Originally titled "Create docker structure based on docker
-files to have all servers configured as docker containers to run tests and/or the application" —
-i.e., Docker containers for MongoDB/RabbitMQ/Solr. It is re-scoped to **Firestore and Pub/Sub
-emulators** for local and CI testing, which is why it sits here, beside the Pub/Sub work it will
-exercise. Wave 8's local mode reuses it. Its GitHub milestone moved from `0.4.0-SNAPSHOT` to
-`1.0.0-SNAPSHOT` on 2026-09-28.
+`#49` was listed here until 2026-10-10. It is in Wave 5 now.
 
 **Tasks:**
 
 1. Add `spring-cloud-gcp-starter-pubsub` and `spring-integration-gcp`.
-2. Pub/Sub channel adapters for the channels between stages, under `@Profile("gcp")`, as ADR-003
-   decides.
+2. **The `gcp` transport** for the channels between stages, as ADR-003 decides. On Cloud Run each
+   stage has to be driven by a request: with zero minimum instances, work that continues after the
+   response has no CPU (findings G8, §8.4). That points at Pub/Sub delivering by push to an HTTP
+   endpoint, and away from a subscriber that polls. Until 2026-10-10 this task read "Pub/Sub
+   channel adapters for the channels between stages, under `@Profile("gcp")`".
+3. **The Pub/Sub emulator**, added to `#49`'s structure, for layer 3.
+4. **The tier's topics and subscriptions.** The deploy creates `dsh-dev-<channel>` for each channel
+   (findings §8.1). Layer 5a then asserts that a submitted document reaches its final status on
+   `dsh-dev`.
 
-### Wave 6 — GCP: term statistics and search
+### Wave 7 — The release path on GCP
 
-Milestone: `1.0.0-SNAPSHOT`. **Its contents wait on ADR-003.** ADR-001 Phase 4 replaces Solr with
-Vertex AI Search. But Wave 3 computes term statistics in Java, and DSH offers no search, so this wave
-may shrink to storing those statistics in Firestore, or disappear. Phase 4's tasks stay recorded in
-ADR-001 until ADR-003 decides.
+Milestone: `0.6.0-SNAPSHOT`. Added by the re-plan of 2026-10-10. It gives the release candidate and
+the release their own tiers, by running Wave 4's deploy twice more under other base names (findings,
+section 5). The gate is stated once in the findings (section 7), for a release and a hotfix alike.
 
-### Wave 7 — Validation and cutover
+**Upstream issue:**
 
-Milestone: `1.0.0-SNAPSHOT`. ADR-001 Phase 5, less its parity comparison: there is no old pipeline to
-compare with.
-
-**Tasks:**
-
-1. Run the integration tests against the `gcp` profile.
-2. Performance-test against `specs/testing/performance-benchmarks/` (FR004: 95% of documents under
-   10 MB processed within 30 s).
-3. Make `gcp` the default profile.
-4. Remove `dsh-solr` and whatever remains of the legacy implementations, as ADR-003 decides.
-
-### Wave 8 — Distribution
-
-Milestone: `1.0.0-SNAPSHOT`. Delivers ADR-004. An end user downloads one zip from a GitHub Release
-and runs a script; the root `README.md` describes exactly that.
-
-**Upstream issues:**
-
-- [`parent-poms#90`](https://github.com/MRISS-Projects/parent-poms/issues/90) — manage
-  docker-maven-plugin's version. Needed by task 1.
 - [`parent-poms#91`](https://github.com/MRISS-Projects/parent-poms/issues/91) — expose the release
   tag and version as outputs of the reusable release and hotfix workflows. A DSH job after the
-  reusable workflow cannot otherwise know which release to attach to.
-- [`parent-poms#92`](https://github.com/MRISS-Projects/parent-poms/issues/92) — export the MRISS
-  build artifacts a consumer needs as an offline Maven repository.
-- [`parent-poms#109`](https://github.com/MRISS-Projects/parent-poms/issues/109) — expose the
-  version and the build number as outputs of the reusable staging workflow.
-
-  `#109` came out of DSH `#48` on 2026-10-10. It was not folded into `#91`, which covers the
-  release and hotfix workflows; `#109` is the staging one. It is in this wave because its milestone
-  is this wave's. The job that needs it deploys a build to a development or staging tier, and the
-  findings (§9.1) propose moving a minimal deploy forward to Wave 4. `dsh-plan-wave` decides that.
-
-All four are on parent-poms `3.12.0-SNAPSHOT`, this wave's milestone there (§3).
+  reusable workflow cannot otherwise know which release to deploy. Needed by task 2. On parent-poms
+  `3.13.0-SNAPSHOT`, this wave's milestone there (§3). It was listed under the distribution wave
+  until 2026-10-10.
 
 **Tasks:**
 
-1. A Dockerfile, and a public container image published on every release.
+1. **Deploy `dsh-staging` from `staging.yml`.** Revision `dsh-staging-<version>-rc-<n>`, with its
+   own database, managed folder, topics and subscriptions, and layer 5a against it.
+   `parent-poms#109` (Wave 4) already covers the outputs of a release-candidate build.
+2. **Deploy `dsh` from `release.yml` and `hotfix.yml`.** It is built from the release tag, so the
+   image is a rebuild, one release commit ahead of what staging tested. Layer 5b covers that
+   rebuild: health, the version and the commit, and no document. Production data is never used by a
+   test.
+3. **The commit gate, and the release skill.** A release or a hotfix goes ahead only when the
+   `dsh-staging` revision that passed layer 5a was built from the head of the branch being
+   released, read from its build stamp. If it was not, staging runs first. Where the gate runs is
+   ADR-004's to decide. The `dsh-release` skill (`#148`, Wave 1) gains the gate and the production
+   smoke check.
+
+**0.6.0's release candidate and release are the first real run of this path** (§6).
+
+Left open, for ADR-004: how a hotfix branch reaches `dsh-staging` while a release candidate
+occupies it.
+
+### Wave 8 — GCP: term statistics and search
+
+Milestone: `1.0.0-SNAPSHOT`. It was Wave 6 until 2026-10-10. **Its contents wait on ADR-003.**
+ADR-001 Phase 4 replaces Solr with Vertex AI Search. But Wave 3 computes term statistics in Java,
+and DSH offers no search, so this wave may shrink to storing those statistics in Firestore, or
+disappear. Phase 4's tasks stay recorded in ADR-001 until ADR-003 decides.
+
+### Wave 9 — Validation and cutover
+
+Milestone: `1.0.0-SNAPSHOT`. It was Wave 7 until 2026-10-10. ADR-001 Phase 5, less its parity
+comparison: there is no old pipeline to compare with.
+
+Two of its four tasks were dropped on 2026-10-10, because earlier waves now do them:
+
+- **"Run the integration tests against the `gcp` profile"** is layer 5a. It runs against `dsh-dev`
+  from Wave 5 and against `dsh-staging` from Wave 7.
+- **"Make `gcp` the default profile"** is no change to the jar. The jar sets no default profile
+  (R2), and the deployment has set `gcp` since Wave 4.
+
+**Tasks:**
+
+1. Performance-test against `specs/testing/performance-benchmarks/` (FR004: 95% of documents under
+   10 MB processed within 30 s). It runs against `dsh-staging`, and the cost rule in `CLAUDE.md`
+   holds for it as for everything else: minimum instances stays 0.
+2. Remove `dsh-solr` and whatever remains of the legacy implementations, as ADR-003 decides. That
+   includes what a run with no profile persists to once MongoDB is gone (findings §6.3).
+
+### Wave 10 — Distribution
+
+Milestone: `1.0.0-SNAPSHOT`. It was Wave 8 until 2026-10-10. Delivers what is left of ADR-004 after
+Waves 4 and 7: the end-user packaging. An end user downloads one zip from a GitHub Release and runs
+a script; the root `README.md` describes exactly that.
+
+**Upstream issue:**
+
+- [`parent-poms#92`](https://github.com/MRISS-Projects/parent-poms/issues/92) — export the MRISS
+  build artifacts a consumer needs as an offline Maven repository. Needed by task 2. On parent-poms
+  `3.14.0-SNAPSHOT`, this wave's milestone there (§3).
+
+`parent-poms#90` and `#109` moved to Wave 4 on 2026-10-10, and `parent-poms#91` to Wave 7.
+
+**Tasks:**
+
+1. Publish the container image publicly on every release, as ADR-004 decides. The Dockerfile and
+   the image itself are Wave 4 task 2.
 2. The release zip: sources, binaries, the offline Maven repository and a build-from-sources script.
    It passes ADR-004's acceptance test.
-3. The deploy script. It checks its prerequisites (gcloud installed, authenticated, a project
+3. The deploy script, for an end user. It is Wave 4's deploy in the form a user runs against a GCP
+   project of their own. It checks its prerequisites (gcloud installed, authenticated, a project
    chosen) and tells the user what is missing. It creates each resource only if absent, so a second
-   run is safe, and it deploys the image to the user's own GCP project.
+   run is safe, and it deploys the image under the default name, `dsh`. Whether it is the same
+   script that deploys the operated tiers is ADR-004's to decide.
 4. Local mode: the application in Docker on localhost, with each service on GCP or on an emulator,
-   by configuration. It reuses `#49`.
+   by configuration. It reuses `#49` and Wave 6 task 3.
 5. Rewrite the root `README.md` (its source is `src/site/markdown/README.md`) as the user guide for
    the zip and the script: prerequisites, credentials, deploy, local mode.
 6. Access through IAP for named Google accounts, which needs no Workspace domain. It waits for a
-   front end, which no wave yet plans.
+   front end, which no wave yet plans. Anything it needs that has a fixed cost while idle, such as
+   a load balancer, needs the owner's approval under the cost rule.
 
-### Wave 9 — Product backlog
+### Wave 11 — Product backlog
 
-Milestone: `1.0.0-SNAPSHOT`. Existing backlog issues with no dependency on the GCP migration,
-scheduled after it so the migration lands first.
+Milestone: `1.0.0-SNAPSHOT`. It was Wave 9 until 2026-10-10. Existing backlog issues with no
+dependency on the GCP migration, scheduled after it so the migration lands first.
 
 **Triaged issues:**
 
-- `#45` — Document, configure and test Spring Boot actuators for the REST API module
 - `#50` — Add extra Swagger documentation using annotations
 - `#51` — Investigate and add support for `spring-boot-starter-hateoas`
 - `#52` — Improvement for performance: file hash generation could be another service. Reviewed and
@@ -1209,14 +1432,14 @@ scheduled after it so the migration lands first.
   failed submission. That contract is a product decision, so the IT pinned it rather than changing
   it.
 
-`#44` moved to Wave 1 on 2026-09-28.
+`#44` moved to Wave 1 on 2026-09-28, and `#45` to Wave 4 on 2026-10-10.
 
 **Upstream issues:**
 
 - [`parent-poms#85`](https://github.com/MRISS-Projects/parent-poms/issues/85) — decide whether the
   infrastructure site pages are still worth keeping, and what replaces them. On parent-poms
-  `3.13.0-SNAPSHOT`. It depends on nothing in DSH's plan and blocks nothing, so it is scheduled with
-  the backlog. It had no milestone until 2026-10-02.
+  `3.15.0-SNAPSHOT` since 2026-10-10; it was on `3.13.0-SNAPSHOT` from 2026-10-02 until then. It
+  depends on nothing in DSH's plan and blocks nothing, so it is scheduled with the backlog.
 
 ## 5. Won't-fix
 
@@ -1226,14 +1449,14 @@ wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what 
 
 | Issue | Reason | Superseded by |
 |---|---|---|
-| `#65` (closed) — Implement indexer-worker daemon | Its body specifies enqueuing via RabbitMQ and storing results in Solr — both surfaces this migration replaces. | Wave 2 (pipeline skeleton), Wave 3 (algorithms) and Wave 5 (Pub/Sub) |
-| `#47` (closed) — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour belongs on the new repository, not the one being replaced. | Wave 4 (Firestore + GCS) |
+| `#65` (closed) — Implement indexer-worker daemon | Its body specifies enqueuing via RabbitMQ and storing results in Solr — both surfaces this migration replaces. | Wave 2 (pipeline skeleton), Wave 3 (algorithms) and Wave 6 (Pub/Sub) |
+| `#47` (closed) — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour belongs on the new repository, not the one being replaced. | Wave 5 (Firestore + GCS) |
 
-The *Superseded by* column was renumbered by the re-plan of 2026-09-28. The comments on both closed
-issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: Wave 3 and Wave 4 for
-`#65`, Wave 2 for `#47`.
+The *Superseded by* column was renumbered by the re-plans of 2026-09-28 and 2026-10-10. The
+comments on both closed issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of
+2026-09-16: Wave 3 and Wave 4 for `#65`, Wave 2 for `#47`.
 
-`#52` is explicitly **not** in this table — see Wave 9 above for why it was reviewed and kept.
+`#52` is explicitly **not** in this table — see Wave 11 above for why it was reviewed and kept.
 
 ## 6. Known risks / accepted decisions
 
@@ -1348,3 +1571,23 @@ issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of 2026-09-16: W
   at `0.3.1-SNAPSHOT` on `0.3.x`. The release did surface two defects outside `#65` and `#69`,
   both in its site: `parent-poms#95` and `#96` (Wave 1, upstream step 0). Both were fixed in 3.9.2
   and shipped by DSH 0.3.2.
+- **The release path on GCP is first proven by the 0.6.0 release — accepted on 2026-10-10.** Wave 7
+  builds the `dsh-staging` deploy, the `dsh` deploy, the commit gate and the production smoke
+  check. None of them can run for real before a release candidate and a release exist to run them.
+  The deploy itself is proven earlier, by every `dsh-dev` deploy from Wave 4 on, because the three
+  tiers are three runs of one deploy. What stays unproven until 0.6.0 is the gate, the production
+  run and the smoke check against `dsh`.
+
+  The `0.6.0` milestone exists to bound that cost. A defect found on the first run costs a patch
+  release of 0.6.0, not of 1.0.0. Anything the run misses is fixed then, from the hotfix line if it
+  has to be, as was done for 0.3.0.
+
+  Two costs come with it:
+
+  - **A production deployment exists from 0.6.0**, two milestones before the end-user packaging.
+    Under the cost rule in `CLAUDE.md` it is billed for what it stores and for nothing while idle.
+  - **`dsh-staging` stays deployed between releases**, because the gate reads the revision that
+    passed. The same rule makes that affordable.
+
+  **This decision closes when 0.6.0 is released** and the run confirms, or corrects, what Wave 7
+  built.
