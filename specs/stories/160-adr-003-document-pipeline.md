@@ -1187,7 +1187,7 @@ reference's index page, as that row says.
 | C5 | three lines, `CLAUDE.md:8`, `CLAUDE.md:24` and `SKILL.md:21`; nothing from the second `grep` | yes |
 | C6 | the five files of §4 and no other | yes |
 | C7, the `diff` | `the diagrams are the same` | yes |
-| C7, the look on GitHub | **not done.** See §8.4 | no |
+| C7, the look on GitHub | a drawn sequence diagram with five participants and three shaded bands, looked at after the build. See §8.4 | yes, late |
 
 **C2's last `grep`.** §7.2 expects lines inside sections 1 and 5 of the Decision part only. Nine
 of the 17 are there, at lines 83 to 228 and 545 to 569, and each was read against §5.2's last
@@ -1207,11 +1207,15 @@ a transaction that runs again.
 
 ### 8.4 Departures from this spec
 
-1. **The diagram was not looked at on GitHub** (T1 step 2, C7). The Chrome extension was not
-   connected during the build. In its place the block of §3.3 was parsed with Mermaid 12.2.0,
-   which accepted it as a sequence diagram, and rejected a deliberately broken copy. That shows
-   the syntax is valid for that version. It does not show what GitHub draws. The look is still
-   owed, on the task branch or on the pull request.
+1. **The diagram was looked at on GitHub after the build, not before it** (T1 step 2, C7). The
+   Chrome extension was not connected during the build. In its place the block of §3.3 was
+   parsed with Mermaid 12.2.0, which accepted it as a sequence diagram, and rejected a
+   deliberately broken copy. The look was done once Chrome was connected, on 2026-10-13, at this
+   spec's §3.3 on the task branch, as pushed at `ca2e20c6a`. GitHub drew the diagram: the five
+   participants, the three shaded bands headed "Request 1", "Request 2" and "Request 3", the two
+   notes between them, and the numbered arrows as far as number 25. The last arrows, below the
+   keywords stage, were scrolled past and not seen. The ADR's copy was not looked at, because
+   the ADR is not pushed yet; C7's `diff` shows it is the same text.
 2. **A key was named.** §3.4 leaves the name of the `local` file store's directory key to the
    ADR. It is `dsh.storage.local-directory`, beside the findings' `dsh.storage.bucket` and
    `dsh.storage.prefix`.
