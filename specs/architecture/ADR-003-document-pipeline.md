@@ -288,6 +288,12 @@ returns the token after point 2 is recorded. The `@Async` call after the respons
 With zero minimum instances, work that continues after a response gets no CPU (G8, findings
 §8.4).
 
+`/submit` and `/status/{token}` are named in this ADR as `DocumentResource` has them today,
+under `/v1/dsh/document`. This ADR decides how a submission is carried through the pipeline. It
+decides nothing about the public API: the routes, the response codes and the field names stay
+as they are until a story changes them. `specs/api/openapi/dsh-rest-api.yaml` describes other
+routes, which the code does not have (follow-up candidate 8).
+
 ### 2. The deployables
 
 **Decision.** One application runs the pipeline: `dsh-rest-api`, and the flow lives in it. Every
@@ -905,6 +911,14 @@ wrote this ADR.
    current.** They are right until the code is removed, and the stories that remove it should
    correct them. One sentence is the exception: `system-design.md`'s migration note is stale from
    the merge, and the re-plan corrects it ("After the merge", step 2).
+8. **The OpenAPI document and the feature specs describe an API and a workflow the code does not
+   have.** `specs/api/openapi/dsh-rest-api.yaml` has `/documents`, `/documents/{documentId}`,
+   `/documents/{documentId}/highlights` and `/health` under `/api/v1`. `DocumentResource` has
+   `/v1/dsh/document/submit` and `/v1/dsh/document/status/{token}`. The files in
+   `specs/features/` name the OpenAPI routes, and three statuses where the code has 18. They
+   were written before this ADR. `#138` changes the response codes and the OpenAPI document with
+   them, and does not cover the routes. Which side is right is a decision about the public API,
+   which this ADR does not make (section 1, "`/submit`").
 
 ---
 
