@@ -778,7 +778,7 @@ The owner's decisions from that session:
    `#132`'s analysers. Wave 2 task 3 goes ahead of `#119` and `#120` for the same reason, so
    that neither carries Solr.
 3. **`#157` is superseded by task 8, and `#140` is reduced** to the part `#48` added to it,
-   the test profile's properties file. Closing `#157` is the owner's.
+   the test profile's properties file. The owner closed `#157` the same day.
 4. **Every wave keeps its number, and Wave 8 is retired.** ADR-003 was accepted citing Wave 9 and
    Wave 11, and ADR-001's phases name their waves. Renumbering would have made both wrong on the
    day of the acceptance.
@@ -1117,7 +1117,8 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   `#146`, which was a release, not tooling. It belongs in this wave because the next release is
   0.4.0, and the skill should exist before it.
 
-- `#157` — Give `mongo.*` its values at run time, not through build-time filtering.
+- `#157` — **closed**, with no pull request: superseded by task 8 (§5). Give `mongo.*` its values
+  at run time, not through build-time filtering.
 - `#158` — Stop Maven from filtering `${…}` in Spring configuration.
 
   Neither is an ADR-001 phase task. Both came out of `#48` on 2026-10-10, as follow-ups 2 and 1 of
@@ -1127,8 +1128,7 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
 
   **`#157` was superseded on 2026-10-13 by task 8**, which removes MongoDB and every `mongo.*`
   value with it, the build-time values in the six workflows included. It has no step in the
-  order of work any more. Closing it as not planned is the owner's, and it then moves to §5.
-  `#158` is in step 4.
+  order of work any more. The owner closed it that day, and it is in §5. `#158` is in step 4.
 
   The findings' other four follow-ups went into issues that existed or belong elsewhere: `#137`
   gained AC005, `#120` gained AC007, `#140` gained a second change to make, and
@@ -1704,18 +1704,23 @@ decision.
 
 ## 5. Won't-fix
 
-Two issues were superseded by the ADR-001 migration itself and will not be built as written. Both
-were **closed as `not planned` on 2026-09-16** by the repo owner, each with a comment naming the
-wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly what was run.
+Three issues were superseded and will not be built as written. Two were superseded by the ADR-001
+migration itself. Both were **closed as `not planned` on 2026-09-16** by the repo owner, each with
+a comment naming the wave that supersedes it. `scripts/close-wontfix-issues.sh` records exactly
+what was run. The third, `#157`, was superseded by ADR-003 and joined on 2026-10-13.
 
 | Issue | Reason | Superseded by |
 |---|---|---|
 | `#65` (closed) — Implement indexer-worker daemon | Its body specifies enqueuing via RabbitMQ and storing results in Solr — both surfaces this migration replaces. | Wave 2 (pipeline skeleton), Wave 3 (algorithms) and Wave 6 (Pub/Sub) |
 | `#47` (closed) — Mongo DAO ordering by timestamp | Targets `MongoDocumentDao`, which ADR-001 Phase 1 wraps and Phase 2 replaces with a Firestore-backed implementation. Ordering behaviour belongs on the new repository, not the one being replaced. | Wave 5 (Firestore + GCS) |
+| `#157` (closed) — Give `mongo.*` its values at run time, not through build-time filtering | Every acceptance criterion is about `mongo.*` values. ADR-003 removes MongoDB where ADR-001 planned to migrate it, so none of them has a subject. What its AC004 asked for, the build-time values gone from the six workflows, is part of the task that supersedes it. | Wave 1 task 8 (the in-memory `DocumentDao` replaces MongoDB) |
 
-The *Superseded by* column was renumbered by the re-plans of 2026-09-28 and 2026-10-10. The
-comments on both closed issues, and `scripts/close-wontfix-issues.sh`, keep the numbers of
-2026-09-16: Wave 3 and Wave 4 for `#65`, Wave 2 for `#47`.
+For `#65` and `#47`, the *Superseded by* column was renumbered by the re-plans of 2026-09-28 and
+2026-10-10. The comments on those two issues, and `scripts/close-wontfix-issues.sh`, keep the
+numbers of 2026-09-16: Wave 3 and Wave 4 for `#65`, Wave 2 for `#47`.
+
+`#157` was closed by the owner on 2026-10-13, the day the re-plan superseded it, with a comment
+naming the task. It came out of `#48` three days earlier and was never started.
 
 `#52` is explicitly **not** in this table — see Wave 11 above for why it was reviewed and kept.
 
