@@ -15,11 +15,11 @@ a fresh agent per task.
 
 - Conventions are in `.github/copilot/rules/java-conventions.md`; test patterns are in
   `.github/copilot/rules/testing-patterns.md`. Follow them rather than inventing a style.
-- ADR-001 requires **interface-first** work: new GCP implementations go behind an existing
-  interface, selected by Spring profile (`gcp` vs `legacy`). Never edit a deprecated
-  implementation in place - add alongside it.
-- Deprecate, do not delete. Annotate with `@Deprecated` plus a Javadoc `@deprecated` tag
-  naming the replacement.
+- ADR-003 requires **interface-first** work: a service outside the JVM is reached through an
+  interface that names no technology, and its implementation is selected by a property
+  (`dsh.persistence`, `dsh.transport`, `dsh.file-store`) that the `gcp` profile sets. See
+  `specs/architecture/ADR-003-document-pipeline.md`.
+- Code that ADR-003 replaces is deleted, not deprecated.
 
 ## The gate before you claim done
 
