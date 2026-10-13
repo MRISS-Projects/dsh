@@ -1087,14 +1087,16 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   repurposed. The analysers it did not cover became this new issue. Their configuration belongs
   in parent-poms, which is why it waits for 0.3.0.
 - `#137` — Run the Postman collections against a lifecycle-managed server.
-- `#140` — Remove the unused `spring.data.mongodb.*` settings from `dsh-rest-api`.
+- `#140` — Give dsh-rest-api's tests a `test` profile file, so that it stops replacing the main
+  `application.properties`.
 
   Neither is an ADR-001 phase task. Both came out of `#46` on 2026-09-28. `#137` is the open
   question `#46`'s spec deferred rather than answered: whether newman joins the Maven lifecycle,
   and what becomes of `api-testing.yml`. It is layer 4 of the test layers in `testing-patterns.md`.
-  `#140` came from `#46`'s code review. Since the re-plan of 2026-10-13 only the part `#48`
-  added to it is left, the test profile's properties file: task 8 removes the settings its
-  title names.
+  `#140` came from `#46`'s code review, as "Remove the unused `spring.data.mongodb.*` settings
+  from dsh-rest-api". Since the re-plan of 2026-10-13 only the part `#48` added to it is left,
+  the test profile's properties file, because task 8 removes those settings. It was retitled on
+  GitHub that day.
 - `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
   task 5 below is written as its body, so no new issue is opened for that task.
 - `#144` — Swagger UI is not served: `/swagger-ui/` returns 404 and the webjar page fails to load.
