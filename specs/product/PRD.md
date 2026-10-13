@@ -95,6 +95,11 @@ held `#85`. The distribution work was split across three waves, so `#91` moved t
 
 ## 4. The waves
 
+**The waves below have not yet been re-planned from ADR-003, and no story starts until they
+are.** [ADR-003](../architecture/ADR-003-document-pipeline.md) was accepted on 2026-10-13. Its
+"Consequences for the waves" lists what changes, and its "After the merge" says what the re-plan
+does first. The re-plan removes this paragraph when it ends.
+
 ### Wave 0 — Engineering foundation
 
 Milestone: `0.3.0`, **released on 2026-09-29** as tag `v0.3.0` by release run
@@ -912,11 +917,14 @@ are.
    `specs/stories/48-investigate-spring-and-maven-profiles.md`, holds the evidence. The findings
    feed the ADR's choice of transport and persistence by profile. The ADR comes before the Spring
    Boot upgrade: it decides structure, not API detail, and more of the wave waits on it than on
-   anything else.
+   anything else. **The ADR-003 half was done on 2026-10-13:** `#160` — **closed** — PR #161.
+   The ADR is `specs/architecture/ADR-003-document-pipeline.md`, and task 2 below has its
+   outcome.
 3. `#157`, `#158`, `#140`, then `#119`. Mechanical work, done while ADR-003 is in review. `#157`
    and `#158` joined this step on 2026-10-10. `#157` goes first, so that `#158` can cover
    `mongo.properties` too, which it otherwise has to leave filtered. `#140` comes before `#120`, so
-   `#120` carries fewer settings.
+   `#120` carries fewer settings. ADR-003 left review on 2026-10-13 with none of this step
+   started, and no step from here on starts before the re-plan (the head of §4).
 4. `#120`, after `#119` for the reason given with the triaged issues.
 5. Task 3 (ADR-004). It needs ADR-003's answers on Vertex AI Search and on local mode.
 6. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
@@ -1043,7 +1051,12 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
    #154, brought that page into `docs/wiki/`. `wiki-sync.yml` had been disabled by GitHub for
    inactivity since 2026-07-21. It was re-enabled on 2026-10-06 to run that sync, and it will be
    disabled again after 60 days without activity on `master`. No issue is open for that yet.
-2. **ADR-003 — the document pipeline.** Decides:
+2. **Done on 2026-10-13: ADR-003 — the document pipeline.** `#160` — **closed** — PR #161.
+   ADR-003: decide the document pipeline, and revise ADR-001 to match. Its spec,
+   `specs/stories/160-adr-003-document-pipeline.md`, holds the evidence. The plan as written is
+   kept below.
+
+   Decides:
    - The flow: one Java DSL `IntegrationFlow` as the bus, with stages as POJO endpoints and one
      interceptor or advice that records each `DocumentStatus` transition, so no stage touches
      persistence for status.
@@ -1074,6 +1087,12 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
    ADR-003 also revises ADR-001 in place, which its **Proposed** status allows: the Context table is
    corrected, Phase 1 tasks 3-6 and the Phase 2 migration utility are dropped, and Phases 3-5 are
    rewritten to match the waves below.
+
+   **Outcome.** The ADR is `specs/architecture/ADR-003-document-pipeline.md`, accepted by the
+   merge of PR #161 on 2026-10-13. Every question listed above is decided there. ADR-001 was
+   revised in place and keeps its status, Proposed. Nothing in this document has been changed to
+   match yet: the ADR's "Consequences for the waves" lists what changes, wave by wave, and the
+   re-plan applies it.
 3. **ADR-004 — distribution.** Decides:
    - A run path and a build path. Running DSH needs a container image, and a public GHCR image pulls
      without credentials. Cloud Run cannot deploy from ghcr.io directly, so the deploy script copies
