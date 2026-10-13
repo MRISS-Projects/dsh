@@ -47,9 +47,9 @@ why DSH moves to GCP and onto which services. What changed:
   stay.
 
 Each phase now names the PRD wave that delivers it. The wave numbers are those of the
-re-plan of 2026-10-10, and a later re-plan will move them. Until the PRD has been re-planned
-from ADR-003's consequences, it differs from this ADR in places. Where they differ, this ADR
-follows ADR-003.
+re-plan of 2026-10-10, which the re-plan of 2026-10-13 kept. That re-plan applied ADR-003's
+consequences to the PRD, and it corrected Phase 1's pointers to Wave 1 tasks 8 and 9, which
+it cut differently.
 
 ---
 
@@ -144,12 +144,12 @@ Each phase names the PRD wave that delivers it. Task numbers that this revision 
 
 **Goal**: Put every service outside the JVM behind a technology-neutral interface, each with a default implementation that needs nothing installed.
 
-Tasks 1.1 and 1.2 are delivered together, or in an order that writes no MongoDB code: after 1.1 alone, `MongoDocumentDao` would have to implement the new advance only to be deleted by 1.2. The re-plan of the waves settles which (ADR-003, "Consequences for the waves").
+Tasks 1.1 and 1.2 are delivered in an order that writes no MongoDB code: after 1.1 alone, `MongoDocumentDao` would have to implement the new advance only to be deleted by 1.2. The re-plan of the waves settled it on 2026-10-13. Wave 1 task 8 delivers the in-memory implementation of 1.1 and all of 1.2. Wave 1 task 9 delivers the rest of 1.1: the advance, the contract and its test.
 
 | Task | Module | Detail |
 | ------ | -------- | -------- |
-| 1.1 | `dsh-data` | Add the conditional status advance to `DocumentDao`, and an in-memory implementation that is the default. The contract is written on the interface: the atomic advance, writes by field, copies. One contract test, which every implementation passes (ADR-003, sections 1 and 3). Wave 1 task 8. |
-| 1.2 | `dsh-data` | Remove MongoDB: `MongoDocumentDao`, `DocumentRepository`, `dshApplicationContext.xml`, `mongo.properties`, the MongoDB dependencies, and the MongoDB container that `-DintegrationTests` starts. Wave 1 task 9. |
+| 1.1 | `dsh-data` | Add the conditional status advance to `DocumentDao`, and an in-memory implementation that is the default. The contract is written on the interface: the atomic advance, writes by field, copies. One contract test, which every implementation passes (ADR-003, sections 1 and 3). Wave 1 tasks 8 and 9. |
+| 1.2 | `dsh-data` | Remove MongoDB: `MongoDocumentDao`, `DocumentRepository`, `dshApplicationContext.xml`, `mongo.properties`, the MongoDB dependencies, and the MongoDB container that `-DintegrationTests` starts. Wave 1 task 8. |
 | 1.7 | `dsh-data` | Refactor `Document` entity: extract `byte[] originalFileContents` into a `FileStorageService` interface that stores and retrieves an object, and lets a caller store one so that a repeat replaces it. Create `LocalFileStorageService`, the default, and later the Cloud Storage implementation. Wave 1 task 10. |
 
 #### Phase 2 — GCP Implementation: Firestore + GCS (Wave 5)

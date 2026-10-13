@@ -7,11 +7,6 @@ Storage) is **proposed** in `specs/architecture/ADR-001-GCP-based-components.md`
 Proposed, no implementation work has started yet. How the document pipeline is built, with and
 without GCP, is decided in `specs/architecture/ADR-003-document-pipeline.md`.
 
-**Until the waves have been re-planned from ADR-003, three things are stale:** `specs/product/PRD.md`,
-the migration note in `specs/architecture/system-design.md`, and the `dsh-plan-wave` skill. No
-story starts before that re-plan. ADR-003, "After the merge", says what the re-plan does first.
-The re-plan removes this paragraph when it ends.
-
 ## This file is a router
 
 Coding standards live in `.github/copilot-instructions.md` and `.github/copilot/rules/`.

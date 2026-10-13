@@ -19,6 +19,10 @@ dependencies and no code marked `@Deprecated`. Nor does the document pipeline AD
 §4's "The 2026-09-28 re-plan", between Wave 0 and Wave 1, records what exists, what does not, and
 the decisions that reordered the waves around building it. "The 2026-10-10 re-plan", after it,
 records the operated tiers on GCP and the `0.6.0` milestone that first releases through them.
+"The 2026-10-13 re-plan" records what
+[ADR-003](../architecture/ADR-003-document-pipeline.md), **Status: Accepted**, changed in the
+waves. It decides how the pipeline is built, and it removes the legacy code where ADR-001
+planned to deprecate it.
 
 ## 2. How to read a wave
 
@@ -37,8 +41,9 @@ records the operated tiers on GCP and the `0.6.0` milestone that first releases 
   (`dsh-reconcile-prd`) after a merge, never hand-edited ahead of one. Titles in that column are
   the GitHub titles, normalised to sentence case with any `[STORY]` prefix dropped.
 - Waves 1-5 used to mirror the five migration phases in ADR-001 §4 one for one. Since the re-plan of
-  2026-09-28 they do not: a task still drawn from an ADR-001 phase table says so, and ADR-003
-  (Wave 1) revises ADR-001 to match.
+  2026-09-28 they do not: a task still drawn from an ADR-001 phase table says so. ADR-003
+  (Wave 1 task 2) revised ADR-001 on 2026-10-13, and each of its phases names the wave that
+  delivers it.
 - A wave can list issues in other repositories (parent-poms, the `maven-changes-plugin` fork,
   maven-repo) when DSH's work depends on them. They are linked in full, since a bare `#n` here means
   a DSH issue.
@@ -55,7 +60,7 @@ records the operated tiers on GCP and the `0.6.0` milestone that first releases 
 | 5 | `0.6.0-SNAPSHOT` |
 | 6 | `0.6.0-SNAPSHOT` |
 | 7 | `0.6.0-SNAPSHOT` |
-| 8 | `1.0.0-SNAPSHOT` |
+| 8 | none: retired on 2026-10-13 (§4) |
 | 9 | `1.0.0-SNAPSHOT` |
 | 10 | `1.0.0-SNAPSHOT` |
 | 11 | `1.0.0-SNAPSHOT` |
@@ -94,11 +99,6 @@ held `#85`. The distribution work was split across three waves, so `#91` moved t
 `3.13.0-SNAPSHOT`, and `#92` and `#85` moved to two milestones created that day.
 
 ## 4. The waves
-
-**The waves below have not yet been re-planned from ADR-003, and no story starts until they
-are.** [ADR-003](../architecture/ADR-003-document-pipeline.md) was accepted on 2026-10-13. Its
-"Consequences for the waves" lists what changes, and its "After the merge" says what the re-plan
-does first. The re-plan removes this paragraph when it ends.
 
 ### Wave 0 — Engineering foundation
 
@@ -669,8 +669,10 @@ its id, and nothing consumes the queue. `dsh-doc-indexer-worker`, `dsh-doc-proce
 `dsh-keyword-extractor` and `dsh-top-sentences-extractor` each hold a 17-line `Application` class
 and nothing else. No keyword or sentence extraction code exists, here or anywhere else; it is
 written from scratch against the two papers the wiki cites. `DocumentStatus` models all 18 states of
-the pipeline, and only the first few are reachable. ADR-001's Context table says the workers
-"dequeue and process", and it names a `dequeue-docId-context.xml` that does not exist.
+the pipeline, and only the first few are reachable. ADR-001's Context table said the workers
+"dequeue and process", and it treated `dequeue-docId-context.xml`, an unused test resource, as
+production configuration. ADR-003 revised that table on 2026-10-13. Until that day this
+paragraph said the file does not exist. It exists, under `dsh-rest-api`'s test resources.
 
 The owner's decisions from that session:
 
@@ -741,6 +743,96 @@ findings, `#48`'s spec and `specs/stories/143-readme-describes-dsh-today.md` kee
 before 2026-10-10: read them against the table above.
 `specs/stories/124-keep-test-fixtures-out-of-production-artifacts.md` and
 `scripts/close-wontfix-issues.sh` keep the numbers of 2026-09-16, from before both re-plans.
+
+### The 2026-10-13 re-plan
+
+Waves 1 onward were re-planned on 2026-10-13, after `#160` closed.
+[ADR-003](../architecture/ADR-003-document-pipeline.md) decides how the document pipeline is
+built, and its "Consequences for the waves" table lists what each wave owes it. No wave was added
+or renumbered, and no milestone moved. Wave 8 was left empty and is retired.
+
+What ADR-003 decides, as far as the waves show it:
+
+- **The legacy code is removed, not migrated.** MongoDB goes in Wave 1 task 8, RabbitMQ in Wave 2
+  task 1 and Solr in Wave 2 task 3. No `legacy`, `mongodb` or `rabbitmq` profile ever exists.
+- **A run with no profile needs nothing installed.** Documents are kept in memory, files in a local
+  directory, and the hops between stages are in the JVM.
+- **Each service outside the JVM is selected by a property**: `dsh.persistence`, `dsh.transport`
+  and `dsh.file-store`. The `gcp` profile sets the three together, and the GCP implementations
+  live in a module of their own, `dsh-gcp`.
+- **No search engine has a role.** Corpus term statistics are stored with the documents.
+
+The owner's decisions from that session:
+
+1. **Wave 1 tasks 8 and 9 are cut differently.** ADR-003 found that they did not hold as it had
+   listed them: task 8 added the conditional status advance to `DocumentDao`, so
+   `MongoDocumentDao` would have had to implement it, only for task 9 to delete it. Task 8 is now
+   the swap, the in-memory `DocumentDao` in and MongoDB out, with the interface as it stands. Task
+   9 is the new behaviour: the advance and the store's contract. No MongoDB code is written. Two
+   alternatives were rejected. One story with all of it put a wide removal and a concurrency
+   contract in one review. Three stories needed MongoDB made selectable beside the in-memory
+   store, for the length of one story.
+2. **Task 8 goes first in Wave 1's order of work, and tasks 9 and 10 stay after `#120`.** Five
+   items are lighter once MongoDB is gone: `#157`, `#158`, `#119`, `#120` and `#137`. The
+   cost is accepted: the in-memory DAO is written before the Spring Boot upgrade and before
+   `#132`'s analysers. Wave 2 task 3 goes ahead of `#119` and `#120` for the same reason, so
+   that neither carries Solr.
+3. **`#157` is superseded by task 8, and `#140` is reduced** to the part `#48` added to it,
+   the test profile's properties file. Closing `#157` is the owner's.
+4. **Every wave keeps its number, and Wave 8 is retired.** ADR-003 was accepted citing Wave 9 and
+   Wave 11, and ADR-001's phases name their waves. Renumbering would have made both wrong on the
+   day of the acceptance.
+5. **The code is the baseline for the public API.** The OpenAPI document and four feature specs
+   describe routes and statuses the code does not have. Wave 1 task 11 makes them describe what
+   exists, and from then on an API change starts in the OpenAPI document. Moving the code to the
+   OpenAPI document's routes was rejected: the walking skeleton would also have carried a
+   breaking redesign of the API.
+6. **`NOT_INDEXED_ERROR`'s wrong description gets an issue of its own**, Wave 1 task 12, so that
+   the fix is in 0.4.0's release notes.
+7. **Wave 2 task 1 is three tasks.** ADR-003 gave it the rules for repeats and failures on top of
+   the flow. They are task 4 now, and the generated pipeline diagram is task 5.
+
+**Existing tasks keep their numbers.** A new task takes the next free number in its wave, and the
+order is stated in prose. Where ADR-003 says "Wave 1 task 8" or "Wave 1 task 9", it means the cut
+from before this re-plan, and the first rows of the table below translate.
+
+**The mapping.** ADR-003 ("After the merge", step 3) asks the re-plan for one line for each row of
+its consequences table, naming the task that now carries it.
+
+| Row of ADR-003's consequences table | Carried by |
+|---|---|
+| Wave 1 task 3, ADR-004 | Wave 1 task 3 |
+| Wave 1 tasks 5 and 6, the wiki | Wave 1 tasks 5 and 6 |
+| Wave 1 task 8: the conditional advance, the in-memory default, the contract and its test | Split. The in-memory default is Wave 1 task 8. The advance, the contract and its test are Wave 1 task 9 |
+| Wave 1 task 9: remove MongoDB | Wave 1 task 8 |
+| Wave 1 tasks 8 and 9, their order | Settled by decisions 1 and 2. Steps 3 and 9 of Wave 1's order of work |
+| Wave 1 task 10 | Wave 1 task 10 |
+| Wave 2 task 1 | Wave 2 task 1, and Wave 2 task 4 for the two rules a repeat follows and the two kinds of failure |
+| Wave 2 task 3 | Wave 2 task 3 |
+| Wave 3 task 1 | Wave 3 task 1 |
+| Wave 3 task 2 | Wave 3 task 2 |
+| Wave 3, every stage | The paragraph above Wave 3's tasks, and the limits in its tasks 4 and 6 |
+| Wave 5 | Wave 5 tasks 1, 2, 3 and 7 |
+| Wave 6 | Wave 6 tasks 1, 2 and 4 |
+| Wave 8, empty | Wave 8, retired |
+| Wave 9 task 2, nothing left to remove | Dropped. The number is kept |
+| Wave 11, a backlog line | The line under Wave 11's triaged issues |
+| `specs/architecture/system-design.md` and the `dsh-plan-wave` skill | No task. Both were corrected as the re-plan's first act, in commit `fc2017253` |
+| `specs/features/indexing-workflow.md` | Wave 1 task 11 |
+
+ADR-003's eight follow-up candidates were settled in the same session:
+
+1. `#157`: superseded (decision 3).
+2. `#140`: reduced (decision 3).
+3. `#158`, `#137` and `#120`: still valid, each with less to cover. Wave 1's triaged issues say
+   what.
+4. The PRD re-plan: this one.
+5. `NOT_INDEXED_ERROR`: Wave 1 task 12 (decision 6).
+6. The sentence on `dequeue-docId-context.xml`: corrected, in "The 2026-09-28 re-plan" above.
+7. `CLAUDE.md` and `system-design.md` describing MongoDB, RabbitMQ and Solr as current: each is
+   corrected by the story that removes the code. Those are Wave 1 task 8, Wave 2 task 1 and Wave 2
+   task 3. `CLAUDE.md`'s paragraph on what was stale until this re-plan was removed with it.
+8. The OpenAPI document and the feature specs: Wave 1 task 11 (decision 5).
 
 ### Wave 1 — Pipeline design, documentation and upstream catch-up
 
@@ -903,7 +995,8 @@ the wave, in order:
      structure.
 
 **The upstream block is complete.** Task 1 is done too. The rest of the wave runs in this order,
-agreed on 2026-10-06. It interleaves the triaged issues with the tasks, because the wave has two
+agreed on 2026-10-06 and re-ordered from step 3 on by the re-plan of 2026-10-13. It interleaves
+the triaged issues with the tasks, because the wave has two
 critical paths that do not wait on each other: design, which Wave 2 waits on, and the platform,
 which new code waits on. Items are named by their issue or task number below, which stay as they
 are.
@@ -920,29 +1013,36 @@ are.
    anything else. **The ADR-003 half was done on 2026-10-13:** `#160` — **closed** — PR #161.
    The ADR is `specs/architecture/ADR-003-document-pipeline.md`, and task 2 below has its
    outcome.
-3. `#157`, `#158`, `#140`, then `#119`. Mechanical work, done while ADR-003 is in review. `#157`
-   and `#158` joined this step on 2026-10-10. `#157` goes first, so that `#158` can cover
-   `mongo.properties` too, which it otherwise has to leave filtered. `#140` comes before `#120`, so
-   `#120` carries fewer settings. ADR-003 left review on 2026-10-13 with none of this step
-   started, and no step from here on starts before the re-plan (the head of §4).
-4. `#120`, after `#119` for the reason given with the triaged issues.
-5. Task 3 (ADR-004). It needs ADR-003's answers on Vertex AI Search and on local mode.
-6. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
+3. **Task 8, the in-memory `DocumentDao` replaces MongoDB.** First since the re-plan of
+   2026-10-13, because five items are lighter once MongoDB is gone. `#158` has no
+   `mongo.properties` to leave filtered, `#119` has no MongoDB test to migrate, `#120` upgrades
+   no MongoDB dependency, `#137` starts no MongoDB container, and `#157` loses its purpose. Until
+   then this step read "`#157`, `#158`, `#140`, then `#119`", and tasks 8 to 10 were step 8.
+4. `#158`, `#140`, Wave 2 task 3, then `#119`. Mechanical work. `#140` comes before `#120`,
+   so `#120` carries fewer settings. Wave 2 task 3 removes `dsh-solr` and the stub applications.
+   It depends on no other task, and it comes here so that `#119` migrates no Solr test and `#120`
+   carries no `spring-data-solr`.
+5. `#120`, after `#119` for the reason given with the triaged issues.
+6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
+7. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
    settles.
-7. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
+8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
    the wiki's source moves into `docs/wiki/`, and task 4's reachability check needs that answer.
    That move would also retire `wiki-sync.yml`, so its disabling for inactivity (task 1's outcome)
    waits on task 5 rather than getting an issue now.
-8. Tasks 8 to 10, the `dsh-data` interfaces. They come after ADR-003, which may reshape them, and
-   after `#120`, so that new code is written on the final Spring Boot line.
-9. `#148`, last, before the 0.4.0 release candidate. It should learn from everything this wave
-   changes in the build. The commit gate and the production smoke check that the findings (§9.1)
-   give the skill are not part of it: no tier exists before Wave 4. They are Wave 7 task 3.
+9. Tasks 9 and 10, the new behaviour in `dsh-data`. They come after `#120`, so that new code is
+   written on the final Spring Boot line, and after `#132`.
+10. `#148`, last, before the 0.4.0 release candidate. It should learn from everything this wave
+    changes in the build. The commit gate and the production smoke check that the findings (§9.1)
+    give the skill are not part of it: no tier exists before Wave 4. They are Wave 7 task 3.
 
-Task 7 and `#132` have no fixed step. They fill gaps, such as an ADR in review, but each has a
-latest point. `#132` lands before tasks 8 to 10, so that the new `dsh-data` code is written to the
-analysers' rules, and before `#148` in any case, because it changes the build. Task 7 lands before
-`#148`, inside the wave, because Wave 3's stories cite the papers.
+Task 7, `#132`, task 11 and task 12 have no fixed step. They fill gaps, such as an ADR in review,
+but each has a latest point. `#132` lands before tasks 9 and 10, so that the new `dsh-data` code
+is written to the analysers' rules, and before `#148` in any case, because it changes the build.
+Task 8 is written before it, which the re-plan of 2026-10-13 accepted. Task 7 lands before `#148`,
+inside the wave, because Wave 3's stories cite the papers. Task 11 lands before Wave 2 task 2,
+which adds to the OpenAPI document. Task 12 lands before Wave 2 task 1, whose flow is the first
+thing that can leave a document in `NOT_INDEXED_ERROR`.
 
 Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the re-plan of
 2026-10-10, `parent-poms#90` and `#109` belong to Wave 4, `#91` to Wave 7, `#92` to Wave 10, and
@@ -992,7 +1092,9 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   Neither is an ADR-001 phase task. Both came out of `#46` on 2026-09-28. `#137` is the open
   question `#46`'s spec deferred rather than answered: whether newman joins the Maven lifecycle,
   and what becomes of `api-testing.yml`. It is layer 4 of the test layers in `testing-patterns.md`.
-  `#140` came from `#46`'s code review.
+  `#140` came from `#46`'s code review. Since the re-plan of 2026-10-13 only the part `#48`
+  added to it is left, the test profile's properties file: task 8 removes the settings its
+  title names.
 - `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
   task 5 below is written as its body, so no new issue is opened for that task.
 - `#144` — Swagger UI is not served: `/swagger-ui/` returns 404 and the webjar page fails to load.
@@ -1019,12 +1121,20 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   Neither is an ADR-001 phase task. Both came out of `#48` on 2026-10-10, as follow-ups 2 and 1 of
   its findings (`specs/architecture/profiles-and-configuration.md`, §9.2). They were not folded
   into `#48`, which was an investigation and changed no code. Their milestone, `0.4.0-SNAPSHOT`, is
-  shared by Waves 1 and 2. They sit in this wave because neither depends on ADR-003. Both are in
-  step 3 of the order of work above since 2026-10-10.
+  shared by Waves 1 and 2. They sit in this wave because neither depends on ADR-003.
+
+  **`#157` was superseded on 2026-10-13 by task 8**, which removes MongoDB and every `mongo.*`
+  value with it, the build-time values in the six workflows included. It has no step in the
+  order of work any more. Closing it as not planned is the owner's, and it then moves to §5.
+  `#158` is in step 4.
 
   The findings' other four follow-ups went into issues that existed or belong elsewhere: `#137`
   gained AC005, `#120` gained AC007, `#140` gained a second change to make, and
   `parent-poms#109` is in Wave 4.
+
+Since the re-plan of 2026-10-13, three of these have less to cover than their bodies say. `#158`
+has no `mongo.properties` to leave filtered. `#137` starts no MongoDB container. `#120` upgrades
+no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 runs ahead of it.
 
 `#142`, which came from the same `#46` review, moved to Wave 2 on 2026-09-28.
 
@@ -1090,9 +1200,8 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
 
    **Outcome.** The ADR is `specs/architecture/ADR-003-document-pipeline.md`, accepted by the
    merge of PR #161 on 2026-10-13. Every question listed above is decided there. ADR-001 was
-   revised in place and keeps its status, Proposed. Nothing in this document has been changed to
-   match yet: the ADR's "Consequences for the waves" lists what changes, wave by wave, and the
-   re-plan applies it.
+   revised in place and keeps its status, Proposed. The re-plan of 2026-10-13 applied the ADR's
+   "Consequences for the waves" to this document.
 3. **ADR-004 — distribution.** Decides:
    - A run path and a build path. Running DSH needs a container image, and a public GHCR image pulls
      without credentials. Cloud Run cannot deploy from ghcr.io directly, so the deploy script copies
@@ -1101,9 +1210,9 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
      binaries, the deploy script, and an offline Maven repository of the MRISS artifacts the build
      resolves (`parent-poms#92`). Its acceptance test is a build from the zip with an empty local
      repository and no GitHub credentials.
-   - What local mode can and cannot do. Firestore and Pub/Sub have emulators. GCS has only
-     third-party fakes, and Vertex AI Search has none, so from Wave 8 a local run may still need a
-     real GCP project, depending on task 2's answer.
+   - What local mode can and cannot do. Firestore and Pub/Sub have emulators, and GCS has only
+     third-party fakes. Search needs no real GCP project: ADR-003 gives no search engine a role
+     (section 6). Until 2026-10-13 this bullet said a local run might still need one.
 
    More, added on 2026-10-10 from `#48`'s findings (§9.1). Waves 4 and 7 deliver this part, and
    Wave 10 the part above:
@@ -1123,6 +1232,15 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
      they write on `dsh-dev` and `dsh-staging`.
    - **The release gate.** Where it runs, whether the commit is also a label on the revision, and
      how a hotfix branch reaches `dsh-staging` while a release candidate occupies it.
+
+   More, added on 2026-10-13 from ADR-003's consequences:
+   - **The push endpoints.** Under `gcp`, Pub/Sub calls the service on two endpoints (Wave 6
+     task 2). How they are protected, so that they accept requests from Pub/Sub only.
+   - **Rules R5, R6, R8 and R10 of the findings**, which ADR-003 leaves to this ADR.
+   - **The retention of the corpus term statistics.** They gain every test document on an
+     operated tier, and their interface offers no removal.
+   - **How a test that calls a store directly reaches `dsh-dev`.** Layer 5a goes over the wire
+     and cannot run the two-caller case of Wave 5 task 7.
 4. **Documentation map.** `CLAUDE.md` is the root of the developer documentation tree. A CI check,
    like `check-spec-references`, fails when a Markdown file under `docs/`, `specs/` or `.github/`
    cannot be reached from `CLAUDE.md` by links. The same task deletes the empty scaffolding READMEs
@@ -1134,28 +1252,66 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
    terms (indexer, NoSQL store, queue); ADRs and developer pages keep the product names. The task
    also decides whether the wiki's source moves into `docs/wiki/`, published to the wiki rather
    than synced from it, so its pages get review and markdownlint.
-6. **Wiki page on Spring Integration**, with a diagram of the flow. It follows task 2.
+6. **Wiki page on Spring Integration**, with a diagram of the flow. It follows task 2. Its
+   diagrams, and task 5's, draw from ADR-003 sections 1 and 4, and the page can link to the
+   ADR's sequence diagram.
 
    The diagrams in tasks 5 and 6 are drawn by hand from ADR-003, because no flow exists yet to
-   generate them from. They are interim: Wave 2 task 1 generates the pipeline diagram from the flow
+   generate them from. They are interim: Wave 2 task 5 generates the pipeline diagram from the flow
    and keeps it in sync.
 7. **Reference papers.** The keyword paper is committed under `specs/` only if its licence permits
    redistribution; otherwise it is cited by DOI. The sentence paper is paid: it stays in a gitignored
    local folder and is cited by DOI. The owner is a co-author, so whether the publisher allows posting
    the accepted manuscript is worth checking. Wave 3's stories cite these.
-8. `dsh-data` — Create a `DocumentPersistenceRepository` interface. Wrap the existing
-   `DocumentRepository` (Mongo) as `MongoDocumentPersistenceRepository implements
-   DocumentPersistenceRepository`, marked `@Deprecated`. (ADR-001 Phase 1 task 1.)
-9. `dsh-data` — Refactor `MongoDocumentDao` to depend on `DocumentPersistenceRepository` instead of
-   `DocumentRepository` directly. Mark `MongoDocumentDao` `@Deprecated`. (ADR-001 Phase 1 task 2.)
-10. `dsh-data` — Extract `byte[] originalFileContents` from the `Document` entity into a
-    `FileStorageService` interface with `store(byte[]) → URI` and `retrieve(URI) → byte[]`. Create
-    `LocalFileStorageService`; `GcsFileStorageService` follows in Wave 5. (ADR-001 Phase 1 task 7.)
+8. **The in-memory `DocumentDao` replaces MongoDB.** `dsh-data` gains an in-memory
+   implementation of `DocumentDao` as the interface stands today. It is the default, selected by
+   `dsh.persistence` (ADR-003, section 3). The same story removes MongoDB: `MongoDocumentDao`,
+   `DocumentRepository`, `dshApplicationContext.xml`, `mongo.properties`, the MongoDB
+   dependencies, the `spring.data.mongodb.*` settings in `dsh-rest-api`, the MongoDB container
+   that `-DintegrationTests` starts, and the `mongo.*` values in six workflows and in the
+   `settings.xml` instructions. It corrects `CLAUDE.md` and
+   `specs/architecture/system-design.md` where they describe MongoDB as current. The interface
+   does not change in this task, so no MongoDB code is written. (ADR-001 Phase 1: the in-memory
+   implementation of task 1.1, and task 1.2.)
+
+   Until 2026-10-13 this task wrapped `DocumentRepository` behind a
+   `DocumentPersistenceRepository` interface and marked the wrapper `@Deprecated`.
+9. **The conditional status advance, and the store's contract.** `DocumentDao` gains an advance
+   that names the status it expects, and applies only if the stored status is still that one
+   (ADR-003, section 1). The contract is written on the interface: the advance is atomic, a write
+   names its fields, and a read returns a copy. One contract test holds it, with a case of two
+   callers attempting one advance at once, and every implementation passes that same test. Where
+   the test class lives, so that `dsh-gcp` can run it in Wave 5, is this task's to choose. Only
+   the in-memory implementation exists to satisfy it. (ADR-001 Phase 1: the rest of task 1.1.)
+
+   Until 2026-10-13 this task refactored `MongoDocumentDao` and marked it `@Deprecated`.
+10. **The file store.** `dsh-data` gains a `FileStorageService` interface, and `byte[]
+    originalFileContents` leaves the `Document` entity for it. The store holds two kinds of
+    object: the original file, and the indexing stage's output (Wave 3 task 1). It lets a caller
+    store an object so that a repeat replaces it, which `store(byte[]) → URI` alone does not.
+    `LocalFileStorageService` is the default, selected by `dsh.file-store`. It writes under
+    `dsh.storage.local-directory`, whose default this task chooses. Nothing is marked
+    `@Deprecated`. `GcsFileStorageService` follows in Wave 5. (ADR-001 Phase 1 task 1.7.)
+11. **The OpenAPI document and the feature specs describe what exists.** Added on 2026-10-13.
+    `specs/api/openapi/dsh-rest-api.yaml` describes four routes under `/api/v1` that the code
+    does not have, and `document-analysis.md`, `indexing-workflow.md`, `rest-api-endpoints.md`
+    and `smart-highlighting.md` in `specs/features/` follow it. The code is the baseline. The
+    OpenAPI document is rewritten to the two endpoints `DocumentResource` has. The four feature
+    specs are corrected against the code and ADR-003, and what they describe that no wave has
+    built yet is marked as planned. That covers what ADR-003 overrides in
+    `indexing-workflow.md`: the three retries of a failed task, the "Analysis timeout" row, and
+    Solr. From then on an API change starts in the OpenAPI document, as
+    `.github/copilot/rules/api-standards.md` asks. Documentation only.
+12. **Every status describes itself.** Added on 2026-10-13. `NOT_INDEXED_ERROR` is declared with
+    the description and the message of `DEQUEUED_FOR_INDEXING`, and a client reads both through
+    `/status/{token}`. The task is the fix, and a test that holds every status to a description
+    of its own. It gets an issue, so that the fix is in 0.4.0's release notes.
 
 ### Wave 2 — Pipeline walking skeleton
 
-Milestone: `0.4.0-SNAPSHOT`. It runs on the existing persistence layer (`DocumentDao`) and on
-in-memory channels, with no RabbitMQ and no Solr. Every task depends on ADR-003.
+Milestone: `0.4.0-SNAPSHOT`. It runs on the in-memory `DocumentDao` (Wave 1 task 8) and on
+in-memory channels, with no RabbitMQ and no Solr. Every task depends on ADR-003. Until
+2026-10-13 this line said "the existing persistence layer", which was MongoDB.
 
 **Triaged issue:** `#142` — Enqueue acks are applied to every in-flight document, not the one they
 confirm. It came out of Copilot's review of PR #141. The defect lives in `DocumentQueueServiceImpl`
@@ -1169,25 +1325,57 @@ knowingly: status is wrong for overlapping submissions until Wave 2.
 
 **Tasks:**
 
-1. **The flow, end to end.** A gateway receives a submitted document id, and pass-through stages carry
-   it through every status to `SENTENCES_PROCESSED_SUCCESS`. Submission in `dsh-rest-api` moves to
-   the gateway, and the RabbitMQ enqueue path is deleted: `enqueue-docId-context.xml`,
-   `DocumentQueueServiceImpl`, its handlers, the AMQP dependencies, and the RabbitMQ container that
-   `-DintegrationTests` starts.
+Task 1 comes first. Tasks 2, 4 and 5 follow it, in any order. Task 3 depends on none of them, and
+runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1 on 2026-10-13.
 
-   **The pipeline diagram is generated from the flow from here on.** An integration test reads the
-   running flow's channels and endpoints from Spring Integration's `IntegrationGraphServer`, renders
-   them as Mermaid, and fails with the regenerated text when they differ from a committed
-   `specs/architecture/document-pipeline-flow.md`. It is the same pattern as Wave 1 task 1's status
-   diagram, but it must be an `*IT`: the graph exists only in a running Spring context, and a unit
-   test never starts one. So it runs under `-DintegrationTests` and on every staging build, not on
-   pull-request CI. The wiki pages from Wave 1 tasks 5 and 6 then link to this file, and their
-   hand-drawn diagrams are retired.
+1. **The flow, end to end.** A gateway receives a submitted document id, and pass-through stages carry
+   it through every status to `SENTENCES_PROCESSED_SUCCESS` (ADR-003, section 1).
+   - **The flow.** One Java DSL `IntegrationFlow` in `dsh-rest-api`, with two asynchronous hops.
+     A hop stays inside the JVM here. It is selected by `dsh.transport`, whose default is
+     `memory`.
+   - **The status recorder.** One component records every transition, at twelve points, through
+     the conditional advance of Wave 1 task 9. No stage writes a status.
+   - **`/submit` stores and sends before it answers.** The `@Async` call after the response is
+     removed, and the document is stored as `CREATED` before the first point.
+   - **The RabbitMQ enqueue path is deleted**: `enqueue-docId-context.xml`,
+     `DocumentQueueServiceImpl`, its handlers, the AMQP dependencies, the RabbitMQ container that
+     `-DintegrationTests` starts, and the unused test resource `dequeue-docId-context.xml`. The
+     story corrects `CLAUDE.md` and `specs/architecture/system-design.md` where they describe
+     RabbitMQ as current.
+   - **Three proofs.** `#142`'s test of two overlapping submissions, which proves ADR-003's
+     assumption A1. A context test started with a value of `dsh.transport` that matches no
+     transport, which proves A6. And the table of twelve points against
+     `DocumentStatus.transition`: applying each point's transition to its "From" status gives its
+     "To" status.
 2. **A results endpoint.** Retrieve a document's keywords and sentences by token. The API has
    `/submit` and `/status/{token}` and nothing that returns a result. It returns empty lists until
-   Wave 3 fills them, but its contract is fixed here.
-3. **The worker modules, per ADR-003.** Consolidate, keep or remove the four stub worker modules as
-   the ADR decides.
+   Wave 3 fills them, but its contract is fixed here. The contract is written in the OpenAPI
+   document first, from the baseline Wave 1 task 11 leaves.
+3. **The modules, per ADR-003 section 2.** `dsh-doc-indexer-worker` is renamed
+   `dsh-doc-indexer`. It, `dsh-keyword-extractor` and `dsh-top-sentences-extractor` become
+   libraries with no `Application` class. `dsh-doc-processor-worker` is removed. `dsh-solr` is
+   removed with its two plugins, and the `spring-data-solr` declarations go with it. The story
+   corrects `CLAUDE.md`'s module table and `specs/architecture/system-design.md`. It depends on
+   no other task of this wave, and runs at step 4 of Wave 1's order of work, ahead of `#119` and
+   `#120`. Until 2026-10-13 this task read "Consolidate, keep or remove the four stub worker
+   modules as the ADR decides", and removing `dsh-solr` was Wave 9 task 2.
+4. **Repeats and failures.** Split out of task 1 on 2026-10-13. What the flow does when a message
+   arrives twice, and when something fails (ADR-003, section 1, "Compare-and-set" and "Failures"):
+   - **The first write wins**, where the sender recorded a hop's error and the message arrives
+     all the same.
+   - **A repeat resumes from the document's status.** It does not run again a stage the document
+     is past, and it sends on the next hop when that send was never recorded as a success.
+   - **A store's failure is told from a stage's own.** The first records nothing and leaves the
+     message unconsumed. The second records the stage's error status and consumes the message. A
+     stage's own failure is not retried.
+5. **The pipeline diagram is generated from the flow.** Split out of task 1 on 2026-10-13. An
+   integration test reads the running flow's channels and endpoints from Spring Integration's
+   `IntegrationGraphServer`, renders them as Mermaid, and fails with the regenerated text when
+   they differ from a committed `specs/architecture/document-pipeline-flow.md`. It is the same
+   pattern as Wave 1 task 1's status diagram, but it must be an `*IT`: the graph exists only in a
+   running Spring context, and a unit test never starts one. So it runs under
+   `-DintegrationTests` and on every staging build, not on pull-request CI. The wiki pages from
+   Wave 1 tasks 5 and 6 then link to this file, and their hand-drawn diagrams are retired.
 
 ### Wave 3 — Analysis algorithms
 
@@ -1207,17 +1395,27 @@ The bundle is a plugin parameter, not a dependency, so `mvn -pl <module> -am` do
 instead. That copy can be missing or older than the source. Run a full `mvn -B install` first, or
 add `dsh-test-dataset` to `-pl`.
 
+**Every stage in this wave is idempotent**: running it twice for one document leaves the same
+result (ADR-003, section 1). It stores its result through the store's interface, in a write that
+names its fields, before the recorder writes the success status.
+
 **Tasks:**
 
-1. **Text extraction.** PDF and HTML into title, paragraphs, sentences and terms. The library is the
-   spec's choice.
-2. **Corpus term statistics.** Term frequency per document and document frequency across the corpus,
-   stored where ADR-003 decides.
+1. **Text extraction.** PDF and HTML into title, paragraphs, sentences and terms. Terms are
+   extracted by a library inside the JVM, and the library is the spec's choice. The stage's output,
+   the extracted text and the document's own term frequencies, goes to the file store (Wave 1
+   task 10) and not into the record. A repeat replaces it.
+2. **Corpus term statistics.** Term frequency per document and document frequency across the corpus.
+   The interface of ADR-003 section 5, in `dsh-data`, with an in-memory implementation and one
+   contract test. The update is atomic, and it counts a document once however often its stage
+   runs. The statistics are stored where the documents are, so `dsh.persistence` selects both.
+   Until 2026-10-13 this task read "stored where ADR-003 decides".
 3. **TF and IDF variants**, as the keyword paper defines them.
-4. **Keyword ranking** by the meta-algorithmic combination of task 3's variants.
+4. **Keyword ranking** by the meta-algorithmic combination of task 3's variants. It sets a limit on
+   the number of keywords returned, which keeps the record bounded.
 5. **Sentence similarity to the title**, by the sentence paper's algorithm.
 6. **Sentence ranking.** Combine task 5 with task 3's scores, and return the top sentences with their
-   paragraph numbers.
+   paragraph numbers. It sets a limit on the number of sentences returned, for the same reason.
 
 ### Wave 4 — GCP foundation and the development tier
 
@@ -1253,7 +1451,8 @@ the distribution wave until 2026-10-10.
 1. **Version, commit and health** (`#45`). The build stamps the version and the commit into the jar
    with `spring-boot:build-info`, and stamps nothing else (findings M2, R8). The application serves
    health, and info carrying both values. Other actuator endpoints stay off. What health reports
-   while the default persistence is still MongoDB, which no tier has, is the spec's to settle.
+   while persistence is in memory, which is the default from Wave 1 task 8 until Wave 5, is the
+   spec's to settle.
 2. **The container image.** A Dockerfile, and an image named `dsh` and tagged with the dotted
    version (findings §8.2), built as ADR-004 decides. One image serves every tier and local mode.
    It runs locally before anything is deployed. Publishing it for end users is Wave 10 task 1.
@@ -1277,12 +1476,14 @@ the distribution wave until 2026-10-10.
 ### Wave 5 — GCP: Firestore and GCS
 
 Milestone: `0.6.0-SNAPSHOT`, moved from `1.0.0-SNAPSHOT` on 2026-10-10. It was Wave 4 until then.
-Tasks 1 to 4 are drawn from ADR-001 §4, "Phase 2". The migration utility, task 5 there, is dropped:
-no deployment holds data to migrate.
+ADR-001 §4, "Phase 2", as ADR-003 revised it. The migration utility is dropped: no deployment
+holds data to migrate.
 
-Where ADR-001 says `@Profile("gcp")`, the selection is whatever ADR-003 decides. The findings
-propose a property per service, `dsh.persistence` and `dsh.file-store`, with `gcp` as the profile
-that sets them together (R3).
+The GCP implementations live in a new module, `dsh-gcp`, and nowhere else (ADR-003, sections 2 and
+3). `dsh-rest-api` depends on it at `runtime` scope and no other module does, so a class anywhere
+else that names a Firestore or Cloud Storage type does not compile. An implementation is selected
+by a property, `dsh.persistence` or `dsh.file-store`, and the `gcp` profile sets them together.
+Until 2026-10-13 the tasks below put these classes in `dsh-data`.
 
 **Triaged issue:** `#49` — re-scoped twice. Originally titled "Create docker structure based on
 docker files to have all servers configured as docker containers to run tests and/or the
@@ -1298,44 +1499,72 @@ task 6.
 
 **Tasks:**
 
-1. `dsh-data` — Add `spring-cloud-gcp-starter-data-firestore` and
-   `spring-cloud-gcp-starter-storage` dependencies.
-2. `dsh-data` — Create `FirestoreDocumentPersistenceRepository implements
-   DocumentPersistenceRepository`. Map `Document` fields to Firestore collections.
-3. `dsh-data` — Create `FirestoreDocumentDao implements DocumentDao`, selected as ADR-003 decides.
-   Wire to `FirestoreDocumentPersistenceRepository`.
-4. `dsh-data` — Create `GcsFileStorageService implements FileStorageService`, selected as ADR-003
-   decides. Upload and download file bytes to a GCS bucket; the `Document` entity stores a
-   `fileStorageUri` instead of raw bytes. Add a fixture above Firestore's 1 MiB document limit: the
-   largest today, `The-Categories.pdf`, is 262 KiB.
+Tasks 4 to 6 keep their numbers. Until 2026-10-13, task 2 created a
+`FirestoreDocumentPersistenceRepository` and task 3 put the DAO on top of it. ADR-003 leaves no
+such layer, so the two are one task now, and task 3 is new.
+
+1. **The `dsh-gcp` module.** A library with `spring-cloud-gcp-starter-data-firestore` and
+   `spring-cloud-gcp-starter-storage`. `application-gcp.properties` in `dsh-rest-api` sets
+   `dsh.persistence` and `dsh.file-store`. The context test of the `gcp` profile proves
+   ADR-003's assumption A5: the context finds the implementations in a module the application
+   cannot compile against. The task also settles how the module's unit tests sit beside the
+   contract tests, because a run against an emulator is an integration test and counts nothing
+   toward the 95% gate.
+2. **`FirestoreDocumentDao implements DocumentDao`**, selected by `dsh.persistence=firestore`.
+   The mapping of `Document` to Firestore is inside the module, and `Document` carries no
+   provider's annotation. The status advance is a transaction that reads the document and writes
+   the status only if it matches. It passes Wave 1 task 9's contract test against the emulator.
+3. **Corpus term statistics on Firestore**, behind the interface of Wave 3 task 2, with a bound on
+   the writes per document (ADR-003, section 5). It passes that task's contract test against the
+   emulator. It proves assumption A4: a layout exists that bounds the writes, fits Firestore's
+   limits, and lets one transaction cover the update.
+4. **`GcsFileStorageService implements FileStorageService`**, selected by `dsh.file-store=gcs`.
+   It uploads and downloads objects in a GCS bucket. Add a fixture above Firestore's 1 MiB
+   document limit: the largest today, `The-Categories.pdf`, is 262 KiB.
 5. **The tier's data resources.** The deploy creates the Firestore database `dsh-dev-db`, the
    bucket with uniform bucket-level access, the `dsh-dev/` managed folder with the tier's service
    account granted on it alone, and a lifecycle rule that removes test objects (findings §8.1,
-   §8.4). Which tier holds the one free Firestore database is ADR-004's choice.
+   §8.4). Which tier holds the one free Firestore database is ADR-004's choice, and so is the
+   retention of the term statistics.
 6. **Layer 5a begins.** The layer 3 tests run over the wire against `dsh-dev` after each deploy:
    submission and status, with the document in Firestore and its file in the bucket. How they
    authenticate, and how they clean up what they write, is ADR-004's to decide (findings §7). The
    pipeline finishing on Cloud Run is asserted from Wave 6, not here.
+7. **Two callers against Firestore itself.** Added on 2026-10-13. The Firestore emulator does not
+   implement all the transaction behaviour of production, so it proves the advance for one caller
+   only. A test that calls the store directly, in `dsh-dev`, has two callers attempt one advance at
+   once, and one succeeds (assumption A3). Layer 5a goes over the wire and cannot run it. How the
+   test reaches `dsh-dev` is ADR-004's to decide (Wave 1 task 3).
 
 ### Wave 6 — GCP: Pub/Sub
 
 Milestone: `0.6.0-SNAPSHOT`, moved from `1.0.0-SNAPSHOT` on 2026-10-10. It was Wave 5 until then.
-ADR-001 Phase 3, rewritten by ADR-003 for the flow Wave 2 builds.
+ADR-001 Phase 3, rewritten by ADR-003 for the flow Wave 2 builds. The Pub/Sub classes go into
+`dsh-gcp` (Wave 5 task 1).
 
 `#49` was listed here until 2026-10-10. It is in Wave 5 now.
 
 **Tasks:**
 
-1. Add `spring-cloud-gcp-starter-pubsub` and `spring-integration-gcp`.
-2. **The `gcp` transport** for the channels between stages, as ADR-003 decides. On Cloud Run each
-   stage has to be driven by a request: with zero minimum instances, work that continues after the
-   response has no CPU (findings G8, §8.4). That points at Pub/Sub delivering by push to an HTTP
-   endpoint, and away from a subscriber that polls. Until 2026-10-10 this task read "Pub/Sub
-   channel adapters for the channels between stages, under `@Profile("gcp")`".
+1. Add `spring-cloud-gcp-starter-pubsub` and `spring-integration-gcp`, in `dsh-gcp`.
+2. **The `pubsub` transport**, selected by `dsh.transport=pubsub`, which the `gcp` profile sets
+   (ADR-003, section 4). Each of the flow's two hops is a topic with a push subscription to the
+   same Cloud Run service, so minimum instances stays 0. For each hop there is a publish to the
+   topic, whose outcome is awaited inside the request, and a push endpoint that hands the
+   document's id to the flow. The endpoint answers with a success code to consume the message,
+   and with a failure to have it delivered again. The endpoints are protected as ADR-004 decides
+   (Wave 1 task 3). Until 2026-10-13 this task read "The `gcp` transport for the channels between
+   stages, as ADR-003 decides", and until 2026-10-10 "Pub/Sub channel adapters for the channels
+   between stages, under `@Profile("gcp")`".
 3. **The Pub/Sub emulator**, added to `#49`'s structure, for layer 3.
-4. **The tier's topics and subscriptions.** The deploy creates `dsh-dev-<channel>` for each channel
-   (findings §8.1). Layer 5a then asserts that a submitted document reaches its final status on
-   `dsh-dev`.
+4. **The tier's topics and subscriptions.** The deploy creates two topics and two push
+   subscriptions for each tier, named `dsh-dev-<channel>` on the first (findings §8.1). It sets
+   what ADR-003 leaves to this wave: the retry policy, a dead-letter topic and its maximum of
+   delivery attempts, the message retention, and the acknowledgment deadline. The task also
+   settles what the publisher tries again before it reports a failed send, because a failed send
+   is final once it is recorded. Layer 5a then asserts that a submitted document reaches its final
+   status on `dsh-dev`. That proves assumption A2: the outcome of a publish is known inside the
+   request that made it.
 
 ### Wave 7 — The release path on GCP
 
@@ -1371,12 +1600,13 @@ section 5). The gate is stated once in the findings (section 7), for a release a
 Left open, for ADR-004: how a hotfix branch reaches `dsh-staging` while a release candidate
 occupies it.
 
-### Wave 8 — GCP: term statistics and search
+### Wave 8 — Retired
 
-Milestone: `1.0.0-SNAPSHOT`. It was Wave 6 until 2026-10-10. **Its contents wait on ADR-003.**
-ADR-001 Phase 4 replaces Solr with Vertex AI Search. But Wave 3 computes term statistics in Java,
-and DSH offers no search, so this wave may shrink to storing those statistics in Firestore, or
-disappear. Phase 4's tasks stay recorded in ADR-001 until ADR-003 decides.
+It was "GCP: term statistics and search", on `1.0.0-SNAPSHOT`, and Wave 6 until 2026-10-10. Its
+contents waited on ADR-003, which left it empty on 2026-10-13. Corpus term statistics on Firestore
+are Wave 5 task 3. No search engine has a role (ADR-003, section 6), and search across documents is
+a line in Wave 11's backlog. The number is kept, so that Waves 9 to 11 stay what ADR-003 and
+ADR-001 call them.
 
 ### Wave 9 — Validation and cutover
 
@@ -1395,8 +1625,10 @@ Two of its four tasks were dropped on 2026-10-10, because earlier waves now do t
 1. Performance-test against `specs/testing/performance-benchmarks/` (FR004: 95% of documents under
    10 MB processed within 30 s). It runs against `dsh-staging`, and the cost rule in `CLAUDE.md`
    holds for it as for everything else: minimum instances stays 0.
-2. Remove `dsh-solr` and whatever remains of the legacy implementations, as ADR-003 decides. That
-   includes what a run with no profile persists to once MongoDB is gone (findings §6.3).
+2. **Dropped on 2026-10-13: nothing is left to remove.** MongoDB goes in Wave 1 task 8, RabbitMQ
+   in Wave 2 task 1, and `dsh-solr` in Wave 2 task 3. A run with no profile persists in memory,
+   also from Wave 1 task 8. Until then this task read "Remove `dsh-solr` and whatever remains of
+   the legacy implementations, as ADR-003 decides". The number is kept.
 
 ### Wave 10 — Distribution
 
@@ -1424,7 +1656,9 @@ a script; the root `README.md` describes exactly that.
    run is safe, and it deploys the image under the default name, `dsh`. Whether it is the same
    script that deploys the operated tiers is ADR-004's to decide.
 4. Local mode: the application in Docker on localhost, with each service on GCP or on an emulator,
-   by configuration. It reuses `#49` and Wave 6 task 3.
+   by configuration. It reuses `#49` and Wave 6 task 3. The configuration is the three keys of
+   ADR-003, section 3, each of which can be set alone. Nothing in it needs a real GCP project
+   because of search.
 5. Rewrite the root `README.md` (its source is `src/site/markdown/README.md`) as the user guide for
    the zip and the script: prerequisites, credentials, deploy, local mode.
 6. Access through IAP for named Google accounts, which needs no Workspace domain. It waits for a
@@ -1452,6 +1686,12 @@ dependency on the GCP migration, scheduled after it so the migration lands first
   it.
 
 `#44` moved to Wave 1 on 2026-09-28, and `#45` to Wave 4 on 2026-10-10.
+
+**A backlog line with no issue, added on 2026-10-13: search across documents.** It is the one
+thing that would bring a search engine back (ADR-003, section 6). It has two preconditions, and
+neither is planned: an owner for each document, so that a search returns only what its caller
+may see, and a check of the engine's cost against the cost rule in `CLAUDE.md`. Both need a new
+decision.
 
 **Upstream issues:**
 
@@ -1596,6 +1836,13 @@ comments on both closed issues, and `scripts/close-wontfix-issues.sh`, keep the 
   The deploy itself is proven earlier, by every `dsh-dev` deploy from Wave 4 on, because the three
   tiers are three runs of one deploy. What stays unproven until 0.6.0 is the gate, the production
   run and the smoke check against `dsh`.
+- **Until 0.6.0, a released DSH keeps documents in memory only — accepted on 2026-10-13, with
+  ADR-003.** Wave 1 task 8 removes MongoDB, and Firestore arrives in Wave 5. So 0.4.0 and 0.5.0
+  lose every document at a restart, and a file in the local directory can outlive its record
+  (ADR-003, section 8). It is accepted because no deployment exists before Wave 4 and none holds
+  data. The alternative was MongoDB kept selectable until Firestore exists, and that means
+  writing MongoDB code for the conditional advance and for the term statistics, which a later
+  wave deletes.
 
   The `0.6.0` milestone exists to bound that cost. A defect found on the first run costs a patch
   release of 0.6.0, not of 1.0.0. Anything the run misses is fixed then, from the hotfix line if it
