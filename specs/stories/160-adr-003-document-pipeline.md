@@ -1282,3 +1282,29 @@ What this changes against the rest of this spec:
 The diff still holds the five files of §4 and no other. C1 to C5 and C7 were run again after the
 fixes, with the output §8.3 records, and the quotations of the F rows were checked again by the
 script of §8.2.
+
+### 8.8 Review round 1 on the pull request, 2026-10-13
+
+Copilot reviewed `d213cb7c3` on `#161` and raised three findings, one high and two medium. The
+review arrived without being requested, and its own summary gives its effort as Balanced. Each
+finding was checked against the code and the specs before the owner read the triage, and the
+owner decided the first on the same day.
+
+| # | Finding | Verdict | What was done |
+|---|---|---|---|
+| 1 | ADR-003's table of failures makes a first failure final, against `indexing-workflow.md` FR001 and its error table | **Valid.** It is the observation of §8.5. Two of the four lines it cites do not conflict: "Database unavailable" is met by the store's row, and "Solr unavailable" has no subject once Solr is removed | **Decided by the owner:** the rule stays, and the ADR says so. Section 1, "Failures", states which failures are final, names the two sentences of `indexing-workflow.md` it overrides, and says a failed send is final too. One more rejected alternative, one more negative consequence, a consequences row for `indexing-workflow.md`, and additions to the rows of Wave 2 task 1 and Wave 6. ADR-001's §3.2 says the same of FR001. `a962662cd` |
+| 2 | ADR-003's diagram uses `/submit` where the OpenAPI document has `POST /api/v1/documents` | **Incorrect as stated.** `DocumentResource` has `/v1/dsh/document/submit` and `/status/{token}`, and the OpenAPI document's four paths exist nowhere in the code. The remedy would have an accepted ADR assert a change of route, of response code and of field that nobody decided. What it exposed is real: the ADR did not say that it decides nothing about the public API | The diagram is not changed. Section 1, "`/submit`", gains a paragraph, and follow-up candidate 8 hands the difference between the OpenAPI document, the feature specs and the code to the owner. `4f1e6f104` |
+| 3 | The same, on this spec's copy of the diagram | **Incorrect as stated**, as finding 2 | Nothing. The two diagrams are still the same, and C7 passes |
+
+What this changes against the rest of this spec:
+
+- **§8.5's observation is settled.** The ADR overrides FR001's three retries, and says so.
+  `specs/features/indexing-workflow.md` is not edited, because it is outside §4.
+- **Section 1 of the ADR rejects seven alternatives, and the alternatives table has 23 rows.** C1's
+  last number is now `25`, where §8.3 records `24`.
+- **The ADR has eight follow-up candidates.** §3.9 lists seven.
+- **The flow has to tell a store's failure from a stage's own.** §3.2's table of failures
+  already needed that and did not say it. It is Wave 2 task 1's to build.
+
+The diff still holds the five files of §4 and no other. C1 to C4 and C7 were run after the fixes:
+C1 as above, C2's loops and C3 printed nothing, lint exited 0, and the diagrams are the same.
