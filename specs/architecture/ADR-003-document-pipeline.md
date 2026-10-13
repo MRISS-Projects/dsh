@@ -20,7 +20,7 @@ DSH moves to GCP and onto which services, and is revised to match this one.
 "The findings" means [`profiles-and-configuration.md`](./profiles-and-configuration.md), the
 output of `#48`. Its probe ids (P0 to P31), finding ids (S1 to S8, M1 to M4), rule ids (R1 to R12)
 and GCP fact ids (G1 to G8) are used here as they are there. Facts read for this ADR are F1 to
-F12, and assumptions are A1 to A5; both are listed under [Evidence](#evidence) and
+F12, and assumptions are A1 to A6; both are listed under [Evidence](#evidence) and
 [Assumptions](#assumptions).
 
 Wave and task numbers are those of the re-plan of 2026-10-10 in `specs/product/PRD.md`. A later
@@ -86,7 +86,7 @@ output goes to the file store, and the record in the document store stays bounde
 
 **Reason.** The two hops are the two queues the 18 states already describe, so the status API does
 not change. With one recorder, no stage can leave a document in a status of its own making, and
-`DocumentStatus.transition` stays the only definition of the state machine. Compare-and-set is
+`DocumentStatus.transition` stays the only definition of where each status leads. Compare-and-set is
 what keeps a late write from overwriting newer state when two instances handle one document, and
 it is correct only if the comparison and the write are one operation. A later stage can run in
 another request, on another instance, so whatever it needs has to be in a store, and Firestore
@@ -94,8 +94,8 @@ limits the size of one document (F7).
 
 **Rejected.** Six alternatives.
 
-- **One hop for the whole pipeline.** It removes three statuses from the status API, and makes
-  one request carry the whole document.
+- **One hop for the whole pipeline.** It removes the four statuses of hop 2 from the status API,
+  and makes one request carry the whole document.
 - **A hop per stage.** It adds statuses and a topic, for a split nobody has asked for.
 - **Atomicity left to each implementation.** That is how a default store that never fails hides a
   defect that appears only on GCP.
@@ -153,10 +153,20 @@ needs is in a store.
 #### The status recorder
 
 One component in `dsh-rest-api` records every transition. It is attached at two kinds of point:
-around every stage, and on each hop. It never names a status. It applies a `TransitionType`, and
-`DocumentStatus.transition` picks the next state, so the generated diagram in
-`document-status-workflow.md` stays the only definition of the state machine. That an advice
-around each stage and an interceptor on each hop's channel see all twelve points is assumption A1.
+around every stage, and on each hop. It never names the status a document moves to. It applies a
+`TransitionType`, and `DocumentStatus.transition` picks the next state, so the generated diagram
+in `document-status-workflow.md` stays the only definition of where each status leads. That an
+advice around each stage and an interceptor on each hop's channel see all twelve points is
+assumption A1.
+
+The recorder does hold one thing about the statuses: the status each point expects to find, which
+is the "From" column below. Compare-and-set needs it, and `DocumentStatus.transition` cannot
+supply it, because a status with one way out leaves on any `TransitionType`:
+`INDEXED_SUCCESS.transition` returns `QUEUED_FOR_PROCESSING` whatever it is given. Without the
+expected status, a repeat would advance a document that is already further on. The table is
+therefore a second statement of the order of the states, and it has to agree with the first. Wave
+2 task 1 tests that it does: for each point, applying its transition to its "From" status gives
+its "To" status.
 
 The twelve points, checked against all 18 states:
 
@@ -183,16 +193,28 @@ An advance names the status it expects to find, and applies only if the stored s
 that one. A plain save of the whole document is not enough. Under `gcp` the message comes back as
 a request of its own (G8), and nothing orders that request against the sender's next write. It
 can reach a second instance before the first has recorded point 2, and the first instance's late
-save would then overwrite newer state. That is the class of defect `#142` describes. Three rules
+save would then overwrite newer state. That is the class of defect `#142` describes. Four rules
 follow.
 
 - **Receiving an id proves the send succeeded.** At points 3 and 8, if the sender has not yet
   recorded the outcome, the receiver advances through it. The sender's late write then finds the
   status changed, and is dropped.
+- **Where the sender and the receiver disagree, the first write wins.** A publish can time out
+  for the sender although Pub/Sub accepted the message (F8 gives the publish a timeout). If the
+  sender records the hop's `…_ERROR` status before the message arrives, the document is in a
+  status it never leaves, and the message is acknowledged and dropped. If the message arrives
+  first, the rule above applies and the sender's error is dropped. The first outcome marks a
+  document failed although Pub/Sub held its message. That is accepted, so that no status gains a
+  way out and `DocumentStatus` does not change (section 9).
 - **An advance that finds the document already at its target changes nothing.** The stage still
   runs, because stages are idempotent.
-- **A stage is skipped when the document is already past it**, or is in a status it never leaves.
-  The message is acknowledged.
+- **A repeat resumes from the document's status.** A message that arrives for a document already
+  past the stage it starts does not run that stage again. It carries on with what the request
+  still owes after that stage: the next stage of the same request, or the send on the next hop
+  when that send was never recorded as a success. So a request that stopped between a stage's
+  success and the next hop's publish is finished by its repeat, and the document is not left with
+  no message in flight. A document whose next send was recorded as a success, or one in a status
+  it never leaves, is left as it is. In every case the message is acknowledged.
 
 The conditional update is a requirement on `DocumentDao`, which Wave 1's reshaped tasks 8 and 9
 add.
@@ -245,7 +267,8 @@ the emulator proves the advance for one caller, and only Firestore itself proves
 | A stage throws | its `…_ERROR` status | consumed; under `gcp` the request answers with a success code (F2) |
 | The send on a hop fails | the hop's `…_ERROR` status | none was sent |
 | A store cannot be reached, or gives up on a write after contention (F10) | none | not consumed; under `gcp` the request answers with a failure, and Pub/Sub delivers again (F2) |
-| A repeat arrives for a document past the stage | none | consumed |
+| A repeat arrives for a document past the stage | none for that stage. The request resumes from the document's status, and records whatever it then does | consumed |
+| The message arrives after the sender recorded the hop's `…_ERROR` status | none: the first write wins | consumed |
 
 How many times Pub/Sub delivers again, and what happens to a message that keeps failing, are
 settings of the subscription: its retry policy, a dead-letter topic with a maximum number of
@@ -383,7 +406,9 @@ is. The owner confirmed this on 2026-10-13.
    recorder, the stages, the API's resources and services, and one implementation's use of
    another.
 3. **One implementation of each interface is in the context**, chosen by the key. A value that
-   matches none stops the startup (R11, P8).
+   matches none stops the startup. For `dsh.persistence` and `dsh.file-store` that follows from
+   a consumer that injects the missing bean (R11, P8). For `dsh.transport` nothing is injected,
+   because the flow declares a hop's channels itself, so there it is assumption A6.
 4. **Replacing a tool is three changes**: a new implementation, a new value for the key, and that
    value as the default where the old one was set. No consumer changes, and no interface changes.
    A replacement that needs a change to an interface shows that the interface named the old tool,
@@ -393,7 +418,9 @@ is. The owner confirmed this on 2026-10-13.
    document counted once (section 5). Each interface has one contract test, and every
    implementation passes the same one. The in-memory implementation runs it as a unit test, and
    the Firestore one against the emulator. Where the test class lives, so that two modules can
-   run it, is Wave 1 task 8's to choose.
+   run it, is Wave 1 task 8's to choose. A run against an emulator is an integration test, and
+   an integration test counts nothing toward the 95% coverage gate
+   (`.github/copilot/rules/testing-patterns.md`), which Wave 5 has to allow for.
 
 #### How the build checks rules 1 and 2
 
@@ -420,7 +447,7 @@ are now in force. The findings themselves are a dated record and are not edited.
 | R3, a profile's file sets defaults, and a property selects each implementation | yes | |
 | R4, an emulator is `gcp` with its endpoints redirected | yes | Cloud Storage has no official emulator (G6) |
 | R7, only the deployable has `application*.properties` | yes | the deployable is `dsh-rest-api` (section 2) |
-| R11, each profile has a context test, and each selectable interface has a consumer that is always present | yes | the flow consumes all three, so a mistyped value stops the startup (P8) |
+| R11, each profile has a context test, and each selectable interface has a consumer that is always present | yes | a consumer injects the document store and the file store, so a mistyped value stops the startup (P8). For the transport that is assumption A6 |
 | R12, profile files do not set the same key | yes | |
 | R5, the tier is one value, the base name | left to ADR-004 | |
 | R6, a required value is bound through a validated class | left to ADR-004 | |
@@ -556,6 +583,11 @@ Record the distinct terms of one document, counting that document once however o
 called. Read the number of documents that contain each of a set of terms. Read the number of
 documents in the corpus. The names and signatures are Wave 3 task 2's to choose.
 
+The interface offers no removal. A document that is deleted stays counted, and so does every
+test document on an operated tier. What retention the cost rule asks of these records, and
+whether the interface gains a removal for it, is ADR-004's to decide with the cleanup of test
+data.
+
 #### The constraint on an implementation
 
 The writes per document are bounded by a number that does not grow with the document's
@@ -667,7 +699,8 @@ statuses changed by this design is empty.
 twelve points of the status recorder reach every one of them.
 
 **Rejected.** The two alternatives of section 1 that would have changed the statuses. **One hop**
-removes three of them from the status API. **A hop per stage** adds some.
+removes four of them from the status API: `QUEUED_FOR_PROCESSING`, its `_SUCCESS` and its
+`_ERROR`, and `DEQUEUED_FOR_PROCESSING`. **A hop per stage** adds some.
 
 One defect in a status is recorded as a follow-up candidate and is not part of this decision:
 `NOT_INDEXED_ERROR` carries the description and message of another status.
@@ -750,9 +783,10 @@ Each is something only running code can show.
 |---|---|---|
 | A1 | In the Java DSL, an advice around each stage and an interceptor on each hop's channel see all twelve points of section 1 | Wave 2 task 1, with `#142`'s test of two overlapping submissions |
 | A2 | Under `gcp`, the outcome of a publish is known inside the request that made it | Wave 6, at layer 5a against `dsh-dev` |
-| A3 | Firestore applies the conditional status advance atomically: of two callers attempting one advance at once, one succeeds | Wave 5. One caller at layer 3 against the emulator; two callers at layer 5a against `dsh-dev`, because of F11 |
+| A3 | Firestore applies the conditional status advance atomically: of two callers attempting one advance at once, one succeeds | Wave 5. One caller at layer 3 against the emulator. Two callers against Firestore itself in `dsh-dev`, because of F11, by a test that calls the store directly. Layer 5a goes over the wire and cannot run it, so how such a test reaches `dsh-dev` is ADR-004's to say |
 | A4 | A layout of the term statistics exists that bounds the writes per document, fits Firestore's limits, and lets one transaction cover the update | Wave 5 |
 | A5 | The application's context finds the implementations in `dsh-gcp`, a module it depends on at `runtime` scope, and its own classes cannot compile against that module's types | Wave 5, by the context test of the `gcp` profile (R11) and by the build |
+| A6 | A value of `dsh.transport` that matches no transport stops the startup. P8 showed that for a bean a consumer injects, and a hop's channels are declared by the flow itself | Wave 2 task 1, by a context test started with a value that no transport matches |
 
 ---
 
@@ -774,6 +808,8 @@ Each is something only running code can show.
 - **One document takes three requests**, and each can meet a cold start (G8).
 - **Delivery is at least once** (F3), so every stage must be idempotent. A stage that outlasts the
   subscription's acknowledgment deadline is delivered again while it runs (F2).
+- **A document can be marked failed although Pub/Sub held its message**, when a publish times
+  out for the sender and its error is recorded first (section 1, "Compare-and-set").
 - **Documents that update the same term records contend**, and a write that gives up is delivered
   again (F10, F2).
 - **With no profile everything is lost at a restart**, and a file can outlive its record.
@@ -791,21 +827,23 @@ This ADR does not edit the PRD. It lists the consequences, and the PRD changes g
 
 | Where | Consequence |
 |---|---|
-| Wave 1 task 3, ADR-004 | Search needs no real GCP project. Protecting the push endpoints is its decision. It inherits R5, R6, R8 and R10 |
+| Wave 1 task 3, ADR-004 | Search needs no real GCP project. Protecting the push endpoints is its decision. It inherits R5, R6, R8 and R10. It decides the retention of the term statistics, which gain every test document on an operated tier and have no removal (section 5), and how a test that calls a store directly reaches `dsh-dev` (A3) |
 | Wave 1 tasks 5 and 6, the wiki | Their diagrams draw from sections 1 and 4. Task 6's page can link to this ADR's sequence diagram |
 | Wave 1 task 8 | Becomes: add the conditional status advance to `DocumentDao`, and an in-memory implementation that is the default. The contract of section 1 is written on the interface: the atomic advance, writes by field, copies. The task also writes the contract test of section 3, with a case of two callers attempting one advance at once |
 | Wave 1 task 9 | Becomes: remove MongoDB. That is `MongoDocumentDao`, `DocumentRepository`, `dshApplicationContext.xml`, `mongo.properties`, the MongoDB dependencies, the MongoDB container that `-DintegrationTests` starts, and the `mongo.*` values in six workflows and in the `settings.xml` instructions |
+| Wave 1 tasks 8 and 9, their order | As two stories in that order they do not hold. After task 8, `MongoDocumentDao` would have to implement the new advance and pass the contract test, only for task 9 to delete it, which is MongoDB work of the kind section 8 rejects. The re-plan merges the two, or orders them so that no MongoDB code is written |
 | Wave 1 task 10 | Nothing is marked deprecated. The file store holds two kinds of object, the original file and the indexing stage's output. The interface lets a caller store an object so that a repeat replaces it, which `store(byte[]) → URI` alone does not. The `local` implementation's directory is `dsh.storage.local-directory`, and this task chooses its default |
-| Wave 2 task 1 | `/submit` stores and sends before it answers. The status recorder and its twelve points. `#142`'s test proves assumption A1. Its list of what to delete gains the unused test resource `dequeue-docId-context.xml` |
+| Wave 2 task 1 | `/submit` stores and sends before it answers. The status recorder and its twelve points. `#142`'s test proves assumption A1. Its list of what to delete gains the unused test resource `dequeue-docId-context.xml`. It tests the table of twelve points against `DocumentStatus.transition`, builds the two rules a repeat follows, "the first write wins" and "a repeat resumes" (section 1), and proves assumption A6 |
 | Wave 2 task 3 | The module table of section 2, `dsh-solr` included |
 | Wave 3 task 1 | Terms are extracted by a library inside the JVM, and the choice of library stays with this task. Its output goes to the file store, not into the record |
 | Wave 3 task 2 | The term statistics interface of section 5, with an in-memory implementation and a contract test. The update is atomic |
 | Wave 3, every stage | Idempotent (section 1). It stores its result through the store's interface, in a write that names its fields, before the recorder writes the success status |
-| Wave 5 | Creates the `dsh-gcp` module. Gains term statistics on Firestore, with bounded writes. Its implementations pass the contract tests of Waves 1 and 3 against the emulator, and the case of two callers against Firestore itself (A3) |
+| Wave 5 | Creates the `dsh-gcp` module. Gains term statistics on Firestore, with bounded writes. Its implementations pass the contract tests of Waves 1 and 3 against the emulator, and the case of two callers against Firestore itself (A3). Runs against the emulator are integration tests and count nothing toward the 95% gate, so `dsh-gcp` needs unit tests of its own as well, and this wave settles how they sit beside a contract that is tested once |
 | Wave 6 | Two topics and two push subscriptions per tier, an outbound publish whose outcome is awaited, two push endpoints, and the redelivery settings, the acknowledgment deadline among them. The Pub/Sub classes go into `dsh-gcp` |
 | Wave 8 | Empty |
 | Wave 9 task 2 | Nothing left to remove |
 | Wave 11 | A backlog line: search across documents, with its two preconditions (section 6) |
+| `specs/architecture/system-design.md` and the `dsh-plan-wave` skill | Stale from the merge of this ADR, knowingly. The first still says that ADR-001 proposes replacing Solr with Vertex AI Search. The second still sends a re-plan to ADR-001's phases and does not name this ADR. Both are corrected as the first act of the re-plan ("After the merge", step 2) |
 
 ### After the merge
 
@@ -813,10 +851,27 @@ This ADR records the consequences, and it changes no plan by itself. They become
 order.
 
 1. **The PRD is reconciled** (`dsh-reconcile-prd`), which marks `#160` closed and changes no plan.
+   It also writes one sentence at the head of the PRD's §4: the waves below have not yet been
+   re-planned from ADR-003, and no story starts until they are.
 2. **The waves are re-planned** (`dsh-plan-wave`), from the consequences table, **before any other
-   story starts**. `#157` is next in Wave 1's order of work and has lost its purpose, and tasks 8
-   to 10 still have their old shape in the PRD. A story started before the re-plan starts from a
-   plan this ADR has overturned.
+   story starts. This step is not optional.** `#157` is next in Wave 1's order of work and has
+   lost its purpose, and tasks 8 to 10 still have their old shape in the PRD. A story started
+   before the re-plan starts from a plan this ADR has overturned.
+
+   **The re-plan's first act is to correct two files that this ADR leaves stale**, before it
+   plans anything:
+
+   - `.claude/skills/dsh-plan-wave/SKILL.md` tells a re-plan to read ADR-001 "for the migration
+     phases that waves 1-5 mirror", and does not name this ADR. It is changed to send a re-plan
+     to this ADR and its consequences table as well. Until it is, the skill that runs the
+     re-plan points away from what the re-plan is for.
+   - `specs/architecture/system-design.md` says, in its migration note, that ADR-001 proposes
+     replacing Solr with Vertex AI Search. The revised ADR-001 no longer does.
+
+   Both were left as they were by the story that wrote this ADR, which was limited to the two
+   ADRs, `CLAUDE.md` and the build skill. `CLAUDE.md`'s opening paragraph says that they are
+   stale, and the PRD with them, so that a session that has not read this ADR still meets the
+   warning. The re-plan removes that sentence when it ends.
 3. **The re-plan ends with a mapping**: one line for each row of the consequences table, naming
    the PRD task that now carries it, or saying that the row needs no task and why. The owner
    reads the mapping with the wave contents, before the PRD is written. A row with no line is a
@@ -847,8 +902,9 @@ wrote this ADR.
    owner's approval, to: "it treats `dequeue-docId-context.xml`, an unused test resource, as
    production configuration".
 7. **`CLAUDE.md` and `specs/architecture/system-design.md` describe MongoDB, RabbitMQ and Solr as
-   current.** They are right until the code is removed. The stories that remove it should correct
-   them.
+   current.** They are right until the code is removed, and the stories that remove it should
+   correct them. One sentence is the exception: `system-design.md`'s migration note is stale from
+   the merge, and the re-plan corrects it ("After the merge", step 2).
 
 ---
 
@@ -856,7 +912,7 @@ wrote this ADR.
 
 | Alternative | Lost to | Reason |
 | --- | --- | --- |
-| One hop for the whole pipeline | Two hops (sections 1 and 9) | It removes three statuses from the status API, and one request carries the whole document |
+| One hop for the whole pipeline | Two hops (sections 1 and 9) | It removes the four statuses of hop 2 from the status API, and one request carries the whole document |
 | A hop per stage | Two hops (sections 1 and 9) | It adds statuses and a topic for a split nobody has asked for |
 | Atomicity left to each implementation | Atomicity in the store's contract (section 1) | A default store that never fails hides a defect that appears only on GCP |
 | Choosing the term-extraction library in this ADR | The library is Wave 3 task 1's choice (section 1) | It is a decision about an algorithm's input, and belongs with the story that has the fixtures to judge it |

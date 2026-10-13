@@ -144,6 +144,8 @@ Each phase names the PRD wave that delivers it. Task numbers that this revision 
 
 **Goal**: Put every service outside the JVM behind a technology-neutral interface, each with a default implementation that needs nothing installed.
 
+Tasks 1.1 and 1.2 are delivered together, or in an order that writes no MongoDB code: after 1.1 alone, `MongoDocumentDao` would have to implement the new advance only to be deleted by 1.2. The re-plan of the waves settles which (ADR-003, "Consequences for the waves").
+
 | Task | Module | Detail |
 | ------ | -------- | -------- |
 | 1.1 | `dsh-data` | Add the conditional status advance to `DocumentDao`, and an in-memory implementation that is the default. The contract is written on the interface: the atomic advance, writes by field, copies. One contract test, which every implementation passes (ADR-003, sections 1 and 3). Wave 1 task 8. |

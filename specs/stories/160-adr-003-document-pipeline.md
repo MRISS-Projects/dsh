@@ -1190,13 +1190,14 @@ reference's index page, as that row says.
 | C7, the look on GitHub | a drawn sequence diagram with five participants and three shaded bands, looked at after the build. See §8.4 | yes, late |
 
 **C2's last `grep`.** §7.2 expects lines inside sections 1 and 5 of the Decision part only. Nine
-of the 17 are there, at lines 83 to 228 and 545 to 569, and each was read against §5.2's last
+of the 17 are there, at lines 83 to 250 and 572 to 601, and each was read against §5.2's last
 bullet: each says what is atomic and names the fact or the assumption beside it, or is a heading
 or the name of a rejected alternative. The eight others are outside those sections, and each
-repeats text this spec prescribes: rule 5 of §3.4 (line 392), the quotations of F9 and F12 (737,
-740), assumption A3 (753), the last negative consequence of T3 step 8 (782), two rows of §3.9's
-table (796, 802), and the alternatives table's row for decision 15 (861). §7.2's expectation was
-narrower than the content the same spec asks for.
+repeats text this spec prescribes: rule 5 of §3.4 (line 417), the quotations of F9 and F12 (770,
+773), assumption A3 (786), the last negative consequence of T3 step 8 (818), two rows of §3.9's
+table (832, 839), and the alternatives table's row for decision 15 (917). §7.2's expectation was
+narrower than the content the same spec asks for. The line numbers are those of the ADR after the
+review's fixes (§8.7); the count and the split were the same before them.
 
 **The reading for GCP sentences (T3 step 12).** Done once, top to bottom. Four sentences were
 changed by it: the one on a push reaching a second instance, which now cites G8 for the push and
@@ -1242,3 +1243,42 @@ decision this story does not reopen and the feature specs are outside §4. It is
 finished at 16:10 on 2026-10-13. `All coverage checks have been met` was printed eight times,
 once for each module with production sources. That is gates 1 and 2. Gate 3 does not apply: no
 code changed.
+
+Run again after the review's fixes (§8.7), on the tree that the pull request carries apart from
+this record: `maven exit=0`, `BUILD SUCCESS` for all 13 modules in 01:03 min, finished at 16:47 on
+2026-10-13, with `All coverage checks have been met` printed eight times.
+
+### 8.7 The local review (step 5)
+
+Run on 2026-10-13 with `/code-review` at high effort, over the branch's diff against `DEVELOP`.
+It returned ten findings, all on ADR-003. Three were checked against the code before the owner
+read them, and they held: the count of statuses, the behaviour of `DocumentStatus.transition`,
+and the two files outside the diff. The owner read all ten and decided each on the same day.
+
+| # | Finding | What was done |
+|---|---|---|
+| 1 | A request that stops between a stage's success and the next hop's publish strands its document: the repeat was skipped | **Decided by the owner.** A repeat resumes from the document's status, and sends on the next hop when that send was never recorded as a success. Section 1, "Compare-and-set", and the table of failures |
+| 2 | When a publish times out for the sender and Pub/Sub accepted it, two rules disagreed on the outcome | **Decided by the owner.** The first write wins, and `DocumentStatus` does not change. Section 1, the table of failures, and one more negative consequence |
+| 3 | "The recorder never names a status" did not survive compare-and-set | **Decided by the owner.** The recorder holds the status each of the twelve points expects, `DocumentStatus.transition` still picks the target, and Wave 2 task 1 tests the table against it |
+| 4 | "A mistyped key stops the startup (P8)" was cited for the transport, which P8 did not probe | Corrected. It is assumption A6, proved by Wave 2 task 1. Rule 3 and the R11 row say so |
+| 5 | "One hop removes three statuses": it removes four | Corrected in the ADR, in three places. **§2.2, decision 1, of this spec still says three**, and is left as the record of what was agreed |
+| 6 | A3's two-caller case was assigned to layer 5a, which goes over the wire and cannot run it | Corrected. The test calls the store directly, and how it reaches `dsh-dev` is handed to ADR-004 |
+| 7 | Emulator runs count nothing toward the 95% gate, so `dsh-gcp` needs unit tests as well | A consequence for Wave 5, and a sentence under rule 5 |
+| 8 | The term statistics have no removal and no retention | A consequence for ADR-004, and a paragraph in section 5 |
+| 9 | Wave 1 tasks 8 and 9 do not hold as two stories in that order | A row in the consequences table, for the re-plan to settle. ADR-001's Phase 1 says the same of its tasks 1.1 and 1.2 |
+| 10 | `system-design.md`'s migration note and the `dsh-plan-wave` skill are stale from the merge | **Decided by the owner:** not corrected here. A row in the consequences table; "After the merge" makes the re-plan mandatory and makes correcting the two files its first act; follow-up candidate 7 names the exception; and `CLAUDE.md`'s opening gains a paragraph that says what is stale until the re-plan, which the re-plan removes |
+
+What this changes against the rest of this spec:
+
+- **The ADR has six assumptions, A1 to A6.** §3.10 lists five.
+- **The compare-and-set rules are four, not three**, and the table of failures has one more row.
+  §3.2 has the earlier form.
+- **`CLAUDE.md` changes in one more place** than T5 lists: the paragraph of finding 10. C5
+  still prints three lines, the second now at `CLAUDE.md:29`, because the paragraph names ADR-003
+  without its file name.
+- **The consequences table and "After the merge" are longer than §3.9's.** The ADR is the one to
+  read.
+
+The diff still holds the five files of §4 and no other. C1 to C5 and C7 were run again after the
+fixes, with the output §8.3 records, and the quotations of the F rows were checked again by the
+script of §8.2.
