@@ -129,7 +129,7 @@ ADR-003 adds two interfaces to `dsh-data`: `FileStorageService` (Wave 1 task 10)
 | Aspect | Detail |
 | -------- | -------- |
 | **Messaging** | Each of the pipeline's two hops is a **Pub/Sub** topic with a **push** subscription to the same Cloud Run service. The service publishes the document's id, and Pub/Sub posts it back to an HTTP endpoint of the service. There is no worker and no subscriber that pulls. |
-| **Delivery semantics** | Pub/Sub delivers at least once (ADR-003, F3), which FR001 in `indexing-workflow.md` asks for, so every stage is idempotent. FR001's "retried up to 3 times" is not settled by this mapping: a dead-letter topic's maximum number of delivery attempts is 5 at the least (ADR-003, F4), and ADR-003 leaves the redelivery settings to Wave 6. |
+| **Delivery semantics** | Pub/Sub delivers at least once (ADR-003, F3), which FR001 in `indexing-workflow.md` asks for, so every stage is idempotent. FR001's "retried up to 3 times" is overridden by ADR-003 (section 1, "Failures"): a stage's own failure is recorded at once, and only a store's failure is delivered again. How many times is a setting of the subscription that Wave 6 chooses, and a dead-letter topic cannot set it below 5 (ADR-003, F4). |
 | **Spring dependency** | `spring-cloud-gcp-starter-pubsub`, `spring-integration-gcp`, in `dsh-gcp` only |
 | **Cloud Run integration** | A stage is started by the push request, so no instance waits on a queue and minimum instances stays 0, as the cost rule in `CLAUDE.md` requires (ADR-003, section 4). |
 | **Configuration** | Java configuration in `dsh-gcp`, selected by `dsh.transport=pubsub`. With no profile a hop is a channel in the JVM. `enqueue-docId-context.xml` is deleted, not converted. |

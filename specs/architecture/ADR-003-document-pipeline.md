@@ -92,7 +92,7 @@ it is correct only if the comparison and the write are one operation. A later st
 another request, on another instance, so whatever it needs has to be in a store, and Firestore
 limits the size of one document (F7).
 
-**Rejected.** Six alternatives.
+**Rejected.** Seven alternatives.
 
 - **One hop for the whole pipeline.** It removes the four statuses of hop 2 from the status API,
   and makes one request carry the whole document.
@@ -105,6 +105,8 @@ limits the size of one document (F7).
   Firestore's limit on the size of a document (F7).
 - **The indexing stage's output carried in the message.** The message is the document's id and
   nothing else.
+- **Retrying a stage before its error is recorded.** A repeat does not cure a stage's own
+  failure, and a store's failure is already retried by redelivery ("Failures" below).
 
 #### The flow at run time
 
@@ -269,6 +271,40 @@ the emulator proves the advance for one caller, and only Firestore itself proves
 | A store cannot be reached, or gives up on a write after contention (F10) | none | not consumed; under `gcp` the request answers with a failure, and Pub/Sub delivers again (F2) |
 | A repeat arrives for a document past the stage | none for that stage. The request resumes from the document's status, and records whatever it then does | consumed |
 | The message arrives after the sender recorded the hop's `…_ERROR` status | none: the first write wins | consumed |
+
+**A stage's own failure is final, and a store's failure is retried.** What separates the two is
+whether a repeat can end differently. A stage computes its result inside the JVM from what it
+has read, so the design takes its failure to be one that a repeat does not cure: a file that
+cannot be parsed is not parsed at the third attempt. Its `…_ERROR` status is recorded at the
+first failure, and the message is consumed. A store that cannot be reached may answer a moment
+later, so nothing is recorded and the message is delivered again. A stage reads from the stores,
+so a store's failure can surface inside a stage, and the flow has to tell it from the stage's
+own. How it does is Wave 2 task 1's to build.
+
+A send that fails is final too, by the second row: the hop's `…_ERROR` status is recorded, and
+no message exists to be delivered again. Unlike a stage's failure, a send can fail for a reason
+that passes. What the publisher itself tries again before it reports a failure is not among this
+ADR's facts. Wave 6 settles it, with the publish timeout (F8).
+
+A recorded error is also final in `DocumentStatus`. Each of the six `…_ERROR` states returns
+itself from `transition`, so with the 18 states kept (section 9), a retry after the error is
+recorded has nowhere to go.
+
+This overrides two sentences of `specs/features/indexing-workflow.md`, which was written before
+this design:
+
+- **FR001, "Failed tasks must be retried up to 3 times before marking as failed".** A stage's
+  failure is not retried. A store's failure is, and the number of attempts is a setting of the
+  subscription, which a dead-letter topic cannot set below 5 (F4).
+- **The error table's "Analysis timeout", "Retry up to 3 times; then status → failed".** A stage
+  has no timeout of its own in this design. The limit on a stage is the acknowledgment deadline,
+  below.
+
+The rest of FR001 holds: the response does not wait for the processing, and delivery is at least
+once (F3). So does the error table's "Database unavailable", "Retry with backoff; do not lose
+task", by the third row above; whether a redelivery backs off is the subscription's retry
+policy (F4). The story that wrote this ADR does not edit that file ("Consequences for the
+waves").
 
 How many times Pub/Sub delivers again, and what happens to a message that keeps failing, are
 settings of the subscription: its retry policy, a dead-letter topic with a maximum number of
@@ -814,6 +850,8 @@ Each is something only running code can show.
 - **One document takes three requests**, and each can meet a cold start (G8).
 - **Delivery is at least once** (F3), so every stage must be idempotent. A stage that outlasts the
   subscription's acknowledgment deadline is delivered again while it runs (F2).
+- **A stage's failure is not retried.** A document whose stage fails once is marked failed,
+  where `specs/features/indexing-workflow.md` asked for three attempts (section 1, "Failures").
 - **A document can be marked failed although Pub/Sub held its message**, when a publish times
   out for the sender and its error is recorded first (section 1, "Compare-and-set").
 - **Documents that update the same term records contend**, and a write that gives up is delivered
@@ -839,17 +877,18 @@ This ADR does not edit the PRD. It lists the consequences, and the PRD changes g
 | Wave 1 task 9 | Becomes: remove MongoDB. That is `MongoDocumentDao`, `DocumentRepository`, `dshApplicationContext.xml`, `mongo.properties`, the MongoDB dependencies, the MongoDB container that `-DintegrationTests` starts, and the `mongo.*` values in six workflows and in the `settings.xml` instructions |
 | Wave 1 tasks 8 and 9, their order | As two stories in that order they do not hold. After task 8, `MongoDocumentDao` would have to implement the new advance and pass the contract test, only for task 9 to delete it, which is MongoDB work of the kind section 8 rejects. The re-plan merges the two, or orders them so that no MongoDB code is written |
 | Wave 1 task 10 | Nothing is marked deprecated. The file store holds two kinds of object, the original file and the indexing stage's output. The interface lets a caller store an object so that a repeat replaces it, which `store(byte[]) → URI` alone does not. The `local` implementation's directory is `dsh.storage.local-directory`, and this task chooses its default |
-| Wave 2 task 1 | `/submit` stores and sends before it answers. The status recorder and its twelve points. `#142`'s test proves assumption A1. Its list of what to delete gains the unused test resource `dequeue-docId-context.xml`. It tests the table of twelve points against `DocumentStatus.transition`, builds the two rules a repeat follows, "the first write wins" and "a repeat resumes" (section 1), and proves assumption A6 |
+| Wave 2 task 1 | `/submit` stores and sends before it answers. The status recorder and its twelve points. `#142`'s test proves assumption A1. Its list of what to delete gains the unused test resource `dequeue-docId-context.xml`. It tests the table of twelve points against `DocumentStatus.transition`, builds the two rules a repeat follows, "the first write wins" and "a repeat resumes" (section 1), and proves assumption A6. It tells a store's failure from a stage's own, so that the first is delivered again and the second is recorded (section 1, "Failures") |
 | Wave 2 task 3 | The module table of section 2, `dsh-solr` included |
 | Wave 3 task 1 | Terms are extracted by a library inside the JVM, and the choice of library stays with this task. Its output goes to the file store, not into the record |
 | Wave 3 task 2 | The term statistics interface of section 5, with an in-memory implementation and a contract test. The update is atomic |
 | Wave 3, every stage | Idempotent (section 1). It stores its result through the store's interface, in a write that names its fields, before the recorder writes the success status |
 | Wave 5 | Creates the `dsh-gcp` module. Gains term statistics on Firestore, with bounded writes. Its implementations pass the contract tests of Waves 1 and 3 against the emulator, and the case of two callers against Firestore itself (A3). Runs against the emulator are integration tests and count nothing toward the 95% gate, so `dsh-gcp` needs unit tests of its own as well, and this wave settles how they sit beside a contract that is tested once |
-| Wave 6 | Two topics and two push subscriptions per tier, an outbound publish whose outcome is awaited, two push endpoints, and the redelivery settings, the acknowledgment deadline among them. The Pub/Sub classes go into `dsh-gcp` |
+| Wave 6 | Two topics and two push subscriptions per tier, an outbound publish whose outcome is awaited, two push endpoints, and the redelivery settings, the acknowledgment deadline among them. It settles what the publisher tries again before it reports a failed send, which is final once recorded (section 1, "Failures"). The Pub/Sub classes go into `dsh-gcp` |
 | Wave 8 | Empty |
 | Wave 9 task 2 | Nothing left to remove |
 | Wave 11 | A backlog line: search across documents, with its two preconditions (section 6) |
 | `specs/architecture/system-design.md` and the `dsh-plan-wave` skill | Stale from the merge of this ADR, knowingly. The first still says that ADR-001 proposes replacing Solr with Vertex AI Search. The second still sends a re-plan to ADR-001's phases and does not name this ADR. Both are corrected as the first act of the re-plan ("After the merge", step 2) |
+| `specs/features/indexing-workflow.md` | Stale from the merge of this ADR, knowingly, in what section 1's "Failures" overrides: FR001's three retries, and the "Analysis timeout" row of its error table. Its FR003 and its "Solr unavailable" row describe Solr, which section 2 removes. The file was already apart from the code in its routes and its statuses. When it is corrected is settled with follow-up candidate 8 |
 
 ### After the merge
 
@@ -928,6 +967,7 @@ wrote this ADR.
 | --- | --- | --- |
 | One hop for the whole pipeline | Two hops (sections 1 and 9) | It removes the four statuses of hop 2 from the status API, and one request carries the whole document |
 | A hop per stage | Two hops (sections 1 and 9) | It adds statuses and a topic for a split nobody has asked for |
+| Retrying a stage before its error is recorded | A stage's failure is final (section 1) | A repeat does not cure a stage's own failure, and a store's failure is already retried by redelivery |
 | Atomicity left to each implementation | Atomicity in the store's contract (section 1) | A default store that never fails hides a defect that appears only on GCP |
 | Choosing the term-extraction library in this ADR | The library is Wave 3 task 1's choice (section 1) | It is a decision about an algorithm's input, and belongs with the story that has the fixtures to judge it |
 | The indexing stage's output in the record | The output in the file store (section 1) | A long document pushes the record past Firestore's limit on a document's size (F7) |
