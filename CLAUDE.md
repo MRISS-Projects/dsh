@@ -2,9 +2,15 @@
 
 Document Smart Highlights (DSH) is a Java 17 / Spring Boot multi-module Maven system that
 analyses documents and produces smart highlights. It currently runs on self-managed
-MongoDB / RabbitMQ / Solr. A migration to managed GCP services (Firestore, Pub/Sub, Vertex AI
-Search) is **proposed** in `specs/architecture/ADR-001-GCP-based-components.md` — status
-Proposed, no implementation work has started yet.
+MongoDB / RabbitMQ / Solr. A migration to managed GCP services (Firestore, Pub/Sub, Cloud
+Storage) is **proposed** in `specs/architecture/ADR-001-GCP-based-components.md` — status
+Proposed, no implementation work has started yet. How the document pipeline is built, with and
+without GCP, is decided in `specs/architecture/ADR-003-document-pipeline.md`.
+
+**Until the waves have been re-planned from ADR-003, three things are stale:** `specs/product/PRD.md`,
+the migration note in `specs/architecture/system-design.md`, and the `dsh-plan-wave` skill. No
+story starts before that re-plan. ADR-003, "After the merge", says what the re-plan does first.
+The re-plan removes this paragraph when it ends.
 
 ## This file is a router
 
@@ -20,6 +26,7 @@ agent in this repo: commands, branch rules, gates, the GCP cost rule, and the de
 | Testing patterns | `.github/copilot/rules/testing-patterns.md` |
 | Who owns what | `.github/roles.md` |
 | Target architecture and migration phases | `specs/architecture/ADR-001-GCP-based-components.md` |
+| The document pipeline: flow, modules, transports and selection | `specs/architecture/ADR-003-document-pipeline.md` |
 | Current architecture | `specs/architecture/system-design.md` |
 | Proposed profile and configuration convention | `specs/architecture/profiles-and-configuration.md` |
 | The development process, in full | `docs/process/ai-driven-development.md` |
@@ -34,7 +41,7 @@ agent in this repo: commands, branch rules, gates, the GCP cost rule, and the de
 | `dsh-doc-analyser` | Analysis engine; sub-modules for keyword extraction, top-sentence extraction, and doc processing (`dsh-doc-processor-worker`) |
 | `dsh-doc-indexer-worker` | Async indexing worker |
 | `dsh-data` | Shared models and persistence |
-| `dsh-solr` | Solr integration and custom plugins (proposed for replacement — see ADR-001) |
+| `dsh-solr` | Solr integration and custom plugins (to be removed — see ADR-003) |
 | `dsh-test-dataset` | PDF fixtures used by tests |
 | `dsh-coverage-report` | Aggregates JaCoCo coverage across modules |
 
