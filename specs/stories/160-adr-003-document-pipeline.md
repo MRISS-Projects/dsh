@@ -944,7 +944,7 @@ Expected: a drawn sequence diagram with five participants and three shaded bands
 
 ### 7.3 The tasks
 
-- [ ] **T1 — record the red state.** Before any file of §4 is changed.
+- [x] **T1 — record the red state.** Before any file of §4 is changed.
 
   1. Run C1, C3 and C5. Expected: C1 prints nothing for `test -f` and an error for each `grep`,
      because the ADR does not exist. C3 prints 34 lines. C5's first `grep` prints nothing, and its
@@ -955,7 +955,7 @@ Expected: a drawn sequence diagram with five participants and three shaded bands
      corrected here first.
   3. Nothing else is committed by this task.
 
-- [ ] **T2 — establish F1 to F12.** Read each page, and note the URL, the date and the words that
+- [x] **T2 — establish F1 to F12.** Read each page, and note the URL, the date and the words that
   state the fact. The notes stay in the session's scratchpad until T3 writes them into the ADR.
   The starting pages for F1 to F8 and F12 are from memory and may have moved. F9 to F11 were read
   on 2026-10-13 (§3.10).
@@ -978,7 +978,7 @@ Expected: a drawn sequence diagram with five participants and three shaded bands
      not write the ADR around it.
   3. Nothing is committed by this task.
 
-- [ ] **T3 — write `specs/architecture/ADR-003-document-pipeline.md`.**
+- [x] **T3 — write `specs/architecture/ADR-003-document-pipeline.md`.**
 
   1. Create the file with these headings, in this order, and the header table ADR-001 uses: date,
      status `Accepted`, authors `Backend Development Team`.
@@ -1063,7 +1063,7 @@ Expected: a drawn sequence diagram with five participants and three shaded bands
   13. Run C1, C2, C4 and C7's `diff`. Expected: as §7.2 states.
   14. Commit: `docs(#160): ADR-003, the document pipeline`.
 
-- [ ] **T4 — revise `specs/architecture/ADR-001-GCP-based-components.md`.**
+- [x] **T4 — revise `specs/architecture/ADR-001-GCP-based-components.md`.**
 
   1. Add this section between the header table's rule and `## Context`, with the date of the day,
      and one bullet for each row of §3.7 that changes something, in the table's order:
@@ -1092,7 +1092,7 @@ Expected: a drawn sequence diagram with five participants and three shaded bands
   4. Run C3 and C4. Expected: C3 prints nothing, and `lint exit=0`.
   5. Commit: `docs(#160): revise ADR-001 to match ADR-003`.
 
-- [ ] **T5 — `CLAUDE.md` and the build skill.**
+- [x] **T5 — `CLAUDE.md` and the build skill.**
 
   1. In `CLAUDE.md`'s opening paragraph, replace `(Firestore, Pub/Sub, Vertex AI Search)`, which
      wraps over two lines, with `(Firestore, Pub/Sub, Cloud Storage)`. After the paragraph's last
@@ -1118,7 +1118,7 @@ Expected: a drawn sequence diagram with five participants and three shaded bands
   5. Run C5 and C4. Expected: as §7.2 states.
   6. Commit: `docs(#160): point CLAUDE.md and the build skill at ADR-003`.
 
-- [ ] **T6 — gates and record.**
+- [x] **T6 — gates and record.**
 
   1. `mvn -B clean install`, logged to `.logs/mvn-clean-install.log` as `CLAUDE.md` requires, with
      the exit code reported. Expected: exit 0. Gate 3 does not apply: no code changed.
@@ -1132,3 +1132,109 @@ Expected: a drawn sequence diagram with five participants and three shaded bands
   and the issue's sentence that names only `specs/architecture/` and `CLAUDE.md`, which §4 now
   exceeds by one file. The pull request is opened in step 6, by `dsh-ship-story`, and the owner's
   merge of it is ADR-003's acceptance.
+
+## 8. Verification results
+
+Built on 2026-10-13, from `ca2e20c6a` on `issue-160-adr-003-document-pipeline`, with `DEVELOP` at
+`043adc533`. T1 to T6 are ticked above. T7 is the message that ends the build session, so it is
+not ticked by this commit.
+
+### 8.1 The red state (T1)
+
+Run before any file of §4 was changed.
+
+| Check | Output |
+|---|---|
+| C1 | `test -f` printed nothing. Each `grep` and the `awk` answered `No such file or directory` |
+| C3 | 34 lines |
+| C5, first `grep` | nothing |
+| C5, second `grep` | three lines: `CLAUDE.md:5` (`Vertex AI`), and `SKILL.md:19` and `:21` (`legacy`, `Deprecate, do not delete`) |
+
+### 8.2 The facts (T2)
+
+All twelve were found and kept. None was dropped or moved to the assumptions, and no page
+contradicted a decision of §2.2. Each page was downloaded on 2026-10-13, and every quotation in
+the ADR's F rows was then searched for in the downloaded text by a script: 40 quotations, all
+found on the page their row names, except the compatibility values of F8, which are on the same
+reference's index page, as that row says.
+
+| Id | Result | Note |
+|---|---|---|
+| F1 | kept | |
+| F2 | kept, two rows | The second row is the acknowledgment deadline: 10 seconds by default, 600 at most, and not extendable for a pushed message. The ADR states it in section 1, under "Failures", and hands the setting to Wave 6 |
+| F3 | kept | |
+| F4 | kept, two rows | `handling-failures` redirects to `dead-letter-topics`. A dead-letter topic's maximum number of delivery attempts is 5 at the least |
+| F5 | kept | |
+| F6 | kept | `docs.cloud.google.com/firestore/pricing` redirects to `cloud.google.com/firestore/pricing`, which is the URL cited |
+| F7 | kept, two rows | The size limit from the quotas page, the conditional write from the transactions page |
+| F8 | kept, two rows | Version read: 3.9.0, whose compatibility table pairs the 3.x line with Spring Boot 2.6.x and 2.7.x |
+| F9 | kept | The three quotations of §3.10 are on the page word for word |
+| F10 | kept | One quotation of §3.10 differs from the page, which now says "Firestore guarantees serializable isolation of transactions", without "Cloud". The ADR quotes the page |
+| F11 | kept | Word for word |
+| F12 | kept, two rows | The limits read are on size, 10 MiB, and on time, 270 seconds. No limit on the number of writes in one transaction was found on either page, and the ADR says so |
+
+### 8.3 The checks, after T5
+
+| Check | Output | As expected |
+|---|---|---|
+| C1 | `the ADR exists`; `6:\| **Status**  \| Accepted`; `9`, `9`, `9`, `9`; nothing from the fifth `grep`; `24` | yes |
+| C2, the ids | nothing. The ids cited are G1, G2, G6, G8, M1, M4, P0, P7, P8, P10, P17, P31, R1 to R12, S1, S2, S4 to S8 | yes |
+| C2, the F rows | nothing: every one of F1 to F12 has a complete row | yes |
+| C2, the A rows | nothing | yes |
+| C2, `atomic` | 17 lines. See below | in part |
+| C3 | nothing | yes |
+| C4 | `lint exit=0`, no finding | yes |
+| C5 | three lines, `CLAUDE.md:8`, `CLAUDE.md:24` and `SKILL.md:21`; nothing from the second `grep` | yes |
+| C6 | the five files of §4 and no other | yes |
+| C7, the `diff` | `the diagrams are the same` | yes |
+| C7, the look on GitHub | **not done.** See §8.4 | no |
+
+**C2's last `grep`.** §7.2 expects lines inside sections 1 and 5 of the Decision part only. Nine
+of the 17 are there, at lines 83 to 228 and 545 to 569, and each was read against §5.2's last
+bullet: each says what is atomic and names the fact or the assumption beside it, or is a heading
+or the name of a rejected alternative. The eight others are outside those sections, and each
+repeats text this spec prescribes: rule 5 of §3.4 (line 392), the quotations of F9 and F12 (737,
+740), assumption A3 (753), the last negative consequence of T3 step 8 (782), two rows of §3.9's
+table (796, 802), and the alternatives table's row for decision 15 (861). §7.2's expectation was
+narrower than the content the same spec asks for.
+
+**The reading for GCP sentences (T3 step 12).** Done once, top to bottom. Four sentences were
+changed by it: the one on a push reaching a second instance, which now cites G8 for the push and
+states the ordering as the design's own reasoning; two that said nothing costs while idle, which
+now say only that no instance is kept alive (G8), because the findings leave the idle cost of
+Firestore and Pub/Sub unestablished (§8.3 there); and the F12 row, which gained the quotation for
+a transaction that runs again.
+
+### 8.4 Departures from this spec
+
+1. **The diagram was not looked at on GitHub** (T1 step 2, C7). The Chrome extension was not
+   connected during the build. In its place the block of §3.3 was parsed with Mermaid 12.2.0,
+   which accepted it as a sequence diagram, and rejected a deliberately broken copy. That shows
+   the syntax is valid for that version. It does not show what GitHub draws. The look is still
+   owed, on the task branch or on the pull request.
+2. **A key was named.** §3.4 leaves the name of the `local` file store's directory key to the
+   ADR. It is `dsh.storage.local-directory`, beside the findings' `dsh.storage.bucket` and
+   `dsh.storage.prefix`.
+3. **Three reasons were worded during the build.** §2.2 records these alternatives as rejected
+   without a reason of their own, and AC002 asks for one: keeping four empty applications, a
+   fixed reference table for the term statistics, and a store in local files. The owner should
+   read the three rows in the ADR's alternatives table.
+4. **ADR-001, two sentences beyond §3.7's table**, both found by T4 step 3. Its §3.1 said the
+   `Document` model would carry a Firestore annotation, which decision 16 rules out; the mapping
+   is now in `dsh-gcp`. Its §3.2 said dead-letter topics handle FR001's "retry up to 3 times"
+   natively, which F4 contradicts; it now says the mapping does not settle that requirement.
+
+### 8.5 One observation for the owner
+
+`specs/features/indexing-workflow.md`, FR001, says "Failed tasks must be retried up to 3 times
+before marking as failed". The design of §3.2 records a stage's `…_ERROR` status on its first
+failure and consumes the message. The two differ. Neither file was changed, because §3.2 is a
+decision this story does not reopen and the feature specs are outside §4. It is raised in T7.
+
+### 8.6 The gates
+
+`mvn -B clean install`, logged to `.logs/mvn-clean-install.log`, run after T5's commit
+(`1b093d6d5`): `maven exit=0`, `BUILD SUCCESS` for all 13 modules of the reactor in 01:22 min,
+finished at 16:10 on 2026-10-13. `All coverage checks have been met` was printed eight times,
+once for each module with production sources. That is gates 1 and 2. Gate 3 does not apply: no
+code changed.
