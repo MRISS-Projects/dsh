@@ -12,9 +12,12 @@ only supplies DSH context.
 
 ## DSH context to bring
 
-- Read `specs/product/PRD.md` for existing waves, and
-  `specs/architecture/ADR-001-GCP-based-components.md` for the migration phases that
-  waves 1-5 mirror.
+- Read `specs/product/PRD.md` for existing waves.
+- Read `specs/architecture/ADR-003-document-pipeline.md`, which decides how the document
+  pipeline is built. Its "Consequences for the waves" table lists what the waves owe it, and a
+  re-plan from it ends with one line for each row of that table ("After the merge", step 3).
+- Read `specs/architecture/ADR-001-GCP-based-components.md` for why DSH moves to GCP and onto
+  which services. Its phases name the waves that deliver them. The waves no longer mirror them.
 - Waves are ordered and roughly sequential. A task belongs in the earliest wave whose
   dependencies it satisfies.
 - Every task must be small enough to become one INVEST story in step 2. "Migrate to

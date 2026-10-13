@@ -38,17 +38,19 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
              ▼                 ▼
      ┌───────────────────┐  ┌───────────────────┐
      │      MongoDB      │  │     dsh-solr      │
-     │  (replacement     │  │  (replacement     │
-     │   proposed)       │  │   proposed)       │
+     │  (replacement     │  │  (removal         │
+     │   proposed)       │  │   decided)        │
      │  (documents)      │  │ (full-text        │
      │                   │  │  indexing)        │
      └───────────────────┘  └───────────────────┘
 ```
 
 > **Migration note:** [ADR-001](./ADR-001-GCP-based-components.md) (Status: Proposed) proposes
-> replacing MongoDB, RabbitMQ and Apache Solr with Firestore + GCS, Cloud Pub/Sub, and Vertex AI
-> Search respectively. No migration work has started — these components remain the active
-> implementation. See `specs/product/PRD.md` for the delivery waves.
+> replacing MongoDB with Firestore + GCS, and RabbitMQ with Cloud Pub/Sub.
+> [ADR-003](./ADR-003-document-pipeline.md) (Status: Accepted) decides how the pipeline is built:
+> the MongoDB, RabbitMQ and Solr code is removed, not migrated, and no search engine replaces
+> Solr. None of that work has started, and the code for all three is still in the repository.
+> See `specs/product/PRD.md` for the delivery waves.
 
 ## Module Responsibilities
 
