@@ -774,3 +774,6 @@ fixed, each checked red before the fix and green after it.
    advances the document only when a confirm, nack or return reaches it, and stores it once more
    afterwards. If neither happens, or the second store fails, the document stays where the first
    store left it. Fix: `indexing-workflow.md` says so, as from the code.
+7. **Minor: a Planned item said `/status` would "never" answer `TOKEN_NOT_FOUND`** for a token
+   `/submit` returned. The default store after Wave 1 task 8 is in memory, and a restart empties it.
+   Fix: "while the store still holds the document", with the in-memory store's limit stated.

@@ -112,8 +112,9 @@ Recorded against a running `dsh-rest-api` on 2026-10-14 (story `#162`,
   fills them. Its contract is written in the OpenAPI document first (Wave 2 task 2).
 - **`4xx` codes** for the failures that answer `200` today (`#138`).
 - **`/submit` stores the document and sends its id before it answers**, so a store failure reaches
-  the client and `/status` never answers `TOKEN_NOT_FOUND` for a token `/submit` returned (Wave 2
-  task 1).
+  the client, and `/status` does not answer `TOKEN_NOT_FOUND` for a token `/submit` returned while
+  the store still holds the document (Wave 2 task 1). The in-memory store of Wave 1 task 8 holds it
+  only until the application stops.
 - **`NOT_INDEXED_ERROR` answers a description of its own** (Wave 1 task 12).
 
 ## References
