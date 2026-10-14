@@ -7,6 +7,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+
 import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
 
@@ -14,6 +17,8 @@ import com.mriss.dsh.data.models.Document;
  * Keeps documents in this JVM's memory. The store of a run with no profile (ADR-003, section 8):
  * nothing has to be installed, and every document is lost when the application stops.
  */
+@Component
+@ConditionalOnProperty(name = "dsh.persistence", havingValue = "memory", matchIfMissing = true)
 public class InMemoryDocumentDao implements DocumentDao {
 
 	private final Map<String, Document> documents = new ConcurrentHashMap<>();
