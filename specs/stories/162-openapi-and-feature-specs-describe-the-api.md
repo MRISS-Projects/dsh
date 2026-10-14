@@ -777,3 +777,8 @@ fixed, each checked red before the fix and green after it.
 7. **Minor: a Planned item said `/status` would "never" answer `TOKEN_NOT_FOUND`** for a token
    `/submit` returned. The default store after Wave 1 task 8 is in memory, and a restart empties it.
    Fix: "while the store still holds the document", with the in-memory store's limit stated.
+8. **Minor: one departure from `api-standards.md` was missing.** Its "Never expose internal error
+   details in production responses" is broken by `/submit`, whose `message` carries the caught
+   exception's `getMessage()`. Fix: the departure is listed in the YAML's `info.description` and in
+   `rest-api-endpoints.md`. No issue plans it: `#138`'s criteria change the status codes, not the
+   message.

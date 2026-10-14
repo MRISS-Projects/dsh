@@ -17,6 +17,9 @@ info:
       authentication.
     - Errors that reach Spring Boot answer its default error body (`ErrorBody`), not the error body
       the standard describes.
+    - The standard says never to expose internal error details, but a rejected submission's
+      `message` carries the caught exception's own message. No issue plans a change: `#138`
+      changes the status codes, not the message.
 
     **Outside this document.** `/actuator/health` and `/actuator/info` exist, served by Spring Boot
     Actuator. They are not `DocumentResource`'s, and `#45` owns them.

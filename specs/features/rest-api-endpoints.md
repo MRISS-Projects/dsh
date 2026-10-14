@@ -100,6 +100,9 @@ Recorded against a running `dsh-rest-api` on 2026-10-14 (story `#162`,
 - A failure the controller handles answers `200`, with the failure in the body (`#138`).
 - No request is authenticated. No issue plans authentication.
 - Errors that reach Spring Boot answer its default error body, not the standard's.
+- The standard says never to expose internal error details, but a rejected submission's `message`
+  carries the caught exception's own message. No issue plans a change: `#138` changes the status
+  codes, not the message.
 
 ### Outside this contract
 
