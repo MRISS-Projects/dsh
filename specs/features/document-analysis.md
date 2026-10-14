@@ -11,7 +11,8 @@ submitted document is stored and its id is queued, and no analysis runs.
 ### What `/submit` does with a document
 
 1. It reads the file into the document, computes its SHA-256 hash, and gives it a new token. The
-   file's type and size are not checked.
+   file's type is not checked. A file over 1 MB never reaches the controller: Spring Boot's
+   multipart default rejects it with `500` (`./rest-api-endpoints.md`).
 2. It answers with the token (`./rest-api-endpoints.md`).
 3. After answering, asynchronously, it stores the document as `QUEUED_FOR_INDEXING` and sends its
    id to RabbitMQ. The enqueue's outcome gives `QUEUED_FOR_INDEXING_SUCCESS` or

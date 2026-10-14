@@ -737,3 +737,17 @@ fixed, each checked red before the fix and green after it.
    match it, because the ID comes before the file name. Fix: the parenthetical now says no
    requirement bounds the size. The ADR's reason for moving the file to GCS, Firestore's 1 MiB limit
    on one document, holds without it. §5 lists the file, and §8.3 carries the correction.
+3. **Important: "the file's size is not checked" was false, and the contract lacked a code.**
+   Nothing sets `spring.servlet.multipart.*`, so Spring Boot's defaults apply. A second live run on
+   2026-10-14, against the same jar and containers as Task 1 (`.logs/162-baseline-review.txt`),
+   recorded:
+
+   | # | Call | Observed |
+   |---|---|---|
+   | B12 | `POST /submit` with a 2 MB file | `500` `ErrorBody` (`FileSizeLimitExceededException`: "exceeds its maximum permitted size of 1048576 bytes") |
+   | B13 | `POST /submit` with an 11 MB file | `500` `ErrorBody` (`SizeLimitExceededException`: request size 11534663 "exceeds the configured maximum (10485760)") |
+
+   Fix: the YAML documents `/submit`'s `500` with B12's body and states the 1 MB and 10 MB limits.
+   `rest-api-endpoints.md` gives them, with a row in its outcomes table, and so does
+   `document-analysis.md`. `indexing-workflow.md`'s FR004 notes that a 10 MB document cannot be
+   submitted today, and that no task plans raising the limit.

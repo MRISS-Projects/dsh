@@ -73,7 +73,9 @@ From ADR-003 section 1, "The flow", unless an item says otherwise.
   tasks 1 and 4). This is the part of FR001 that ADR-003 section 1, "Failures", keeps; it overrides
   the rest. The ID is kept because ADR-001 and ADR-003 cite it.
 - **FR004: performance.** 95% of documents under 10 MB are processed within 30 seconds, measured
-  against `dsh-staging` (Wave 9 task 1). The ID is kept because the PRD and ADR-001 cite it.
+  against `dsh-staging` (Wave 9 task 1). The ID is kept because the PRD and ADR-001 cite it. Today
+  `/submit` rejects a file over 1 MB (`./rest-api-endpoints.md`), so a document of 10 MB cannot be
+  submitted. No task yet plans raising that limit.
 - **The indexing stage is text extraction**: PDF and HTML into title, paragraphs, sentences and
   terms, with the output kept in the file store (Wave 3 task 1, Wave 1 task 10).
 - **Corpus term statistics replace a search engine**: term frequency per document and document

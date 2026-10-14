@@ -60,7 +60,9 @@ paths:
         - **The token is opaque** to a client.
         - **A rejected submission answers `200`**, with `token` `ERROR` and the reason in
           `message`: a blank title, or any exception the controller catches (`#138`).
-        - **The file's type and size are not checked.**
+        - **The file's type is not checked.** Its size is bounded by Spring Boot's multipart
+          defaults, which the application does not change: 1 MB per file and 10 MB per request.
+          A larger upload answers `500`.
 
         See `specs/features/rest-api-endpoints.md` and `specs/features/document-analysis.md`.
       requestBody:
@@ -80,7 +82,7 @@ paths:
                 contents:
                   type: string
                   format: binary
-                  description: The document's file.
+                  description: The document's file, of any type, at most 1 MB.
       responses:
         '200':
           description: |
@@ -113,6 +115,19 @@ paths:
                 timestamp: '2026-10-14T16:10:01.339+00:00'
                 status: 400
                 error: Bad Request
+                path: /v1/dsh/document/submit
+        '500':
+          description: |
+            The file is larger than 1 MB, or the request larger than 10 MB: Spring Boot's multipart
+            defaults. The upload is rejected before the controller runs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+              example:
+                timestamp: '2026-10-14T18:07:11.607+00:00'
+                status: 500
+                error: Internal Server Error
                 path: /v1/dsh/document/submit
 
   /v1/dsh/document/status/{token}:

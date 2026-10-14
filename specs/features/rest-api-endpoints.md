@@ -25,7 +25,8 @@ token that identifies it.
 **Request:** `multipart/form-data`, with two parts, both required:
 
 - `title`: the document's title. It must not be blank.
-- `contents`: the document's file. Its type and size are not checked.
+- `contents`: the document's file. Its type is not checked. It may be at most 1 MB, and the request
+  at most 10 MB: Spring Boot's multipart defaults, which the application does not change.
 
 ```bash
 curl -X POST http://localhost:8080/v1/dsh/document/submit \
@@ -76,6 +77,7 @@ Recorded against a running `dsh-rest-api` on 2026-10-14 (story `#162`,
 | `/submit`, and the controller catches any other exception | `200` | `TokenDto`: `token` `ERROR`, `message` `Error submitting file: <reason>` |
 | `/submit` without `title` or without `contents` | `400` | `ErrorBody` |
 | `/submit` with a body that is not `multipart/form-data` | `400` | `ErrorBody` |
+| `/submit` with a file over 1 MB, or a request over 10 MB | `500` | `ErrorBody`. Spring Boot's multipart defaults reject the upload before the controller runs |
 | `/submit` while the document store cannot be reached | `200` | `TokenDto`: a token, `message` `""`. The store runs afterwards and fails, so the document is not stored and its token is never found |
 | `/status/{token}` for a known token | `200` | `DocumentStatusDto`: the status and its message |
 | `/status/{token}` for an unknown token | `200` | `DocumentStatusDto`: `status` `TOKEN_NOT_FOUND`, `message` `No token was found with the contents: <token>` |
