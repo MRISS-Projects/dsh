@@ -66,9 +66,12 @@ From ADR-003 section 1, "The flow", unless an item says otherwise.
     message is consumed. It is not retried.
   - A store's failure is retried by redelivery. Nothing is recorded, the message is not consumed,
     and no message is lost. The number of deliveries is a setting of the transport (Wave 6).
-  - A failed send on a hop records the hop's `…_ERROR` status.
+- **A failed send on a hop** records the hop's `…_ERROR` status, at the recorder's points 2 and 7,
+  and is final (Wave 2 task 1; ADR-003 section 1, "Failures", second row). What the publisher tries
+  again before it reports the failure is Wave 6's to settle.
 - **Repeats** (Wave 2 task 4, ADR-003 section 1 "Compare-and-set"):
-  - Every stage is idempotent: running it twice for one document leaves the same result.
+  - Every stage is idempotent: running it twice for one document leaves the same result (Wave 3,
+    which builds the stages; ADR-003 section 1, "A stage").
   - A repeat resumes from the document's status. It does not run again a stage the document is past.
   - When the sender has recorded a hop's error and the message arrives all the same, the first write
     wins.

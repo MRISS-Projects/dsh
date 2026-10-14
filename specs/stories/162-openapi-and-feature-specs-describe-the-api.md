@@ -782,3 +782,10 @@ fixed, each checked red before the fix and green after it.
    exception's `getMessage()`. Fix: the departure is listed in the YAML's `info.description` and in
    `rest-api-endpoints.md`. No issue plans it: `#138`'s criteria change the status codes, not the
    message.
+9. **Minor: two Planned items cited a task that does not plan them.** "A failed send on a hop
+   records the hop's `…_ERROR` status" sat under Wave 2 task 4, which does not list it. Recording it
+   is the status recorder's points 2 and 7 (Wave 2 task 1, ADR-003 section 1, "Failures", second
+   row), and what the publisher retries first is Wave 6's. Fix: the item stands on its own with
+   those citations. The same check found a second one the review had not named: "every stage is
+   idempotent" sat under Wave 2 task 4 too, but the PRD says it of Wave 3's stages, and ADR-003
+   states it under "A stage". It now cites both.
