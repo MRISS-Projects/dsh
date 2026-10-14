@@ -39,7 +39,7 @@ curl -X POST http://localhost:8080/v1/dsh/document/submit \
 {"token":"2026101461d279be-cc9e-40f3-a373-cd3fdabdcdf7","message":""}
 ```
 
-- **The answer is sent before the document is stored.** The store and the enqueue run after the
+- **`/submit` does not wait for the store or the enqueue.** Both run asynchronously and race the
   response, so `/status` can answer `TOKEN_NOT_FOUND` for a moment (from the code: in 20 tries a
   live run never saw it, because the store finished first), and a store that cannot be reached does
   not fail the submission.

@@ -52,11 +52,10 @@ paths:
         Stores a document and queues it for processing, and answers with the token that identifies
         it.
 
-        - **The answer is sent before the document is stored.** The store and the enqueue run
-          asynchronously after the response, so `/status` can answer `TOKEN_NOT_FOUND` for a
-          moment (from the code; a live run never saw it in 20 tries), and a store that cannot be
-          reached does not fail the submission. Wave 2 task 1
-          (`specs/product/PRD.md`) changes this.
+        - **`/submit` does not wait for the store or the enqueue.** Both run asynchronously and
+          race the response, so `/status` can answer `TOKEN_NOT_FOUND` for a moment (from the
+          code; a live run never saw it in 20 tries), and a store that cannot be reached does not
+          fail the submission. Wave 2 task 1 (`specs/product/PRD.md`) changes this.
         - **Every submission gets a new token**, the same file included.
         - **The token is opaque** to a client.
         - **A rejected submission answers `200`**, with `token` `ERROR` and the reason in

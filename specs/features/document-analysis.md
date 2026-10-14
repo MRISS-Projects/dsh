@@ -13,9 +13,9 @@ submitted document is stored and its id is queued, and no analysis runs.
 1. It reads the file into the document, computes its SHA-256 hash, and gives it a new token. The
    file's type is not checked. A file over 1 MB never reaches the controller: Spring Boot's
    multipart default rejects it with `500` (`./rest-api-endpoints.md`).
-2. It answers with the token (`./rest-api-endpoints.md`).
-3. After answering, asynchronously, it stores the document as `QUEUED_FOR_INDEXING` and sends its
-   id to RabbitMQ. The enqueue's outcome gives `QUEUED_FOR_INDEXING_SUCCESS` or
+2. It starts, asynchronously, the store of the document as `QUEUED_FOR_INDEXING` and the send of
+   its id to RabbitMQ.
+3. It answers with the token, without waiting for step 2 (`./rest-api-endpoints.md`). The enqueue's outcome gives `QUEUED_FOR_INDEXING_SUCCESS` or
    `QUEUED_FOR_INDEXING_ERROR` (`./indexing-workflow.md`).
 
 The document is stored in MongoDB with the original file's bytes in the record.

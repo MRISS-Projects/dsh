@@ -11,8 +11,8 @@ through is decided by ADR-003 (`../architecture/ADR-003-document-pipeline.md`), 
 
 ### The enqueue
 
-After `/submit` has answered, `DocumentSubmissionServiceImpl.storeDocumentAndQueueForProcessing()`
-runs asynchronously (`@Async`):
+`/submit` starts `DocumentSubmissionServiceImpl.storeDocumentAndQueueForProcessing()`
+asynchronously (`@Async`) and answers without waiting for it:
 
 1. It advances the document from `CREATED` to `QUEUED_FOR_INDEXING` and stores it. That is the
    document's first store, so a client never reads `CREATED`.
@@ -38,8 +38,8 @@ written. They are all listed, with their transitions, in
 
 - **An enqueue's outcome can be applied to the wrong document** when submissions overlap: every
   in-flight handler receives every confirm (`#142`).
-- **A store failure is not visible to the client** that submitted the document, because the store
-  runs after the response. `/status` answers `500` for as long as the store cannot be reached.
+- **A store failure is not visible to the client** that submitted the document, because `/submit`
+  does not wait for the store. `/status` answers `500` for as long as the store cannot be reached.
 
 ## Planned
 

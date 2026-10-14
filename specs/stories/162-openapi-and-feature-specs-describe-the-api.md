@@ -765,3 +765,8 @@ fixed, each checked red before the fix and green after it.
    from the code and as never seen in 20 tries, in the YAML and in `rest-api-endpoints.md`. The
    "any other exception" row is marked from the code. The outcomes table's heading names the
    marker.
+5. **Minor: the order of the response and the store was stated as a guarantee.** "The answer is
+   sent before the document is stored", and "after answering" in two specs. The `@Async` call is
+   started before the method returns, and the two race: B2 and B15 show the store usually wins.
+   Fix: "`/submit` does not wait for the store or the enqueue", in the YAML and in the three specs
+   that said it. §3.2's wording above is the design as written and is left as it was.
