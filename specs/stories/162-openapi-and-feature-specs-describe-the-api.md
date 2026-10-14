@@ -770,3 +770,7 @@ fixed, each checked red before the fix and green after it.
    started before the method returns, and the two race: B2 and B15 show the store usually wins.
    Fix: "`/submit` does not wait for the store or the enqueue", in the YAML and in the three specs
    that said it. §3.2's wording above is the design as written and is left as it was.
+6. **Minor: "Where it stops" left out `QUEUED_FOR_INDEXING`.** `DocumentEnqueueResponseMessageHandler`
+   advances the document only when a confirm, nack or return reaches it, and stores it once more
+   afterwards. If neither happens, or the second store fails, the document stays where the first
+   store left it. Fix: `indexing-workflow.md` says so, as from the code.

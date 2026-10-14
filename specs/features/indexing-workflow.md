@@ -34,6 +34,10 @@ Nothing consumes `si.test.queue`. `dsh-doc-indexer-worker` holds one class,
 written. They are all listed, with their transitions, in
 `../architecture/document-status-workflow.md`.
 
+A document also stays at `QUEUED_FOR_INDEXING`, with nothing to move it on, when no confirm, nack
+or return ever reaches its handler, or when the handler's second store fails. Both come from the
+code; neither was observed.
+
 ### Known defects
 
 - **An enqueue's outcome can be applied to the wrong document** when submissions overlap: every
