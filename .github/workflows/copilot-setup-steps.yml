@@ -59,7 +59,7 @@ jobs:
 
       # Same settings as ci.yml. The values stay ${env.*} references, so Maven
       # reads the token from the environment at run time and it is never written
-      # to disk. The mongo.* values go with the rest of them in Wave 1 task 8.
+      # to disk.
       - name: Configure Maven settings for GitHub Packages
         run: |
           mkdir -p ~/.m2
@@ -91,10 +91,6 @@ jobs:
                       <id>github-packages</id>
                       <properties>
                           <github.personal.token>${env.PACKAGES_READ_TOKEN}</github.personal.token>
-                          <mongo.host>localhost</mongo.host>
-                          <mongo.port>27017</mongo.port>
-                          <mongo.user>dshuser</mongo.user>
-                          <mongo.password>dshpass</mongo.password>
                       </properties>
                       <repositories>
                           <repository>
