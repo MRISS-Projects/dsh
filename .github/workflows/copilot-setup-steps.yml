@@ -1,0 +1,127 @@
+name: Copilot Setup Steps
+
+# Prepares the ephemeral environment of the Copilot cloud agent (the agent
+# behind "Fix with Copilot" and @copilot on a pull request) before it starts
+# work. Without it the agent has no ~/.m2/settings.xml, so Maven cannot resolve
+# the MRISS parent POM from GitHub Packages.
+#
+# GitHub runs this file only from the default branch, and only a job named
+# copilot-setup-steps. The triggers below let it be tested by hand and on any
+# change to it.
+#
+# PACKAGES_READ_TOKEN must be stored as an Agents secret
+# (Settings -> Secrets and variables -> Agents). The agent cannot read Actions
+# secrets, so the one ci.yml uses does not reach it. Use a classic PAT holding
+# the "read:packages" scope and no other scope, as for ci.yml: the agent sees
+# it as an environment variable.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    env:
+      PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Maven 3.9.16
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: '3.9.16'
+
+      - name: Check the package credential is present
+        run: |
+          if [ -z "$PACKAGES_READ_TOKEN" ]; then
+            echo "::error::PACKAGES_READ_TOKEN is unavailable to the Copilot agent. Add it under Settings → Secrets and variables → Agents; Actions secrets do not reach the agent."
+            exit 1
+          fi
+
+      # Same settings as ci.yml. The values stay ${env.*} references, so Maven
+      # reads the token from the environment at run time and it is never written
+      # to disk. The mongo.* values go with the rest of them in Wave 1 task 8.
+      - name: Configure Maven settings for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                        https://maven.apache.org/xsd/settings-1.0.0.xsd">
+              <servers>
+                  <server>
+                      <id>MRISS-Projects-maven-repo</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.PACKAGES_READ_TOKEN}</password>
+                  </server>
+                  <server>
+                      <id>MRISS-Projects-maven-repo-plugins</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.PACKAGES_READ_TOKEN}</password>
+                  </server>
+                  <server>
+                      <id>github.com</id>
+                      <username>${env.GITHUB_ACTOR}</username>
+                      <password>${env.PACKAGES_READ_TOKEN}</password>
+                  </server>
+              </servers>
+              <profiles>
+                  <profile>
+                      <id>github-packages</id>
+                      <properties>
+                          <github.personal.token>${env.PACKAGES_READ_TOKEN}</github.personal.token>
+                          <mongo.host>localhost</mongo.host>
+                          <mongo.port>27017</mongo.port>
+                          <mongo.user>dshuser</mongo.user>
+                          <mongo.password>dshpass</mongo.password>
+                      </properties>
+                      <repositories>
+                          <repository>
+                              <id>MRISS-Projects-maven-repo</id>
+                              <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+                              <releases><enabled>true</enabled></releases>
+                              <snapshots><enabled>true</enabled></snapshots>
+                          </repository>
+                      </repositories>
+                      <pluginRepositories>
+                          <pluginRepository>
+                              <id>MRISS-Projects-maven-repo-plugins</id>
+                              <url>https://maven.pkg.github.com/MRISS-Projects/maven-repo</url>
+                              <releases><enabled>true</enabled></releases>
+                              <snapshots><enabled>true</enabled></snapshots>
+                          </pluginRepository>
+                      </pluginRepositories>
+                  </profile>
+              </profiles>
+              <activeProfiles>
+                  <activeProfile>github-packages</activeProfile>
+              </activeProfiles>
+          </settings>
+          EOF
+
+      # Resolves the parent POM, the plugins and the dependencies, and installs
+      # the modules, so the agent's first build starts from a warm ~/.m2. Tests
+      # and the coverage gate are left to the agent's own build and to CI.
+      - name: Warm the Maven repository
+        run: mvn -B install -DskipTests -Djacoco.skip=true --file pom.xml
