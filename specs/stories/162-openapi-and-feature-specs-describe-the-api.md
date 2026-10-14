@@ -323,6 +323,7 @@ changes.
 | `specs/features/indexing-workflow.md` | Rewritten (§3.3) |
 | `specs/features/smart-highlighting.md` | Rewritten (§3.3) |
 | `specs/stories/162-openapi-and-feature-specs-describe-the-api.md` | This spec; §3.2 corrected by Task 1 if needed, §8 filled in |
+| `specs/architecture/ADR-001-GCP-based-components.md` | One parenthetical, which cited `document-analysis.md`'s removed FR001 and its 50 MB (added in the local review, §8.6) |
 
 Nothing else. Logs and scratch output go to `.logs/`, which is gitignored.
 
@@ -686,7 +687,10 @@ one `multipart/form-data` body.
   target, which Wave 9 task 1 plans. That also corrects §3.4: the 30-second figure is planned, not
   unplanned. The 10 concurrent tasks stay removed. Every other ID is dropped. The FR references in
   the poms and in `specs/devops/` name other documents' requirements. §3.3 and §3.4 are corrected
-  above, and the change is its own commit.
+  above, and the change is its own commit. (Corrected in the local review: the wider grep also
+  matched `ADR-001-GCP-based-components.md:121`, which cites `document-analysis.md`'s FR001 for a
+  50 MB limit. That FR001 and the limit are removed here, so the citation was dangling and this
+  paragraph missed it. The ADR's parenthetical is corrected, §8.6 item 2.)
 - **Task 4.** Red: both files matched (11 lines in `document-analysis.md`, 7 in
   `smart-highlighting.md`). Green: no match.
 
@@ -727,3 +731,9 @@ fixed, each checked red before the fix and green after it.
    three warnings kept as known: `info-license`, `no-server-example.com` (the server is a local
    run), and `operation-4xx-response` (`/status` answers no `4xx`, the `#138` departure).
    `openapi-generator-cli validate` and AC001 stay green.
+2. **Important: a dangling citation outside `specs/features/`.** `ADR-001-GCP-based-components.md:121`
+   gave the original file's size as "up to 50 MB per FR001 in `document-analysis.md`", both of
+   which this story removes, and §8.3 said no such citation existed. Task 4 Step 1's regex could not
+   match it, because the ID comes before the file name. Fix: the parenthetical now says no
+   requirement bounds the size. The ADR's reason for moving the file to GCS, Firestore's 1 MiB limit
+   on one document, holds without it. §5 lists the file, and §8.3 carries the correction.
