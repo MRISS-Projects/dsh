@@ -96,7 +96,10 @@ task 2), and keyword and sentence ranking with bounded limits (Wave 3 tasks 3 to
 - **Tools on this machine.** No `jq`, `yq` or Node on `PATH`. `jq` is `~/apps/jq/jq.exe`; markdownlint
   is under `~/apps/node-v24.21.0-win-x64`, put on `PATH` per command. The validator is Java:
   `org.openapitools:openapi-generator-cli:7.26.0`, the latest release on 2026-10-14. Docker 29.8.1
-  is running.
+  is running. (Corrected in the local review: CI's validator is redocly, not this one.
+  `spec-validation.yml` runs `redocly lint specs/api/openapi/dsh-rest-api.yaml` with the
+  `recommended` rules, so AC004 is redocly's verdict, run with `npx @redocly/cli`.
+  `openapi-generator-cli` stays as the converter AC001's check uses, and as a second validator.)
 - **A local run needs MongoDB and RabbitMQ** until Wave 1 task 8 and Wave 2 task 1 remove them. The
   `http-integration-tests` profile of `dsh-rest-api/pom.xml` shows how: `mongo:6` with
   `src/test/docker/mongo-init.js` mounted, `rabbitmq:3`, and the application started with
@@ -187,7 +190,10 @@ task 2), and keyword and sentence ranking with bounded limits (Wave 3 tasks 3 to
   - `ErrorBody`: Spring Boot's default error attributes, with exactly the fields Task 1's `400` body
     holds, each typed as observed. Task 1 observed `timestamp` (date-time string), `status`
     (integer), `error` (string) and `path` (string), and no `message`.
-- **No `securitySchemes`, no `security`, no `parameters` or `responses` components**, and none of
+- **`security: []` on each operation**, which declares that no authentication applies. It is not a
+  security scheme. redocly's `security-defined` rule fails an operation that declares no security
+  at all. (Corrected in the local review: this line said "no `security`".)
+- **No `securitySchemes`, no `parameters` or `responses` components**, and none of
   `AnalysisOptions`, `AnalysisResult`, `Highlight`, `HighlightCollection`, `Position`,
   `HealthStatus`, `ErrorResponse`.
 
@@ -301,8 +307,8 @@ changes.
 |---|---|---|
 | AC001 | The operation sets from Springfox and from the YAML are equal (§3.1 decision 6) | Task 2 Steps 1 and 5, Task 5 |
 | AC002 | Each documented outcome matches the response Task 1 recorded; `DocumentResourceHttpIT` passes | Task 1, Task 2 Step 4, Task 5 |
-| AC003 | No `securitySchemes` or `security` key; Task 1's calls were made at the `servers` URL | Task 2 Step 5 |
-| AC004 | `openapi-generator-cli validate` exits 0 | Task 2 Steps 1 and 5 |
+| AC003 | No `securitySchemes` key, and every `security` is `[]`; Task 1's calls were made at the `servers` URL | Task 2 Step 5 |
+| AC004 | `redocly lint`, CI's command, exits 0; `openapi-generator-cli validate` exits 0 | Task 2 Steps 1 and 5 |
 | AC005 | The terms of §3.4 appear in `specs/features/` only where a Planned section names a wave task; every Planned item names one | Task 3, Task 4, Task 5 |
 | AC006 | `indexing-workflow.md` has no `Solr`, `3 times`, `Analysis timeout` | Task 3 Steps 1 and 3 |
 | AC007 | markdownlint exits 0; `git diff --name-only DEVELOP...HEAD` lists only `specs/` | Task 5 |
@@ -651,7 +657,8 @@ one `multipart/form-data` body.
   `generate -g openapi` logs one `WARN Failed to get the schema name: null`, from the inline
   multipart schema it skips as an unused form model; `openapi.json` is written in full.
 - **AC003.** `grep -nE 'securitySchemes|^security:|bearer'` prints nothing. `servers` is
-  `http://localhost:8080`, the URL every call of Task 1 was made at.
+  `http://localhost:8080`, the URL every call of Task 1 was made at. Since the local review each
+  operation declares `security: []` (§8.6).
 - **AC002, Step 4.** Each recorded body's field names were compared with its documented schema's
   properties, by `jq` over the generated `openapi.json`:
 
@@ -707,3 +714,16 @@ one `multipart/form-data` body.
   of two sentences, that score the same. Nothing fills the sets today, so it is latent. Wave 3 tasks
   4 and 6 rank into them. `smart-highlighting.md` states it under Today. Filed as `#163`, with no
   milestone.
+
+### 8.6 The local review
+
+Step 5's review found ten things to fix, one critical, three important and six minor. All ten were
+fixed, each checked red before the fix and green after it.
+
+1. **Critical: CI's validator failed the new YAML.** `spec-validation.yml` runs `redocly lint`,
+   which AC004 had not named. Red: `@redocly/cli` 2.63.0 gave "Validation failed with 2 errors and
+   3 warnings", the errors being `security-defined` on both operations. The old file had passed.
+   Fix: `security: []` on each operation. Green: exit 0, "Your API description is valid", with
+   three warnings kept as known: `info-license`, `no-server-example.com` (the server is a local
+   run), and `operation-4xx-response` (`/status` answers no `4xx`, the `#138` departure).
+   `openapi-generator-cli validate` and AC001 stay green.

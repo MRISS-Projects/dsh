@@ -13,7 +13,8 @@ info:
       resources. No issue plans a change.
     - A failure the controller handles answers `200`, with the failure in the body: a rejected
       submission and an unknown token. `#138` plans the `4xx` codes.
-    - No request is authenticated. No issue plans authentication.
+    - No request is authenticated, so each operation declares `security: []`. No issue plans
+      authentication.
     - Errors that reach Spring Boot answer its default error body (`ErrorBody`), not the error body
       the standard describes.
 
@@ -46,6 +47,7 @@ paths:
         - documents
       summary: Submit a document for processing
       operationId: submitDocument
+      security: []
       description: |
         Stores a document and queues it for processing, and answers with the token that identifies
         it.
@@ -119,6 +121,7 @@ paths:
         - documents
       summary: Get a document's status
       operationId: getDocumentStatus
+      security: []
       description: |
         Answers the status of the document a token identifies, and the status's message.
 
