@@ -29,8 +29,8 @@ import com.mriss.dsh.restapi.rest.DocumentResource;
 
 /**
  * Calls the REST API over HTTP against the server that the {@code http-integration-tests} profile
- * starts, backed by the MongoDB and RabbitMQ containers it starts. No Spring context runs in this
- * JVM: the application under test is a separate process.
+ * starts, which keeps documents in its own memory, with RabbitMQ in the container the profile
+ * starts. No Spring context runs in this JVM: the application under test is a separate process.
  */
 public class DocumentResourceHttpIT {
 
@@ -44,7 +44,7 @@ public class DocumentResourceHttpIT {
 
 	private static final int CONNECT_TIMEOUT_MILLIS = 5_000;
 
-	/** Above the MongoDB driver's 30 s server-selection timeout, so that failure still reports as a 500. */
+	/** So that a server that hangs fails the test rather than the build. */
 	private static final int READ_TIMEOUT_MILLIS = 60_000;
 
 	private static final ParameterizedTypeReference<Map<String, Object>> JSON =

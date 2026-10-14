@@ -270,11 +270,6 @@
 									<maxAttempts>120</maxAttempts>
 									<arguments>
 										<argument>--server.port=${dsh.it.http.port}</argument>
-										<argument>--mongo.host=localhost</argument>
-										<argument>--mongo.port=${dsh.it.mongo.port}</argument>
-										<!-- Must match the user src/test/docker/mongo-init.js creates. -->
-										<argument>--mongo.user=dshuser</argument>
-										<argument>--mongo.password=dshpass</argument>
 										<argument>--spring.rabbitmq.host=localhost</argument>
 										<argument>--spring.rabbitmq.port=${dsh.it.rabbitmq.port}</argument>
 									</arguments>
@@ -302,25 +297,6 @@
 							<skip>${skipITs}</skip>
 							<containerNamePattern>dsh-it-%a-%t</containerNamePattern>
 							<images>
-								<image>
-									<alias>mongo</alias>
-									<name>mongo:6</name>
-									<run>
-										<ports>
-											<port>127.0.0.1:dsh.it.mongo.port:27017</port>
-										</ports>
-										<volumes>
-											<bind>
-												<volume>${project.basedir}/src/test/docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro</volume>
-											</bind>
-										</volumes>
-										<wait>
-											<!-- The init scripts run on a temporary mongod that also logs this line. -->
-											<log>(?s)init process complete.*Waiting for connections</log>
-											<time>90000</time>
-										</wait>
-									</run>
-								</image>
 								<image>
 									<alias>rabbitmq</alias>
 									<name>rabbitmq:3</name>
