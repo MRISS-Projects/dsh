@@ -797,3 +797,19 @@ fixed, each checked red before the fix and green after it.
 After the ten fixes: `.logs/162-review-checks.sh`, one check per finding, failed all 12 checks
 before the fixes and passes all 12 after them. AC001, both validators, markdownlint and AC007 were
 run again on the final tree; the results follow this list in §8.7.
+
+### 8.7 The final tree, after the local review
+
+- **AC001:** `AC001: operations match`.
+- **AC004:** `redocly lint`, 2.63.0, exits 0 with the three warnings of §8.6 item 1.
+  `openapi-generator-cli validate` reports `No validation issues detected.`
+- **AC002:** `submitDocument` documents `200`, `400` and `500`, and `getDocumentStatus` documents
+  `200` and `500`. Every recorded body's fields equal its schema's, B12 included.
+- **AC003:** no `securitySchemes`, no root `security` and no `bearer`. Each operation declares
+  `security: []`.
+- **AC005 and AC006:** the grep of Task 5 Step 1 matches only `rest-api-endpoints.md:99`, a
+  departure. `indexing-workflow.md` has no `Solr`, `3 times` or `Analysis timeout`.
+- **AC007:** markdownlint exits 0. `git diff --name-only DEVELOP...HEAD` lists the YAML, the four
+  feature specs, this file, and `ADR-001-GCP-based-components.md` (§5, §8.6 item 2), all under
+  `specs/`.
+- **Containers:** both runs removed theirs, and the test files of B12 and B13 were deleted.
