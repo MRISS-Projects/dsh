@@ -162,17 +162,21 @@ task 2), and keyword and sentence ranking with bounded limits (Wave 3 tasks 3 to
     `blankTitle` (`token` `ERROR`, `message`
     `Error submitting file: Document title and contents can't be null.`). The description says a
     caught failure also answers here, with `token` `ERROR` (`#138`).
-  - `400`: `ErrorBody`, "a part is missing", with the body Task 1 captured as its example.
-  - Any further code Task 1 observes for this operation, with its body.
+  - `400`: `ErrorBody`, "a part is missing, or the request is not `multipart/form-data`", with the
+    body Task 1 captured as its example. (Corrected by Task 1: B6, a JSON body, answers this same
+    `400`.)
+  - No further code: B11 showed that a store that cannot be reached still answers `200` with a
+    token.
 - **`GET /v1/dsh/document/status/{token}`**, `operationId: getDocumentStatus`, tag `documents`.
   - Path parameter `token`, `string`, required: "the token `/submit` returned".
   - Description: references `specs/features/rest-api-endpoints.md` and
     `specs/features/indexing-workflow.md`.
-  - `200`: `DocumentStatusDto`, with examples `known` (the status Task 1 recorded, and its message)
-    and `tokenNotFound` (`TOKEN_NOT_FOUND`, `No token was found with the contents: <token>`). The
-    description says an unknown token answers here (`#138`).
-  - `500`: `ErrorBody`, "the document store cannot be reached", if Task 1 observes it, with the body
-    it captured.
+  - `200`: `DocumentStatusDto`, with examples `known` (`QUEUED_FOR_INDEXING_SUCCESS` and its
+    message, the status Task 1 recorded) and `tokenNotFound` (`TOKEN_NOT_FOUND`,
+    `No token was found with the contents: <token>`). The description says an unknown token answers
+    here (`#138`).
+  - `500`: `ErrorBody`, "the document store cannot be reached", with the body B10 captured. B10
+    answered after about 30 seconds, the store client's own timeout, and the description says so.
 - **`components.schemas`:**
   - `TokenDto`: `token` (`string`: "the document's token, or `ERROR` when the submission failed"),
     `message` (`string`: "empty on success; the reason on failure").
@@ -181,7 +185,8 @@ task 2), and keyword and sentence ranking with bounded limits (Wave 3 tasks 3 to
     `specs/architecture/document-status-workflow.md`; or `TOKEN_NOT_FOUND`"), `message`
     (`string`: "the status's message, or the reason the token was not found").
   - `ErrorBody`: Spring Boot's default error attributes, with exactly the fields Task 1's `400` body
-    holds, each typed as observed.
+    holds, each typed as observed. Task 1 observed `timestamp` (date-time string), `status`
+    (integer), `error` (string) and `path` (string), and no `message`.
 - **No `securitySchemes`, no `security`, no `parameters` or `responses` components**, and none of
   `AnalysisOptions`, `AnalysisResult`, `Highlight`, `HighlightCollection`, `Position`,
   `HealthStatus`, `ErrorResponse`.
@@ -201,7 +206,10 @@ Every file takes this outline:
 
 A file may give **Today** or **Planned** subsections. Requirement IDs (`FR001`…) are dropped: they
 named requirements that no wave plans, and none is referenced from outside the file (Task 4 checks
-this before removing them).
+this before removing them). (Corrected during the build: Task 4's check found two that are.
+`indexing-workflow.md`'s FR001 is cited by ADR-001 and ADR-003, and its FR004 by ADR-001 and by
+the PRD's Wave 9 task 1. Both are kept in that file's Planned section, each on what still holds.
+Every other ID is dropped.)
 
 **`rest-api-endpoints.md` — the readable form of §3.2.**
 
@@ -215,10 +223,12 @@ this before removing them).
 
 **`document-analysis.md` — what happens to a submitted document.**
 
-- Today: `/submit` reads the file, stores the document as `CREATED` after answering, and sends its
-  id to RabbitMQ; the status then follows the enqueue's outcome, recorded by Task 1; nothing
-  consumes the queue, and the analysis modules are not wired to it. The file's type and size are
-  not checked.
+- Today: `/submit` reads the file and, after answering, stores the document as
+  `QUEUED_FOR_INDEXING` and sends its id to RabbitMQ; the enqueue's outcome then gives
+  `QUEUED_FOR_INDEXING_SUCCESS`, where Task 1's document stopped, or `QUEUED_FOR_INDEXING_ERROR`;
+  nothing consumes the queue, and the analysis modules are not wired to it. The file's type and
+  size are not checked. (Corrected by Task 1: the document is never stored as `CREATED`, because
+  `storeDocumentAndQueueForProcessing()` advances it before the first store.)
 - Planned: one flow carries a document through every status to `SENTENCES_PROCESSED_SUCCESS`
   (Wave 2 task 1); text extraction from PDF and HTML (Wave 3 task 1); corpus term statistics
   (Wave 3 task 2); TF and IDF variants and keyword ranking (Wave 3 tasks 3 and 4); sentence
@@ -235,7 +245,10 @@ this before removing them).
   processing; text extraction as the indexing stage (Wave 3 task 1); corpus term statistics in place
   of a search engine (Wave 3 task 2, ADR-003 section 5).
 - Removed: Solr everywhere (ADR-003 sections 2 and 6), the three retries and the "Analysis timeout"
-  row (overridden by ADR-003 section 1, "Failures"), FR004's SLAs (§3.4).
+  row (overridden by ADR-003 section 1, "Failures"), FR004's 10 concurrent tasks (§3.4).
+- Kept as Planned (corrected during the build): FR001's asynchronous response and at-least-once
+  delivery (ADR-003 section 1, "Failures"), and FR004's 30-second target for 95% of documents
+  under 10 MB (Wave 9 task 1).
 
 **`smart-highlighting.md` — a document's smart highlights are its keywords and top sentences.**
 
@@ -259,7 +272,7 @@ PRD first.
 | Semantic analysis, pattern recognition, named entity recognition | `document-analysis.md`, `smart-highlighting.md` |
 | DOC and DOCX, the 50 MB limit | `document-analysis.md`, `rest-api-endpoints.md` |
 | Highlight IDs, types, confidence, positions, metadata, filters, pagination, ranking strategy | OpenAPI, `smart-highlighting.md`, `rest-api-endpoints.md` |
-| The 30-second analysis SLA, 10 concurrent tasks | `document-analysis.md`, `indexing-workflow.md` |
+| 10 concurrent tasks; the 30-second SLA in `document-analysis.md`, which `indexing-workflow.md`'s FR004 now carries as planned (Wave 9 task 1, corrected during the build) | `document-analysis.md`, `indexing-workflow.md` |
 | The error body of `api-standards.md` | OpenAPI, `rest-api-endpoints.md` |
 | Solr indexing and every Solr row | `indexing-workflow.md`, `document-analysis.md` (ADR-003 removes Solr) |
 | Three retries of a failed task, "Analysis timeout" | `indexing-workflow.md` (ADR-003 overrides them) |
@@ -592,4 +605,104 @@ Produces the operation IDs `submitDocument` and `getDocumentStatus`, and the sch
 
 ## 8. Verification results
 
-Filled in during the build.
+Built on 2026-10-14, against `dsh-rest-api-0.4.0-SNAPSHOT.jar` from `mvn -B -DskipTests install`
+(`maven exit=0`). Scratch output is in `.logs/162-*`, which is gitignored.
+
+### 8.1 Task 1: the live baseline
+
+MongoDB (`mongo:6`) on `127.0.0.1:27117` and RabbitMQ (`rabbitmq:3`) on `127.0.0.1:5772`;
+`Started DshRestApplication`, Tomcat on 8080 with context path `''`.
+
+| # | Call | Observed | Against "Expected" |
+|---|---|---|---|
+| B1 | `POST /submit`, title and file | `200` `{"token":"2026101461d279be-cc9e-40f3-a373-cd3fdabdcdf7","message":""}` | as expected |
+| B2 | `GET /status/<B1>` at once, then after 10 s | `200` `QUEUED_FOR_INDEXING` / "Document id sent to the indexing queue to be processed.", then `200` `QUEUED_FOR_INDEXING_SUCCESS` / "Document id successfuly queued for indexing." | **differs**: the first answer is neither `TOKEN_NOT_FOUND` nor `CREATED`. The document is advanced to `QUEUED_FOR_INDEXING` before its first store, so `CREATED` is never stored. A document stops at `QUEUED_FOR_INDEXING_SUCCESS` |
+| B3 | `POST /submit`, blank title | `200` `{"token":"ERROR","message":"Error submitting file: Document title and contents can't be null."}` | as expected |
+| B4 | `POST /submit`, no `contents` | `400` `{"timestamp":"2026-10-14T16:10:01.339+00:00","status":400,"error":"Bad Request","path":"/v1/dsh/document/submit"}` | as expected; the body has no `message` |
+| B5 | `POST /submit`, no `title` | `400`, the same four fields | as expected |
+| B6 | `POST /submit`, JSON `{}` | `400`, the same four fields | recorded: a non-multipart body is the same `400` |
+| B7 | `GET /status/no-such-token` | `200` `{"status":"TOKEN_NOT_FOUND","message":"No token was found with the contents: no-such-token"}` | as expected |
+| B8 | `GET /v2/api-docs?group=dsh-app` | `200`, Swagger 2.0, paths `/v1/dsh/document/status/{token}` and `/v1/dsh/document/submit` | as expected: Springfox answers, so decision 6's fallback was not needed |
+| B9 | `/actuator/health`, `/actuator/info` | `200` `{"status":"UP"}`, `200` `{}` | recorded |
+| B10 | MongoDB stopped, `GET /status/<B1>` | `500` `{"timestamp":"2026-10-14T16:10:43.987+00:00","status":500,"error":"Internal Server Error","path":"/v1/dsh/document/status/2026101461d279be-cc9e-40f3-a373-cd3fdabdcdf7"}`, after 31 s (`MongoTimeoutException: Timed out after 30000 ms`) | as expected |
+| B11 | MongoDB stopped, `POST /submit` | `200` with a token, in under 1 s | as expected. The app was stopped while the `@Async` store (`task-2`) was still waiting on MongoDB's 30-second timeout, so its failure was not seen. That the document is then not stored comes from the code: `storeDocument` throws outside the `try` in `storeDocumentAndQueueForProcessing()` |
+
+**Corrections made to this file from Task 1** (Step 5): §3.2's `/submit` `400` also covers a
+non-multipart request (B6) and no further code exists (B11); `/status`'s `known` example is
+`QUEUED_FOR_INDEXING_SUCCESS` and its `500` is documented with B10's body and the 30-second wait;
+`ErrorBody` holds `timestamp`, `status`, `error` and `path`. §3.3's `document-analysis.md` Today says
+`QUEUED_FOR_INDEXING`, not `CREATED`. None changes a decision of §3.1.
+
+Springfox's description also lists `201`, `401`, `403` and `404`. Those are Springfox's default
+responses, not codes the application returns, and the YAML does not carry them. It types `contents`
+as a body parameter and `title` as a query parameter, which is how Springfox renders a
+`@RequestParam` beside a `MultipartFile`; the YAML follows the request the run made, two parts of
+one `multipart/form-data` body.
+
+### 8.2 Task 2: the OpenAPI document
+
+- **AC001.** Red on today's file: `diff` showed `GET /documents/{documentId}`,
+  `GET /documents/{documentId}/highlights`, `GET /health`, `POST /documents` against Springfox's
+  `GET /v1/dsh/document/status/{token}` and `POST /v1/dsh/document/submit`. Green after the rewrite,
+  and again in Task 5: `AC001: operations match`. The Springfox side is B8's
+  `.logs/162-api-docs.json`; no operation was written by hand.
+- **AC004.** `openapi-generator-cli` 7.26.0 `validate`: `No validation issues detected.`, exit 0,
+  on the old file and on the new one. So the validator alone would never have caught the drift.
+  `generate -g openapi` logs one `WARN Failed to get the schema name: null`, from the inline
+  multipart schema it skips as an unused form model; `openapi.json` is written in full.
+- **AC003.** `grep -nE 'securitySchemes|^security:|bearer'` prints nothing. `servers` is
+  `http://localhost:8080`, the URL every call of Task 1 was made at.
+- **AC002, Step 4.** Each recorded body's field names were compared with its documented schema's
+  properties, by `jq` over the generated `openapi.json`:
+
+  | Row | Code | Schema | Fields | Result |
+  |---|---|---|---|---|
+  | B1, B3 | `200` | `TokenDto` | `message`, `token` | equal |
+  | B4, B5, B6 | `400` | `ErrorBody` | `error`, `path`, `status`, `timestamp` | equal |
+  | B2, B7 | `200` | `DocumentStatusDto` | `message`, `status` | equal |
+  | B10 | `500` | `ErrorBody` | `error`, `path`, `status`, `timestamp` | equal |
+
+### 8.3 Tasks 3 and 4: the feature specs
+
+- **Task 3.** Red: `indexing-workflow.md` matched `Solr`, `3 times` and `Analysis timeout` on 10 lines,
+  `rest-api-endpoints.md` matched on 11. Green: `indexing-workflow.md` has no match (AC006).
+  `rest-api-endpoints.md` matches on two lines: the departure "not `/api/v1`", and the actuator note
+  of §3.1 decision 5, where `/health` matches as part of `/actuator/health`. That line describes a
+  route outside the contract, not a DSH route.
+- **Task 4 Step 1 found references.** The regex of Step 1 matched only
+  `specs/stories/160-adr-003-document-pipeline.md`, a closed story quoting the old text. A wider
+  `git grep '\bFR00[0-9]'` found the IDs that live documents cite: `indexing-workflow.md`'s FR001 in
+  ADR-003 (section 1, "Failures", and "Consequences for the waves") and ADR-001 (§3.2), and its FR004
+  in ADR-001 (Phase 5, task 5.3) and in the PRD's Wave 9 task 1. By Step 1's rule both IDs are kept in
+  `indexing-workflow.md`, in its Planned section, on the part that still holds: FR001 on the
+  asynchronous response and at-least-once delivery, which ADR-003 keeps, and FR004 on the 30-second
+  target, which Wave 9 task 1 plans. That also corrects §3.4: the 30-second figure is planned, not
+  unplanned. The 10 concurrent tasks stay removed. Every other ID is dropped. The FR references in
+  the poms and in `specs/devops/` name other documents' requirements. §3.3 and §3.4 are corrected
+  above, and the change is its own commit.
+- **Task 4.** Red: both files matched (11 lines in `document-analysis.md`, 7 in
+  `smart-highlighting.md`). Green: no match.
+
+### 8.4 Task 5: the gates and the acceptance checks
+
+- **AC005.** The grep of Step 1 over the four specs matches one line,
+  `rest-api-endpoints.md:94`, a departure. Every Planned item in the four files names a wave task or
+  an issue: Wave 1 tasks 7, 8, 9, 10 and 12, Wave 2 tasks 1 to 5, Wave 3 tasks 1 to 6, Wave 6 and
+  Wave 9 task 1, `#138` and `#142`.
+- **AC007.** markdownlint, the command in `CLAUDE.md`: exit 0. `git diff --name-only DEVELOP...HEAD`
+  lists `specs/api/openapi/dsh-rest-api.yaml`, the four files under `specs/features/` and this
+  file, and nothing else.
+- **Gates 1 and 2.** `mvn -B clean install`: `maven exit=0`, `BUILD SUCCESS` in 1:05,
+  `All coverage checks have been met` in 8 modules.
+- **AC002, pinned.** `mvn -B clean verify -DintegrationTests -pl dsh-rest-api`: `maven exit=0`,
+  `DocumentResourceHttpIT` 4 tests run, 0 failures, 0 errors.
+- **Gate 3** does not apply: no code changed.
+- **Containers.** `dsh-162-mongo` and `dsh-162-rabbit` were removed at the end of Task 1, and
+  `docker ps -a` showed none left after Task 5.
+
+### 8.5 Found along the way, not fixed here
+
+- **Ties in the ranked sets.** `KeywordSorter` and `SentenceSorter` return `0` for two entries with
+  the same score, and `Document`'s `TreeSet`s use them, so a set keeps only one of two keywords, or
+  of two sentences, that score the same. Nothing fills the sets today, so it is latent. Wave 3 tasks
+  4 and 6 rank into them. `smart-highlighting.md` states it under Today. It has no issue.
