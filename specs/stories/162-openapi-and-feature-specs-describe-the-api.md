@@ -705,4 +705,5 @@ one `multipart/form-data` body.
 - **Ties in the ranked sets.** `KeywordSorter` and `SentenceSorter` return `0` for two entries with
   the same score, and `Document`'s `TreeSet`s use them, so a set keeps only one of two keywords, or
   of two sentences, that score the same. Nothing fills the sets today, so it is latent. Wave 3 tasks
-  4 and 6 rank into them. `smart-highlighting.md` states it under Today. It has no issue.
+  4 and 6 rank into them. `smart-highlighting.md` states it under Today. Filed as `#163`, with no
+  milestone.

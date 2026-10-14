@@ -15,7 +15,7 @@ holds a place for both on every document. Nothing computes them yet, and no endp
 - `relevantSentences`, of `Sentence`: a `value`, a `score` and the `paragraph` it comes from.
 
 Both sets are ordered by score, highest first (`KeywordSorter`, `SentenceSorter`). The comparators
-call two entries with the same score equal, so a set keeps only one of them.
+call two entries with the same score equal, so a set keeps only one of them (`#163`).
 
 ### What fills them, and what returns them
 
