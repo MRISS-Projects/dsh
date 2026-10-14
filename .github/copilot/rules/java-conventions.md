@@ -14,7 +14,8 @@
 - Controllers: `*Controller` suffix (e.g., `DocumentController`)
 - DTOs: `*Dto` suffix (e.g., `AnalysisResultDto`)
 - Entities: Descriptive names without suffix (e.g., `Document`, `Highlight`)
-- Repositories: `*Repository` suffix (e.g., `DocumentRepository`)
+- Stores: the interface takes the `*Dao` suffix (e.g., `DocumentDao`); an implementation is prefixed
+  with what it is built on (e.g., `InMemoryDocumentDao`)
 - Configuration classes: `*Configuration` suffix
 
 ## Spring Boot Patterns
@@ -22,7 +23,10 @@
 - Use `@RestController` for API endpoints; pair with `@RequestMapping` at class level
 - Implement service layer with `@Service`; prefer constructor injection over field injection
 - Use `@Component` for utilities and helpers
-- Follow repository pattern with Spring Data (e.g., `MongoRepository`, `JpaRepository`)
+- Reach a service outside the JVM through an interface that names no technology, in its name,
+  its signatures, its types or its exceptions (ADR-003, section 3, rule 1)
+- A consumer names the interface, never an implementation; the implementation is selected by
+  its `dsh.*` key (ADR-003, section 3, rules 2 and 3)
 - Use `@Configuration` and `@Bean` for infrastructure wiring
 - Prefer `@ConfigurationProperties` over `@Value` for grouped configuration
 

@@ -6,7 +6,7 @@ This REST API has three main methods:
 
 1. **`submit`**: Upload a PDF or HTML file.
    - Receives the file.
-   - Stores the file at MongoDB, creating a document in the collection with:
+   - Stores the file in the document store, as a document with:
      - Token
      - Unique hash for the file
      - File contents
@@ -23,4 +23,3 @@ This REST API has three main methods:
 3. **`getResult`**: When processing result is success, retrieves the resulting processing data:
    - List of keywords.
    - List of most relevant sentences associated with their paragraphs.
-
