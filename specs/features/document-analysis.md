@@ -1,99 +1,58 @@
-# Document Analysis Feature Specification
+# Document Analysis Specification
 
 ## Overview
 
-The document analysis feature processes uploaded documents to identify and extract smart highlights based on configurable analysis rules. Analysis is performed asynchronously by the `dsh-doc-analyser` module, orchestrated through the `dsh-doc-indexer-worker`.
+What happens to a document once it is submitted. DSH is planned to extract its text and to rank its
+keywords and its top sentences, which are its smart highlights (`./smart-highlighting.md`). Today a
+submitted document is stored and its id is queued, and no analysis runs.
 
-## Functional Requirements
+## Today
 
-### FR001: Document Upload
+### What `/submit` does with a document
 
-- **Description**: The system shall accept document uploads in PDF, DOC, and DOCX formats
-- **Input**: Document file + optional `AnalysisOptions`
-- **Output**: Document ID + `processing` status
-- **Acceptance Criteria**:
-  - Maximum file size: 50 MB
-  - Supported formats are validated; unsupported formats return HTTP 400
-  - A unique document ID is generated and returned immediately (HTTP 202)
-  - The document is persisted for downstream async processing
+1. It reads the file into the document, computes its SHA-256 hash, and gives it a new token. The
+   file's type and size are not checked.
+2. It answers with the token (`./rest-api-endpoints.md`).
+3. After answering, asynchronously, it stores the document as `QUEUED_FOR_INDEXING` and sends its
+   id to RabbitMQ. The enqueue's outcome gives `QUEUED_FOR_INDEXING_SUCCESS` or
+   `QUEUED_FOR_INDEXING_ERROR` (`./indexing-workflow.md`).
 
-### FR002: Asynchronous Content Analysis
+The document is stored in MongoDB with the original file's bytes in the record.
 
-- **Description**: The system shall analyse document content for highlight candidates via a background worker
-- **Algorithm**: Configurable analysis rules including:
-  - Keyword matching
-  - Semantic analysis
-  - Pattern recognition
-  - Named entity recognition
-- **Performance**: Analysis completes within 30 seconds for documents under 10 MB
-- **Acceptance Criteria**:
-  - Document status transitions: `processing` → `completed` or `failed`
-  - Status can be polled via `GET /api/v1/documents/{documentId}`
-  - Failed analysis updates status to `failed` with an error message
+### What does not happen
 
-### FR003: Highlight Generation
+- **Nothing consumes the queue**, so a document is never analysed.
+- **The analysis modules are not wired to anything.** `dsh-keyword-extractor`,
+  `dsh-top-sentences-extractor` and `dsh-doc-processor-worker` each hold one `Application` class and
+  no analysis code.
+- **No text is extracted** from a file.
 
-- **Description**: The system shall generate highlights with position data and confidence scores
-- **Output**: Position-based highlights with type, confidence, and optional metadata
-- **Confidence Threshold**: Configurable per request (default: 0.7)
-- **Acceptance Criteria**:
-  - Each highlight has a unique ID, text content, start/end position, and confidence score
-  - Highlights with confidence below the threshold are excluded
-  - Highlights are accessible via `GET /api/v1/documents/{documentId}/highlights`
+## Planned
 
-### FR004: Analysis Configuration
-
-- **Description**: Clients shall be able to configure the analysis behaviour per request
-- **Input**: `AnalysisOptions` in the upload request
-- **Configurable Parameters**:
-  - `highlightTypes` – subset of analysis algorithms to apply
-  - `confidenceThreshold` – minimum confidence score
-  - `maxHighlights` – limit on number of returned highlights
-
-## Technical Implementation
-
-### Component Integration
-
-- **dsh-rest-api**: Accepts upload, validates input, returns document ID
-- **dsh-doc-indexer-worker**: Picks up queued documents, orchestrates analysis
-- **dsh-doc-analyser**: Executes analysis algorithms, produces highlights
-- **dsh-data**: Persists documents, analysis results, and highlights
-- **dsh-solr**: Indexes document content for full-text search
-
-### Data Flow
-
-```text
-Client → [POST /documents] → dsh-rest-api
-  → persist document (dsh-data / MongoDB)
-  → enqueue analysis task
-  → return {documentId, status: "processing"}
-
-dsh-doc-indexer-worker (async):
-  → dequeue task
-  → call dsh-doc-analyser.analyze(document)
-  → persist highlights (dsh-data)
-  → index content (dsh-solr)
-  → update status to "completed"
-```
-
-## Testing Requirements
-
-### Unit Tests
-
-- Analysis algorithm validation for each highlight type
-- Configuration parameter boundary tests
-- Error handling: unsupported format, file too large, analysis failure
-
-### Integration Tests
-
-- End-to-end document processing (upload → poll → retrieve highlights)
-- API endpoint validation against OpenAPI spec
-- Performance: analysis within SLA for representative document sizes
+- **One flow carries a document through every status** to `SENTENCES_PROCESSED_SUCCESS`, with
+  pass-through stages at first (Wave 2 task 1, ADR-003 section 1).
+- **MongoDB is replaced** by an in-memory `DocumentDao`, selected by `dsh.persistence` (Wave 1 task
+  8), and the original file leaves the record for a file store, selected by `dsh.file-store` (Wave
+  1 task 10).
+- **The analysis modules become libraries** with no `Application` class, and
+  `dsh-doc-processor-worker` is removed (Wave 2 task 3, ADR-003 section 2).
+- **Text extraction** from PDF and HTML into title, paragraphs, sentences and terms (Wave 3 task 1).
+- **Corpus term statistics**: term frequency per document and document frequency across the corpus
+  (Wave 3 task 2, ADR-003 section 5).
+- **TF and IDF variants**, as the keyword paper defines them (Wave 3 task 3).
+- **Keyword ranking** by a meta-algorithmic combination of those variants, with a limit on the
+  number of keywords returned (Wave 3 task 4).
+- **Sentence similarity to the title**, by the sentence paper's algorithm (Wave 3 task 5).
+- **Sentence ranking**, which returns the top sentences with their paragraph numbers, with a limit
+  on the number returned (Wave 3 task 6).
+- Every algorithm is written against the two reference papers (Wave 1 task 7), and each Wave 3
+  story brings its expected-output fixtures.
 
 ## References
 
-- Architecture: `../architecture/system-design.md`
-- API Specification: `../api/openapi/dsh-rest-api.yaml`
-- Test Plans: `../testing/test-plans/`
-- Test Cases: `../testing/test-cases/`
-- Acceptance Criteria: `../requirements/acceptance-criteria/`
+- ADR-003, the document pipeline: `../architecture/ADR-003-document-pipeline.md`
+- Document statuses: `../architecture/document-status-workflow.md`
+- The PRD's waves: `../product/PRD.md`
+- The contract: `../api/openapi/dsh-rest-api.yaml`
+- Indexing workflow: `./indexing-workflow.md`
+- Smart highlighting: `./smart-highlighting.md`
