@@ -789,3 +789,11 @@ fixed, each checked red before the fix and green after it.
    those citations. The same check found a second one the review had not named: "every stage is
    idempotent" sat under Wave 2 task 4 too, but the PRD says it of Wave 3's stages, and ADR-003
    states it under "A stage". It now cites both.
+10. **Minor: `title` as a query parameter was left out.** Springfox renders `title` as `in: query`
+    (§8.1). B14, `POST /submit?title=A%20title` with only a `contents` part, answered `200` with a
+    token. Fix: the YAML's `title` property and `rest-api-endpoints.md` say it is also accepted that
+    way, and the YAML keeps describing the part.
+
+After the ten fixes: `.logs/162-review-checks.sh`, one check per finding, failed all 12 checks
+before the fixes and passes all 12 after them. AC001, both validators, markdownlint and AC007 were
+run again on the final tree; the results follow this list in §8.7.

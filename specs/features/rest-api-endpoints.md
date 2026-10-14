@@ -24,7 +24,8 @@ token that identifies it.
 
 **Request:** `multipart/form-data`, with two parts, both required:
 
-- `title`: the document's title. It must not be blank.
+- `title`: the document's title. It must not be blank. It is also accepted as a query parameter
+  (`?title=`), beside a `contents` part, because the controller reads it with `@RequestParam`.
 - `contents`: the document's file. Its type is not checked. It may be at most 1 MB, and the request
   at most 10 MB: Spring Boot's multipart defaults, which the application does not change.
 

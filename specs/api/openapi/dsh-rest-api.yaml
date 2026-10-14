@@ -80,7 +80,10 @@ paths:
               properties:
                 title:
                   type: string
-                  description: The document's title. Must not be blank.
+                  description: |
+                    The document's title. Must not be blank. The controller reads it with
+                    `@RequestParam`, so it is also accepted as a query parameter (`?title=`),
+                    beside a `contents` part. This document describes the part.
                   example: A title
                 contents:
                   type: string
