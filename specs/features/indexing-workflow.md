@@ -64,13 +64,16 @@ From ADR-003 section 1, "The flow", unless an item says otherwise.
     and no message is lost. The number of deliveries is a setting of the transport (Wave 6).
   - A failed send on a hop records the hop's `…_ERROR` status.
 - **Repeats** (Wave 2 task 4, ADR-003 section 1 "Compare-and-set"):
-  - Delivery is at least once, so every stage is idempotent: running it twice for one document
-    leaves the same result.
+  - Every stage is idempotent: running it twice for one document leaves the same result.
   - A repeat resumes from the document's status. It does not run again a stage the document is past.
   - When the sender has recorded a hop's error and the message arrives all the same, the first write
     wins.
-- **The response does not wait for the processing.** `/submit` answers once the document is stored
-  and its id sent on hop 1 (ADR-003 section 1, "`/submit`").
+- **FR001: asynchronous processing.** The response does not wait for the processing: `/submit`
+  answers once the document is stored and its id sent on hop 1. Delivery is at least once (Wave 2
+  tasks 1 and 4). This is the part of FR001 that ADR-003 section 1, "Failures", keeps; it overrides
+  the rest. The ID is kept because ADR-001 and ADR-003 cite it.
+- **FR004: performance.** 95% of documents under 10 MB are processed within 30 seconds, measured
+  against `dsh-staging` (Wave 9 task 1). The ID is kept because the PRD and ADR-001 cite it.
 - **The indexing stage is text extraction**: PDF and HTML into title, paragraphs, sentences and
   terms, with the output kept in the file store (Wave 3 task 1, Wave 1 task 10).
 - **Corpus term statistics replace a search engine**: term frequency per document and document
