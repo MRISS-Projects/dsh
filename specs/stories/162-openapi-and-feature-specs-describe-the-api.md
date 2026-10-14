@@ -751,3 +751,17 @@ fixed, each checked red before the fix and green after it.
    `rest-api-endpoints.md` gives them, with a row in its outcomes table, and so does
    `document-analysis.md`. `indexing-workflow.md`'s FR004 notes that a 10 MB document cannot be
    submitted today, and that no task plans raising the limit.
+4. **Important: inferences were presented as recorded.** The same second run made two of them
+   observations, and the rest are marked "(from the code)":
+
+   | # | Call | Observed |
+   |---|---|---|
+   | B15 | 20 submissions, each followed at once by `/status` | 3 `QUEUED_FOR_INDEXING`, 17 `QUEUED_FOR_INDEXING_SUCCESS`, no `TOKEN_NOT_FOUND` |
+   | B16 | MongoDB stopped, `/submit`; 40 s later MongoDB restarted, then `/status` | `200` with a token; the `@Async` store failed after 30 s (`task-6`, `SimpleAsyncUncaughtExceptionHandler`); then `200` `TOKEN_NOT_FOUND` |
+
+   B16 closes B11's gap (§8.1): the unreachable-store row of `rest-api-endpoints.md` is now
+   observed, and narrowed to a store still unreachable after its client's 30-second timeout, so
+   "never found" is gone. `TOKEN_NOT_FOUND` "for a moment" stays as the code allows it, marked as
+   from the code and as never seen in 20 tries, in the YAML and in `rest-api-endpoints.md`. The
+   "any other exception" row is marked from the code. The outcomes table's heading names the
+   marker.

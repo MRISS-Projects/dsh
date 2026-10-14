@@ -40,8 +40,9 @@ curl -X POST http://localhost:8080/v1/dsh/document/submit \
 ```
 
 - **The answer is sent before the document is stored.** The store and the enqueue run after the
-  response, so `/status` can answer `TOKEN_NOT_FOUND` for a moment, and a store that cannot be
-  reached does not fail the submission.
+  response, so `/status` can answer `TOKEN_NOT_FOUND` for a moment (from the code: in 20 tries a
+  live run never saw it, because the store finished first), and a store that cannot be reached does
+  not fail the submission.
 - **Every submission gets a new token**, the same file included.
 - **The token is opaque** to a client.
 
@@ -68,17 +69,18 @@ in `../architecture/document-status-workflow.md`. Today a document stops at
 ### Outcomes
 
 Recorded against a running `dsh-rest-api` on 2026-10-14 (story `#162`,
-`../stories/162-openapi-and-feature-specs-describe-the-api.md` §8).
+`../stories/162-openapi-and-feature-specs-describe-the-api.md` §8), except where a row says
+"(from the code)".
 
 | Request | Code | Body |
 |---|---|---|
 | `/submit` with a title and a file | `200` | `TokenDto`: a token, `message` `""` |
 | `/submit` with a blank title | `200` | `TokenDto`: `token` `ERROR`, `message` `Error submitting file: Document title and contents can't be null.` |
-| `/submit`, and the controller catches any other exception | `200` | `TokenDto`: `token` `ERROR`, `message` `Error submitting file: <reason>` |
+| `/submit`, and the controller catches any other exception (from the code) | `200` | `TokenDto`: `token` `ERROR`, `message` `Error submitting file: <reason>` |
 | `/submit` without `title` or without `contents` | `400` | `ErrorBody` |
 | `/submit` with a body that is not `multipart/form-data` | `400` | `ErrorBody` |
 | `/submit` with a file over 1 MB, or a request over 10 MB | `500` | `ErrorBody`. Spring Boot's multipart defaults reject the upload before the controller runs |
-| `/submit` while the document store cannot be reached | `200` | `TokenDto`: a token, `message` `""`. The store runs afterwards and fails, so the document is not stored and its token is never found |
+| `/submit` while the document store cannot be reached | `200` | `TokenDto`: a token, `message` `""`. If the store is still unreachable when its client's 30-second timeout ends, the document is not stored, and `/status` then answers `TOKEN_NOT_FOUND` for that token |
 | `/status/{token}` for a known token | `200` | `DocumentStatusDto`: the status and its message |
 | `/status/{token}` for an unknown token | `200` | `DocumentStatusDto`: `status` `TOKEN_NOT_FOUND`, `message` `No token was found with the contents: <token>` |
 | `/status/{token}` while the document store cannot be reached | `500` | `ErrorBody`, after about 30 seconds, the store client's own timeout |

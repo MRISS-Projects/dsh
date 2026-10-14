@@ -54,7 +54,8 @@ paths:
 
         - **The answer is sent before the document is stored.** The store and the enqueue run
           asynchronously after the response, so `/status` can answer `TOKEN_NOT_FOUND` for a
-          moment, and a store that cannot be reached does not fail the submission. Wave 2 task 1
+          moment (from the code; a live run never saw it in 20 tries), and a store that cannot be
+          reached does not fail the submission. Wave 2 task 1
           (`specs/product/PRD.md`) changes this.
         - **Every submission gets a new token**, the same file included.
         - **The token is opaque** to a client.
