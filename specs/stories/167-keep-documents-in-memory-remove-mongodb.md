@@ -900,7 +900,7 @@ show.
 
 ## 9. Verification results
 
-Recorded on 2026-10-14. T8's rows are filled when the deploy runs.
+Recorded on 2026-10-14, and T8's rows on 2026-10-15.
 
 | Task | Check | Result |
 |---|---|---|
@@ -921,4 +921,9 @@ Recorded on 2026-10-14. T8's rows are filled when the deploy runs.
 | T7 | gate 3 | `mvn -B -s settings-no-mongo.xml clean verify -DintegrationTests -pl dsh-data -amd`: exit 0. Failsafe: `dsh-rest-api` 15 run, `dsh-doc-indexer-worker` 1 run, 0 failures; `dsh-data` has no IT. One container, `rabbitmq:3` |
 | T7 | AC008 | 33 files hit, against 74 before. Every one is in §3.8, after adding three rows that §3.7 and §3.4 made necessary: `docs/devops/README.md`, `system-design.md`, `PersistenceSelectionIT.java` |
 | Step 5 | local review | four findings fixed at the owner's choice. `PersistenceSelectionIT`'s absent case asserts the key is absent: red with `-Ddsh.persistence=memory`, green without. `docs/copilot/prompt-examples.md` injects `DocumentDao, HighlightDao`. `system-design.md` drops "Manages database schema migrations". The "New Store" prompt names `@Component` |
-| T8 | AC010 | pending: dispatched once the pull request's first CI run is green |
+| T8 | AC010 | `deploy.yml` on the task branch at `42259940d`, 2026-10-15: green, <https://github.com/MRISS-Projects/dsh/actions/runs/38766449969>, with no `maven_properties` |
+| T8 | §3.9 item 1 | failsafe: `PersistenceSelectionIT` 3 run, `DocumentResourceHttpIT` 4 run, 0 failures and 0 errors |
+| T8 | §3.9 item 2 | one container, `rabbitmq:3`; no `mongo` image pulled. The log's other mongo lines are the branch name and POMs (no jars) that the site's "Dependency Management" report resolves from the Spring Boot BOM |
+| T8 | §3.9 item 3 | all 13 modules uploaded at `0.4.0-SNAPSHOT` |
+| T8 | §3.9 item 4 | the site's `index.html` and each module's answer 200 |
+| T8 | §3.9 item 5 | `41ff0f14d Auto-generated README.md [skip jenkins]` pulled; its mongo hits are the seven release-notes rows §3.8 allows (`#139`, `#123`, `#17`, `#21`, `#18`, `#19`, `#15`) |
