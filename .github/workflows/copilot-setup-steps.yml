@@ -14,6 +14,12 @@ name: Copilot Setup Steps
 # secrets, so the one ci.yml uses does not reach it. Use a classic PAT holding
 # the "read:packages" scope and no other scope, as for ci.yml: the agent sees
 # it as an environment variable.
+#
+# The token is set on each step that needs it, never in a job-level env block.
+# Copilot runs these steps inside its own job and keeps each step's settings,
+# but not this job's env, so a job-level value is empty there. The review run
+# on #168 showed it: the Agents secret was injected, and the check below still
+# failed.
 
 on:
   workflow_dispatch:
@@ -30,9 +36,6 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-
-    env:
-      PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -51,6 +54,8 @@ jobs:
           maven-version: '3.9.16'
 
       - name: Check the package credential is present
+        env:
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
         run: |
           if [ -z "$PACKAGES_READ_TOKEN" ]; then
             echo "::error::PACKAGES_READ_TOKEN is unavailable to the Copilot agent. Add it under Settings → Secrets and variables → Agents; Actions secrets do not reach the agent."
@@ -124,4 +129,6 @@ jobs:
       # the modules, so the agent's first build starts from a warm ~/.m2. Tests
       # and the coverage gate are left to the agent's own build and to CI.
       - name: Warm the Maven repository
+        env:
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
         run: mvn -B install -DskipTests -Djacoco.skip=true --file pom.xml
