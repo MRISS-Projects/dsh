@@ -35,6 +35,9 @@ public class PersistenceSelectionIT {
 	public void startup_whenPersistenceKeyAbsent_shouldUseTheInMemoryStore() {
 		context = start();
 
+		assertThat(context.getEnvironment().containsProperty("dsh.persistence"))
+				.as("dsh.persistence must be absent, or this case does not exercise matchIfMissing")
+				.isFalse();
 		assertOnlyStoreIsInMemory();
 	}
 
