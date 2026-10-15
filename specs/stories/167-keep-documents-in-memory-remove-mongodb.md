@@ -439,8 +439,8 @@ The root `README.md` is generated from this file and is never edited (`docs/devo
   Requirements:
   - An interface in dsh-data, [EntityName]Dao, that names no technology
   - Operations: [list operations]
-  - An in-memory implementation, InMemory[EntityName]Dao, in dsh-data, selected by
-    @ConditionalOnProperty on its dsh.* key with matchIfMissing = true
+  - An in-memory implementation, InMemory[EntityName]Dao, in dsh-data: a @Component
+    selected by @ConditionalOnProperty on its dsh.* key with matchIfMissing = true
   - Include documentation referencing /specs/architecture/data-models/
   ```
 
@@ -920,4 +920,5 @@ Recorded on 2026-10-14. T8's rows are filled when the deploy runs.
 | T7 | gates 1 and 2 | `mvn -B -s settings-no-mongo.xml clean install`: exit 0, 8 modules met `jacoco:check`. `dsh-data` LINE 0.9757 (241/247), BRANCH 1.0000 (82/82); `dsh-rest-api` LINE 0.9793 (142/145), BRANCH 0.9722 (35/36) |
 | T7 | gate 3 | `mvn -B -s settings-no-mongo.xml clean verify -DintegrationTests -pl dsh-data -amd`: exit 0. Failsafe: `dsh-rest-api` 15 run, `dsh-doc-indexer-worker` 1 run, 0 failures; `dsh-data` has no IT. One container, `rabbitmq:3` |
 | T7 | AC008 | 33 files hit, against 74 before. Every one is in §3.8, after adding three rows that §3.7 and §3.4 made necessary: `docs/devops/README.md`, `system-design.md`, `PersistenceSelectionIT.java` |
+| Step 5 | local review | four findings fixed at the owner's choice. `PersistenceSelectionIT`'s absent case asserts the key is absent: red with `-Ddsh.persistence=memory`, green without. `docs/copilot/prompt-examples.md` injects `DocumentDao, HighlightDao`. `system-design.md` drops "Manages database schema migrations". The "New Store" prompt names `@Component` |
 | T8 | AC010 | pending: dispatched once the pull request's first CI run is green |

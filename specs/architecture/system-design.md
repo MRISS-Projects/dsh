@@ -77,7 +77,6 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 
 - Contains the shared models, the `DocumentDao` interface and its in-memory implementation
 - Provides data access layer for other modules
-- Manages database schema migrations
 - Manages document status transitions. The state machine is drawn in
   [`document-status-workflow.md`](document-status-workflow.md), which is generated from
   `DocumentStatus` and checked by the build.

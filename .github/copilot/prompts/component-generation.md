@@ -69,8 +69,8 @@ in the DSH project, following ADR-003 section 3
 Requirements:
 - An interface in dsh-data, [EntityName]Dao, that names no technology
 - Operations: [list operations]
-- An in-memory implementation, InMemory[EntityName]Dao, in dsh-data, selected by
-  @ConditionalOnProperty on its dsh.* key with matchIfMissing = true
+- An in-memory implementation, InMemory[EntityName]Dao, in dsh-data: a @Component
+  selected by @ConditionalOnProperty on its dsh.* key with matchIfMissing = true
 - Include documentation referencing /specs/architecture/data-models/
 ```
 
