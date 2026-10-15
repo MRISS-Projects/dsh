@@ -4,7 +4,7 @@
 
 ## Version
 
-0.4.0-SNAPSHOT - 3 - 20261003-131752
+0.4.0-SNAPSHOT - 4 - 20261015-160954
 
 ## Introduction
 
@@ -50,7 +50,8 @@ Project Development Documentation: <https://mriss-projects.github.io/dsh-docs/>
 * **dsh-test-dataset**: the PDF files used as fixtures by automated tests.
 * **dsh-data**: the data models, **Document**, **Keyword** and **Sentence**, and the
   [workflow](https://github.com/MRISS-Projects/dsh/wiki/Workflow) of statuses a document moves
-  through while it is processed. Also the MongoDB persistence of documents.
+  through while it is processed. Also the document store: an interface, and the in-memory
+  implementation DSH runs with by default.
 * **dsh-rest-api**: the application. A Spring Boot jar exposing the REST API: document submission
   and processing status. Querying the results (keywords and relevant sentences) is not available
   yet.
@@ -80,8 +81,7 @@ Project Development Documentation: <https://mriss-projects.github.io/dsh-docs/>
 
 * Java 17 (Temurin)
 * Maven 3.9.16
-* Docker, to run MongoDB and RabbitMQ, and for the integration build
-* MongoDB 6, run from the `mongo:6` image
+* Docker, to run RabbitMQ, and for the integration build
 * RabbitMQ 3, run from the `rabbitmq:3` image
 
 ### Installing/Building the Application
@@ -219,26 +219,16 @@ Project Development Documentation: <https://mriss-projects.github.io/dsh-docs/>
          OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
          ```
 
-#### MongoDB and RabbitMQ
+#### RabbitMQ
 
-Run both from the images the integration build is verified against:
+Run it from the image the integration build is verified against:
 
 ```bash
-docker run -d --name dsh-mongo -p 127.0.0.1:27017:27017 mongo:6
 docker run -d --name dsh-rabbitmq -p 127.0.0.1:5672:5672 rabbitmq:3
 ```
 
-MongoDB takes a few seconds to start. Then create the user the application connects to it as, with
-read and write access to the `dsh` database. Choose your own password:
-
-```bash
-docker exec dsh-mongo mongosh dsh --quiet --eval \
-  'db.createUser({user: "dshuser", pwd: "YOUR-DSH-PASSWORD", roles: [{role: "readWrite", db: "dsh"}]})'
-```
-
-RabbitMQ needs no set-up: the application connects as its default `guest` user. Stop both with
-`docker stop dsh-mongo dsh-rabbitmq`, and start them again with `docker start`; the MongoDB user
-lives in the container, so it survives a restart but not a `docker rm`.
+RabbitMQ needs no set-up: the application connects as its default `guest` user. Stop it with
+`docker stop dsh-rabbitmq`, and start it again with `docker start`.
 
 #### Building From Sources
 
@@ -251,9 +241,9 @@ lives in the container, so it survives a restart but not a `docker rm`.
    mvn clean install
    ```
 
-This runs the unit tests only, and needs neither MongoDB nor RabbitMQ running. The integration
-tests run with `mvn clean install -DintegrationTests`, which starts its own MongoDB and RabbitMQ
-containers, so it needs a running Docker daemon.
+This runs the unit tests only, and needs no RabbitMQ running. The integration tests run with
+`mvn clean install -DintegrationTests`, which starts its own RabbitMQ container, so it needs a
+running Docker daemon.
 
 ## Configuration
 
@@ -326,36 +316,9 @@ token is described under Secrets in `docs/devops/README.md`.
 </settings>
 ```
 
-### MongoDB Access Properties
-
-Edit or create the maven user `settings.xml` file typically at `$HOME/.m2` (or `%HOMEPATH%\.m2`
-at windows) folder and add a default activated profile similar to this:
-
-```xml
-<profile>
-  <id>development-properties</id>
-  <activation>
-    <activeByDefault>true</activeByDefault>
-  </activation>
-  <properties>
-    <mongo.host>localhost</mongo.host>
-    <mongo.port>27017</mongo.port>
-    <mongo.user>dshuser</mongo.user>
-    <mongo.password>[the password you chose when creating the MongoDB user]</mongo.password>
-  </properties>
-</profile>
-```
-
-Or add the `properties` section at any default activated profile already present at `settings.xml` file.
-
-The application authenticates to MongoDB as `mongo.user`, against the `dsh` database, through a
-connection string: `mongodb://<user>:<password>@<host>:<port>/dsh`. A password containing `@`, `:`,
-`/`, `?`, `#` or `%` must be percent-encoded in `mongo.password` (`@` as `%40`, for example), or the
-connection string breaks. Any value can be overridden at runtime, e.g. `--mongo.port=27018`.
-
 ## Usage
 
-With MongoDB and RabbitMQ running and the build done, start the application in either of two ways.
+With RabbitMQ running and the build done, start the application in either of two ways.
 
 ### Running the Jar
 
@@ -363,14 +326,10 @@ With MongoDB and RabbitMQ running and the build done, start the application in e
 java -jar dsh-rest-api/target/dsh-rest-api-<version>.jar
 ```
 
-The MongoDB connection comes from the `mongo.*` properties in your Maven settings (see
-[MongoDB Access Properties](#mongodb-access-properties)), resolved when the jar was built. Any of
-them can be overridden when starting it, as can the RabbitMQ address:
+The RabbitMQ address can be overridden when starting it:
 
 ```bash
 java -jar dsh-rest-api/target/dsh-rest-api-<version>.jar \
-  --mongo.host=localhost --mongo.port=27017 \
-  --mongo.user=dshuser --mongo.password=YOUR-DSH-PASSWORD \
   --spring.rabbitmq.host=localhost --spring.rabbitmq.port=5672
 ```
 
@@ -387,6 +346,13 @@ Either way, the application is up when the log shows a line like:
 ```text
 c.m.dsh.restapi.DshRestApplication - Started DshRestApplication in 9.385 seconds
 ```
+
+### Where Documents Are Kept
+
+DSH keeps documents in memory. Nothing has to be installed for it, and every document is lost
+when the application stops: a run with no profile is for trying DSH out and for tests, not a
+deployment. The store is selected by `dsh.persistence`. Its default, and its only value until
+the Firestore store arrives, is `memory`. Any other value stops the startup.
 
 ### Calling the API
 
@@ -418,6 +384,10 @@ The API description, in Swagger 2 format, is served at
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [160](https://github.com/MRISS-Projects/dsh/issues/160) | task | [STORY] ADR-003: decide the document pipeline, and revise ADR-001 to match | null | mriss | 10/13/26 |
+| [48](https://github.com/MRISS-Projects/dsh/issues/48) | task | Investigate how to use profiles (dev, stagging, production) with spring and maven | null | mriss | 10/10/26 |
+| [128](https://github.com/MRISS-Projects/dsh/issues/128) | task | Point the wiki's release link at releases/products/dsh once 0.3.0 is released | null | mriss | 10/6/26 |
+| [152](https://github.com/MRISS-Projects/dsh/issues/152) | task | [STORY] Generate the document-status diagram from DocumentStatus and fail the build when it drifts | null | mriss | 10/6/26 |
 | [150](https://github.com/MRISS-Projects/dsh/issues/150) | task | Re-pin the parent to the released parent-poms 3.10.0, and retire what the SNAPSHOT pin needed | null | mriss | 10/3/26 |
 | [127](https://github.com/MRISS-Projects/dsh/issues/127) | enhancement | Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does | null | mriss | 10/2/26 |
 

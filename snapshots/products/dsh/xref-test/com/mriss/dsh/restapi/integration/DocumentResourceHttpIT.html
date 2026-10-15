@@ -37,8 +37,8 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment"> * Calls the REST API over HTTP against the server that the {@code http-integration-tests} profile</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment"> * starts, backed by the MongoDB and RabbitMQ containers it starts. No Spring context runs in this</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment"> * JVM: the application under test is a separate process.</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment"> * starts, which keeps documents in its own memory, with RabbitMQ in the container the profile</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment"> * starts. No Spring context runs in this JVM: the application under test is a separate process.</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="DocumentResourceHttpIT" href="../../../../../com/mriss/dsh/restapi/integration/DocumentResourceHttpIT.html#DocumentResourceHttpIT">DocumentResourceHttpIT</a> {
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
@@ -52,7 +52,7 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> CONNECT_TIMEOUT_MILLIS = 5_000;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	<em class="jxr_javadoccomment">/** Above the MongoDB driver's 30 s server-selection timeout, so that failure still reports as a 500. */</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	<em class="jxr_javadoccomment">/** So that a server that hangs fails the test rather than the build. */</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> READ_TIMEOUT_MILLIS = 60_000;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ParameterizedTypeReference&lt;Map&lt;String, Object&gt;&gt; JSON =

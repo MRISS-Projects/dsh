@@ -4,17 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ImportResource(locations = { &quot;classpath:/dshApplicationContext.xml&quot; })
-<span class="fc" id="L11">public class DshDataApplication {</span>
+<span class="fc" id="L9">public class DshDataApplication {</span>
 	
-<span class="fc" id="L13">	final static Logger logger = LoggerFactory.getLogger(DshDataApplication.class);</span>
+<span class="fc" id="L11">	final static Logger logger = LoggerFactory.getLogger(DshDataApplication.class);</span>
 	
 	public static void main(String[] args) {
-<span class="nc" id="L16">		SpringApplication.run(DshDataApplication.class, args);</span>
-<span class="nc" id="L17">		logger.info(&quot;Main application run!!!&quot;);</span>
-<span class="nc" id="L18">	}</span>
+<span class="nc" id="L14">		SpringApplication.run(DshDataApplication.class, args);</span>
+<span class="nc" id="L15">		logger.info(&quot;Main application run!!!&quot;);</span>
+<span class="nc" id="L16">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

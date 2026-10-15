@@ -27,7 +27,7 @@ Document Smart Highlights
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">1   Version</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.4.0-SNAPSHOT - 3 - 20261003-131752</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">0.4.0-SNAPSHOT - 4 - 20261015-160954</fo:block>
 </fo:block>
 
 
@@ -141,7 +141,8 @@ product-oriented environment, please get in touch through the email:
 
 <fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/wiki/Workflow">
 <fo:inline color="green">workflow</fo:inline></fo:basic-link> of statuses a document moves
-through while it is processed. Also the MongoDB persistence of documents.</fo:block>
+through while it is processed. Also the document store: an interface, and the in-memory
+implementation DSH runs with by default.</fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -287,15 +288,7 @@ coverage badge.</fo:block>
 <fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
 
 <fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>Docker, to run MongoDB and RabbitMQ, and for the integration build</fo:block>
-</fo:list-item-body>
-</fo:list-item>
-
-<fo:list-item start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em"><fo:list-item-label><fo:block>&#8226;</fo:block></fo:list-item-label>
-
-<fo:list-item-body start-indent="inherited-property-value(start-indent) + 1em" space-before="0.15em" space-after="0.25em">
-<fo:block>MongoDB 6, run from the 
-<fo:inline font-family="monospace" font-size="10pt">mongo:6</fo:inline> image</fo:block>
+<fo:block>Docker, to run RabbitMQ, and for the integration build</fo:block>
 </fo:list-item-body>
 </fo:list-item>
 
@@ -975,37 +968,21 @@ OS&#160;name:&#160;"windows&#160;11",&#160;version:&#160;"10.0",&#160;arch:&#160
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.3   MongoDB and RabbitMQ</fo:block>
+<fo:block font-size="9.5pt" space-before="15pt" space-after="3pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">4.2.3   RabbitMQ</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Run both from the images the integration build is verified against:</fo:block>
-
-
-<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">docker&#160;run&#160;-d&#160;--name&#160;dsh-mongo&#160;-p&#160;127.0.0.1:27017:27017&#160;mongo:6
-<fo:block/>
-docker&#160;run&#160;-d&#160;--name&#160;dsh-rabbitmq&#160;-p&#160;127.0.0.1:5672:5672&#160;rabbitmq:3
-<fo:block/>
-</fo:inline></fo:block>
-
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">MongoDB takes a few seconds to start. Then create the user the application connects to it as, with
-read and write access to the 
-<fo:inline font-family="monospace" font-size="10pt">dsh</fo:inline> database. Choose your own password:</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Run it from the image the integration build is verified against:</fo:block>
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">docker&#160;exec&#160;dsh-mongo&#160;mongosh&#160;dsh&#160;--quiet&#160;--eval&#160;\
-<fo:block/>
-&#160;&#160;'db.createUser({user:&#160;"dshuser",&#160;pwd:&#160;"YOUR-DSH-PASSWORD",&#160;roles:&#160;[{role:&#160;"readWrite",&#160;db:&#160;"dsh"}]})'
+<fo:inline font-family="monospace" font-size="10pt">docker&#160;run&#160;-d&#160;--name&#160;dsh-rabbitmq&#160;-p&#160;127.0.0.1:5672:5672&#160;rabbitmq:3
 <fo:block/>
 </fo:inline></fo:block>
 
 <fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">RabbitMQ needs no set-up: the application connects as its default 
-<fo:inline font-family="monospace" font-size="10pt">guest</fo:inline> user. Stop both with
+<fo:inline font-family="monospace" font-size="10pt">guest</fo:inline> user. Stop it with
 
-<fo:inline font-family="monospace" font-size="10pt">docker stop dsh-mongo dsh-rabbitmq</fo:inline>, and start them again with 
-<fo:inline font-family="monospace" font-size="10pt">docker start</fo:inline>; the MongoDB user
-lives in the container, so it survives a restart but not a 
-<fo:inline font-family="monospace" font-size="10pt">docker rm</fo:inline>.</fo:block>
+<fo:inline font-family="monospace" font-size="10pt">docker stop dsh-rabbitmq</fo:inline>, and start it again with 
+<fo:inline font-family="monospace" font-size="10pt">docker start</fo:inline>.</fo:block>
 </fo:block>
 
 
@@ -1057,10 +1034,10 @@ lets Maven resolve the parent POM
 
 </fo:list-block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">This runs the unit tests only, and needs neither MongoDB nor RabbitMQ running. The integration
-tests run with 
-<fo:inline font-family="monospace" font-size="10pt">mvn clean install -DintegrationTests</fo:inline>, which starts its own MongoDB and RabbitMQ
-containers, so it needs a running Docker daemon.</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">This runs the unit tests only, and needs no RabbitMQ running. The integration tests run with
+
+<fo:inline font-family="monospace" font-size="10pt">mvn clean install -DintegrationTests</fo:inline>, which starts its own RabbitMQ container, so it needs a
+running Docker daemon.</fo:block>
 </fo:block>
 </fo:block>
 </fo:block>
@@ -1272,68 +1249,6 @@ token is described under Secrets in
 <fo:block/>
 </fo:inline></fo:block>
 </fo:block>
-
-
-<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
-
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">5.2   MongoDB Access Properties</fo:block>
-
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Edit or create the maven user 
-<fo:inline font-family="monospace" font-size="10pt">settings.xml</fo:inline> file typically at 
-<fo:inline font-family="monospace" font-size="10pt">$HOME/.m2</fo:inline> (or 
-<fo:inline font-family="monospace" font-size="10pt">%HOMEPATH%\.m2</fo:inline>
-at windows) folder and add a default activated profile similar to this:</fo:block>
-
-
-<fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
-<fo:inline font-family="monospace" font-size="10pt">&lt;profile&gt;
-<fo:block/>
-&#160;&#160;&lt;id&gt;development-properties&lt;/id&gt;
-<fo:block/>
-&#160;&#160;&lt;activation&gt;
-<fo:block/>
-&#160;&#160;&#160;&#160;&lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
-<fo:block/>
-&#160;&#160;&lt;/activation&gt;
-<fo:block/>
-&#160;&#160;&lt;properties&gt;
-<fo:block/>
-&#160;&#160;&#160;&#160;&lt;mongo.host&gt;localhost&lt;/mongo.host&gt;
-<fo:block/>
-&#160;&#160;&#160;&#160;&lt;mongo.port&gt;27017&lt;/mongo.port&gt;
-<fo:block/>
-&#160;&#160;&#160;&#160;&lt;mongo.user&gt;dshuser&lt;/mongo.user&gt;
-<fo:block/>
-&#160;&#160;&#160;&#160;&lt;mongo.password&gt;[the&#160;password&#160;you&#160;chose&#160;when&#160;creating&#160;the&#160;MongoDB&#160;user]&lt;/mongo.password&gt;
-<fo:block/>
-&#160;&#160;&lt;/properties&gt;
-<fo:block/>
-&lt;/profile&gt;
-<fo:block/>
-</fo:inline></fo:block>
-
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">Or add the 
-<fo:inline font-family="monospace" font-size="10pt">properties</fo:inline> section at any default activated profile already present at 
-<fo:inline font-family="monospace" font-size="10pt">settings.xml</fo:inline> file.</fo:block>
-
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The application authenticates to MongoDB as 
-<fo:inline font-family="monospace" font-size="10pt">mongo.user</fo:inline>, against the 
-<fo:inline font-family="monospace" font-size="10pt">dsh</fo:inline> database, through a
-connection string: 
-<fo:inline font-family="monospace" font-size="10pt">mongodb://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/dsh</fo:inline>. A password containing 
-<fo:inline font-family="monospace" font-size="10pt">@</fo:inline>, 
-<fo:inline font-family="monospace" font-size="10pt">:</fo:inline>,
-
-<fo:inline font-family="monospace" font-size="10pt">/</fo:inline>, 
-<fo:inline font-family="monospace" font-size="10pt">?</fo:inline>, 
-<fo:inline font-family="monospace" font-size="10pt">#</fo:inline> or 
-<fo:inline font-family="monospace" font-size="10pt">%</fo:inline> must be percent-encoded in 
-<fo:inline font-family="monospace" font-size="10pt">mongo.password</fo:inline> (
-<fo:inline font-family="monospace" font-size="10pt">@</fo:inline> as 
-<fo:inline font-family="monospace" font-size="10pt">%40</fo:inline>, for example), or the
-connection string breaks. Any value can be overridden at runtime, e.g. 
-<fo:inline font-family="monospace" font-size="10pt">--mongo.port=27018</fo:inline>.</fo:block>
-</fo:block>
 </fo:block>
 
 
@@ -1341,7 +1256,7 @@ connection string breaks. Any value can be overridden at runtime, e.g.
 
 <fo:block font-size="12pt" font-weight="bold" space-before="18pt" space-after="6pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6   Usage</fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">With MongoDB and RabbitMQ running and the build done, start the application in either of two ways.</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">With RabbitMQ running and the build done, start the application in either of two ways.</fo:block>
 
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
@@ -1354,20 +1269,11 @@ connection string breaks. Any value can be overridden at runtime, e.g.
 <fo:block/>
 </fo:inline></fo:block>
 
-<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The MongoDB connection comes from the 
-<fo:inline font-family="monospace" font-size="10pt">mongo.*</fo:inline> properties in your Maven settings (see
-
-<fo:basic-link internal-destination="#mongodb-access-properties">
-<fo:inline color="blue">MongoDB Access Properties</fo:inline></fo:basic-link>), resolved when the jar was built. Any of
-them can be overridden when starting it, as can the RabbitMQ address:</fo:block>
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The RabbitMQ address can be overridden when starting it:</fo:block>
 
 
 <fo:block color="black" border-style="solid" border-width="0.5pt" border-color="#454545" padding-before="0.25em" padding-after="0.25em" padding-start="0.25em" padding-end="0.25em" start-indent="inherited-property-value(start-indent) + 2.5em" end-indent="inherited-property-value(end-indent) + 3em" space-before="0.75em" space-after="1em" font-size="10pt" font-family="monospace" linefeed-treatment="preserve" wrap-option="no-wrap" keep-together="always" white-space-collapse="false">
 <fo:inline font-family="monospace" font-size="10pt">java&#160;-jar&#160;dsh-rest-api/target/dsh-rest-api-&lt;version&gt;.jar&#160;\
-<fo:block/>
-&#160;&#160;--mongo.host=localhost&#160;--mongo.port=27017&#160;\
-<fo:block/>
-&#160;&#160;--mongo.user=dshuser&#160;--mongo.password=YOUR-DSH-PASSWORD&#160;\
 <fo:block/>
 &#160;&#160;--spring.rabbitmq.host=localhost&#160;--spring.rabbitmq.port=5672
 <fo:block/>
@@ -1400,7 +1306,20 @@ them can be overridden when starting it, as can the RabbitMQ address:</fo:block>
 
 <fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
 
-<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.3   Calling the API</fo:block>
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.3   Where Documents Are Kept</fo:block>
+
+<fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">DSH keeps documents in memory. Nothing has to be installed for it, and every document is lost
+when the application stops: a run with no profile is for trying DSH out and for tests, not a
+deployment. The store is selected by 
+<fo:inline font-family="monospace" font-size="10pt">dsh.persistence</fo:inline>. Its default, and its only value until
+the Firestore store arrives, is 
+<fo:inline font-family="monospace" font-size="10pt">memory</fo:inline>. Any other value stops the startup.</fo:block>
+</fo:block>
+
+
+<fo:block font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">
+
+<fo:block font-size="9.5pt" font-weight="bold" space-before="18pt" space-after="5pt" font-family="Helvetica,sans-serif" color="#000000" keep-with-next="always">6.4   Calling the API</fo:block>
 
 <fo:block space-before="3pt" space-after="6pt" font-size="11pt" line-height="12pt" white-space-collapse="true" font-family="Garamond,serif">The REST API has the two operations of the document resource:</fo:block>
 
@@ -1510,6 +1429,118 @@ Updated</fo:block>
 </fo:table-row>
 
 
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/160">
+<fo:inline color="green">160</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+[STORY] ADR-003: decide the document pipeline, and revise ADR-001 to match</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+10/13/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/48">
+<fo:inline color="green">48</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Investigate how to use profiles (dev, stagging, production) with spring and maven</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+10/10/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/128">
+<fo:inline color="green">128</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+Point the wiki's release link at releases/products/dsh once 0.3.0 is released</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+10/6/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
+
+<fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+
+<fo:basic-link external-destination="https://github.com/MRISS-Projects/dsh/issues/152">
+<fo:inline color="green">152</fo:inline></fo:basic-link></fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="2">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+task</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="3">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+[STORY] Generate the document-status diagram from DocumentStatus and fail the build when it drifts</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="4">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+null</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="5">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+mriss</fo:block>
+</fo:table-cell>
+<fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="6">
+<fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">
+10/6/26</fo:block>
+</fo:table-cell>
+</fo:table-row>
 
 <fo:table-row keep-together="auto" keep-with-next="auto"><fo:table-cell padding-before="4pt" padding-after="1.5pt" background-color="#eeeeee" padding-start="2.5pt" padding-end="5pt" keep-together.within-column="always" column-number="1">
 <fo:block font-size="9pt" font-family="Helvetica,sans-serif" line-height="1.2em" text-align="left">

@@ -5,7 +5,7 @@ com.mriss.dsh.analyser.keywords.integration
 com.mriss.dsh.analyser.topsentences
 com.mriss.dsh.analyser.topsentences.integration
 com.mriss.dsh.data
-com.mriss.dsh.data.document.dao.mongo
+com.mriss.dsh.data.document.dao.memory
 com.mriss.dsh.data.models
 com.mriss.dsh.docindexer
 com.mriss.dsh.docindexer.integration
