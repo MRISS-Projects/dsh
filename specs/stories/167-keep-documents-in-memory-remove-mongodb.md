@@ -478,6 +478,9 @@ check.
 | `specs/features/document-analysis.md`, `specs/features/indexing-workflow.md` | `#162` |
 | `.github/scripts/check-unit-tests-context-free.sh` | its comment names `@DataMongoTest` among Spring Boot's test slices, which the checker must still catch. A statement about Spring, not about DSH |
 | `scripts/close-wontfix-issues.sh` | the record of a one-off closure: the quoted message of `#47`'s closing comment |
+| `docs/devops/README.md` | added in T7. §3.7.2's "Build properties" paragraph says the `mongo.*` values were removed by `#167`. History, not a description of DSH |
+| `specs/architecture/system-design.md` | added in T7. §3.7's migration note says ADR-003 removes the MongoDB code and `#167` removed it |
+| `dsh-rest-api/.../integration/PersistenceSelectionIT.java` | added in T7. §3.4's `--dsh.persistence=mongodb` is the value that matches no store |
 
 ### 3.9 The deploy (AC010)
 
@@ -897,4 +900,24 @@ show.
 
 ## 9. Verification results
 
-To be filled by T1, T2, T3, T4, T7 and T8.
+Recorded on 2026-10-14. T8's rows are filled when the deploy runs.
+
+| Task | Check | Result |
+|---|---|---|
+| T0 | AC010 in `#167`'s body | added below AC009, as approved |
+| T1 | baseline | `d3a4080e7`; `mvn -B clean install` exit 0; 74 files hit `git grep -il mongo` |
+| T1 | baseline coverage | `jacoco:check` prints only "met", so read from `jacoco:report` over the same exec data: `dsh-data` LINE 0.9711 (235/242), BRANCH 0.9878 (81/82); `dsh-rest-api` LINE 0.9793 (142/145), BRANCH 0.9722 (35/36) |
+| T2 | red | `test-compile` fails: `cannot find symbol: class InMemoryDocumentDao` |
+| T2 | green | `InMemoryDocumentDaoTest`: 12 run, 0 failures |
+| T2 | `HashMap` observation | 0 of 5 runs failed with `HashMap` in place of `ConcurrentHashMap`. The race did not show, as §T2 allowed; the test still guards the property |
+| T3 | red | `PersistenceSelectionIT`: 3 run, 3 failures. Both "in-memory" cases found `MongoDocumentDao`; the failure case started up |
+| T3 | green | 3 run, 0 failures. The failure case's cause: `DocumentHandlingServiceImpl.dao` required a `DocumentDao` that could not be found |
+| T3 | AC005 | `mvn -B dependency:tree -Dincludes=org.mongodb`: 13 module trees, 0 `org.mongodb` lines (`.logs/mvn-dependency-tree-mongodb.log`) |
+| T4 | AC006 | `mvn -B -pl dsh-rest-api clean verify -DintegrationTests`: exit 0; failsafe 15 run, 0 failures (`DocumentResourceHttpIT` 4, `DocumentResourceIT` 6, `DshRestApplicationIT` 2, `PersistenceSelectionIT` 3). One container started, `rabbitmq:3`; no line of the log mentions mongo |
+| T5 | workflows | `git grep -i mongo -- .github/workflows` finds nothing. All 11 parse under `js-yaml@4.1.0`, run in a `node:20-alpine` container because no Node is installed on this machine |
+| T6 | lint | `markdownlint-cli@0.45.0`, in the same container: the `CLAUDE.md` command clean; the site README and module pages clean after removing a trailing blank line, already there, from four module pages |
+| T7 | AC007 settings | `settings-no-mongo.xml`: `grep -c mongo` gives 0 |
+| T7 | gates 1 and 2 | `mvn -B -s settings-no-mongo.xml clean install`: exit 0, 8 modules met `jacoco:check`. `dsh-data` LINE 0.9757 (241/247), BRANCH 1.0000 (82/82); `dsh-rest-api` LINE 0.9793 (142/145), BRANCH 0.9722 (35/36) |
+| T7 | gate 3 | `mvn -B -s settings-no-mongo.xml clean verify -DintegrationTests -pl dsh-data -amd`: exit 0. Failsafe: `dsh-rest-api` 15 run, `dsh-doc-indexer-worker` 1 run, 0 failures; `dsh-data` has no IT. One container, `rabbitmq:3` |
+| T7 | AC008 | 33 files hit, against 74 before. Every one is in §3.8, after adding three rows that §3.7 and §3.4 made necessary: `docs/devops/README.md`, `system-design.md`, `PersistenceSelectionIT.java` |
+| T8 | AC010 | pending: dispatched once the pull request's first CI run is green |
