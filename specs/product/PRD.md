@@ -1043,7 +1043,8 @@ Task 8 is written before it, which the re-plan of 2026-10-13 accepted. Task 7 la
 inside the wave, because Wave 3's stories cite the papers. Task 11 lands before Wave 2 task 2,
 which adds to the OpenAPI document. Task 12 lands before Wave 2 task 1, whose flow is the first
 thing that can leave a document in `NOT_INDEXED_ERROR`. **Tasks 11 and 12 landed on 2026-10-16**,
-ahead of both: `#162` — **closed** — PR #164, and `#171` — **closed** — PR #172.
+ahead of both: `#162` — **closed** — PR #164, and `#171` — **closed** — PR #172. **Task 7 landed
+the same day**, ahead of `#148`: `#173` — **closed** — PR #174.
 
 Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the re-plan of
 2026-10-10, `parent-poms#90` and `#109` belong to Wave 4, `#91` to Wave 7, `#92` to Wave 10, and
@@ -1262,7 +1263,14 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    The diagrams in tasks 5 and 6 are drawn by hand from ADR-003, because no flow exists yet to
    generate them from. They are interim: Wave 2 task 5 generates the pipeline diagram from the flow
    and keeps it in sync.
-7. **Reference papers.** The keyword paper is committed under `specs/` only if its licence permits
+7. **Done on 2026-10-16: the reference papers are recorded.** `#173` — **closed** — PR #174.
+   Record the reference papers Wave 3 is built from, and keep their full text out of git unless a
+   licence allows it. Neither licence allows it, so both papers are cited from
+   `specs/references/README.md`, not committed. The story's spec,
+   `specs/stories/173-record-reference-papers.md`, holds the evidence. The plan as written is kept
+   below.
+
+   **Reference papers.** The keyword paper is committed under `specs/` only if its licence permits
    redistribution; otherwise it is cited by DOI. The sentence paper is paid: it stays in a gitignored
    local folder and is cited by DOI. The owner is a co-author, so whether the publisher allows posting
    the accepted manuscript is worth checking. Wave 3's stories cite these.
