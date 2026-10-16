@@ -386,6 +386,67 @@ Filled in by Task 1 and Task 3.
 
 ### 8.1 Task 1: red, green, and the two reintroduced copies
 
+Run on 2026-10-16 with `mvn -B -pl dsh-data test -Dtest=DocumentStatusTest`.
+
+| Run | `DocumentStatus.java:58` | Exit | Result |
+|---|---|---|---|
+| Red, Step 2 | `("DEQUEUED_FOR_INDEXING", "Document dequeued for indexing.")` | 1 | 4 tests, 3 failures |
+| Green, Step 4 | `("NOT_INDEXED_ERROR", "Error indexing document.")` | 0 | 4 tests, 0 failures |
+| Description copied back, Step 5.1 | `("DEQUEUED_FOR_INDEXING", "Error indexing document.")` | 1 | 4 tests, 1 failure |
+| Message copied back, Step 5.2 | `("NOT_INDEXED_ERROR", "Document dequeued for indexing.")` | 1 | 4 tests, 2 failures |
+
+The red run failed as predicted:
+
+```text
+getStatusDescription_forEveryStatus_shouldEqualItsName:20 expected:<[NOT_INDEXED_ERROR]> but was:<[DEQUEUED_FOR_INDEXING]>
+getStatusMessage_forEveryStatus_shouldBeItsOwn:32 NOT_INDEXED_ERROR shares its message with DEQUEUED_FOR_INDEXING expected null, but was:<DEQUEUED_FOR_INDEXING>
+getStatusMessage_ofNotIndexedError_shouldSayThatIndexingFailed:38 expected:<[Error indexing document].> but was:<[Document dequeued for indexing].>
+```
+
+With the description copied back, only `getStatusDescription_forEveryStatus_shouldEqualItsName`
+failed, with the first line above. With the message copied back,
+`getStatusMessage_forEveryStatus_shouldBeItsOwn` and
+`getStatusMessage_ofNotIndexedError_shouldSayThatIndexingFailed` failed, with the second and third
+lines above. After Step 5.3, `git diff` on `DocumentStatus.java` showed only Step 4's line.
+
 ### 8.2 Task 3 Step 1: the grep
 
+```text
+specs/architecture/ADR-003-document-pipeline.md:48:| `NOT_INDEXED_ERROR` carries the description and message of `DEQUEUED_FOR_INDEXING`. Fixed by `#171` on 2026-10-16 | `DocumentStatus.java`, the constant's constructor arguments |
+specs/architecture/ADR-003-document-pipeline.md:181:| 5 | indexing ends | `SUCCESS` or `ERROR` | `INDEXING` | `INDEXED_SUCCESS` or `NOT_INDEXED_ERROR` |
+specs/architecture/ADR-003-document-pipeline.md:748:`NOT_INDEXED_ERROR` carries the description and message of another status. Fixed by `#171` on
+specs/architecture/ADR-003-document-pipeline.md:943:5. **`NOT_INDEXED_ERROR`'s description and message are those of `DEQUEUED_FOR_INDEXING`.** A small
+specs/architecture/document-status-workflow.md:23:    INDEXING --> NOT_INDEXED_ERROR : ERROR
+specs/architecture/document-status-workflow.md:25:    NOT_INDEXED_ERROR --> [*]
+specs/product/PRD.md:790:6. **`NOT_INDEXED_ERROR`'s wrong description gets an issue of its own**, Wave 1 task 12, so that
+specs/product/PRD.md:830:5. `NOT_INDEXED_ERROR`: Wave 1 task 12 (decision 6).
+specs/product/PRD.md:1045:thing that can leave a document in `NOT_INDEXED_ERROR`.
+specs/product/PRD.md:1307:12. **Every status describes itself.** Added on 2026-10-13. `NOT_INDEXED_ERROR` is declared with
+```
+
+These are the expected matches and nothing else. `dsh-rest-api.yaml` and `rest-api-endpoints.md`
+do not appear. Candidate 5 is at line 943, not 942, because the note at line 748 wraps onto a
+second line. Each of ADR-003's three passages carries `Fixed by #171 on 2026-10-16`: line 748's
+note ends on line 749, and candidate 5's on line 944.
+
 ### 8.3 Task 3 Step 2: the gates
+
+`mvn -B clean install` on 2026-10-16: `maven exit=0`, `BUILD SUCCESS` across the 13-module reactor
+in 1:34 min. Every `jacoco:check` reported "All coverage checks have been met." `DocumentStatusTest`
+ran 4 tests with 0 failures.
+
+`dsh-data/target/site/jacoco/index.html`, which Step 2 names, is not produced: `install` writes
+`dsh-data/target/jacoco.exec` and runs `jacoco:check`, but no per-module report. The figures below
+come from the aggregate report of the same build,
+`dsh-coverage-report/target/site/jacoco-aggregate/dsh-data/index.html`, which reads that
+`jacoco.exec`.
+
+| `dsh-data` | Covered | Missed | Coverage |
+|---|---|---|---|
+| LINE | 217 of 224 | 7 | 96.9% |
+| BRANCH | 81 of 82 | 1 | 98.8% |
+
+`DocumentStatus` is fully covered. The enum's own class has no branches, and its 18 constant bodies,
+which JaCoCo reports as separate anonymous classes, are at 100% of their lines and, for the five with
+an `if`, 100% of their branches. That bears out §4: the branches are `transition`'s, and the change
+adds none.
