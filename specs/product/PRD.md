@@ -1394,7 +1394,7 @@ runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1
 
 ### Wave 3 — Analysis algorithms
 
-Milestone: `0.5.0-SNAPSHOT`, created on 2026-10-16 for `#163` (§3). Everything here is written from scratch against the two papers (Wave 1 task 7). Each
+Milestone: `0.5.0-SNAPSHOT`, created on 2026-10-16 for `#163` (§3). Everything here is written from scratch against the two papers recorded in [`specs/references/README.md`](../references/README.md) (Wave 1 task 7). Each
 story brings its expected-output fixtures.
 
 **Triaged issue:** `#163` — Ranked keyword and sentence sets drop entries that tie on score. It was
