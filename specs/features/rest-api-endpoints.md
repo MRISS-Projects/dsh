@@ -22,10 +22,13 @@ authenticated.
 Operation `submitDocument`. Stores a document and queues it for processing, and answers with the
 token that identifies it.
 
-**Request:** `multipart/form-data`, with two parts, both required:
+**Request:** `multipart/form-data`, with a required `contents` part. A non-blank `title` must be
+supplied either as a query parameter or as a multipart part; OpenAPI 3.0 cannot enforce this
+requirement across locations.
 
-- `title`: the document's title. It must not be blank. It is also accepted as a query parameter
-  (`?title=`), beside a `contents` part, because the controller reads it with `@RequestParam`.
+- `title` (optional part): the document's title. It must not be blank when supplied. It is also
+  accepted as a query parameter (`?title=`), beside a `contents` part, because the controller reads
+  it with `@RequestParam`.
 - `contents`: the document's file. Its type is not checked. It may be at most 1 MB, and the request
   at most 10 MB: Spring Boot's multipart defaults, which the application does not change.
 
