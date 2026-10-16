@@ -65,9 +65,8 @@ curl http://localhost:8080/v1/dsh/document/status/2026101461d279be-cc9e-40f3-a37
 {"status":"QUEUED_FOR_INDEXING_SUCCESS","message":"Document id successfuly queued for indexing."}
 ```
 
-`status` is `DocumentStatus`'s description (`dsh-data`). That is the status's name, except for
-`NOT_INDEXED_ERROR`, which answers `DEQUEUED_FOR_INDEXING` (Wave 1 task 12). The statuses are listed
-in `../architecture/document-status-workflow.md`. Today a document stops at
+`status` is `DocumentStatus`'s description (`dsh-data`), which is the status's name. The statuses
+are listed in `../architecture/document-status-workflow.md`. Today a document stops at
 `QUEUED_FOR_INDEXING_SUCCESS` or `QUEUED_FOR_INDEXING_ERROR` under normal operation
 (`./indexing-workflow.md`). If no outcome is persisted, it can remain at `QUEUED_FOR_INDEXING`;
 if saving a success outcome fails, the retained handler can later persist `DEQUEUED_FOR_INDEXING`
@@ -125,7 +124,6 @@ Recorded against a running `dsh-rest-api` on 2026-10-14 (story `#162`,
   the client, and `/status` does not answer `TOKEN_NOT_FOUND` for a token `/submit` returned while
   the store still holds the document (Wave 2 task 1). The in-memory store of Wave 1 task 8 holds it
   only until the application stops.
-- **`NOT_INDEXED_ERROR` answers a description of its own** (Wave 1 task 12).
 
 ## References
 

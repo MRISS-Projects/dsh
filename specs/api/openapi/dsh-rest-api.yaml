@@ -217,10 +217,9 @@ components:
         status:
           type: string
           description: |
-            `DocumentStatus`'s description (`dsh-data`), which is the status's name except for
-            `NOT_INDEXED_ERROR` (Wave 1 task 12). The statuses and their transitions are listed in
-            `specs/architecture/document-status-workflow.md`. Or `TOKEN_NOT_FOUND`, when no document
-            has the token.
+            `DocumentStatus`'s description (`dsh-data`), which is the status's name. The statuses
+            and their transitions are listed in `specs/architecture/document-status-workflow.md`.
+            Or `TOKEN_NOT_FOUND`, when no document has the token.
         message:
           type: string
           description: The status's message, or the reason the token was not found.

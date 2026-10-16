@@ -1,26 +1,41 @@
 package com.mriss.dsh.data.models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
 public class DocumentStatusTest {
 
     @Test
-    public void testGetStatusDescription() {
-        assertNotNull(DocumentStatus.CREATED.getStatusDescription());
-        assertEquals("CREATED", DocumentStatus.CREATED.getStatusDescription());
-        assertNotNull(DocumentStatus.INDEXED_SUCCESS.getStatusDescription());
+    public void getStatusDescription_forEveryStatus_shouldEqualItsName() {
+        for (DocumentStatus status : DocumentStatus.values()) {
+            assertEquals(status.name(), status.getStatusDescription());
+        }
     }
 
     @Test
-    public void testGetStatusMessage() {
-        assertNotNull(DocumentStatus.CREATED.getStatusMessage());
-        assertNotNull(DocumentStatus.SENTENCES_PROCESSED_SUCCESS.getStatusMessage());
-        assertNotNull(DocumentStatus.QUEUED_FOR_INDEXING.getStatusMessage());
+    public void getStatusMessage_forEveryStatus_shouldBeItsOwn() {
+        Map<String, DocumentStatus> owners = new HashMap<>();
+        for (DocumentStatus status : DocumentStatus.values()) {
+            String message = status.getStatusMessage();
+            assertNotNull(status + " has no message", message);
+            assertFalse(status + " has a blank message", message.trim().isEmpty());
+            DocumentStatus owner = owners.putIfAbsent(message, status);
+            assertNull(status + " shares its message with " + owner, owner);
+        }
+    }
+
+    @Test
+    public void getStatusMessage_ofNotIndexedError_shouldSayThatIndexingFailed() {
+        assertEquals("Error indexing document.", DocumentStatus.NOT_INDEXED_ERROR.getStatusMessage());
     }
 
     @Test

@@ -45,7 +45,7 @@ On `DEVELOP` at `043adc533`, on 2026-10-12.
 | `dequeue-docId-context.xml` exists only as a test resource of `dsh-rest-api`. Nothing references it, and it does nothing but log what it receives | `dsh-rest-api/src/test/resources/dequeue-docId-context.xml`; a grep for its name over every `*.java`, `*.xml`, `*.properties` and `*.yml` finds no reference |
 | The original file is held inside the record, as `byte[] originalFileContents`. Moving it to a file store is already planned, and is not a decision of this ADR | `Document.java`; ADR-001 §3.1; PRD Wave 1 task 10 |
 | `AdvancedNumberFilter` imports Lucene's analysis classes and nothing of Solr. The vector-order plugin imports Solr | the imports of the classes under `dsh-solr/*/src/main/java` |
-| `NOT_INDEXED_ERROR` carries the description and message of `DEQUEUED_FOR_INDEXING` | `DocumentStatus.java`, the constant's constructor arguments |
+| `NOT_INDEXED_ERROR` carries the description and message of `DEQUEUED_FOR_INDEXING`. Fixed by `#171` on 2026-10-16 | `DocumentStatus.java`, the constant's constructor arguments |
 
 Until this ADR revised it, ADR-001 planned a migration of consumers that were never written. Its
 Context table said the workers dequeued and processed documents, and it treated
@@ -745,7 +745,8 @@ removes four of them from the status API: `QUEUED_FOR_PROCESSING`, its `_SUCCESS
 `_ERROR`, and `DEQUEUED_FOR_PROCESSING`. **A hop per stage** adds some.
 
 One defect in a status is recorded as a follow-up candidate and is not part of this decision:
-`NOT_INDEXED_ERROR` carries the description and message of another status.
+`NOT_INDEXED_ERROR` carries the description and message of another status. Fixed by `#171` on
+2026-10-16.
 
 ---
 
@@ -940,7 +941,7 @@ wrote this ADR.
    MongoDB or RabbitMQ container, fewer dependencies.
 4. **The PRD re-plan**, through `dsh-plan-wave`, from the table above.
 5. **`NOT_INDEXED_ERROR`'s description and message are those of `DEQUEUED_FOR_INDEXING`.** A small
-   defect in `dsh-data`, visible through `/status/{token}`.
+   defect in `dsh-data`, visible through `/status/{token}`. Fixed by `#171` on 2026-10-16.
 6. **The PRD says `dequeue-docId-context.xml` does not exist.** It exists, as an unused test
    resource. The PRD's sentence (§4, "The 2026-09-28 re-plan") is corrected in the re-plan of
    candidate 4. The same sentence in `#160`'s Context was corrected on 2026-10-13, with the
