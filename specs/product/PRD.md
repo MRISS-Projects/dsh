@@ -72,10 +72,10 @@ Wave 1's upstream step 0 was the exception. Its DSH issue, `#146`, was built on 
 and shipped as a patch release, not in `0.4.0`. It went on `0.3.1-SNAPSHOT`, which was renamed `0.3.2`,
 because the release shipped as 0.3.2 (§4, Wave 1, step 0). The milestone was closed on 2026-09-30.
 
-`0.5.0-SNAPSHOT` does not exist in GitHub yet; the others do. It is created when Wave 3's first
-issue is. `0.6.0-SNAPSHOT` was created on 2026-10-10, ahead of its first new issue, because `#45`
-and `#49` moved onto it that day. `dsh-new-story` sets `--milestone` on `gh issue create` from this
-table, keyed by the wave the task came from.
+Every milestone in the table exists in GitHub. `0.5.0-SNAPSHOT` was created on 2026-10-16, when
+`#163` became Wave 3's first issue. `0.6.0-SNAPSHOT` was created on 2026-10-10, ahead of its first
+new issue, because `#45` and `#49` moved onto it that day. `dsh-new-story` sets `--milestone` on
+`gh issue create` from this table, keyed by the wave the task came from.
 
 **parent-poms has its own milestones, one per wave that carries parent-poms work.** A wave's
 upstream issues go on the milestone below, so that a parent-poms release clears one wave's work and
@@ -788,7 +788,7 @@ The owner's decisions from that session:
    OpenAPI document's routes was rejected: the walking skeleton would also have carried a
    breaking redesign of the API.
 6. **`NOT_INDEXED_ERROR`'s wrong description gets an issue of its own**, Wave 1 task 12, so that
-   the fix is in 0.4.0's release notes.
+   the fix is in 0.4.0's release notes. That issue is `#171`.
 7. **Wave 2 task 1 is three tasks.** ADR-003 gave it the rules for repeats and failures on top of
    the flow. They are task 4 now, and the generated pipeline diagram is task 5.
 
@@ -827,7 +827,7 @@ ADR-003's eight follow-up candidates were settled in the same session:
 3. `#158`, `#137` and `#120`: still valid, each with less to cover. Wave 1's triaged issues say
    what.
 4. The PRD re-plan: this one.
-5. `NOT_INDEXED_ERROR`: Wave 1 task 12 (decision 6).
+5. `NOT_INDEXED_ERROR`: Wave 1 task 12 (decision 6). `#171` — **closed** — PR #172.
 6. The sentence on `dequeue-docId-context.xml`: corrected, in "The 2026-09-28 re-plan" above.
 7. `CLAUDE.md` and `system-design.md` describing MongoDB, RabbitMQ and Solr as current: each is
    corrected by the story that removes the code. Those are Wave 1 task 8, Wave 2 task 1 and Wave 2
@@ -1042,7 +1042,8 @@ is written to the analysers' rules, and before `#148` in any case, because it ch
 Task 8 is written before it, which the re-plan of 2026-10-13 accepted. Task 7 lands before `#148`,
 inside the wave, because Wave 3's stories cite the papers. Task 11 lands before Wave 2 task 2,
 which adds to the OpenAPI document. Task 12 lands before Wave 2 task 1, whose flow is the first
-thing that can leave a document in `NOT_INDEXED_ERROR`.
+thing that can leave a document in `NOT_INDEXED_ERROR`. **Tasks 11 and 12 landed on 2026-10-16**,
+ahead of both: `#162` — **closed** — PR #164, and `#171` — **closed** — PR #172.
 
 Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the re-plan of
 2026-10-10, `parent-poms#90` and `#109` belong to Wave 4, `#91` to Wave 7, `#92` to Wave 10, and
@@ -1265,7 +1266,10 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    redistribution; otherwise it is cited by DOI. The sentence paper is paid: it stays in a gitignored
    local folder and is cited by DOI. The owner is a co-author, so whether the publisher allows posting
    the accepted manuscript is worth checking. Wave 3's stories cite these.
-8. **The in-memory `DocumentDao` replaces MongoDB.** `dsh-data` gains an in-memory
+8. **The in-memory `DocumentDao` replaces MongoDB.** `#167` — open. Keep documents in memory by
+   default, and remove MongoDB.
+
+   `dsh-data` gains an in-memory
    implementation of `DocumentDao` as the interface stands today. It is the default, selected by
    `dsh.persistence` (ADR-003, section 3). The same story removes MongoDB: `MongoDocumentDao`,
    `DocumentRepository`, `dshApplicationContext.xml`, `mongo.properties`, the MongoDB
@@ -1294,9 +1298,13 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
     `LocalFileStorageService` is the default, selected by `dsh.file-store`. It writes under
     `dsh.storage.local-directory`, whose default this task chooses. Nothing is marked
     `@Deprecated`. `GcsFileStorageService` follows in Wave 5. (ADR-001 Phase 1 task 1.7.)
-11. **The OpenAPI document and the feature specs describe what exists.** Added on 2026-10-13.
-    `specs/api/openapi/dsh-rest-api.yaml` describes four routes under `/api/v1` that the code
-    does not have, and `document-analysis.md`, `indexing-workflow.md`, `rest-api-endpoints.md`
+11. **Done on 2026-10-16: the OpenAPI document and the feature specs describe what exists.**
+    `#162` — **closed** — PR #164. Make the OpenAPI document and the feature specs describe the API
+    that exists. Its spec, `specs/stories/162-openapi-and-feature-specs-describe-the-api.md`, holds
+    the evidence. The plan as written is kept below.
+
+    Added on 2026-10-13. `specs/api/openapi/dsh-rest-api.yaml` describes four routes under
+    `/api/v1` that the code does not have, and `document-analysis.md`, `indexing-workflow.md`, `rest-api-endpoints.md`
     and `smart-highlighting.md` in `specs/features/` follow it. The code is the baseline. The
     OpenAPI document is rewritten to the two endpoints `DocumentResource` has. The four feature
     specs are corrected against the code and ADR-003, and what they describe that no wave has
@@ -1304,7 +1312,12 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
     `indexing-workflow.md`: the three retries of a failed task, the "Analysis timeout" row, and
     Solr. From then on an API change starts in the OpenAPI document, as
     `.github/copilot/rules/api-standards.md` asks. Documentation only.
-12. **Every status describes itself.** Added on 2026-10-13. `NOT_INDEXED_ERROR` is declared with
+12. **Done on 2026-10-16: every status describes itself.** `#171` — **closed** — PR #172.
+    `NOT_INDEXED_ERROR` answers `DEQUEUED_FOR_INDEXING`'s description and message. Its spec,
+    `specs/stories/171-not-indexed-error-describes-itself.md`, holds the evidence. The plan as
+    written is kept below.
+
+    Added on 2026-10-13. `NOT_INDEXED_ERROR` is declared with
     the description and the message of `DEQUEUED_FOR_INDEXING`, and a client reads both through
     `/status/{token}`. The task is the fix, and a test that holds every status to a description
     of its own. It gets an issue, so that the fix is in 0.4.0's release notes.
@@ -1381,8 +1394,13 @@ runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1
 
 ### Wave 3 — Analysis algorithms
 
-Milestone: `0.5.0-SNAPSHOT`, which does not exist yet (§3). Everything here is written from scratch against the two papers (Wave 1 task 7). Each
+Milestone: `0.5.0-SNAPSHOT`, created on 2026-10-16 for `#163` (§3). Everything here is written from scratch against the two papers (Wave 1 task 7). Each
 story brings its expected-output fixtures.
+
+**Triaged issue:** `#163` — Ranked keyword and sentence sets drop entries that tie on score. It was
+found on 2026-10-14 while building `#162` (that story's spec, §8.5). It was not folded into `#162`,
+which changed documentation only. It sits in this wave because nothing fills the sets until tasks
+4 and 6 rank keywords and sentences into them, so the defect is latent until then.
 
 **Test fixtures.** `dsh-test-dataset` holds four PDFs and nothing else (`#124` §3). A module unpacks
 them with a `maven-remote-resources-plugin:process` execution into `target/test-classes`, with
