@@ -119,6 +119,70 @@ public class InMemoryDocumentDaoTest {
 	}
 
 	@Test
+	public void storeDocument_whenIndexKeysChange_shouldUpdateTheIndexes() throws Exception {
+		Document document = document("before");
+		String id = dao.storeDocument(document);
+		Document sameHash = document("before");
+		dao.storeDocument(sameHash);
+		String oldHash = document.getFileHash();
+		String oldToken = document.getToken();
+
+		document.setOriginalFileContents("after".getBytes(StandardCharsets.UTF_8));
+		List<Document> oldHashMatches = dao.findDocumentsByHash(oldHash);
+		assertThat(oldHashMatches).hasSize(1);
+		assertThat(oldHashMatches.get(0)).isSameAs(sameHash);
+		dao.storeDocument(document);
+
+		oldHashMatches = dao.findDocumentsByHash(oldHash);
+		assertThat(oldHashMatches).hasSize(1);
+		assertThat(oldHashMatches.get(0)).isSameAs(sameHash);
+		assertThat(dao.findDocumentsByHash(document.getFileHash())).containsExactly(document);
+		assertThat(dao.findDocumentByToken(oldToken)).isSameAs(document);
+
+		Document replacement = document("replacement");
+		replacement.setId(id);
+		dao.storeDocument(replacement);
+
+		assertThat(dao.findDocumentsByHash(document.getFileHash())).isEmpty();
+		assertThat(dao.findDocumentsByHash(replacement.getFileHash())).containsExactly(replacement);
+		assertThat(dao.findDocumentByToken(oldToken)).isNull();
+		assertThat(dao.findDocumentByToken(replacement.getToken())).isSameAs(replacement);
+	}
+
+	@Test
+	public void storeDocument_whenHashAndTokenAreNull_shouldIndexAndClearThem() throws Exception {
+		Document document = new Document();
+
+		dao.storeDocument(document);
+
+		assertThat(dao.findDocumentsByHash(null)).containsExactly(document);
+		assertThat(dao.findDocumentByToken(null)).isSameAs(document);
+
+		Document replacement = document("replacement");
+		replacement.setId(document.getId());
+		dao.storeDocument(replacement);
+
+		assertThat(dao.findDocumentsByHash(null)).isEmpty();
+		assertThat(dao.findDocumentByToken(null)).isNull();
+		assertThat(dao.findDocumentsByHash(replacement.getFileHash())).containsExactly(replacement);
+
+		dao.clearDocuments();
+
+		assertThat(dao.findDocumentsByHash(null)).isEmpty();
+		assertThat(dao.findDocumentByToken(null)).isNull();
+	}
+
+	@Test
+	public void findDocumentByToken_whenNullTokenWasChangedBeforeRestoring_shouldNotReturnIt() {
+		MutableTokenDocument document = new MutableTokenDocument();
+		dao.storeDocument(document);
+
+		document.token = "changed";
+
+		assertThat(dao.findDocumentByToken(null)).isNull();
+	}
+
+	@Test
 	public void clearDocuments_whenDocumentsStored_shouldRemoveEveryOne() throws Exception {
 		Document document = document("a");
 		String id = dao.storeDocument(document);
@@ -167,7 +231,59 @@ public class InMemoryDocumentDaoTest {
 		}
 	}
 
+	@Test
+	public void storeDocument_whenConcurrentWritesReplaceSameId_shouldKeepOnlyCurrentIndexes() throws Exception {
+		int threads = 8;
+		int perThread = 50;
+		ExecutorService pool = Executors.newFixedThreadPool(threads);
+		CountDownLatch start = new CountDownLatch(1);
+		List<Future<List<Document>>> results = new ArrayList<>();
+		try {
+			for (int t = 0; t < threads; t++) {
+				int thread = t;
+				results.add(pool.submit(() -> {
+					start.await();
+					List<Document> stored = new ArrayList<>();
+					for (int i = 0; i < perThread; i++) {
+						Document document = document("shared-" + thread + "-" + i);
+						document.setId("shared-id");
+						dao.storeDocument(document);
+						stored.add(document);
+					}
+					return stored;
+				}));
+			}
+			start.countDown();
+
+			List<Document> stored = new ArrayList<>();
+			for (Future<List<Document>> result : results) {
+				stored.addAll(result.get(30, TimeUnit.SECONDS));
+			}
+
+			Document current = dao.findDocumentById("shared-id");
+			assertThat(dao.findDocumentsByHash(current.getFileHash())).containsExactly(current);
+			assertThat(dao.findDocumentByToken(current.getToken())).isSameAs(current);
+			for (Document document : stored) {
+				if (document != current) {
+					assertThat(dao.findDocumentsByHash(document.getFileHash())).isEmpty();
+					assertThat(dao.findDocumentByToken(document.getToken())).isNull();
+				}
+			}
+		} finally {
+			pool.shutdownNow();
+		}
+	}
+
 	private static Document document(String contents) throws Exception {
 		return new Document(contents.getBytes(StandardCharsets.UTF_8), "title of " + contents);
+	}
+
+	private static final class MutableTokenDocument extends Document {
+		private String token;
+
+		@Override
+		public String getToken() {
+			return token;
+		}
 	}
 }
