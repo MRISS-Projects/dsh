@@ -46,10 +46,14 @@ redirects (302) to `https://library.imaging.org/archiving/articles/14/1/art00023
   a login: the paper is free to read.
 - The page states only "Copyright © Society for Imaging Science and Technology 2017". Neither the
   page nor the paper's Crossref record carries a licence.
-- IS&T's Archiving copyright form transfers copyright to IS&T. The authors keep the right to reuse
-  the work, without fee, in their own future works. The 2017 form is no longer online (its URL
-  answers 404); the [2022 form](https://www.imaging.org/common/uploaded%20files/pdfs/Conferences/Archiving/2022/2022Archiving_Copyright.pdf)
-  is the nearest evidence. Neither author is this repository's owner.
+- IS&T's Archiving copyright form transfers copyright to IS&T. Each author keeps four rights:
+  proprietary rights other than copyright, such as patents; reuse without fee in their own future
+  works; "the right to post a personal copy on non-IS&T servers for limited noncommercial
+  distributions", with IS&T's notice attached; and, for an employer that owned the copyright,
+  distribution within the employing organisation. The 2017 form is no longer online (its URL
+  answers 404). The [2022 form](https://www.imaging.org/common/uploaded%20files/pdfs/Conferences/Archiving/2022/2022Archiving_Copyright.pdf)
+  is marked "last update: 6/29/2017", so its terms are likely the 2017 ones. Every retained right
+  is the authors', and neither author is this repository's owner.
 - **Decision: not committed.** Free to read is not a licence to redistribute.
 
 **The sentence paper.** Rafael Ferreira, Rafael Dueire Lins, Steven J. Simske, Fred Freitas and
@@ -69,9 +73,11 @@ Author order and both papers' volumes and pages are as Crossref lists them.
   sites Elsevier has an agreement with. Every shared copy carries a CC BY-NC-ND licence and links
   to the DOI. A public GitHub repository is none of these (`gh repo view` reports `PUBLIC`).
   **Not committed** (§3.1 decision 1).
-- The same policy lets an author give copies "directly to students or research collaborators for
-  their personal use". That is how a developer without a subscription gets the paper into the local
-  folder.
+- The same policy lets an author share the **accepted manuscript** "directly by providing copies to
+  their students or to research collaborators for their personal use". The clause is in the
+  accepted-manuscript list only; for a subscription article's published version the policy asks
+  for a link. So a developer without a subscription gets the accepted manuscript from the owner,
+  not the published PDF.
 
 ### 2.3 Constraints found while designing
 
@@ -542,3 +548,23 @@ link to the PRD uses the anchor `#wave-3--analysis-algorithms`, which is the slu
   `BUILD SUCCESS` in 01:23 min. 130 tests ran, none failed, errored or was skipped. "All coverage
   checks have been met" was printed by each of the 8 modules that run the check. Gate 3 does not
   apply.
+
+### Step 5, the local review
+
+The review of `ffbf67d7c..1c275b0bc` found no critical issue. Both important findings were checked
+against the linked evidence and held, and both were plan errors in §2.2 as well. So the record and
+the placeholders now differ from the text of §6 in these points, and §2.2 is corrected:
+
+- **IS&T's retained rights.** The record said the authors keep "only" the right to reuse the work.
+  The form's own list (lines 73–79 of its text) has four retained rights, among them posting a
+  personal copy on non-IS&T servers. The record now lists them and says why none applies: they
+  are the authors', and neither author owns this repository. The form is marked
+  "last update: 6/29/2017", and the record says so.
+- **Elsevier's personal-use copies.** The clause "Directly by providing copies to their students or
+  to research collaborators for their personal use" is in the policy's accepted-manuscript list
+  only. The published-article section asks for a link. Both "getting a copy" texts now ask the owner
+  for the accepted manuscript, not the published PDF.
+- **Minor.** The sentence placeholder no longer reads as if the policy names GitHub. "How the
+  folders work" now says that a file saved directly in `specs/references/` is not ignored, and that
+  a placeholder must be named exactly `README.md`, because the exception is case-sensitive. One
+  awkward sentence was reworded.
