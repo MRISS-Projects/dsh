@@ -426,7 +426,7 @@ specs/product/PRD.md:1307:12. **Every status describes itself.** Added on 2026-1
 
 These are the expected matches and nothing else. `dsh-rest-api.yaml` and `rest-api-endpoints.md`
 do not appear. Candidate 5 is at line 943, not 942, because the note at line 748 wraps onto a
-second line. Each of ADR-003's three passages carries `Fixed by #171 on 2026-10-16`: line 748's
+second line. Each of ADR-003's three passages carries ``Fixed by `#171` on 2026-10-16``: line 748's
 note ends on line 749, and candidate 5's on line 944.
 
 ### 8.3 Task 3 Step 2: the gates
