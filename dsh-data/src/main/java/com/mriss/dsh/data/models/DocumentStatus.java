@@ -55,7 +55,7 @@ public enum DocumentStatus {
 		}
 	},
 	
-	NOT_INDEXED_ERROR("DEQUEUED_FOR_INDEXING", "Document dequeued for indexing.") {
+	NOT_INDEXED_ERROR("NOT_INDEXED_ERROR", "Error indexing document.") {
 		@Override
 		public DocumentStatus transition(TransitionType type) {
 			return this;
