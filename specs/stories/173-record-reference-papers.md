@@ -495,4 +495,50 @@ ignore rule is the only behaviour, and it is checked with `git check-ignore`, re
 
 ## 8. Verification results
 
-Filled in by Task 1 and Task 3.
+Run on 2026-10-16, on `issue-173-record-reference-papers`.
+
+### Task 1, the ignore rule (AC003, AC004, AC005)
+
+- **Placement.** "Local build logs" is not the last section of `.gitignore`; "Misc" follows it. The
+  section went in directly after "Local build logs", as §3.2 places it, rather than at the end of the
+  file. The rule is at lines 31–33.
+- **Red.** Before the rule, `git check-ignore -q` on a throwaway `paper.pdf` in each paper's directory
+  printed `exit=1` for both.
+- **Green.** After it, `git check-ignore -v` printed
+  `.gitignore:32:specs/references/*/*`, then the path, and `exit=0` for both.
+- **Not ignored.** `git check-ignore -q` printed `readme exit=1` for both placeholders and
+  `record exit=1` for the record.
+- **Links.** The keyword placeholder's DOI link counted `1`, the sentence placeholder's `1`, and the
+  record's links to the placeholders `2`.
+- **Staged.** `git status --short` showed `M  .gitignore` and `A` for exactly the three `README.md`.
+  Neither `paper.pdf` appeared. After `rm`, `git status --short --ignored specs/references` showed the
+  three staged files and no `!!` line.
+
+### Task 2, the PRD (AC006)
+
+The grep over Wave 3's section found one match, on its line 3: the opening paragraph. The record's
+link to the PRD uses the anchor `#wave-3--analysis-algorithms`, which is the slug of the heading
+`### Wave 3 — Analysis algorithms` at `specs/product/PRD.md:1395`.
+
+### Task 3, the acceptance checks and the gates (AC001, AC002, AC003, AC007)
+
+- **DOIs.** Two distinct DOIs, each answering `302`:
+  `10.1016/j.csl.2016.01.003` to `https://linkinghub.elsevier.com/retrieve/pii/S0885230816000048`,
+  and `10.2352/issn.2168-3204.2017.1.0.105` to
+  `https://library.imaging.org/archiving/articles/14/1/art00023`.
+- **The evidence, re-read.** Each linked page answered `200`. Elsevier's sharing policy still contains
+  "share a link to your article rather than the full-text", "non-commercial personal homepage or
+  blog", "research collaborators for their personal use" and "CC BY-NC-ND". The IS&T article page
+  still reads "Copyright © Society for Imaging Science and Technology 2017". The 2022 copyright form
+  answers `200 application/pdf`. Each entry gives authors, title, venue, year, DOI and its Wave 3
+  tasks. The sentence paper's entry treats the published version and the accepted manuscript in two
+  separate paragraphs.
+- **Tree.** `git ls-files specs/references` lists the three `README.md`. `git ls-files '*.pdf'`
+  lists the four fixtures of §2.1 and nothing else.
+- **Diff.** `git diff --stat DEVELOP` touches `.gitignore`, `specs/product/PRD.md`, the three files
+  under `specs/references/` and this spec. Nothing else.
+- **Lint.** `markdownlint exit=0`.
+- **Gates 1 and 2.** `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`,
+  `BUILD SUCCESS` in 01:23 min. 130 tests ran, none failed, errored or was skipped. "All coverage
+  checks have been met" was printed by each of the 8 modules that run the check. Gate 3 does not
+  apply.
