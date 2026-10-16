@@ -8,12 +8,13 @@ Speech & Language, vol. 39, pp. 1–28. Elsevier, 2016. DOI
 Elsevier's paywall, and Elsevier's
 [sharing policy](https://www.elsevier.com/about/policies-and-standards/sharing) asks authors to
 share a link to it rather than its full text. The same policy allows the authors' accepted
-manuscript on a personal homepage and on certain repositories, but not in a public GitHub
-repository.
+manuscript on a personal homepage and on certain repositories; a public GitHub repository is not
+one of them.
 
-**To work with it locally,** get it through ScienceDirect with a subscription, by following the
-DOI, or ask the repository's owner, a co-author: Elsevier's policy lets authors give copies to
-research collaborators for their personal use. Save it in this directory. Git ignores every file
+**To work with it locally,** get the published version through ScienceDirect with a subscription,
+by following the DOI. Or ask the repository's owner, a co-author, for the accepted manuscript:
+Elsevier's policy lets authors give copies of it to research collaborators for their personal use.
+Save it in this directory. Git ignores every file
 here except this one.
 
 The reasoning, and the other papers, are in [the reference record](../README.md).

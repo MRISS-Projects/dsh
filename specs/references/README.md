@@ -25,11 +25,15 @@ before changing a decision here.
 [article page](https://library.imaging.org/archiving/articles/14/1/art00023) lets anyone
 download the PDF, but states only "Copyright © Society for Imaging Science and Technology 2017".
 Neither that page nor the paper's Crossref record carries a licence. IS&T's Archiving copyright
-form transfers copyright to IS&T, and the authors keep only the right to reuse the work in their
-own future works. The 2017 form is no longer online; the
+form transfers copyright to IS&T. The authors keep proprietary rights other than copyright, the
+right to reuse the work without fee in their own future works, and "the right to post a personal
+copy on non-IS&T servers for limited noncommercial distributions", with IS&T's notice attached.
+Their employers may distribute copies within the employing organisation. Every one of those rights
+belongs to the authors, and neither author owns this repository. The 2017 conference's own form is
+no longer online. The
 [2022 form](https://www.imaging.org/common/uploaded%20files/pdfs/Conferences/Archiving/2022/2022Archiving_Copyright.pdf)
-is the nearest evidence. Free to read is not a licence to redistribute, so the paper is cited,
-not committed.
+is marked "last update: 6/29/2017", so its terms are likely the ones the 2017 paper was published
+under. Free to read is not a licence to redistribute, so the paper is cited, not committed.
 
 **Getting a copy.** Follow the DOI to IS&T's library, use *Download PDF*, and save the file in
 `vans-2017-tf-idf-classifiers/`.
@@ -60,16 +64,22 @@ keep the accepted manuscript out. The alternative was the reading that a homepag
 CC BY-NC-ND licence would itself allow it here, and Elsevier has not endorsed that reading. If the
 owner posts it on a personal homepage, this entry will link to it.
 
-**Getting a copy.** Follow the DOI to ScienceDirect, which needs a subscription. Or ask the
-owner: Elsevier's policy lets authors give copies directly to research collaborators for their
-personal use. Save the file in `ferreira-2016-sentence-similarity/`.
+**Getting a copy.** Follow the DOI to ScienceDirect, which needs a subscription, for the published
+version. Or ask the owner for the accepted manuscript: Elsevier's policy lets authors give copies of
+their accepted manuscript directly to research collaborators for their personal use. It grants that
+for the accepted manuscript only; for the published version it asks for a link. Save the file in
+`ferreira-2016-sentence-similarity/`.
 
 ## How the folders work
 
 - Git ignores everything inside a paper's directory except its `README.md`, by a rule in the
   root `.gitignore`. A copy of the paper saved there is never committed, whatever its format.
-- Neither is any other file put there. Keep notes about a paper somewhere else.
+- The same applies to any other file there: it is ignored too, so keep notes about a paper
+  elsewhere.
+- Save a copy inside its paper's directory, never directly in `specs/references/`. The rule covers
+  only the paper directories, so a file saved one level up is not ignored and could be committed.
 - To add a paper, create `specs/references/<first-author>-<year>-<topic>/README.md` as its
-  placeholder, and add an entry here. If its licence does allow the full text in this repository,
+  placeholder, named exactly `README.md`: the exception is case-sensitive, so on a case-sensitive
+  file system a `readme.md` would be ignored. Then add an entry here. If its licence does allow the full text in this repository,
   add the file with `git add -f`, carrying the notice the licence requires, and say so in the
   entry.
