@@ -28,5 +28,9 @@
 # ----- Local build logs (see CLAUDE.md: long commands redirect here) -----
 .logs/
 
+# ----- Reference papers: full text stays local (see specs/references/README.md) -----
+specs/references/*/*
+!specs/references/*/README.md
+
 # ----- Misc -----
 **/*.md.html
