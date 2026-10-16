@@ -29,14 +29,16 @@ seconds later (story `#162`, `../stories/162-openapi-and-feature-specs-describe-
 ### Where it stops
 
 Nothing consumes `si.test.queue`. `dsh-doc-indexer-worker` holds one class,
-`DshDocIndexerApplication`, and no listener. So a document stops at `QUEUED_FOR_INDEXING_SUCCESS` or
-`QUEUED_FOR_INDEXING_ERROR`, and nothing indexes it. None of the statuses after those two is ever
-written. They are all listed, with their transitions, in
+`DshDocIndexerApplication`, and no listener. Normally, a document stops at
+`QUEUED_FOR_INDEXING_SUCCESS` or `QUEUED_FOR_INDEXING_ERROR`, and nothing indexes it. None of the
+statuses after those two is normally written. They are all listed, with their transitions, in
 `../architecture/document-status-workflow.md`.
 
-A document also stays at `QUEUED_FOR_INDEXING`, with nothing to move it on, when no confirm, nack
-or return ever reaches its handler, or when the handler's second store fails. Both come from the
-code; neither was observed.
+A document can instead stay at `QUEUED_FOR_INDEXING` when no confirm, nack or return reaches its
+handler, or when the handler's second store fails before the outcome is persisted. If that store
+fails after a success confirmation, the handler remains subscribed: a later confirmation can advance
+its in-memory document to `DEQUEUED_FOR_INDEXING` and persist that status, even though nothing
+consumes the queue. These paths come from the code; neither was observed.
 
 ### Known defects
 

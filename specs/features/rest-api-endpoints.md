@@ -68,7 +68,10 @@ curl http://localhost:8080/v1/dsh/document/status/2026101461d279be-cc9e-40f3-a37
 `status` is `DocumentStatus`'s description (`dsh-data`). That is the status's name, except for
 `NOT_INDEXED_ERROR`, which answers `DEQUEUED_FOR_INDEXING` (Wave 1 task 12). The statuses are listed
 in `../architecture/document-status-workflow.md`. Today a document stops at
-`QUEUED_FOR_INDEXING_SUCCESS` or `QUEUED_FOR_INDEXING_ERROR` (`./indexing-workflow.md`).
+`QUEUED_FOR_INDEXING_SUCCESS` or `QUEUED_FOR_INDEXING_ERROR` under normal operation
+(`./indexing-workflow.md`). If no outcome is persisted, it can remain at `QUEUED_FOR_INDEXING`;
+if saving a success outcome fails, the retained handler can later persist `DEQUEUED_FOR_INDEXING`
+without anything consuming the queue. These are code-derived paths, not observed outcomes.
 
 ### Outcomes
 

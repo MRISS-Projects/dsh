@@ -770,10 +770,14 @@ fixed, each checked red before the fix and green after it.
    started before the method returns, and the two race: B2 and B15 show the store usually wins.
    Fix: "`/submit` does not wait for the store or the enqueue", in the YAML and in the three specs
    that said it. §3.2's wording above is the design as written and is left as it was.
-6. **Minor: "Where it stops" left out `QUEUED_FOR_INDEXING`.** `DocumentEnqueueResponseMessageHandler`
-   advances the document only when a confirm, nack or return reaches it, and stores it once more
-   afterwards. If neither happens, or the second store fails, the document stays where the first
-   store left it. Fix: `indexing-workflow.md` says so, as from the code.
+6. **Minor: the stopping states were not guaranteed.** `DocumentEnqueueResponseMessageHandler`
+   advances the document in memory before storing it, and unsubscribes only after the store succeeds.
+   If no outcome is persisted, the document can remain at `QUEUED_FOR_INDEXING`. If storing a success
+   outcome fails, the handler remains subscribed; a later confirmation can advance the in-memory
+   document to `DEQUEUED_FOR_INDEXING` and persist that status, although nothing consumes the queue.
+   These paths come from the code and were not observed. Fix: `indexing-workflow.md` and
+   `rest-api-endpoints.md` describe success and error as the normal stopping states and record these
+   exceptions.
 7. **Minor: a Planned item said `/status` would "never" answer `TOKEN_NOT_FOUND`** for a token
    `/submit` returned. The default store after Wave 1 task 8 is in memory, and a restart empties it.
    Fix: "while the store still holds the document", with the in-memory store's limit stated.
