@@ -84,22 +84,23 @@ Requirements:
 
 ---
 
-## Repository Test
+## Store Test
 
 ```text
-As a Backend Developer (see /.github/roles.md), generate a Spring Data repository
-test for [RepositoryName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate tests for the store
+[StoreName] in the DSH project.
 
 Requirements:
-- Test class name: [RepositoryName]IT, in the module's integration package
-  (a slice starts a Spring context, so it is an integration test)
-- Use @DataMongoTest or @DataJpaTest slice context
+- [StoreName]Test: a unit test of the in-memory implementation, with no Spring
+  context and no slice
 - Test cases:
-  - Save and retrieve entity
-  - Custom query method: [method name] with [scenario]
+  - Store and find an entity
+  - Each operation: [method name] with [scenario]
+  - A miss: an unknown key finds nothing
   - Edge case: [describe edge case]
+- The selection by the dsh.* key is tested once, in a *IT in the module's
+  integration package, because it needs a context
 - Use AssertJ assertions
-- Include @After cleanup
 ```
 
 ---

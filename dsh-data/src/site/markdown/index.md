@@ -2,5 +2,4 @@
 
 ## DSH Data Module
 
-This module has models and DAO classes to access MongoDB and SOLR.
-
+This module has the models, the document store interface with its in-memory implementation, and an empty interface for a SOLR index.

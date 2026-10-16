@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Unit test for {@link DshDataApplication}.
- * No Spring context is loaded – MongoDB is not required.
+ * No Spring context is loaded.
  */
 public class DshDataApplicationTest {
 

@@ -24,8 +24,8 @@ Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does
 - **Staging:** every staging build passes `-DintegrationTests`.
 - **Deploy:** a deploy workflow from `DEVELOP`. It does not exist yet.
 - **The local gate**, in addition to the unit gate:
-  - **When it applies:** a story changes code that touches an external system (MongoDB, RabbitMQ,
-    Solr, or any other service outside the JVM) or a REST API entry point.
+  - **When it applies:** a story changes code that touches an external system (RabbitMQ, Solr, or
+    any other service outside the JVM) or a REST API entry point.
   - **What runs:** after the root `mvn -B clean install` passes,
     `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd`. The changed modules are
     the ones whose code changed.
@@ -141,7 +141,7 @@ public class DocumentControllerIT {
 - **Required when a story creates or changes a Spring bean class**, REST entry points included
 - Every external service is a `@MockBean`; nothing leaves the JVM
 - Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for a full context in the test JVM. That is
-  still in-process, with `@MockBean`s standing in for MongoDB and RabbitMQ; it is not layer 3
+  still in-process, with `@MockBean`s standing in for RabbitMQ; it is not layer 3
 - Clean up test data in `@After`
 
 ## Layer 3: over the wire
@@ -150,11 +150,12 @@ public class DocumentControllerIT {
 - **Required when a story adds a REST endpoint or changes one's contract**
 
 `dsh-rest-api`'s `http-integration-tests` profile, active under `-DintegrationTests`, runs the
-application as a **separate process** and runs **real MongoDB and RabbitMQ** in Docker around the
-integration-test phase. `DocumentResourceHttpIT` is the example.
+application as a **separate process** and runs **real RabbitMQ** in Docker around the
+integration-test phase, and the server keeps documents in its own memory. `DocumentResourceHttpIT`
+is the example.
 
 - **No Spring context in the test JVM.** The test is a plain HTTP client (`RestTemplate`) against
-  the forked server. Nothing is mocked; a request goes through Mongo and the broker for real
+  the forked server. Nothing is mocked; a request goes through the store and the broker for real
 - **The URL comes from `dsh.it.baseUrl`**, which failsafe sets from a port reserved at build time.
   Never hardcode a port, and never fall back to `localhost:8080`: run outside the lifecycle, the
   test must fail and say why

@@ -21,10 +21,6 @@ jobs:
       contents: read
 
     services:
-      mongodb:
-        image: mongo:6
-        ports:
-          - 27017:27017
       rabbitmq:
         image: rabbitmq:3-management
         ports:
@@ -176,10 +172,6 @@ jobs:
                       <id>github-packages</id>
                       <properties>
                           <github.personal.token>${env.PACKAGES_READ_TOKEN}</github.personal.token>
-                          <mongo.host>localhost</mongo.host>
-                          <mongo.port>27017</mongo.port>
-                          <mongo.user>dshuser</mongo.user>
-                          <mongo.password>dshpass</mongo.password>
                       </properties>
                       <repositories>
                           <repository>
@@ -204,16 +196,6 @@ jobs:
               </activeProfiles>
           </settings>
           EOF
-
-      - name: Create MongoDB user and database
-        run: |
-          docker run --rm --network host mongo:6 mongosh --host localhost --eval '
-            db.getSiblingDB("dsh").createUser({
-              user: "dshuser",
-              pwd: "dshpass",
-              roles: [{ role: "readWrite", db: "dsh" }]
-            });
-          '
 
       # A unit test never starts a Spring context; one that does is an *IT in an
       # integration package. Checked ahead of the build, test first, so a broken

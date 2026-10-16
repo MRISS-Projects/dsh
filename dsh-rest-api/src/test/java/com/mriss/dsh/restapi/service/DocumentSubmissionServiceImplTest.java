@@ -27,7 +27,7 @@ import com.mriss.dsh.data.models.DocumentStatus;
 /**
  * Unit tests for {@link DocumentSubmissionServiceImpl}.
  * <p>
- * Both MongoDB ({@link DocumentDao}) and RabbitMQ ({@link DocumentQueueService})
+ * Both the document store ({@link DocumentDao}) and RabbitMQ ({@link DocumentQueueService})
  * are mocked. The RabbitMQ mock simulates an ACK by invoking the real
  * {@link DocumentEnqueueResponseMessageHandler} so that document status
  * transitions are still exercised for coverage.

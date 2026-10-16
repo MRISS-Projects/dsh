@@ -58,8 +58,8 @@ import com.mriss.dsh.restapi.service.DocumentEnqueueMessageHandler;
 /**
  * Integration tests for {@link DocumentResource} using Spring MockMvc.
  * <p>
- * MongoDB ({@link DocumentDao}) and RabbitMQ ({@link DocumentQueueService})
- * are replaced with Mockito mocks so no real infrastructure is required.
+ * The document store ({@link DocumentDao}) and RabbitMQ ({@link DocumentQueueService})
+ * are replaced with Mockito mocks, so that each test drives the statuses itself.
  * The RabbitMQ mock simulates an ACK to drive the document through its
  * full status lifecycle, exercising all production code paths.
  */
@@ -80,7 +80,7 @@ public class DocumentResourceIT {
 
     protected MockHttpServletRequest request;
 
-    /** Mock MongoDB DAO – prevents any real MongoDB connection. */
+    /** Mock document store – the tests set the statuses it returns. */
     @MockBean
     private DocumentDao dao;
 

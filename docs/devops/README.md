@@ -73,14 +73,14 @@ table below) and matches it; no trigger shown here is invented.
 | --- | --- | --- |
 | `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B install`). That single command *is* the coverage gate: `jacoco:check` enforces a 95% LINE and BRANCH minimum per module, and `enforce-coverage-data-exists` fails a module that produced no coverage data at all. Both are bound to `verify` and inherited from `parent-poms` rather than declared here. This is the primary correctness gate. |
 | `spec-validation.yml` | `push` and `pull_request`, both scoped to paths `specs/**`, `docs/**`, `.github/copilot-instructions.md`, `.github/copilot/**`, `.github/roles.md`, `.github/scripts/**`, `.github/skills/**`, `.github/workflows/spec-validation.yml`, `.markdownlint.json`, `CLAUDE.md`, `.claude/**` | Lints the OpenAPI spec with Redocly, lints Markdown under `specs/`, `.github/`, `docs/` (excluding `docs/wiki/**`), `CLAUDE.md` and `.claude/` with markdownlint, and verifies that every path referenced from `copilot-instructions.md` resolves. That last check is enforcing: it fails the job on an unresolved reference, on a source file it cannot read, and when it extracts no references at all. Its logic is covered by `.github/scripts/check-spec-references.test.sh`, which the same job runs first. |
-| `api-testing.yml` | `push` to `DEVELOP` and `pull_request`, both scoped to paths `dsh-rest-api/**`, `specs/api/**`; `workflow_dispatch` | Builds the full project, boots `dsh-rest-api` against MongoDB/RabbitMQ service containers, and runs the Postman collections in `specs/api/postman/` via Newman. |
+| `api-testing.yml` | `push` to `DEVELOP` and `pull_request`, both scoped to paths `dsh-rest-api/**`, `specs/api/**`; `workflow_dispatch` | Builds the full project, boots `dsh-rest-api` against a RabbitMQ service container, and runs the Postman collections in `specs/api/postman/` via Newman. |
 | `documentation-sync.yml` | `push` to `DEVELOP`, scoped to paths `specs/api/openapi/**`, `specs/architecture/**`, `specs/features/**`, `docs/wiki/**`; `workflow_dispatch` | Two jobs: regenerates HTML API docs from the OpenAPI spec into `docs/api/`, and refreshes the table of contents in `specs/features/*.md` and `specs/architecture/*.md`. Both auto-commit with `[skip ci]`. |
 | `wiki-sync.yml` | `schedule` (`0 2 * * *`, daily 02:00 UTC); `workflow_dispatch` | Because the cron fires on the default branch (`master`), a `redispatch` job re-triggers the workflow on `DEVELOP` when it isn't already running there; the `sync-wiki` job then copies the GitHub wiki's Markdown pages into `docs/wiki/` via a pull request. |
 | `stage.yml` | `workflow_dispatch` only | Delegates to the reusable `project-stage.yml` workflow in `MRISS-Projects/parent-poms` to cut a `staging-<version>-SNAPSHOT-RC` branch from `DEVELOP`. |
-| `staging.yml` | `workflow_dispatch` only | Delegates to `project-staging.yml` in `parent-poms` to stabilise/build an existing RC branch. Passes this repository's build properties as `maven_properties` and nothing else project-specific; no MongoDB runs behind them — see below. |
+| `staging.yml` | `workflow_dispatch` only | Delegates to `project-staging.yml` in `parent-poms` to stabilise/build an existing RC branch. |
 | `deploy.yml` | `workflow_dispatch` only | Deploys the snapshot artifacts and site of the branch it is dispatched on, normally `DEVELOP`, to `snapshots/products/dsh/`. Delegates to the same `project-staging.yml`, with `release_type: snapshots` (parent-poms#104): the build number has no `RC` prefix, and the generated `README.md` is committed back to the branch. A placeholder of this file sits on `master`, because GitHub dispatches a workflow only if its file exists on the default branch; that placeholder refuses to run (`#127`). |
-| `release.yml` | `workflow_dispatch` only | Delegates to `project-release.yml` in `parent-poms` to promote an RC branch to a tagged release on `master` and open the next hotfix line, then merge the release tag back into `DEVELOP`. Takes a `dry_run` checkbox, and passes `maven_properties` and `development_branch: DEVELOP`. |
-| `hotfix.yml` | `workflow_dispatch` only | Delegates to `project-hotfix.yml` in `parent-poms` to build/release a patch from an existing `<version>.x` hotfix branch. Ends by merging the release tag back into `DEVELOP`. Takes the same `dry_run` checkbox, `maven_properties` and `development_branch: DEVELOP`. |
+| `release.yml` | `workflow_dispatch` only | Delegates to `project-release.yml` in `parent-poms` to promote an RC branch to a tagged release on `master` and open the next hotfix line, then merge the release tag back into `DEVELOP`. Takes a `dry_run` checkbox, and passes `development_branch: DEVELOP`. |
+| `hotfix.yml` | `workflow_dispatch` only | Delegates to `project-hotfix.yml` in `parent-poms` to build/release a patch from an existing `<version>.x` hotfix branch. Ends by merging the release tag back into `DEVELOP`. Takes the same `dry_run` checkbox and `development_branch: DEVELOP`. |
 
 All four release workflows (`stage.yml`, `staging.yml`, `release.yml`, `hotfix.yml`) are thin
 wrappers: they take `workflow_dispatch` inputs and pass them straight through to a reusable
@@ -110,48 +110,15 @@ box unticked and the run is a real release, exactly as it was before the checkbo
 The rehearsal itself lives upstream in `parent-poms` (`#72`); these wrappers only make it
 reachable from this repository's Actions tab (`#111`).
 
-### How build properties reach a release build
+### Build properties
 
-`dsh-data/src/main/resources/mongo.properties` is filtered by `maven-resources-plugin` and carries
-four placeholders — `mongo.host`, `mongo.port`, `mongo.user`, `mongo.password`. If a build does not
-define them, filtering leaves `${mongo.port}` as literal text and every `dsh-rest-api` Spring
-context fails with `Circular placeholder reference 'mongo.port' in property definitions`. That is a
-property-resolution failure, not a connectivity one: it happens whether or not a MongoDB is
-running.
-
-Each build path supplies them its own way:
-
-| Path | Where the values come from | Live MongoDB? |
-| --- | --- | --- |
-| Local `mvn install` | **your own `~/.m2/settings.xml`** — see below | yours, if you run one |
-| `ci.yml` | the `github-packages` profile of the `settings.xml` it writes | yes, service container |
-| `staging.yml`, `deploy.yml` | `maven_properties`, rendered upstream into the generated `settings.xml` | no — nothing connects on this path (`#123`, parent-poms#78) |
-| `release.yml`, `hotfix.yml` | the same `maven_properties` block | no — nothing connects on this path |
-
-Precedence is **command line > active settings profile > POM `<properties>`**, measured on Maven
-3.9.16 (`#87`), as it had been on the previous pin (`#114`). Nothing in this repository's POMs
-defines these four: a default there could never win over a settings profile, so its only effect
-would be to hide a missing configuration behind a fabricated `localhost:27017`.
-
-**If you build locally**, your `~/.m2/settings.xml` needs the four names in an active profile:
-
-```xml
-<properties>
-    <mongo.host>localhost</mongo.host>
-    <mongo.port>27017</mongo.port>
-    <mongo.user>dshuser</mongo.user>
-    <mongo.password>dshpass</mongo.password>
-</properties>
-```
-
-Without them a plain `mvn install` fails in `dsh-rest-api` with the placeholder error above, which
-reads like a Spring problem and is not one.
-
-`parent-poms` supplies the mechanism and never the values: `maven_properties` is a generic
-`name=value` block, and no property name belonging to this project exists upstream (`#76`).
-`parent-poms#78` removed the last exception: the Mongo service containers, the step that created
-the Mongo user, and the three `mongo_*` inputs that fed it, which `staging.yml` no longer passes
-(`#123`).
+No build of this repository needs a property of its own. Until `#167`, `dsh-data`'s
+`mongo.properties` was filtered from four `mongo.*` values that every build had to supply: a
+local one through `~/.m2/settings.xml`, and the release wrappers through `maven_properties`
+(`#114`). `#167` removed MongoDB, and the four values with it. `staging.yml`, `deploy.yml`,
+`release.yml` and `hotfix.yml` pass no `maven_properties`. The input stays in `parent-poms`, a
+generic `name=value` block that holds no property name of this project (`#76`), for the day a
+build property is needed again.
 
 ### The Maven toolchain is pinned, in both repositories
 
@@ -237,11 +204,9 @@ published report. The decision is recorded in `specs/stories/104-regenerate-cove
 
 ## Local Developer Scripts
 
-Five `.sh` files sit at the repository root. **None of them is called by CI**: every workflow either
+Three `.sh` files sit at the repository root. **None of them is called by CI**: every workflow either
 invokes Maven directly or delegates to a reusable workflow in `parent-poms`. They exist for local
-convenience only. Three are build tooling and are described below; the other two,
-`connect-mongo.sh` and `connect-mongo-super-user.sh`, are Mongo shell helpers covered in
-`docs/troubleshooting/README.md`.
+convenience only, and are described below.
 
 | Script | What it runs | When you would want it |
 | --- | --- | --- |

@@ -28,7 +28,7 @@ import com.mriss.dsh.data.models.Sentence;
 /**
  * Tests for {@link DocumentHandlingServiceImpl}.
  * <p>
- * MongoDB ({@link DocumentDao}) is mocked; the real service logic is exercised
+ * The document store ({@link DocumentDao}) is mocked; the real service logic is exercised
  * through the mocked DAO, with no Spring context.
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -36,7 +36,7 @@ public class DocumentHandlingServiceImplTest {
 
     final static Logger logger = LoggerFactory.getLogger(DocumentHandlingServiceImplTest.class);
 
-    /** Mock MongoDB DAO – no real MongoDB instance required. */
+    /** Mock document store. */
     @Mock
     private DocumentDao dao;
 

@@ -1,11 +1,12 @@
 # CLAUDE.md
 
 Document Smart Highlights (DSH) is a Java 17 / Spring Boot multi-module Maven system that
-analyses documents and produces smart highlights. It currently runs on self-managed
-MongoDB / RabbitMQ / Solr. A migration to managed GCP services (Firestore, Pub/Sub, Cloud
-Storage) is **proposed** in `specs/architecture/ADR-001-GCP-based-components.md` — status
-Proposed, no implementation work has started yet. How the document pipeline is built, with and
-without GCP, is decided in `specs/architecture/ADR-003-document-pipeline.md`.
+analyses documents and produces smart highlights. It keeps documents in memory by default
+(`dsh.persistence`) and queues them on a self-managed RabbitMQ; the Solr code is still here, but
+nothing runs it. A migration to managed GCP services (Firestore, Pub/Sub, Cloud Storage) is
+**proposed** in `specs/architecture/ADR-001-GCP-based-components.md` — status Proposed. Its
+Phase 1 in-memory store is in place (`#167`), and nothing runs on GCP. How the document pipeline
+is built, with and without GCP, is decided in `specs/architecture/ADR-003-document-pipeline.md`.
 
 ## This file is a router
 
@@ -99,14 +100,14 @@ each is and when each is required — are in `.github/copilot/rules/testing-patt
 1. All tests pass under `mvn -B clean install`. That runs unit tests only, under surefire. Integration
    tests are `*IT` in an `integration` package, run under `mvn -B clean install -DintegrationTests` and on
    every staging build, and are measured by `jacoco-it.exec` — never by the coverage gate below.
-   For `dsh-rest-api`, `-DintegrationTests` also starts MongoDB and RabbitMQ in Docker, so it needs a
-   running Docker daemon.
+   For `dsh-rest-api`, `-DintegrationTests` also starts RabbitMQ in Docker, so it needs a running
+   Docker daemon.
 2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
    by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
    module which produced no coverage data at all. **Both are inherited from
    `MRISS-Projects/parent-poms`, not declared here — grepping this repository will not find them.**
 3. **The local integration gate, conditional.** When a story changes code that touches an external
-   system (MongoDB, RabbitMQ, Solr, or any other service outside the JVM) or a REST API entry point,
+   system (RabbitMQ, Solr, or any other service outside the JVM) or a REST API entry point,
    run `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd` after gate 1 passes. The
    changed modules are the ones whose code changed; `-amd` adds every module that depends on them,
    because a change to shared code (`dsh-data`) breaks only in its consumers. There is no `-am`,
