@@ -118,7 +118,7 @@ ADR-003 adds two interfaces to `dsh-data`: `FileStorageService` (Wave 1 task 10)
 | Aspect | Detail |
 | -------- | -------- |
 | **Document metadata & highlights** | Stored in **Firestore**. The mapping lives in the Firestore implementation, in `dsh-gcp`. The `Document` model in `dsh-data` carries no provider's annotation. |
-| **Original file binary contents** | Stored in **Google Cloud Storage (GCS)**. The `Document` entity's `byte[] originalFileContents` field (up to 50 MB per FR001 in `document-analysis.md`) will be replaced with a `String fileStorageUri` pointing to the GCS object. This is required because Firestore limits one document to **1 MiB** (ADR-003, F7). |
+| **Original file binary contents** | Stored in **Google Cloud Storage (GCS)**. The `Document` entity's `byte[] originalFileContents` field, whose size no requirement bounds, will be replaced with a `String fileStorageUri` pointing to the GCS object. This is required because Firestore limits one document to **1 MiB** (ADR-003, F7). |
 | **The indexing stage's output** | Also stored in **Cloud Storage**, beside the original file: the extracted text and the document's own term frequencies. The record in Firestore holds only what does not grow with the document (ADR-003, section 1). |
 | **Corpus term statistics** | Stored in **Firestore**, behind an interface of their own, with a bound on the writes per document (ADR-003, section 5). |
 | **Spring dependency** | `spring-cloud-gcp-starter-data-firestore`, `spring-cloud-gcp-starter-storage`, in `dsh-gcp` only |

@@ -2,79 +2,101 @@
 
 ## Overview
 
-The indexing workflow describes how documents submitted via the REST API are processed asynchronously by the `dsh-doc-indexer-worker` module, from task enqueuing through analysis and Solr indexing to final status persistence.
+The stages a document goes through after `/submit` accepts it, and the statuses that record them.
+Today a document goes as far as one enqueue on RabbitMQ and stops there. What it is planned to go
+through is decided by ADR-003 (`../architecture/ADR-003-document-pipeline.md`), and built in Waves
+2 and 3 of the PRD (`../product/PRD.md`).
 
-## Workflow Steps
+## Today
 
-```text
-1. Document Received
-   └── REST API persists document metadata (status: processing)
-   └── REST API enqueues indexing task
+### The enqueue
 
-2. Task Dequeued
-   └── Worker picks up task from queue
-   └── Worker validates document is available
+`/submit` starts `DocumentSubmissionServiceImpl.storeDocumentAndQueueForProcessing()`
+asynchronously (`@Async`) and answers without waiting for it:
 
-3. Content Extraction
-   └── Worker extracts raw text from document (PDF/DOC/DOCX)
-   └── Text is normalised (encoding, whitespace)
+1. It advances the document from `CREATED` to `QUEUED_FOR_INDEXING` and stores it. That is the
+   document's first store, so a client never reads `CREATED`.
+2. It sends the document's id to RabbitMQ, on exchange `si.test.exchange` with routing key
+   `si.test.binding`, bound to queue `si.test.queue` (`enqueue-docId-context.xml` in
+   `dsh-rest-api`).
+3. RabbitMQ's publisher confirm advances the document to `QUEUED_FOR_INDEXING_SUCCESS`, or a nack or
+   a returned message advances it to `QUEUED_FOR_INDEXING_ERROR`, and the document is stored again.
+4. If the send throws, the document is advanced to `QUEUED_FOR_INDEXING_ERROR` and stored.
 
-4. Analysis
-   └── Worker calls dsh-doc-analyser with document content and options
-   └── Analyser applies configured algorithms
-   └── Analyser returns list of Highlight objects
+A live run on 2026-10-14 read `QUEUED_FOR_INDEXING` at once and `QUEUED_FOR_INDEXING_SUCCESS` ten
+seconds later (story `#162`, `../stories/162-openapi-and-feature-specs-describe-the-api.md` §8).
 
-5. Persistence
-   └── Worker persists highlights to MongoDB (dsh-data)
-   └── Worker updates document status to: completed
+### Where it stops
 
-6. Solr Indexing
-   └── Worker indexes document content in Apache Solr (dsh-solr)
-   └── Enables full-text search over document content
+Nothing consumes `si.test.queue`. `dsh-doc-indexer-worker` holds one class,
+`DshDocIndexerApplication`, and no listener. Normally, a document stops at
+`QUEUED_FOR_INDEXING_SUCCESS` or `QUEUED_FOR_INDEXING_ERROR`, and nothing indexes it. None of the
+statuses after those two is normally written. They are all listed, with their transitions, in
+`../architecture/document-status-workflow.md`.
 
-7. Error Handling
-   └── On any failure: update document status to: failed
-   └── Persist error message for client retrieval
-   └── Log full stack trace for diagnostics
-```
+A document can instead stay at `QUEUED_FOR_INDEXING` when no confirm, nack or return reaches its
+handler, or when the handler's second store fails before the outcome is persisted. If that store
+fails after a success confirmation, the handler remains subscribed: a later confirmation can advance
+its in-memory document to `DEQUEUED_FOR_INDEXING` and persist that status, even though nothing
+consumes the queue. These paths come from the code; neither was observed.
 
-## Functional Requirements
+### Known defects
 
-### FR001: Asynchronous Processing
+- **An enqueue's outcome can be applied to the wrong document** when submissions overlap: every
+  in-flight handler receives every confirm (`#142`).
+- **A store failure is not visible to the client** that submitted the document, because `/submit`
+  does not wait for the store. `/status` answers `500` for as long as the store cannot be reached.
 
-- Documents must be processed without blocking the REST API response
-- Processing queue must support at-least-once delivery semantics
-- Failed tasks must be retried up to 3 times before marking as failed
+## Planned
 
-### FR002: Status Tracking
+From ADR-003 section 1, "The flow", unless an item says otherwise.
 
-- Document status is always queryable via `GET /api/v1/documents/{documentId}`
-- Status transitions: `processing` → `completed` | `failed`
-- Status updates must be atomic (no partial updates visible to clients)
-
-### FR003: Solr Indexing
-
-- Document full text must be indexed in Solr on successful analysis
-- Solr index must be updated atomically with status change
-- Solr document must be removed if the parent document is deleted
-
-### FR004: Performance
-
-- Worker must process 95% of documents under 10 MB within 30 seconds
-- Worker must handle at least 10 concurrent document processing tasks
-
-## Error Handling
-
-| Scenario | Behaviour |
-| ---------- | ----------- |
-| File not found / corrupted | Immediate failure; status → failed |
-| Unsupported file format | Immediate failure; status → failed |
-| Analysis timeout | Retry up to 3 times; then status → failed |
-| Solr unavailable | Retry with backoff; alert on prolonged failure |
-| Database unavailable | Retry with backoff; do not lose task |
+- **One flow.** One Java DSL `IntegrationFlow` in `dsh-rest-api`, with the stages as its endpoints
+  and two asynchronous hops: submit, hop 1, the indexing stage, hop 2, then the keywords and
+  sentences stages. The message carries the document's id and nothing else (Wave 2 task 1).
+- **One recorder of every status.** No stage writes a status. One component records every
+  transition, by a compare-and-set advance of the stored status (Wave 2 task 1, on the conditional
+  advance of Wave 1 task 9).
+- **The statuses** are those of `../architecture/document-status-workflow.md`, and a document is
+  carried through every one of them to `SENTENCES_PROCESSED_SUCCESS` (Wave 2 task 1).
+- **`/submit` stores and sends before it answers**, and the `@Async` call is removed (Wave 2 task 1,
+  ADR-003 section 1 "`/submit`").
+- **Each document ends in its own status** when submissions overlap (Wave 2 task 1, which closes
+  `#142`).
+- **Failures** (Wave 2 task 4, ADR-003 section 1 "Failures"):
+  - A stage's own failure is final. Its `…_ERROR` status is recorded at the first failure, and the
+    message is consumed. It is not retried.
+  - A store's failure is retried by redelivery. Nothing is recorded, the message is not consumed,
+    and no message is lost. The number of deliveries is a setting of the transport (Wave 6).
+- **A failed send on a hop** records the hop's `…_ERROR` status, at the recorder's points 2 and 7,
+  and is final (Wave 2 task 1; ADR-003 section 1, "Failures", second row). What the publisher tries
+  again before it reports the failure is Wave 6's to settle.
+- **Repeats** (Wave 2 task 4, ADR-003 section 1 "Compare-and-set"):
+  - Every stage is idempotent: running it twice for one document leaves the same result (Wave 3,
+    which builds the stages; ADR-003 section 1, "A stage").
+  - A repeat resumes from the document's status. It does not run again a stage the document is past.
+  - When the sender has recorded a hop's error and the message arrives all the same, the first write
+    wins.
+- **FR001: asynchronous processing.** The response does not wait for the processing: `/submit`
+  answers once the document is stored and its id sent on hop 1. Delivery is at least once (Wave 2
+  tasks 1 and 4). This is the part of FR001 that ADR-003 section 1, "Failures", keeps; it overrides
+  the rest. The ID is kept because ADR-001 and ADR-003 cite it.
+- **FR004: performance.** 95% of documents under 10 MB are processed within 30 seconds, measured
+  against `dsh-staging` (Wave 9 task 1). The ID is kept because the PRD and ADR-001 cite it. Today
+  `/submit` rejects a file over 1 MB (`./rest-api-endpoints.md`), so a document of 10 MB cannot be
+  submitted. No task yet plans raising that limit.
+- **The indexing stage is text extraction**: PDF and HTML into title, paragraphs, sentences and
+  terms, with the output kept in the file store (Wave 3 task 1, Wave 1 task 10).
+- **Corpus term statistics replace a search engine**: term frequency per document and document
+  frequency across the corpus, updated so that a document is counted once however often its stage
+  runs (Wave 3 task 2, ADR-003 sections 5 and 6).
+- **The pipeline diagram is generated from the running flow**, into
+  `../architecture/document-pipeline-flow.md` (Wave 2 task 5).
 
 ## References
 
-- System Architecture: `../architecture/system-design.md`
-- Document Analysis: `./document-analysis.md`
-- Performance Benchmarks: `../testing/performance-benchmarks/`
+- ADR-003, the document pipeline: `../architecture/ADR-003-document-pipeline.md`
+- Document statuses: `../architecture/document-status-workflow.md`
+- The PRD's waves: `../product/PRD.md`
+- Document analysis: `./document-analysis.md`
+- REST API endpoints: `./rest-api-endpoints.md`

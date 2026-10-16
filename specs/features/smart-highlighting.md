@@ -1,84 +1,43 @@
-# Smart Highlighting Feature Specification
+# Smart Highlighting Specification
 
 ## Overview
 
-The smart highlighting feature enables the system to intelligently identify and surface the most relevant passages in a document, providing users with a concise view of key information. Highlights are ranked by confidence and categorised by type.
+A document's smart highlights are its keywords and its top sentences, each ranked by a score. DSH
+holds a place for both on every document. Nothing computes them yet, and no endpoint returns them.
 
-## Functional Requirements
+## Today
 
-### FR001: Highlight Display
+### The model
 
-- **Description**: Clients shall be able to retrieve highlights for any successfully analysed document
-- **Input**: `documentId`, optional filters (`type`, `minConfidence`, pagination)
-- **Output**: Paginated `HighlightCollection`
-- **Acceptance Criteria**:
-  - Returns highlights for `completed` documents
-  - Returns empty collection for documents with no highlights
-  - Returns 404 for unknown `documentId`
+`Document` (`dsh-data`) holds two sorted sets:
 
-### FR002: Highlight Filtering
+- `keyWords`, of `Keyword`: a `value` and a `score`.
+- `relevantSentences`, of `Sentence`: a `value`, a `score` and the `paragraph` it comes from.
 
-- **Description**: Clients shall be able to filter highlights by type and confidence
-- **Acceptance Criteria**:
-  - `type` filter returns only highlights of the specified category
-  - `minConfidence` filter excludes highlights below the threshold
-  - Combined filters work correctly together
-  - Default `minConfidence` is 0.7 when not specified
+Both sets are ordered by score, highest first (`KeywordSorter`, `SentenceSorter`). The comparators
+call two entries with the same score equal, so a set keeps only one of them (`#163`).
 
-### FR003: Highlight Pagination
+### What fills them, and what returns them
 
-- **Description**: The API shall support pagination of highlight results
-- **Acceptance Criteria**:
-  - `page` and `size` parameters control pagination
-  - Response includes `totalElements` and `totalPages`
-  - Default page size is 20; maximum is 100
+- **Nothing fills them.** No production code calls `Document.addKeyword` or `Document.addSentence`,
+  and nothing analyses a document (`./document-analysis.md`).
+- **No endpoint returns them.** `/status/{token}` answers a status and its message, and nothing else
+  (`./rest-api-endpoints.md`).
 
-### FR004: Highlight Types
+## Planned
 
-- **Description**: The system shall support multiple categories of highlights
-
-| Type | Description |
-| ------ | ------------- |
-| `keyword` | Exact keyword or phrase matches |
-| `semantic` | Semantically relevant passages |
-| `pattern` | Regex or structural pattern matches |
-| `entity` | Named entities (persons, organisations, dates) |
-
-## Technical Implementation
-
-### Highlight Data Model
-
-Each highlight contains:
-
-- `id` – unique identifier
-- `text` – highlighted text content
-- `position` – `{start, end, page}` character offsets
-- `confidence` – score between 0.0 and 1.0
-- `type` – highlight category
-- `metadata` – additional type-specific data
-
-### Ranking Strategy
-
-Highlights are sorted by:
-
-1. Confidence score (descending)
-2. Position in document (ascending, as tiebreaker)
-
-## Testing Requirements
-
-### Unit Tests
-
-- Highlight filtering logic for each filter parameter
-- Pagination boundary conditions
-- Sorting correctness
-
-### Integration Tests
-
-- Full flow: upload document → analyse → retrieve highlights with filters
-- Verify response structure matches `../api/openapi/dsh-rest-api.yaml`
+- **A results endpoint** returns a document's keywords and sentences by token. It returns empty
+  lists until Wave 3 fills them, and its contract is written in the OpenAPI document first (Wave 2
+  task 2).
+- **Keywords** are ranked by a meta-algorithmic combination of TF and IDF variants, and a limit
+  bounds the number returned (Wave 3 tasks 3 and 4).
+- **Top sentences** are ranked by their similarity to the title combined with the terms' scores,
+  and returned with their paragraph numbers, with a limit on the number returned (Wave 3 tasks 5
+  and 6).
 
 ## References
 
-- Document Analysis: `./document-analysis.md`
-- API Specification: `../api/openapi/dsh-rest-api.yaml`
-- REST API Endpoints: `./rest-api-endpoints.md`
+- Document analysis: `./document-analysis.md`
+- REST API endpoints: `./rest-api-endpoints.md`
+- The contract: `../api/openapi/dsh-rest-api.yaml`
+- The PRD's waves: `../product/PRD.md`
