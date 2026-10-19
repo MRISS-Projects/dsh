@@ -1,7 +1,5 @@
 package com.mriss.dsh.data.document.dao;
 
-import java.util.List;
-
 import com.mriss.dsh.data.models.Document;
 
 /**
@@ -26,11 +24,12 @@ public interface DocumentDao {
 	Document findDocumentById(String id);
 	
 	/**
-	 * Gets all documents for the given hash based on the original file binary contents
+	 * Gets the document for the given hash based on the original file binary contents. A hash
+	 * belongs to one document at most.
 	 * @param documentHash the hash based on document original binary content
-	 * @return the document
+	 * @return the document, or null when no document has that hash
 	 */
-	List<Document> findDocumentsByHash(String documentHash);
+	Document findDocumentByHash(String documentHash);
 	
 	/**
 	 * Gets a document by its generated processin token

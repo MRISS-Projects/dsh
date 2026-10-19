@@ -1,7 +1,5 @@
 package com.mriss.dsh.restapi.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +19,9 @@ public class DocumentHandlingServiceImpl implements DocumentHandlingService {
 
 	@Override
 	public Document getDocumentByHash(String hash) {
-		List<Document> documents = dao.findDocumentsByHash(hash);
-		if (documents == null || documents.isEmpty()) return null;
-		for (Document document : documents) {
-			if (!document.getKeyWords().isEmpty() && !document.getRelevantSentences().isEmpty()) {
-				return document;
-			}
-		}
-		return null;
+		Document document = dao.findDocumentByHash(hash);
+		return document != null && !document.getKeyWords().isEmpty()
+				&& !document.getRelevantSentences().isEmpty() ? document : null;
 	}
 
 	@Override
