@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
-import com.mriss.dsh.data.models.Keyword;
-import com.mriss.dsh.data.models.Sentence;
 
 /**
  * Tests for {@link DocumentHandlingServiceImpl}.
@@ -67,35 +65,25 @@ public class DocumentHandlingServiceImplTest {
     }
 
     /**
-     * Verifies the two branches of {@code getDocumentByHash}:
+     * Verifies that {@code getDocumentByHash} delegates to the DAO:
      * <ol>
      *   <li>No matching document → returns {@code null}.</li>
-     *   <li>A document with keywords AND sentences exists → returns that document.</li>
+     *   <li>A document has that hash → returns it, processed or not.</li>
      * </ol>
      */
     @Test
     public void testGetDocumentByHash() {
         String hash = docForTest1.getFileHash();
 
-        // Branch 1 – no document → null
+        // No document → null
         when(dao.findDocumentByHash(hash)).thenReturn(null);
         Document result = service.getDocumentByHash(hash);
         assertNull("Should return null when no document matches", result);
 
-        // Branch 2 – document without keywords/sentences → still null
+        // A document not processed yet is still the document with that hash
         when(dao.findDocumentByHash(hash)).thenReturn(docForTest1);
         result = service.getDocumentByHash(hash);
-        assertNull("Should return null when document has no keywords/sentences", result);
-
-        // Branch 2b – document with keywords but no sentences → still null
-        docForTest1.addKeyword(new Keyword("test", 5.0));
-        result = service.getDocumentByHash(hash);
-        assertNull("Should return null when document has keywords but no sentences", result);
-
-        // Branch 3 – document with both keywords and sentences → found
-        docForTest1.addSentence(new Sentence("testee", 4.0, 1));
-        result = service.getDocumentByHash(hash);
-        assertSame("Should return document when it has keywords and sentences", docForTest1, result);
+        assertSame("Should return the document whatever its keywords and sentences", docForTest1, result);
     }
 
     /**

@@ -166,6 +166,15 @@ public class Document {
 		this.documentStatusMessage = this.documentStatus.getStatusMessage();
 	}
 
+	/**
+	 * Puts the document back at {@link DocumentStatus#CREATED}, so that it can be queued for
+	 * processing again.
+	 */
+	public void resetStatus() {
+		this.documentStatus = DocumentStatus.CREATED;
+		this.documentStatusMessage = DocumentStatus.CREATED.getStatusMessage();
+	}
+
 	@Override
 	public String toString() {
 		return "Document [id=" + id + ", title=" + title + ", token=" + token

@@ -217,6 +217,22 @@ public class DocumentTest {
         assertEquals(DocumentStatus.DEQUEUED_FOR_INDEXING, d.getDocumentStatus());
     }
 
+    /** A document queued again starts over: NEUTRAL from a later status would not queue it. */
+    @Test
+    public void testResetStatus() throws Exception {
+        Document d = new Document("Reset test document");
+        d.transitionStatus(TransitionType.NEUTRAL);
+        d.transitionStatus(TransitionType.ERROR);
+        assertEquals(DocumentStatus.QUEUED_FOR_INDEXING_ERROR, d.getDocumentStatus());
+
+        d.resetStatus();
+
+        assertEquals(DocumentStatus.CREATED, d.getDocumentStatus());
+        assertEquals(DocumentStatus.CREATED.getStatusMessage(), d.getDocumentStatusMessage());
+        d.transitionStatus(TransitionType.NEUTRAL);
+        assertEquals(DocumentStatus.QUEUED_FOR_INDEXING, d.getDocumentStatus());
+    }
+
     @Test
     public void testToString() {
         assertNotNull(docAllArgsConstructor);

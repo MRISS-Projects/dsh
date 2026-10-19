@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,9 @@ import org.springframework.messaging.support.GenericMessage;
 import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
 import com.mriss.dsh.data.models.DocumentStatus;
+import com.mriss.dsh.data.models.Keyword;
+import com.mriss.dsh.data.models.Sentence;
+import com.mriss.dsh.data.models.TransitionType;
 
 /**
  * Unit tests for {@link DocumentSubmissionServiceImpl}.
@@ -93,13 +97,71 @@ public class DocumentSubmissionServiceImplTest {
     @Test
     public void testGetTokenFromDocumentCacheHit() throws Exception {
         // Build the expected cached document (same hash as what the service will compute)
-        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf",
-                "Russia-Trump: FBI chief Wray defends agency");
+        Document cached = processed(documentFrom("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency"));
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(cached);
 
         String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
                 "Russia-Trump: FBI chief Wray defends agency", true);
         assertEquals("Should return cached document token", cached.getToken(), token);
+    }
+
+    /**
+     * useCache=false and the file is already stored and processed: a file is stored once, so
+     * the stored document's token is returned and that document is queued again from the start.
+     */
+    @Test
+    public void testGetTokenFromDocumentNoCachingWhenStored_shouldRequeueTheStoredDocument() throws Exception {
+        Document stored = storedDocument();
+        processed(stored);
+        when(docHandlingService.getDocumentByHash(stored.getFileHash())).thenReturn(stored);
+
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", false);
+        service.storeDocumentAndQueueForProcessing();
+
+        assertEquals(stored.getToken(), token);
+        verify(messageHandler).setDocument(stored);
+        verify(docHandlingService).storeDocument(stored);
+        verify(docQueueService).enqueueDocumentId(eq("stored-id"), any());
+        assertEquals(DocumentStatus.QUEUED_FOR_INDEXING, stored.getDocumentStatus());
+    }
+
+    /**
+     * useCache=true and the file is stored but not processed: there is no result to reuse, so
+     * the stored document's token is returned and that document is queued again.
+     */
+    @Test
+    public void testGetTokenFromDocumentCacheWhenStoredNotProcessed_shouldRequeueTheStoredDocument() throws Exception {
+        Document stored = storedDocument();
+        when(docHandlingService.getDocumentByHash(stored.getFileHash())).thenReturn(stored);
+
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", true);
+        service.storeDocumentAndQueueForProcessing();
+
+        assertEquals(stored.getToken(), token);
+        verify(docHandlingService).storeDocument(stored);
+        verify(docQueueService).enqueueDocumentId(eq("stored-id"), any());
+        assertEquals(DocumentStatus.QUEUED_FOR_INDEXING, stored.getDocumentStatus());
+    }
+
+    /**
+     * useCache=true and the stored document has keywords but no sentences: its processing did
+     * not finish, so the result is not reused and the document is queued again.
+     */
+    @Test
+    public void testGetTokenFromDocumentCacheWhenStoredHalfProcessed_shouldRequeueTheStoredDocument() throws Exception {
+        Document stored = storedDocument();
+        stored.addKeyword(new Keyword("wray", 5.0));
+        when(docHandlingService.getDocumentByHash(stored.getFileHash())).thenReturn(stored);
+
+        String token = tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency", true);
+        service.storeDocumentAndQueueForProcessing();
+
+        assertEquals(stored.getToken(), token);
+        verify(docQueueService).enqueueDocumentId(eq("stored-id"), any());
     }
 
     // -------------------------------------------------------------------------
@@ -154,8 +216,8 @@ public class DocumentSubmissionServiceImplTest {
      */
     @Test
     public void testStoreDocumentAndQueueForProcessingCacheHitSkipsStorage() throws Exception {
-        Document cached = documentFrom("target/test-classes/pdf/bbc-news-1.pdf",
-                "Russia-Trump: FBI chief Wray defends agency");
+        Document cached = processed(documentFrom("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency"));
         when(docHandlingService.getDocumentByHash(anyString())).thenReturn(cached);
 
         tokenFor("target/test-classes/pdf/bbc-news-1.pdf",
@@ -198,5 +260,21 @@ public class DocumentSubmissionServiceImplTest {
         try (InputStream is = new FileInputStream(new File(path))) {
             return new Document(is, title);
         }
+    }
+
+    /** The bbc-news-1 document as the store holds it after one round: an id, queued successfully. */
+    private static Document storedDocument() throws Exception {
+        Document stored = documentFrom("target/test-classes/pdf/bbc-news-1.pdf",
+                "Russia-Trump: FBI chief Wray defends agency");
+        stored.setId("stored-id");
+        stored.transitionStatus(TransitionType.NEUTRAL);
+        stored.transitionStatus(TransitionType.SUCCESS);
+        return stored;
+    }
+
+    private static Document processed(Document document) {
+        document.addKeyword(new Keyword("wray", 5.0));
+        document.addSentence(new Sentence("FBI chief Wray defends agency", 4.0, 1));
+        return document;
     }
 }

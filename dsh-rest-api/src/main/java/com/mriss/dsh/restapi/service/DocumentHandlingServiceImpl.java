@@ -19,9 +19,7 @@ public class DocumentHandlingServiceImpl implements DocumentHandlingService {
 
 	@Override
 	public Document getDocumentByHash(String hash) {
-		Document document = dao.findDocumentByHash(hash);
-		return document != null && !document.getKeyWords().isEmpty()
-				&& !document.getRelevantSentences().isEmpty() ? document : null;
+		return dao.findDocumentByHash(hash);
 	}
 
 	@Override
