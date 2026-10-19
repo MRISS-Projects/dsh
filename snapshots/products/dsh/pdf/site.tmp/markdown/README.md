@@ -4,7 +4,7 @@
 
 ## Version
 
-0.4.0-SNAPSHOT - 4 - 20261015-160954
+0.4.0-SNAPSHOT - 5 - 20261019-213234
 
 ## Introduction
 
@@ -384,6 +384,9 @@ The API description, in Swagger 2 format, is served at
 
 | # | Type | Summary | Assignee | Reporter | Updated |
 | --- | ---- | ------- | -------- | -------- | ------- |
+| [173](https://github.com/MRISS-Projects/dsh/issues/173) | task | Record the reference papers Wave 3 is built from, and keep their full text out of git unless a licence allows it | null | mriss | 10/16/26 |
+| [162](https://github.com/MRISS-Projects/dsh/issues/162) | task | Make the OpenAPI document and the feature specs describe the API that exists | null | mriss | 10/16/26 |
+| [171](https://github.com/MRISS-Projects/dsh/issues/171) | bug | NOT_INDEXED_ERROR answers DEQUEUED_FOR_INDEXING's description and message | null | mriss | 10/16/26 |
 | [160](https://github.com/MRISS-Projects/dsh/issues/160) | task | [STORY] ADR-003: decide the document pipeline, and revise ADR-001 to match | null | mriss | 10/13/26 |
 | [48](https://github.com/MRISS-Projects/dsh/issues/48) | task | Investigate how to use profiles (dev, stagging, production) with spring and maven | null | mriss | 10/10/26 |
 | [128](https://github.com/MRISS-Projects/dsh/issues/128) | task | Point the wiki's release link at releases/products/dsh once 0.3.0 is released | null | mriss | 10/6/26 |

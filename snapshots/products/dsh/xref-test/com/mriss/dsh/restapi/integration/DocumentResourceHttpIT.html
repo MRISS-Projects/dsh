@@ -90,75 +90,94 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  		String token = (String) submitted.getBody().get(<span class="jxr_string">"token"</span>);
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  		assertThat(token).isNotBlank().isNotEqualTo(<span class="jxr_string">"ERROR"</span>);
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  		String expected = DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS.getStatusDescription();
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  		String failed = DocumentStatus.QUEUED_FOR_INDEXING_ERROR.getStatusDescription();
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		<strong class="jxr_keyword">long</strong> deadline = System.currentTimeMillis() + STATUS_TIMEOUT_MILLIS;
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  		String last = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  		<strong class="jxr_keyword">while</strong> (System.currentTimeMillis() &lt; deadline) {
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  			ResponseEntity&lt;Map&lt;String, Object&gt;&gt; status = status(token);
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  			assertJson(status, HttpStatus.OK);
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  			last = (String) status.getBody().get(<span class="jxr_string">"status"</span>);
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  			<strong class="jxr_keyword">if</strong> (expected.equals(last)) {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  				<strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  			}
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  			assertThat(last).as(<span class="jxr_string">"the broker rejected or never confirmed the enqueue"</span>).isNotEqualTo(failed);
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  			Thread.sleep(STATUS_POLL_MILLIS);
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  		}
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  		fail(<span class="jxr_string">"document "</span> + token + <span class="jxr_string">" did not reach "</span> + expected + <span class="jxr_string">" within "</span>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 				+ STATUS_TIMEOUT_MILLIS + <span class="jxr_string">" ms; last status was "</span> + last);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  		awaitQueuedForIndexing(token);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  	}
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  	<em class="jxr_javadoccomment">/** A file is stored once: submitting it again returns its token, and queues it again. */</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  	@Test
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> submit_whenSameFileTwice_shouldReturnTheSameTokenAndQueueItAgain() <strong class="jxr_keyword">throws</strong> InterruptedException {
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; first = submit(<span class="jxr_string">"Russia-Trump: FBI chief Wray defends agency"</span>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; second = submit(<span class="jxr_string">"Russia-Trump: FBI chief Wray defends agency"</span>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  		assertJson(first, HttpStatus.OK);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  		assertJson(second, HttpStatus.OK);
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  		String token = (String) first.getBody().get(<span class="jxr_string">"token"</span>);
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  		assertThat(token).isNotBlank().isNotEqualTo(<span class="jxr_string">"ERROR"</span>);
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  		assertThat(second.getBody()).containsEntry(<span class="jxr_string">"token"</span>, token);
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> 		awaitQueuedForIndexing(token);
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> 	}
 <a class="jxr_linenumber" name="L102" href="#L102">102</a> 
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 	@Test
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> status_whenTokenUnknown_shouldReturnTokenNotFound() {
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 		String token = UUID.randomUUID().toString();
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> 		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; response = status(token);
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> 		assertJson(response, HttpStatus.OK);
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 		assertThat(response.getBody())
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> 				.containsEntry(<span class="jxr_string">"status"</span>, DocumentResource.TOKEN_NOT_FOUND)
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> 				.containsEntry(<span class="jxr_string">"message"</span>, DocumentResource.TOKEN_NOT_FOUND_MESSAGE + token);
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> 	}
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> 
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> 	@Test
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> submit_whenTitleBlank_shouldReturnErrorToken() {
-<a class="jxr_linenumber" name="L117" href="#L117">117</a> 		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; response = submit(<span class="jxr_string">""</span>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L118" href="#L118">118</a> 
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 		assertJson(response, HttpStatus.OK);
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> 		assertThat(response.getBody())
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 				.containsEntry(<span class="jxr_string">"token"</span>, <span class="jxr_string">"ERROR"</span>)
-<a class="jxr_linenumber" name="L122" href="#L122">122</a> 				.containsEntry(<span class="jxr_string">"message"</span>, <span class="jxr_string">"Error submitting file: Document title and contents can't be null."</span>);
-<a class="jxr_linenumber" name="L123" href="#L123">123</a> 	}
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> 	@Test
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> submit_whenContentsMissing_shouldReturnBadRequest() {
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> 		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; response = submit(<span class="jxr_string">"A title"</span>, false);
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> 	}
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> 
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> 	<strong class="jxr_keyword">private</strong> ResponseEntity&lt;Map&lt;String, Object&gt;&gt; submit(String title, <strong class="jxr_keyword">boolean</strong> withContents) {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> 		MultiValueMap&lt;String, Object&gt; form = <strong class="jxr_keyword">new</strong> LinkedMultiValueMap&lt;&gt;();
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> 		form.add(<span class="jxr_string">"title"</span>, title);
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 		<strong class="jxr_keyword">if</strong> (withContents) {
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> 			form.add(<span class="jxr_string">"contents"</span>, <strong class="jxr_keyword">new</strong> FileSystemResource(FIXTURE));
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 		}
-<a class="jxr_linenumber" name="L138" href="#L138">138</a> 		HttpHeaders headers = <strong class="jxr_keyword">new</strong> HttpHeaders();
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">rest</strong>.exchange(baseUrl + <span class="jxr_string">"/v1/dsh/document/submit"</span>, HttpMethod.POST,
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> 				<strong class="jxr_keyword">new</strong> HttpEntity&lt;&gt;(form, headers), JSON);
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> awaitQueuedForIndexing(String token) <strong class="jxr_keyword">throws</strong> InterruptedException {
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 		String expected = DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS.getStatusDescription();
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 		String failed = DocumentStatus.QUEUED_FOR_INDEXING_ERROR.getStatusDescription();
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 		<strong class="jxr_keyword">long</strong> deadline = System.currentTimeMillis() + STATUS_TIMEOUT_MILLIS;
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 		String last = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 		<strong class="jxr_keyword">while</strong> (System.currentTimeMillis() &lt; deadline) {
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 			ResponseEntity&lt;Map&lt;String, Object&gt;&gt; status = status(token);
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 			assertJson(status, HttpStatus.OK);
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> 			last = (String) status.getBody().get(<span class="jxr_string">"status"</span>);
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 			<strong class="jxr_keyword">if</strong> (expected.equals(last)) {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 				<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> 			}
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 			assertThat(last).as(<span class="jxr_string">"the broker rejected or never confirmed the enqueue"</span>).isNotEqualTo(failed);
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> 			Thread.sleep(STATUS_POLL_MILLIS);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> 		}
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 		fail(<span class="jxr_string">"document "</span> + token + <span class="jxr_string">" did not reach "</span> + expected + <span class="jxr_string">" within "</span>
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> 				+ STATUS_TIMEOUT_MILLIS + <span class="jxr_string">" ms; last status was "</span> + last);
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> 	}
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 
+<a class="jxr_linenumber" name="L122" href="#L122">122</a> 	@Test
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> status_whenTokenUnknown_shouldReturnTokenNotFound() {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> 		String token = UUID.randomUUID().toString();
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> 
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> 		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; response = status(token);
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> 
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 		assertJson(response, HttpStatus.OK);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> 		assertThat(response.getBody())
+<a class="jxr_linenumber" name="L130" href="#L130">130</a> 				.containsEntry(<span class="jxr_string">"status"</span>, DocumentResource.TOKEN_NOT_FOUND)
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 				.containsEntry(<span class="jxr_string">"message"</span>, DocumentResource.TOKEN_NOT_FOUND_MESSAGE + token);
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> 	}
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> 
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> 	@Test
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> submit_whenTitleBlank_shouldReturnErrorToken() {
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> 		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; response = submit(<span class="jxr_string">""</span>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> 
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> 		assertJson(response, HttpStatus.OK);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> 		assertThat(response.getBody())
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 				.containsEntry(<span class="jxr_string">"token"</span>, <span class="jxr_string">"ERROR"</span>)
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> 				.containsEntry(<span class="jxr_string">"message"</span>, <span class="jxr_string">"Error submitting file: Document title and contents can't be null."</span>);
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> 	}
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> 
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> 	<strong class="jxr_keyword">private</strong> ResponseEntity&lt;Map&lt;String, Object&gt;&gt; status(String token) {
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">rest</strong>.exchange(baseUrl + <span class="jxr_string">"/v1/dsh/document/status/"</span> + token, HttpMethod.GET, <strong class="jxr_keyword">null</strong>, JSON);
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 	}
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 	@Test
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> submit_whenContentsMissing_shouldReturnBadRequest() {
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		ResponseEntity&lt;Map&lt;String, Object&gt;&gt; response = submit(<span class="jxr_string">"A title"</span>, false);
 <a class="jxr_linenumber" name="L147" href="#L147">147</a> 
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> assertJson(ResponseEntity&lt;?&gt; response, HttpStatus expected) {
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 		assertThat(response.getStatusCode()).isEqualTo(expected);
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 		assertThat(response.getHeaders().getContentType()).isNotNull();
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		assertThat(MediaType.APPLICATION_JSON.isCompatibleWith(response.getHeaders().getContentType())).isTrue();
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 	}
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> }
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 	}
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 	<strong class="jxr_keyword">private</strong> ResponseEntity&lt;Map&lt;String, Object&gt;&gt; submit(String title, <strong class="jxr_keyword">boolean</strong> withContents) {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 		MultiValueMap&lt;String, Object&gt; form = <strong class="jxr_keyword">new</strong> LinkedMultiValueMap&lt;&gt;();
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 		form.add(<span class="jxr_string">"title"</span>, title);
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 		<strong class="jxr_keyword">if</strong> (withContents) {
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 			form.add(<span class="jxr_string">"contents"</span>, <strong class="jxr_keyword">new</strong> FileSystemResource(FIXTURE));
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 		}
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> 		HttpHeaders headers = <strong class="jxr_keyword">new</strong> HttpHeaders();
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">rest</strong>.exchange(baseUrl + <span class="jxr_string">"/v1/dsh/document/submit"</span>, HttpMethod.POST,
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 				<strong class="jxr_keyword">new</strong> HttpEntity&lt;&gt;(form, headers), JSON);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> 	}
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	<strong class="jxr_keyword">private</strong> ResponseEntity&lt;Map&lt;String, Object&gt;&gt; status(String token) {
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">rest</strong>.exchange(baseUrl + <span class="jxr_string">"/v1/dsh/document/status/"</span> + token, HttpMethod.GET, <strong class="jxr_keyword">null</strong>, JSON);
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	}
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> assertJson(ResponseEntity&lt;?&gt; response, HttpStatus expected) {
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 		assertThat(response.getStatusCode()).isEqualTo(expected);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 		assertThat(response.getHeaders().getContentType()).isNotNull();
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 		assertThat(MediaType.APPLICATION_JSON.isCompatibleWith(response.getHeaders().getContentType())).isTrue();
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 	}
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> }
 </pre>
 <hr/>
 <div id="footer">© 2020–2026 <a href="https://mriss-personal.github.io/mriss.github.io">Marcelo Riss</a></div>

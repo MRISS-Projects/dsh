@@ -23,37 +23,34 @@
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  	
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment">	 * Gets a token (new or already used) based from the original contents</em>
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">	 * of a file. The method basically creates a new {@link Document} and</em>
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment">	 * return its token for other clients test about processing. The method</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment">	 * tests if the document already exists in the database by using a unique</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment">	 * hash generated from the original file binary contents. If so, and</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment">	 * the flag &lt;code&gt;useCache&lt;/code&gt; is set, that old token associated with</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment">	 * the found document is returned.</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">	 * @param originalDocumentContents the document original contents </em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">	 * @param useCache if set to &lt;code&gt;true&lt;/code&gt;, the method should test if</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">	 * the document already exists in the database using its hash based on its </em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">	 * original binary contents. If document exists and the keywords and sentences document's</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">	 * fields are not empty, then the old token for the old document should be</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">	 * returned. If set to &lt;code&gt;false&lt;/code&gt; no test is executed and a new token </em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">	 * for a newly generated document should be returned.</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">	 * @param documentTitle the document title</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">	 * @return the token (new or old) of the document created (or retrieved from database)</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">	 * @see Document</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	String getTokenFromDocument(InputStream originalDocumentContents, String documentTitle, <strong class="jxr_keyword">boolean</strong> useCache) <strong class="jxr_keyword">throws</strong> DocumentSubmissionException;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 * This method should preferable be implemented to be asynchronous. It should use</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 * a previously created document to store it in the documents database and then</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 * enqueue the document's data for later processing by other processes. The method</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">	 * should also test if an instance of {@link Document} has the sentences and keywords</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 * collections not empty. If they are not empty, and cache settings are set,</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">	 * the method should do nothing.</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">	 * @see Document</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  	<strong class="jxr_keyword">void</strong> storeDocumentAndQueueForProcessing() <strong class="jxr_keyword">throws</strong> <a name="DocumentSubmissionException" href="../../../../../com/mriss/dsh/restapi/service/DocumentSubmissionException.html#DocumentSubmissionException">DocumentSubmissionException</a> ;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  }
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">	 * of a file. A file is stored once: the method looks the document up by</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment">	 * the unique hash of the file's binary contents. If it is not stored, a</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment">	 * new {@link Document} is created and its token returned. If it is, the</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment">	 * stored document's token is returned, and &lt;code&gt;useCache&lt;/code&gt; decides</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment">	 * whether the document is processed again.</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment">	 * @param originalDocumentContents the document original contents</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">	 * @param useCache if set to &lt;code&gt;true&lt;/code&gt; and the stored document's</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">	 * keywords and sentences are not empty, its result is reused and nothing</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">	 * is queued. Otherwise the stored document is put back at its first status</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">	 * and queued again by {@link #storeDocumentAndQueueForProcessing()}.</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">	 * @param documentTitle the document title</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">	 * @return the token (new or old) of the document created (or retrieved from database)</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">	 * @see Document</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	String getTokenFromDocument(InputStream originalDocumentContents, String documentTitle, <strong class="jxr_keyword">boolean</strong> useCache) <strong class="jxr_keyword">throws</strong> DocumentSubmissionException;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">	 * This method should preferable be implemented to be asynchronous. It should use</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">	 * a previously created document to store it in the documents database and then</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 * enqueue the document's data for later processing by other processes. The method</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 * should also test if an instance of {@link Document} has the sentences and keywords</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 * collections not empty. If they are not empty, and cache settings are set,</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 * the method should do nothing.</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">	 * @see Document</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	<strong class="jxr_keyword">void</strong> storeDocumentAndQueueForProcessing() <strong class="jxr_keyword">throws</strong> <a name="DocumentSubmissionException" href="../../../../../com/mriss/dsh/restapi/service/DocumentSubmissionException.html#DocumentSubmissionException">DocumentSubmissionException</a> ;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  	
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  }
 </pre>
 <hr/>
 <div id="footer">© 2020–2026 <a href="https://mriss-personal.github.io/mriss.github.io">Marcelo Riss</a></div>
