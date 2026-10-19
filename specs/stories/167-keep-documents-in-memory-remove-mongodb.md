@@ -73,92 +73,89 @@ All on `DEVELOP` at `132358a69`, on 2026-10-14.
 
 ### 3.2 The in-memory store
 
-`InMemoryDocumentDao`, in `dsh-data`, package `com.mriss.dsh.data.document.dao.memory`.
+`InMemoryDocumentDao`, in `dsh-data`, package `com.mriss.dsh.data.document.dao.memory`. As changed
+by the first review round (§3.10); the design first written here scanned the store on every find
+by hash and by token.
 
 ```java
-package com.mriss.dsh.data.document.dao.memory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
-
-import com.mriss.dsh.data.document.dao.DocumentDao;
-import com.mriss.dsh.data.models.Document;
-
-/**
- * Keeps documents in this JVM's memory. The store of a run with no profile (ADR-003, section 8):
- * nothing has to be installed, and every document is lost when the application stops.
- */
 @Component
 @ConditionalOnProperty(name = "dsh.persistence", havingValue = "memory", matchIfMissing = true)
 public class InMemoryDocumentDao implements DocumentDao {
 
-    private final Map<String, Document> documents = new ConcurrentHashMap<>();
+    private final Map<String, Document> documentsById = new ConcurrentHashMap<>();
+    private final Map<String, String> idsByHash = new ConcurrentHashMap<>();
+    private final Map<String, String> idsByToken = new ConcurrentHashMap<>();
 
-    /**
-     * Gives a document with no id a new one, on the instance itself, as the submission flow
-     * expects. Storing an instance again replaces its record.
-     */
     @Override
-    public String storeDocument(Document document) {
+    public synchronized String storeDocument(Document document) {
         if (document == null) {
             throw new IllegalArgumentException("document must not be null");
         }
-        if (document.getId() == null) {
-            document.setId(UUID.randomUUID().toString());
+        if (document.getFileHash() == null || document.getToken() == null) {
+            throw new IllegalArgumentException("document must have a file hash and a token");
         }
-        documents.put(document.getId(), document);
-        return document.getId();
+        String id = document.getId();
+        String owner = id != null && documentsById.containsKey(id) ? id : null;
+        if (!Objects.equals(owner, idsByHash.get(document.getFileHash()))
+                || !Objects.equals(owner, idsByToken.get(document.getToken()))) {
+            throw new IllegalStateException("another document already has this file hash or token, or this id: " + document);
+        }
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+            document.setId(id);
+        }
+        documentsById.put(id, document);
+        idsByHash.put(document.getFileHash(), id);
+        idsByToken.put(document.getToken(), id);
+        return id;
     }
 
     @Override
     public Document findDocumentById(String id) {
-        return documents.get(id);
+        return id == null ? null : documentsById.get(id);
     }
 
     @Override
-    public List<Document> findDocumentsByHash(String documentHash) {
-        return documents.values().stream()
-                .filter(document -> Objects.equals(documentHash, document.getFileHash()))
-                .collect(Collectors.toList());
+    public Document findDocumentByHash(String documentHash) {
+        return findByIndex(idsByHash, documentHash);
     }
 
     @Override
     public Document findDocumentByToken(String token) {
-        return documents.values().stream()
-                .filter(document -> Objects.equals(token, document.getToken()))
-                .findFirst()
-                .orElse(null);
+        return findByIndex(idsByToken, token);
     }
 
     @Override
-    public void clearDocuments() {
-        documents.clear();
+    public synchronized void clearDocuments() {
+        documentsById.clear();
+        idsByHash.clear();
+        idsByToken.clear();
+    }
+
+    private Document findByIndex(Map<String, String> index, String key) {
+        String id = key == null ? null : index.get(key);
+        return id == null ? null : documentsById.get(id);
     }
 }
 ```
 
-- **A null document** throws `IllegalArgumentException`, the failure MongoDB's `save` gave.
-- **A document that arrives with an id** is stored under it, as MongoDB's `save` upserted.
-- **Finding by token and by hash scans.** This store is for trying DSH out and for tests. An index
-  per field would need its own consistency under concurrent writes, for no gain at that size.
-- **A null id passed to `findDocumentById`** throws `NullPointerException` from the map. No
-  consumer passes one, and `DocumentHandlingServiceImpl` does not call the method at all.
-- **Two branches**, the null check and the id check, both covered by §3.3, for the 95% branch gate.
+- **An id, a file hash and a token each belong to one document at most.** Every find is one map
+  read, and a null key finds nothing. `DocumentDao.findDocumentsByHash`, which returned a list, is
+  `findDocumentByHash`, which returns the document.
+- **A null document**, or one with no file hash or no token, throws `IllegalArgumentException`.
+- **A hash or a token that belongs to another document** throws `IllegalStateException`, and so
+  does another document stored under a stored id with other keys. Nothing is stored and the
+  document gets no id.
+- **Storing a document again under its id replaces its record**, as the submission flow relies on.
+  Because a document's hash comes from its bytes alone (§3.10) and neither it nor the token can
+  change, a stored record's keys never change, and no index entry can go stale.
+- **Writes are `synchronized`; reads are not.** A document is written before its index entries, so
+  a read never finds an id whose document is missing.
 
-**Known limits, recorded rather than engineered around.** Both are task 9's contract.
-
-- **A read returns the stored instance, not a copy.** A caller's change to a document it read is
-  visible to the next reader without a store. Under MongoDB it was not. Nothing in the flow
-  depends on the difference: every change is followed by a store of the same instance.
-- **Two threads storing the same id-less instance at once** could each assign an id. The flow
-  never does that: the second store of an instance always follows the first causally.
+**Known limit, recorded rather than engineered around.** A read returns the stored instance, not a
+copy. A caller's change to a document it read is visible to the next reader without a store. Under
+MongoDB it was not. Nothing in the flow depends on the difference: every change is followed by a
+store of the same instance.
 
 ### 3.3 The unit tests
 
@@ -171,19 +168,22 @@ Documents are built from small byte arrays, not the PDF fixtures.
 | `storeDocument_whenIdAlreadySet_shouldStoreUnderThatId` | AC001 |
 | `storeDocument_whenStoredAgain_shouldReplaceTheRecordNotAddOne` | AC002 |
 | `storeDocument_whenNull_shouldThrowIllegalArgumentException` | AC001 |
-| `findDocumentById_whenStored_shouldReturnIt` | AC001 |
-| `findDocumentById_whenUnknown_shouldReturnNull` | AC001 |
-| `findDocumentByToken_whenStored_shouldReturnIt` | AC001 |
-| `findDocumentByToken_whenUnknown_shouldReturnNull` | AC001 |
-| `findDocumentsByHash_whenStored_shouldReturnEveryDocumentWithThatHash` | AC001 |
-| `findDocumentsByHash_whenUnknown_shouldReturnAnEmptyList` | AC001 |
+| `storeDocument_whenNoFileHash_shouldThrowIllegalArgumentException` | AC001 |
+| `storeDocument_whenNoToken_shouldThrowIllegalArgumentException` | AC001 |
+| `storeDocument_whenAnotherDocumentHasTheSameFileHash_shouldRejectIt` | AC001 |
+| `storeDocument_whenAnotherDocumentHasTheSameToken_shouldRejectIt` | AC001 |
+| `storeDocument_whenAnotherDocumentTakesAStoredIdWithOtherKeys_shouldRejectIt` | AC001 |
+| `findDocumentById_whenStored_shouldReturnIt`, `_whenUnknown_shouldReturnNull`, `_whenNull_shouldReturnNull` | AC001 |
+| `findDocumentByToken_whenStored_shouldReturnIt`, `_whenUnknown_shouldReturnNull`, `_whenNull_shouldReturnNull` | AC001 |
+| `findDocumentByHash_whenStored_shouldReturnIt`, `_whenUnknown_shouldReturnNull`, `_whenNull_shouldReturnNull` | AC001 |
 | `clearDocuments_whenDocumentsStored_shouldRemoveEveryOne` | AC001 |
 | `storeDocument_whenManyThreadsStoreAtOnce_shouldKeepEveryDocumentUnderAnIdOfItsOwn` | AC003 |
+| `storeDocument_whenManyThreadsStoreTheSameFileAtOnce_shouldAcceptExactlyOne` | AC003 |
 
-"Replace, not add" is observable through `findDocumentsByHash`. `Document.equals` compares
-`fileHash`, so a second record of the same instance would make the list two long. The concurrency
-test runs 8 threads, held behind one start latch, each storing 50 distinct documents. Then every
-document is found by its id as the same instance, and the 400 ids are distinct.
+The first concurrency test runs 8 threads, held behind one start latch, each storing 50 distinct
+documents. Then every document is found by its id as the same instance, and the 400 ids are
+distinct. The second runs 8 threads behind one latch, each storing its own document built from the
+same bytes: exactly one is accepted, and it is the document found by that hash.
 
 ### 3.4 Selection, and the tests with a context
 
@@ -513,6 +513,40 @@ The run is green, and:
    does each module's `index.html`.
 5. The `README.md` committed to the branch passes the §3.8 check for `README.md`.
 
+### 3.10 The first review round, 2026-10-19
+
+The owner's review of `bf721150d`, the commit that indexed hashes and tokens at the request of the
+review comment of 2026-10-16. That comment had asked for a hash shared by several documents and
+for index keys that change on a re-store. The store needed six structures and looped in its finds.
+Its premise that every `/submit` calls `getDocumentByHash` was wrong as well: `DocumentResource`
+passes `useCache = false`, so only `/status/{token}` was on the request path.
+
+Decided by the owner:
+
+1. **An id, a file hash and a token each belong to one document**, every lookup returns one
+   document, and storing another document with a stored hash is not allowed. §3.2 and §3.3.
+2. **A document's file hash comes from its bytes alone.** The full-args constructor takes no
+   `fileHash` and computes it; `setOriginalFileContents` and the no-arg constructor, used only by
+   tests since MongoDB went, are removed; `fileHash` and `originalFileContents` are `final`.
+3. **A resubmitted file keeps its document (option (a)).** `getTokenFromDocument` looks the file up
+   by hash, whatever `useCache` says, and returns the stored document's token. With `useCache` and
+   keywords and sentences present the result is reused and nothing is queued, as before. Otherwise
+   the stored document is queued again. Without this, every second `/submit` of a file would have
+   had its store rejected in the `@Async` method, after the client had a token that never resolves.
+
+Two consequences, found while building it:
+
+- **`Document.resetStatus()`** puts a document back at `CREATED` before it is queued again. The
+  status machine has no way back: `NEUTRAL` from `QUEUED_FOR_INDEXING_SUCCESS` goes to
+  `DEQUEUED_FOR_INDEXING`, not to `QUEUED_FOR_INDEXING`.
+- **`DocumentHandlingService.getDocumentByHash` returns the document whatever its state.** The
+  check for keywords and sentences moves to `DocumentSubmissionServiceImpl`, which owns the cache
+  decision and now needs the unprocessed document too.
+
+**Still open, recorded rather than engineered around.** Two submissions of a new file that arrive
+together both find no document, and the second store is rejected in the `@Async` method, as above.
+Closing it needs the token decided and the document stored in one step; no test shows it today.
+
 ## 4. Files to change
 
 | File | Section |
@@ -524,6 +558,7 @@ The run is green, and:
 | `DshDataApplication.java`, the four POMs, both `application.properties` | §3.4, §3.5 |
 | `DocumentResourceHttpIT.java`, `DshRestApplicationIT.java`, `DocumentResourceIT.java`, `DocumentHandlingServiceImplTest.java`, `DocumentSubmissionServiceImplTest.java`, `DshDataApplicationTest.java` (comments only) | §3.4 |
 | the seven workflows | §3.6 |
+| `DocumentDao.java`, `Document.java`, `DocumentTest.java`, `DocumentHandlingService.java` and its `Impl` and test, `DocumentSubmissionService.java` and its `Impl` and test, `DocumentResourceHttpIT.java` (review round 1) | §3.10 |
 | `CLAUDE.md`, `dsh-ship-story/SKILL.md`, `testing-patterns.md`, `java-conventions.md`, the two prompts, `system-design.md`, `data-models/README.md`, `src/site/markdown/README.md`, `docs/devops/README.md`, `docs/troubleshooting/README.md`, the four module site pages | §3.7 |
 
 ## 5. Global constraints
@@ -589,6 +624,9 @@ One commit per task. Every `mvn` run is logged (`CLAUDE.md`, "Always log local M
 ### T2 — The in-memory store (AC001, AC002, AC003)
 
 **Files:** create `InMemoryDocumentDao.java` and `InMemoryDocumentDaoTest.java` (§3.2, §3.3).
+
+The code below is the task as it was built. Review round 1 replaced the store and its tests; §3.2
+and §3.3 hold the current ones, and §3.10 says why.
 
 **Interfaces:** produces `com.mriss.dsh.data.document.dao.memory.InMemoryDocumentDao implements
 DocumentDao`, with a public no-argument constructor. T3 annotates it.
@@ -887,7 +925,7 @@ show.
 
 | AC | Where | Evidence |
 |---|---|---|
-| AC001: the in-memory `DocumentDao`, interface unchanged, unit tests of every operation and miss | §3.2, §3.3; T2 | `InMemoryDocumentDaoTest` |
+| AC001: the in-memory `DocumentDao`, interface unchanged, unit tests of every operation and miss. The owner changed `findDocumentsByHash` to `findDocumentByHash` in review round 1 | §3.2, §3.3, §3.10; T2 | `InMemoryDocumentDaoTest` |
 | AC002: an id-less document gets its id on the same instance, and a repeat store replaces | §3.2; T2 | `storeDocument_whenNoId_…`, `storeDocument_whenStoredAgain_…` |
 | AC003: safe for concurrent use | §3.3; T2 | `storeDocument_whenManyThreadsStoreAtOnce_…` |
 | AC004: selection by `dsh.persistence`, absent / `memory` / other, in an `*IT` | §3.4; T3 | `PersistenceSelectionIT` |
@@ -900,7 +938,7 @@ show.
 
 ## 9. Verification results
 
-Recorded on 2026-10-14, and T8's rows on 2026-10-15.
+Recorded on 2026-10-14, T8's rows on 2026-10-15, and review round 1's on 2026-10-19.
 
 | Task | Check | Result |
 |---|---|---|
@@ -927,3 +965,12 @@ Recorded on 2026-10-14, and T8's rows on 2026-10-15.
 | T8 | §3.9 item 3 | all 13 modules uploaded at `0.4.0-SNAPSHOT` |
 | T8 | §3.9 item 4 | the site's `index.html` and each module's answer 200 |
 | T8 | §3.9 item 5 | `41ff0f14d Auto-generated README.md [skip jenkins]` pulled; its mongo hits are the seven release-notes rows §3.8 allows (`#139`, `#123`, `#17`, `#21`, `#18`, `#19`, `#15`) |
+| Review 1 | store red | `InMemoryDocumentDaoTest` against the old store, with `findDocumentByHash` added: 21 run, 6 failures and 1 error. The rejections of a duplicate hash, a duplicate token, another document under a stored id, a missing hash, a missing token and the concurrent same-file case fail; `findDocumentById(null)` throws `NullPointerException` |
+| Review 1 | store green | 21 run, 0 failures. `f0cdc192c` |
+| Review 1 | `Document` red | `test-compile` fails: no constructor `Document(String, String, String, SortedSet, SortedSet, byte[], DocumentStatus, String)` |
+| Review 1 | `Document` green | `dsh-data` 69 run, 0 failures; the full-args constructor gives `039058c6…cfb81`, the SHA-256 of `{1, 2, 3}` from `sha256sum`. `b4661ea9d` |
+| Review 1 | resubmission red | `resetStatus` cannot be found; `getDocumentByHash` returns null for an unprocessed document; both resubmission tests get a new token instead of the stored one |
+| Review 1 | resubmission green | `dsh-rest-api` 39 run, 0 failures. Branch coverage was first 0.93: the half-processed case had lost its test when the check moved, and got one. `d0d5c9537` |
+| Review 1 | HTTP red | `DocumentResourceHttpIT` with the submission service of `b4661ea9d` checked out: 5 run, 1 failure. The second `/submit` answered a new token, and the rejected store logged `SimpleAsyncUncaughtExceptionHandler` twice |
+| Review 1 | gates 1 and 2 | `mvn -B clean install`: exit 0, 13 modules. `dsh-data` LINE 0.9842 (249/253), BRANCH 1.0000 (100/100); `dsh-rest-api` LINE 0.9786 (137/140), BRANCH 0.9688 (31/32) |
+| Review 1 | gate 3 | `mvn -B clean verify -DintegrationTests -pl dsh-data -amd`: exit 0. Failsafe: `dsh-rest-api` 16 run (`DocumentResourceHttpIT` 5), `dsh-doc-indexer-worker` 1 run, 0 failures. No `AsyncUncaughtExceptionHandler` line in the log. `d9c57cbd7` |
