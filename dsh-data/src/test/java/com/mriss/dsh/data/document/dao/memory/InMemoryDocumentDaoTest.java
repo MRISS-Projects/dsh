@@ -281,8 +281,8 @@ public class InMemoryDocumentDaoTest {
 		return new Document(contents.getBytes(StandardCharsets.UTF_8), "title of " + contents);
 	}
 
-	private static Document documentWithToken(String token, String contents) {
-		return new Document(null, "title of " + contents, token, "hash of " + contents,
+	private static Document documentWithToken(String token, String contents) throws Exception {
+		return new Document(null, "title of " + contents, token,
 				new TreeSet<>(), new TreeSet<>(), contents.getBytes(StandardCharsets.UTF_8),
 				DocumentStatus.CREATED, DocumentStatus.CREATED.getStatusMessage());
 	}

@@ -26,30 +26,26 @@ public class Document {
 	
 	private String token;
 	
-	private String fileHash;
+	/** Computed from {@link #originalFileContents}, never given: it identifies the document. */
+	private final String fileHash;
 	
 	private SortedSet<Keyword> keyWords;
 	
 	private SortedSet<Sentence> relevantSentences;
 	
-	private byte[] originalFileContents;
+	private final byte[] originalFileContents;
 	
 	private DocumentStatus documentStatus;
 	
 	private String documentStatusMessage;
 	
-	public Document() {
-		
-	}
-
-	public Document(String id, String title, String token, String fileHash,
+	public Document(String id, String title, String token,
 			SortedSet<Keyword> keyWords, SortedSet<Sentence> relevantSentences,
-			byte[] originalFileContents, DocumentStatus documentStatus, String documentStatusMessage) {
-		super();
+			byte[] originalFileContents, DocumentStatus documentStatus, String documentStatusMessage) throws NoSuchAlgorithmException {
 		this.id = id;
 		this.title = title;
 		this.token = token;
-		this.fileHash = fileHash;
+		this.fileHash = hashOf(originalFileContents);
 		this.keyWords = keyWords;
 		this.relevantSentences = relevantSentences;
 		this.originalFileContents = originalFileContents;
@@ -58,7 +54,21 @@ public class Document {
 	}
 
 	public Document(String title) throws NoSuchAlgorithmException {
+		this(title, null);
+	}
+
+	public Document(byte[] originalFileContents, String title) throws Exception {
+		this(title, originalFileContents);
+	}
+
+	public Document(InputStream fileContentsStream, String title) throws Exception {
+		this(title, IOUtils.toByteArray(fileContentsStream));
+	}
+
+	private Document(String title, byte[] originalFileContents) throws NoSuchAlgorithmException {
 		this.title = title;
+		this.originalFileContents = originalFileContents;
+		this.fileHash = hashOf(originalFileContents);
 		token = getNewToken();
 		keyWords = new TreeSet<Keyword>(KeywordSorter.getInstance());
 		relevantSentences = new TreeSet<Sentence>(SentenceSorter.getInstance());
@@ -66,22 +76,10 @@ public class Document {
 		documentStatusMessage = DocumentStatus.CREATED.getStatusMessage();
 	}
 	
-	public Document(byte[] originalFileContents, String title) throws Exception {
-		this(title);
-		this.originalFileContents = originalFileContents;
-		fileHash = getNewFileHash();
-	}
-	
-	public Document(InputStream fileContentsStream, String title) throws Exception {
-		this(title);
-		this.originalFileContents = IOUtils.toByteArray(fileContentsStream);
-		fileHash = getNewFileHash();
-	}
-
-	private String getNewFileHash() throws Exception {
-		if (this.originalFileContents != null) {
+	private static String hashOf(byte[] contents) throws NoSuchAlgorithmException {
+		if (contents != null) {
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			return String.format("%064x", new BigInteger(1, md.digest(this.originalFileContents)));
+			return String.format("%064x", new BigInteger(1, md.digest(contents)));
 		} else return null;
 	}
 
@@ -119,15 +117,6 @@ public class Document {
 
 	public String getTitle() {
 		return title;
-	}
-
-	public void setOriginalFileContents(byte[] originalFileContents) {
-		this.originalFileContents = originalFileContents;
-		try {
-			this.fileHash = getNewFileHash();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
 	}
 
 	@Override
