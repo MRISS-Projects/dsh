@@ -82,6 +82,25 @@ public class DocumentResourceHttpIT {
 		String token = (String) submitted.getBody().get("token");
 		assertThat(token).isNotBlank().isNotEqualTo("ERROR");
 
+		awaitQueuedForIndexing(token);
+	}
+
+	/** A file is stored once: submitting it again returns its token, and queues it again. */
+	@Test
+	public void submit_whenSameFileTwice_shouldReturnTheSameTokenAndQueueItAgain() throws InterruptedException {
+		ResponseEntity<Map<String, Object>> first = submit("Russia-Trump: FBI chief Wray defends agency", true);
+		ResponseEntity<Map<String, Object>> second = submit("Russia-Trump: FBI chief Wray defends agency", true);
+
+		assertJson(first, HttpStatus.OK);
+		assertJson(second, HttpStatus.OK);
+		String token = (String) first.getBody().get("token");
+		assertThat(token).isNotBlank().isNotEqualTo("ERROR");
+		assertThat(second.getBody()).containsEntry("token", token);
+
+		awaitQueuedForIndexing(token);
+	}
+
+	private void awaitQueuedForIndexing(String token) throws InterruptedException {
 		String expected = DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS.getStatusDescription();
 		String failed = DocumentStatus.QUEUED_FOR_INDEXING_ERROR.getStatusDescription();
 		long deadline = System.currentTimeMillis() + STATUS_TIMEOUT_MILLIS;
