@@ -15,7 +15,7 @@ import org.junit.Test;
 /**
  * Checks what Maven's resource filtering leaves in dsh-rest-api's main output (#158).
  * The files are read from the directory {@link DshRestApplication} was loaded from,
- * because src/test/resources holds an application.properties that shadows the main one.
+ * so that nothing on the test classpath can stand in for the main output.
  */
 public class ClasspathResourceFilteringTest {
 

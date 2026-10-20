@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mriss.dsh.data.document.dao.DocumentDao;
@@ -24,6 +25,7 @@ import com.mriss.dsh.restapi.service.DocumentQueueService;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ActiveProfiles("test")
 public class DshRestApplicationIT {
 
     final static Logger logger = LoggerFactory.getLogger(DshRestApplicationIT.class);

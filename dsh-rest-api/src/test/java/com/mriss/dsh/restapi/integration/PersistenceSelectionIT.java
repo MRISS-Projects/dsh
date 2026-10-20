@@ -18,7 +18,9 @@ import com.mriss.dsh.restapi.DshRestApplication;
 
 /**
  * Which {@link DocumentDao} the application runs with, by {@code dsh.persistence} (ADR-003,
- * section 3). Starts the application as {@code main} does, once per case.
+ * section 3). Starts the application as {@code main} does, once per case, with the {@code test}
+ * profile as an argument: {@code @ActiveProfiles} does not reach a {@link SpringApplicationBuilder},
+ * and an argument outranks a profile leaked from the environment (#140).
  */
 public class PersistenceSelectionIT {
 
@@ -72,9 +74,10 @@ public class PersistenceSelectionIT {
 	}
 
 	private static ConfigurableApplicationContext start(String... arguments) {
-		String[] all = new String[arguments.length + 1];
+		String[] all = new String[arguments.length + 2];
 		all[0] = "--server.port=0";
-		System.arraycopy(arguments, 0, all, 1, arguments.length);
+		all[1] = "--spring.profiles.active=test";
+		System.arraycopy(arguments, 0, all, 2, arguments.length);
 		return new SpringApplicationBuilder(DshRestApplication.class).run(all);
 	}
 }
