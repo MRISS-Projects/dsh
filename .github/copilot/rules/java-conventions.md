@@ -29,8 +29,9 @@
   its `dsh.*` key (ADR-003, section 3, rules 2 and 3)
 - Use `@Configuration` and `@Bean` for infrastructure wiring
 - Prefer `@ConfigurationProperties` over `@Value` for grouped configuration
-- Write a Spring placeholder as `${…}` in any file on the classpath; Maven never replaces it.
-  Classpath resources are filtered with `@…@` only, by a rule inherited from parent-poms
+- Write a Spring placeholder as `${…}` in any file on the classpath; Maven's resource filtering
+  leaves it alone in `target/classes`, unless a module adds its own `copy-resources` execution
+  there. Classpath resources are filtered with `@…@` only, by a rule inherited from parent-poms
   `products` (`#158`). For a build value, write `@name@` and turn on `<filtering>` for that
   module's `src/main/resources`. The site Markdown is not on the classpath and keeps `${…}`
 

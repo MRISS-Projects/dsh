@@ -530,15 +530,18 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
 The DSH pull request is opened with the `SNAPSHOT` pin, and it says so. It is not ready to merge until
 this task is done.
 
-- [ ] **Step 1:** Once the owner has closed parent-poms `#<p>` and says go, dispatch parent-poms'
+As built, the owner chose to release first, during step 5, so the pull request opens on the released
+`3.11.1` and never carries the `SNAPSHOT` pin (§7.7).
+
+- [x] **Step 1:** Once the owner has closed parent-poms `#<p>` and says go, dispatch parent-poms'
   `deploy.yml` with `release_type: releases`. Check that tag `mriss-parent-3.11.1` exists, that
   `master`'s POMs are at `3.12.0-SNAPSHOT`, and that milestone `3.11.1-SNAPSHOT` has no open issue.
-- [ ] **Step 2:** In DSH: parent `3.11.1-SNAPSHOT` → `3.11.1`. Remove the two `-U`. In `CLAUDE.md`
+- [x] **Step 2:** In DSH: parent `3.11.1-SNAPSHOT` → `3.11.1`. Remove the two `-U`. In `CLAUDE.md`
   ("The parent is the released `3.10.0`") and `docs/devops/README.md` ("The current pin is the released
   `com.mriss.mriss-parent:products:3.10.0`, since `#150`"), name `3.11.1` and `#158`.
-- [ ] **Step 3:** Rerun Task 6 Step 3 into `.logs/mvn-clean-install-repin.log`. Expected:
+- [x] **Step 3:** Rerun Task 6 Step 3 into `.logs/mvn-clean-install-repin.log`. Expected:
   `maven exit=0`, `ClasspathResourceFilteringTest` among the tests run with no failure.
-- [ ] **Step 4:** Commit `build(#158): re-pin the parent to the released parent-poms 3.11.1`, and
+- [x] **Step 4:** Commit `build(#158): re-pin the parent to the released parent-poms 3.11.1`, and
   push.
 
 ## 7. Verification results
@@ -658,12 +661,49 @@ The timestamp line is the only difference. Every `generated-site` tree is byte-i
   2 min 33 s. Every `*IT` passed: `DocumentResourceHttpIT` 5, `DocumentResourceIT` 6,
   `DshRestApplicationIT` 2, `PersistenceSelectionIT` 3, and the four workers' application ITs.
 
-### 7.7 Still to do
+### 7.7 parent-poms: the pull request, the snapshot, the release
 
-- parent-poms Task 3 Step 5: the branch is pushed and its pull request is
-  [`#111`](https://github.com/MRISS-Projects/parent-poms/pull/111), with commits `1cb701e4` (spec),
-  `efe85b4e` (re-version) and `c4a9931f` (the rule). It merged as `becc1602`. Done: the snapshot
-  deploy, [run 39439724416](https://github.com/MRISS-Projects/parent-poms/actions/runs/39439724416)
-  on `becc1602`, `success` at 14:33:39Z. GitHub Packages lists `products` `3.11.1-SNAPSHOT`,
-  updated 14:32:50Z, so DSH's CI can resolve it.
-- Task 7, the release and the re-pin.
+- **The pull request.** [`#111`](https://github.com/MRISS-Projects/parent-poms/pull/111), with
+  commits `1cb701e4` (spec), `efe85b4e` (re-version) and `c4a9931f` (the rule), merged as
+  `becc1602`.
+- **The snapshot.** [Run 39439724416](https://github.com/MRISS-Projects/parent-poms/actions/runs/39439724416)
+  on `becc1602`, `success` at 14:33:39Z. GitHub Packages listed `products` `3.11.1-SNAPSHOT`,
+  updated 14:32:50Z.
+- **Released before the DSH pull request.** The plan opened the DSH pull request on the `SNAPSHOT`
+  pin, and released once its CI had passed. The owner chose to release first instead. The
+  end-to-end check of `CLAUDE.md`'s round trip, step 4, had already run locally against the
+  `SNAPSHOT` (§7.3 to §7.6), so the pull request opens on `3.11.1`, with no `-U` commits and no
+  pin to undo. The release was dispatched while the step-5 review (§7.8) was still running, and
+  that order was a mistake: a finding against parent-poms' code would have needed a 3.11.2. The
+  review found none.
+- **The release.** The owner closed `#110`. [Run 39443436995](https://github.com/MRISS-Projects/parent-poms/actions/runs/39443436995),
+  `success` at 14:59:50Z. Tag `mriss-parent-3.11.1` exists. It points to `336e157d`, the commit
+  that moves `master` on to `3.12.0-SNAPSHOT`, as `mriss-parent-3.11.0` points to `ae7aaf83`. All
+  eight POMs are at `3.12.0-SNAPSHOT` again. Milestone `3.11.1-SNAPSHOT` has no open issue, and
+  GitHub Packages lists `products` `3.11.1`, updated 14:59:01Z.
+- **The re-pin.** The root `pom.xml` is on `3.11.1`. Both `-U` are gone, so the two workflows
+  match `DEVELOP` again. `CLAUDE.md` and `docs/devops/README.md` name `3.11.1` and `#158`.
+  `mvn -B clean install` (`mvn-clean-install-repin.log`): `maven exit=0`, all 13 modules
+  `SUCCESS`, the coverage checks met. The log shows `products-3.11.1.pom` downloaded from GitHub
+  Packages, and `ClasspathResourceFilteringTest` ran with `Tests run: 3, Failures: 0`, so the
+  published release carries the rule.
+
+### 7.8 Step 5 review
+
+A reviewer subagent read `2bbe53fae..2c620f5f2` and parent-poms' three commits. Verdict: ready to
+merge with fixes. Nothing was Critical or Important beyond the `SNAPSHOT` pin, which §7.7 removes.
+The owner chose four of the ten minor findings:
+
+- **1.** The `maven-site-plugin` comment in the root `pom.xml` said "the `<resources>` blocks copy
+  src/site filtered". This branch had removed those blocks, so it now names `copy-site-resources-for-pdf`.
+- **3.** The third test's two assertions got failure messages, like the other two tests.
+- **7.** The `java-conventions.md` bullet said "Maven never replaces it". That held only for the
+  lifecycle executions, so it now says Maven leaves `${…}` alone in `target/classes`, unless a
+  module adds its own `copy-resources` execution there.
+- **9.** parent-poms' spec has its tasks ticked and a results section, in `b0001f30` on its `master`.
+
+Not taken: a `ci.yml` comment that contradicted its `-U` (the re-pin removed the `-U`); a test that
+a version replaced the token (test 1 already pins the probe); a test that also runs from a jar
+(only unit tests run it, and from a jar it fails loudly); IntelliJ's own resource builder (not
+verified); `dsh-test-dataset`'s entry that matches nothing (§7.2); and a sentence on a patch
+release changing behaviour (DSH is the only product).
