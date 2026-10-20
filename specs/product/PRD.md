@@ -832,6 +832,7 @@ ADR-003's eight follow-up candidates were settled in the same session:
 7. `CLAUDE.md` and `system-design.md` describing MongoDB, RabbitMQ and Solr as current: each is
    corrected by the story that removes the code. Those are Wave 1 task 8, Wave 2 task 1 and Wave 2
    task 3. `CLAUDE.md`'s paragraph on what was stale until this re-plan was removed with it.
+   `#167` — **closed** — PR #168 corrected both for MongoDB.
 8. The OpenAPI document and the feature specs: Wave 1 task 11 (decision 5).
 
 ### Wave 1 — Pipeline design, documentation and upstream catch-up
@@ -1018,6 +1019,7 @@ are.
    `mongo.properties` to leave filtered, `#119` has no MongoDB test to migrate, `#120` upgrades
    no MongoDB dependency, `#137` starts no MongoDB container, and `#157` loses its purpose. Until
    then this step read "`#157`, `#158`, `#140`, then `#119`", and tasks 8 to 10 were step 8.
+   **Done on 2026-10-20:** `#167` — **closed** — PR #168.
 4. `#158`, `#140`, Wave 2 task 3, then `#119`. Mechanical work. `#140` comes before `#120`,
    so `#120` carries fewer settings. Wave 2 task 3 removes `dsh-solr` and the stub applications.
    It depends on no other task, and it comes here so that `#119` migrates no Solr test and `#120`
@@ -1274,8 +1276,12 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    redistribution; otherwise it is cited by DOI. The sentence paper is paid: it stays in a gitignored
    local folder and is cited by DOI. The owner is a co-author, so whether the publisher allows posting
    the accepted manuscript is worth checking. Wave 3's stories cite these.
-8. **The in-memory `DocumentDao` replaces MongoDB.** `#167` — open. Keep documents in memory by
-   default, and remove MongoDB.
+8. **Done on 2026-10-20: the in-memory `DocumentDao` replaces MongoDB.** `#167` — **closed** —
+   PR #168. Keep documents in memory by default, and remove MongoDB. The story's spec,
+   `specs/stories/167-keep-documents-in-memory-remove-mongodb.md`, holds the evidence. The
+   interface changed in one method after the owner's review: an id, a file hash and a token each
+   name one document, so `findDocumentsByHash` became `findDocumentByHash`. The plan as written is
+   kept below.
 
    `dsh-data` gains an in-memory
    implementation of `DocumentDao` as the interface stands today. It is the default, selected by
