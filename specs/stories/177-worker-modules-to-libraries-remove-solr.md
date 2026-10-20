@@ -539,4 +539,81 @@ and resources; modify the three library POMs, `pom.xml`, `dsh-coverage-report/po
 
 ## 7. Verification results
 
-Filled in by step 4.
+Run on 2026-10-20, in Git Bash on Windows 11, Maven 3.9.16, Java 17.0.20.1, Docker Desktop running.
+
+| Step | Command | Result |
+|---|---|---|
+| Task 1, baseline | `mvn -B clean install`, at `3ab381a97` | `maven exit=0`; 13 modules; 155 unit tests (below) |
+| Task 2, red (AC004) | `mvn -B clean install`, with `enforce-no-solr` added | `maven exit=1`; `dsh-data` fails in `enforce (enforce-no-solr)` (below) |
+| Task 3, green (AC004) | `mvn -B clean install` | `maven exit=0`; 10 modules; `enforce-no-solr` passes in each. Two runs failed first (§7.1) |
+| Task 4 | `mvn -B -DskipTests install` | `maven exit=0`; 9 modules |
+| Task 5 | `mvn -B clean install` | `maven exit=0`; 9 modules; "JAR will be empty" for the three libraries and, as before, `dsh-coverage-report`; `enforce-coverage-data-exists` passes in each |
+| Task 6 (AC006) | markdownlint, the command in `CLAUDE.md`, and over the three site pages | `lint exit=0` twice, after removing a blank line the analyser page already ended with |
+| Task 7, gate 1 | `mvn -B clean install` | `maven exit=0`; 9 modules; 115 unit tests; "All coverage checks have been met." in `dsh-data` and `dsh-rest-api` |
+| Task 7, AC007 and gate 3 | `mvn -B clean install -DintegrationTests` | `maven exit=0` on the second run; 115 unit and 19 integration tests; the first run hit `#142` (§7.2) |
+
+The red run:
+
+```text
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-enforcer-plugin:3.5.0:enforce (enforce-no-solr) on project dsh-data:
+[ERROR] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies failed with message:
+[ERROR] Solr was removed by ADR-003 section 2 (#177): no module may depend on it, directly or transitively. Lucene's own artifacts (org.apache.lucene) remain allowed.
+[ERROR] com.mriss.products.dsh:dsh-data:jar:0.4.0-SNAPSHOT
+[ERROR]    org.springframework.data:spring-data-solr:jar:4.3.15 <--- banned via the exclude/include list
+```
+
+**Unit tests, before and after.** Before: `dsh-data` 71, `dsh-rest-api` 44,
+`solr-terms-vector-order` 22, `solr-advanced-numbers-filter` 10, and 2 in each of the four worker
+modules, 155 in all. After: `dsh-data` 71, `dsh-rest-api` 44, 115 in all. **The Gates 1, 2 row of
+§4 was wrong** to expect only the four `*ApplicationTest` classes, 8 methods, to go: the two Solr
+plugins' 32 tests went with `dsh-solr`, so 40 tests went. Task 1 Step 2's filter was wrong too:
+surefire 3 writes per-class lines with `-- in`, not ` - in `, so the grep prints both kinds; the
+per-module totals are the lines without a class name.
+
+**The checks of §4, after the last commit:**
+
+| AC | Command | Output |
+|---|---|---|
+| AC001 | `ls -d dsh-solr dsh-doc-analyser/dsh-doc-processor-worker dsh-doc-indexer-worker` | "No such file or directory" for each of the three |
+| AC002 | `git grep -n 'dsh-doc-indexer-worker' -- '*pom.xml'` | no hit |
+| AC002 | `grep -n 'dsh-doc-indexer<' dsh-coverage-report/pom.xml` | `25:            <artifactId>dsh-doc-indexer</artifactId>` |
+| AC003 | `git grep -l -e '@SpringBootApplication' -e 'static void main' -- dsh-doc-indexer dsh-doc-analyser` | no hit |
+| AC003 | `git ls-files dsh-doc-indexer dsh-doc-analyser \| grep /src/main/` | no file |
+| AC004 | `git grep -n -i solr -- '*pom.xml'` | `pom.xml` lines 208, 216, 217 and 219, all `enforce-no-solr`'s |
+| AC004 | `git grep -n -i solr -- '*/src/main/*'` | no hit |
+| AC005 | `git grep -n -i amqp -- dsh-doc-indexer dsh-doc-analyser` | no hit |
+| AC006 | Task 6 Step 2's two greps | the indexer entry and the removal paragraph of `src/site/markdown/README.md`, and line 15 of the indexer's page; `CLAUDE.md:5`, "Solr was removed by `#177`" |
+| AC007 | `grep -o 'Running com\.mriss[^ ]*ApplicationIT'` over the gate 3 log | `Running com.mriss.dsh.restapi.integration.DshRestApplicationIT` only |
+
+### 7.1 What the spec missed
+
+- **Three libraries came only through `spring-data-solr`.** The first green run failed to compile
+  `dsh-data`: `Document` imports `org.apache.commons.io.IOUtils` and
+  `org.springframework.data.annotation.Id`. With those declared, the second failed `dsh-rest-api`:
+  `DocumentResource` imports `org.apache.commons.lang3.StringUtils`. `dsh-data` now declares
+  `spring-data-commons` and `commons-io`, and `dsh-rest-api` declares `commons-lang3`, each without
+  a version: `commons-io` is managed by `mriss-parent` (2.18.0), the other two by the Spring Boot
+  BOM. Each resolves to the version it had before. A diff of `dsh-rest-api`'s runtime
+  `dependency:list` against `3ab381a97` shows removals only: 29 jars, all of them Solr's tree
+  (`solr-solrj`, `spring-data-solr`, ZooKeeper, Netty, Jetty's HTTP client, Apache HttpClient,
+  `commons-lang` 2.6, `commons-math3`, `snappy-java`). No DSH source imports any of them.
+  `@Id` is read by nothing since `#167`; whether `Document` keeps it is left to the store's own
+  story, not decided here.
+- **`management.health.solr.enabled=false`** in `dsh-rest-api`'s `application.properties` failed
+  AC004's second grep. It was deleted, with its comment. It was inert before this story too: Spring
+  Boot's Solr health contributor needs a `SolrClient` bean, and DSH never defined one.
+- **The first wording of the two new POM comments named `spring-data-solr`**, which failed AC004's
+  first grep. They now say only that the dependency `#177` removed brought the library.
+
+### 7.2 Gate 3 and `#142`
+
+Gate 3 ran three times. The first, before the changes of §7.1's last two items, exited 0. The second,
+after them, exited 1 on
+`DocumentResourceHttpIT.submit_whenSameFileTwice_shouldReturnTheSameTokenAndQueueItAgain`: the
+document's status was `DEQUEUED_FOR_INDEXING`, not `QUEUED_FOR_INDEXING_SUCCESS`. That is `#142`,
+with the signature `#140` §7.1 recorded. The server's log shows the test's two submissions
+subscribing two handlers to `toRabbitResponse`, three subscribers with the service activator,
+before either confirm arrived. The first confirm reached both handlers, which hold the same
+document, so the document moved two steps, and the second confirm reached none. The only
+`dsh-rest-api` change between the two runs was deleting the inert property of §7.1. The third run
+exited 0.
