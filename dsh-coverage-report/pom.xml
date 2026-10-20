@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>com.mriss.products.dsh</groupId>
-            <artifactId>dsh-doc-indexer-worker</artifactId>
+            <artifactId>dsh-doc-indexer</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mriss.products.dsh</groupId>

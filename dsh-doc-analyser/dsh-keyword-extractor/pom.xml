@@ -15,17 +15,6 @@
 	<groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
 	<artifactId>dsh-keyword-extractor</artifactId>
 	<packaging>jar</packaging>
-	<!-- FR005: spring-boot-dependencies BOM now imported via products/pom.xml; removed local dependencyManagement -->
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-		</dependency>				
-	</dependencies>
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->
 	<!-- <properties> -->

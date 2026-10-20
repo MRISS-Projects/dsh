@@ -30,7 +30,7 @@
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
-                <artifactId>dsh-doc-indexer-worker</artifactId>
+                <artifactId>dsh-doc-indexer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -304,7 +304,7 @@
         <module>dsh-test-dataset</module>
         <module>dsh-data</module>
         <module>dsh-rest-api</module>
-        <module>dsh-doc-indexer-worker</module>
+        <module>dsh-doc-indexer</module>
         <module>dsh-doc-analyser</module>
         <module>dsh-coverage-report</module>
     </modules>
