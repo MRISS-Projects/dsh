@@ -62,35 +62,6 @@
 
     <!-- BUILD SETTINGS -->
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**</include>
-                </includes>
-                <filtering>true</filtering>
-            </resource>
-            <!-- FR009: .apt filter replaced with .md -->
-            <resource>
-                <directory>src/site</directory>
-                <includes>
-                    <include>**/*.md</include>
-                </includes>
-                <targetPath>${project.build.directory}/generated-site</targetPath>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/site</directory>
-                <includes>
-                    <include>**</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*.md</exclude>
-                </excludes>
-                <filtering>false</filtering>
-                <targetPath>${project.build.directory}/generated-site</targetPath>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.jacoco</groupId>
