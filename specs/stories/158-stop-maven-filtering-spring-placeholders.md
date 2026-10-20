@@ -660,8 +660,9 @@ The timestamp line is the only difference. Every `generated-site` tree is byte-i
 
 ### 7.7 Still to do
 
-- parent-poms Task 3 Step 5: push `issue-110-filter-classpath-resources-with-at-delimiter` and
-  open its pull request, then the snapshot deploy. Its commits: `1cb701e4` (spec), `efe85b4e`
-  (re-version), `c4a9931f` (the rule). `3.11.1-SNAPSHOT` is so far installed only in the local
-  repository, so DSH's CI cannot resolve it until the deploy.
+- parent-poms Task 3 Step 5: the branch is pushed and its pull request is
+  [`#111`](https://github.com/MRISS-Projects/parent-poms/pull/111), with commits `1cb701e4` (spec),
+  `efe85b4e` (re-version) and `c4a9931f` (the rule). The merge and the snapshot deploy remain.
+  `3.11.1-SNAPSHOT` is so far installed only in the local repository, so DSH's CI cannot resolve
+  it until the deploy.
 - Task 7, the release and the re-pin.
