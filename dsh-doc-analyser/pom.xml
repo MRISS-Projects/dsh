@@ -96,6 +96,5 @@
 	<modules>
 		<module>dsh-keyword-extractor</module>
 		<module>dsh-top-sentences-extractor</module>
-		<module>dsh-doc-processor-worker</module>
 	</modules>
 </project>

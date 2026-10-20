@@ -53,11 +53,6 @@
                 <artifactId>dsh-top-sentences-extractor</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
-                <artifactId>dsh-doc-processor-worker</artifactId>
-                <version>${project.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
