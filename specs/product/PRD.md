@@ -86,6 +86,7 @@ a milestone.
 |---|---|---|
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
 | 1, upstream step 6 | `3.11.0-SNAPSHOT`, now `3.11.0` | `#98`, `#106`; both closed; released on 2026-10-04, DSH not re-pinned |
+| 1, for `#158` | `3.11.1-SNAPSHOT`, a hotfix line opened on 2026-10-20 | `#110`; closed; released as `3.11.1` on 2026-10-20, DSH re-pinned by `#158` |
 | 4 | `3.12.0-SNAPSHOT` | `#90`; `#109` joined on 2026-10-10 |
 | 7 | `3.13.0-SNAPSHOT` | `#91`, since 2026-10-10 |
 | 10 | `3.14.0-SNAPSHOT` | `#92`, since 2026-10-10 |
@@ -1023,7 +1024,8 @@ are.
 4. `#158`, `#140`, Wave 2 task 3, then `#119`. Mechanical work. `#140` comes before `#120`,
    so `#120` carries fewer settings. Wave 2 task 3 removes `dsh-solr` and the stub applications.
    It depends on no other task, and it comes here so that `#119` migrates no Solr test and `#120`
-   carries no `spring-data-solr`.
+   carries no `spring-data-solr`. **`#158` was done on 2026-10-20:** `#158` — **closed** — PR #175,
+   with its upstream half, `parent-poms#110`, released as parent-poms 3.11.1.
 5. `#120`, after `#119` for the reason given with the triaged issues.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
 7. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
@@ -1123,7 +1125,7 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
 
 - `#157` — **closed**, with no pull request: superseded by task 8 (§5). Give `mongo.*` its values
   at run time, not through build-time filtering.
-- `#158` — Stop Maven from filtering `${…}` in Spring configuration.
+- `#158` — **closed** — PR #175. Stop Maven from filtering `${…}` in Spring configuration.
 
   Neither is an ADR-001 phase task. Both came out of `#48` on 2026-10-10, as follow-ups 2 and 1 of
   its findings (`specs/architecture/profiles-and-configuration.md`, §9.2). They were not folded
@@ -1133,6 +1135,12 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   **`#157` was superseded on 2026-10-13 by task 8**, which removes MongoDB and every `mongo.*`
   value with it, the build-time values in the six workflows included. It has no step in the
   order of work any more. The owner closed it that day, and it is in §5. `#158` is in step 4.
+
+  **`parent-poms#110` was opened from `#158` on 2026-10-20.** `#158`'s spec found that the
+  delimiter rule belongs in parent-poms `products`, the Spring Boot parent of every product, as
+  `spring-boot-starter-parent` has it. DSH's own `<resources>` blocks were the only part that
+  stayed here. It could not be folded into `#158`, because the change lives in another repository.
+  It shipped first, as the hotfix 3.11.1, and `#158` merged pinned to that release.
 
   The findings' other four follow-ups went into issues that existed or belong elsewhere: `#137`
   gained AC005, `#120` gained AC007, `#140` gained a second change to make, and
@@ -1798,6 +1806,11 @@ naming the task. It came out of `#48` three days earlier and was never started.
     refuses a SNAPSHOT parent. So before any DSH release, parent-poms releases the hotfix and DSH's
     root `pom.xml` is re-pinned to that released version. The reproducibility cost of a SNAPSHOT
     parent is the one described in the entry above, and it ends at that re-pin.
+  - **3.11.1 departed from two of these rules, by the owner's decision of 2026-10-20 (`#158`'s spec,
+    §3.1, decision 5).** It changed what `products` filters, which is closer to new behaviour than
+    to a fix, and shipped as a patch so that 3.12.0's open issues did not hold it up. Its
+    `SNAPSHOT` pin also did not last to the end of Wave 1: parent-poms released 3.11.1 within the
+    story, and `#158` merged pinned to the release.
   - **A patch version carries fixes only.** A wave that needs new upstream behaviour, rather than a
     fix, uses the full round trip in `CLAUDE.md` against parent-poms' next minor version.
   - **The snapshot must be deployed before it is pinned.** As the entry above records, a hotfix
