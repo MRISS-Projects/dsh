@@ -15,19 +15,16 @@ public interface DocumentSubmissionService {
 	
 	/**
 	 * Gets a token (new or already used) based from the original contents
-	 * of a file. The method basically creates a new {@link Document} and
-	 * return its token for other clients test about processing. The method
-	 * tests if the document already exists in the database by using a unique
-	 * hash generated from the original file binary contents. If so, and
-	 * the flag <code>useCache</code> is set, that old token associated with
-	 * the found document is returned.
-	 * @param originalDocumentContents the document original contents 
-	 * @param useCache if set to <code>true</code>, the method should test if
-	 * the document already exists in the database using its hash based on its 
-	 * original binary contents. If document exists and the keywords and sentences document's
-	 * fields are not empty, then the old token for the old document should be
-	 * returned. If set to <code>false</code> no test is executed and a new token 
-	 * for a newly generated document should be returned.
+	 * of a file. A file is stored once: the method looks the document up by
+	 * the unique hash of the file's binary contents. If it is not stored, a
+	 * new {@link Document} is created and its token returned. If it is, the
+	 * stored document's token is returned, and <code>useCache</code> decides
+	 * whether the document is processed again.
+	 * @param originalDocumentContents the document original contents
+	 * @param useCache if set to <code>true</code> and the stored document's
+	 * keywords and sentences are not empty, its result is reused and nothing
+	 * is queued. Otherwise the stored document is put back at its first status
+	 * and queued again by {@link #storeDocumentAndQueueForProcessing()}.
 	 * @param documentTitle the document title
 	 * @return the token (new or old) of the document created (or retrieved from database)
 	 * @see Document

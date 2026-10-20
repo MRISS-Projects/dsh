@@ -22,9 +22,8 @@ public interface DocumentHandlingService {
 	 * Get document by hash code.
 	 * 
 	 * @param hash the documents hash based on its original binary contents
-	 * @return the first document instance where the hash is the same
-	 * and the document's kewords and relevant sentences collections are not
-	 * empty
+	 * @return the document with that hash, processed or not; null when
+	 * no document has that hash
 	 */
 	public Document getDocumentByHash(String hash);
 	

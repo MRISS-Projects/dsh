@@ -39,19 +39,17 @@ public class DocumentSubmissionServiceImpl implements DocumentSubmissionService 
 		logger.info("DocumentSubmissionServiceImpl.this(): " + this);
 		try {
 			this.document = new Document(originalDocumentContents, documentTitle);
-			messageHandler.setDocument(this.document);			
-			if (useCache) {
-				Document doc = docHandlingService.getDocumentByHash(this.document.getFileHash());
-				if (doc != null) {
-					return doc.getToken();
-				} else {
-					storeDocument = true;
-					return this.document.getToken();
+			Document stored = docHandlingService.getDocumentByHash(this.document.getFileHash());
+			if (stored != null) {
+				if (useCache && isProcessed(stored)) {
+					return stored.getToken();
 				}
-			} else {
-				storeDocument = true;
-				return document.getToken();
+				stored.resetStatus();
+				this.document = stored;
 			}
+			messageHandler.setDocument(this.document);
+			storeDocument = true;
+			return this.document.getToken();
 		} catch (Exception e) {
 			try {
 				throw new DocumentSubmissionException(e.getMessage(), e, this.document != null ? document : new Document(documentTitle));
@@ -79,6 +77,10 @@ public class DocumentSubmissionServiceImpl implements DocumentSubmissionService 
 		synchronized (this) {
 			this.notifyAll();
 		}
+	}
+
+	private static boolean isProcessed(Document document) {
+		return !document.getKeyWords().isEmpty() && !document.getRelevantSentences().isEmpty();
 	}
 
 	public void setMessageHandler(DocumentEnqueueMessageHandler messageHandler) {

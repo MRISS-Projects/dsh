@@ -29,8 +29,8 @@ import com.mriss.dsh.restapi.rest.DocumentResource;
 
 /**
  * Calls the REST API over HTTP against the server that the {@code http-integration-tests} profile
- * starts, backed by the MongoDB and RabbitMQ containers it starts. No Spring context runs in this
- * JVM: the application under test is a separate process.
+ * starts, which keeps documents in its own memory, with RabbitMQ in the container the profile
+ * starts. No Spring context runs in this JVM: the application under test is a separate process.
  */
 public class DocumentResourceHttpIT {
 
@@ -44,7 +44,7 @@ public class DocumentResourceHttpIT {
 
 	private static final int CONNECT_TIMEOUT_MILLIS = 5_000;
 
-	/** Above the MongoDB driver's 30 s server-selection timeout, so that failure still reports as a 500. */
+	/** So that a server that hangs fails the test rather than the build. */
 	private static final int READ_TIMEOUT_MILLIS = 60_000;
 
 	private static final ParameterizedTypeReference<Map<String, Object>> JSON =
@@ -82,6 +82,25 @@ public class DocumentResourceHttpIT {
 		String token = (String) submitted.getBody().get("token");
 		assertThat(token).isNotBlank().isNotEqualTo("ERROR");
 
+		awaitQueuedForIndexing(token);
+	}
+
+	/** A file is stored once: submitting it again returns its token, and queues it again. */
+	@Test
+	public void submit_whenSameFileTwice_shouldReturnTheSameTokenAndQueueItAgain() throws InterruptedException {
+		ResponseEntity<Map<String, Object>> first = submit("Russia-Trump: FBI chief Wray defends agency", true);
+		ResponseEntity<Map<String, Object>> second = submit("Russia-Trump: FBI chief Wray defends agency", true);
+
+		assertJson(first, HttpStatus.OK);
+		assertJson(second, HttpStatus.OK);
+		String token = (String) first.getBody().get("token");
+		assertThat(token).isNotBlank().isNotEqualTo("ERROR");
+		assertThat(second.getBody()).containsEntry("token", token);
+
+		awaitQueuedForIndexing(token);
+	}
+
+	private void awaitQueuedForIndexing(String token) throws InterruptedException {
 		String expected = DocumentStatus.QUEUED_FOR_INDEXING_SUCCESS.getStatusDescription();
 		String failed = DocumentStatus.QUEUED_FOR_INDEXING_ERROR.getStatusDescription();
 		long deadline = System.currentTimeMillis() + STATUS_TIMEOUT_MILLIS;

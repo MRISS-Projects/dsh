@@ -19,7 +19,7 @@ class called DocumentAnalysisService in the DSH project.
 
 Requirements:
 - Package: com.dsh.docanalyser
-- Dependencies to inject: DocumentRepository, HighlightRepository
+- Dependencies to inject: DocumentDao, HighlightDao
 - Methods:
   - analyzeDocument(String documentId) → AnalysisResult
 - Error handling: throw DocumentNotFoundException if the document is not found

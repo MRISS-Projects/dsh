@@ -59,17 +59,18 @@ Requirements:
 
 ---
 
-## New Repository
+## New Store
 
 ```text
-As a Backend Developer (see /.github/roles.md), generate a Spring Data
-[MongoDB/JPA] repository for [EntityName] in the DSH project.
+As a Backend Developer (see /.github/roles.md), generate a store for [EntityName]
+in the DSH project, following ADR-003 section 3
+(/specs/architecture/ADR-003-document-pipeline.md).
 
 Requirements:
-- Package: com.dsh.data.repository
-- Entity: [EntityName] (describe fields)
-- Custom query methods: [list methods]
-- Use @Query annotation where JPQL/MQL is needed
+- An interface in dsh-data, [EntityName]Dao, that names no technology
+- Operations: [list operations]
+- An in-memory implementation, InMemory[EntityName]Dao, in dsh-data: a @Component
+  selected by @ConditionalOnProperty on its dsh.* key with matchIfMissing = true
 - Include documentation referencing /specs/architecture/data-models/
 ```
 

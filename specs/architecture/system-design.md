@@ -37,19 +37,20 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
              ┌────────┴────────┐
              ▼                 ▼
      ┌───────────────────┐  ┌───────────────────┐
-     │      MongoDB      │  │     dsh-solr      │
-     │  (replacement     │  │  (removal         │
-     │   proposed)       │  │   decided)        │
+     │  Document store   │  │     dsh-solr      │
+     │  (in memory by    │  │  (removal         │
+     │   default)        │  │   decided)        │
      │  (documents)      │  │ (full-text        │
      │                   │  │  indexing)        │
      └───────────────────┘  └───────────────────┘
 ```
 
 > **Migration note:** [ADR-001](./ADR-001-GCP-based-components.md) (Status: Proposed) proposes
-> replacing MongoDB with Firestore + GCS, and RabbitMQ with Cloud Pub/Sub.
+> a Firestore + GCS document store, and replacing RabbitMQ with Cloud Pub/Sub.
 > [ADR-003](./ADR-003-document-pipeline.md) (Status: Accepted) decides how the pipeline is built:
 > the MongoDB, RabbitMQ and Solr code is removed, not migrated, and no search engine replaces
-> Solr. None of that work has started, and the code for all three is still in the repository.
+> Solr. The MongoDB code was removed by `#167` (ADR-003 section 8), and the RabbitMQ and Solr code
+> is still in the repository.
 > See `specs/product/PRD.md` for the delivery waves.
 
 ## Module Responsibilities
@@ -74,9 +75,8 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 
 ### dsh-data
 
-- Contains shared JPA/MongoDB entity classes and repositories
+- Contains the shared models, the `DocumentDao` interface and its in-memory implementation
 - Provides data access layer for other modules
-- Manages database schema migrations
 - Manages document status transitions. The state machine is drawn in
   [`document-status-workflow.md`](document-status-workflow.md), which is generated from
   `DocumentStatus` and checked by the build.
@@ -98,7 +98,7 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 | Language | Java 17 |
 | Framework | Spring Boot, Spring Framework |
 | Build | Maven (multi-module) |
-| Persistence | MongoDB, Apache Solr |
+| Persistence | In memory (default); Apache Solr (unused, removal decided) |
 | CI | GitHub Actions |
 | Testing | JUnit 5, Mockito, AssertJ |
 

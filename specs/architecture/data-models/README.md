@@ -17,7 +17,7 @@ This directory contains data model specifications for the DSH system.
 
 ## Guidelines
 
-- Document all persistence entities (MongoDB documents, Solr schemas)
+- Document all persistence entities (stored documents, Solr schemas)
 - Use Mermaid `erDiagram` syntax for ER diagrams
 - Map each entity to its corresponding Java class in `dsh-data`
 - Keep in sync with `../../api/schemas/` for API-facing models

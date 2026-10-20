@@ -33,7 +33,7 @@ public class DocumentTest {
 
     private static final String BBC_PDF = "target/test-classes/pdf/bbc-news-1.pdf";
 
-    private Document docTitleConstructor;
+    private Document docAllArgsConstructor;
 
     private Document docTitleContentsConstructor;
 
@@ -43,16 +43,19 @@ public class DocumentTest {
 
     @Before
     public void setUp() throws Exception {
-        docTitleConstructor = documentWithTitle();
+        docAllArgsConstructor = documentWithAllArgs();
         docTitleContentsConstructor = documentWithTitleAndContents();
         docTitleContentsFromStreamConstructor = documentWithTitleAndContentsFromStream();
         anotherDocument = anotherDocument();
     }
 
-    private static Document documentWithTitle() throws NoSuchAlgorithmException, IOException {
-        Document d = new Document(TITLE);
-        d.setOriginalFileContents(FileUtils.readFileToByteArray(new File(BBC_PDF)));
-        return d;
+    private static Document documentWithAllArgs() throws NoSuchAlgorithmException, IOException {
+        return new Document(null, TITLE, "token-of-all-args",
+                new TreeSet<>(KeywordSorter.getInstance()),
+                new TreeSet<>(SentenceSorter.getInstance()),
+                FileUtils.readFileToByteArray(new File(BBC_PDF)),
+                DocumentStatus.CREATED,
+                DocumentStatus.CREATED.getStatusMessage());
     }
 
     private static Document documentWithTitleAndContents() throws Exception {
@@ -75,7 +78,7 @@ public class DocumentTest {
     public void testDocumentStatus() {
         assertEquals(DocumentStatus.CREATED, docTitleContentsFromStreamConstructor.getDocumentStatus());
         assertEquals(DocumentStatus.CREATED, docTitleContentsConstructor.getDocumentStatus());
-        assertEquals(DocumentStatus.CREATED, docTitleConstructor.getDocumentStatus());
+        assertEquals(DocumentStatus.CREATED, docAllArgsConstructor.getDocumentStatus());
         assertEquals(DocumentStatus.CREATED, anotherDocument.getDocumentStatus());
     }
 
@@ -83,19 +86,19 @@ public class DocumentTest {
     public void testHashCode() {
         assertNotNull(docTitleContentsFromStreamConstructor.hashCode());
         assertNotNull(docTitleContentsConstructor.hashCode());
-        assertNotNull(docTitleConstructor.hashCode());
+        assertNotNull(docAllArgsConstructor.hashCode());
 
         logger.info("docTitleContentsFromStreamConstructor.hashCode(): " + docTitleContentsFromStreamConstructor.hashCode());
         logger.info("docTitleContentsConstructor.hashCode(): " + docTitleContentsConstructor.hashCode());
-        logger.info("docTitleConstructor.hashCode(): " + docTitleConstructor.hashCode());
+        logger.info("docAllArgsConstructor.hashCode(): " + docAllArgsConstructor.hashCode());
 
-        assertEquals(docTitleContentsConstructor.hashCode(), docTitleConstructor.hashCode());
+        assertEquals(docTitleContentsConstructor.hashCode(), docAllArgsConstructor.hashCode());
     }
 
     @Test
     public void testDocumentString() {
-        assertNotNull(docTitleConstructor);
-        assertEquals("Russia-Trump: FBI chief Wray defends agency", docTitleConstructor.getTitle());
+        assertNotNull(docAllArgsConstructor);
+        assertEquals("Russia-Trump: FBI chief Wray defends agency", docAllArgsConstructor.getTitle());
     }
 
     @Test
@@ -114,24 +117,24 @@ public class DocumentTest {
     public void testGetToken() {
         assertNotNull(docTitleContentsFromStreamConstructor.getToken());
         assertNotNull(docTitleContentsConstructor.getToken());
-        assertNotNull(docTitleConstructor.getToken());
+        assertNotNull(docAllArgsConstructor.getToken());
 
         logger.info("docTitleContentsFromStreamConstructor.getToken(): " + docTitleContentsFromStreamConstructor.getToken());
         logger.info("docTitleContentsConstructor.getToken(): " + docTitleContentsConstructor.getToken());
-        logger.info("docTitleConstructor.getToken(): " + docTitleConstructor.getToken());
+        logger.info("docAllArgsConstructor.getToken(): " + docAllArgsConstructor.getToken());
     }
 
     @Test
     public void testGetFileHash() {
-        assertNotNull(docTitleConstructor);
-        assertEquals("Russia-Trump: FBI chief Wray defends agency", docTitleConstructor.getTitle());
-        logger.info("docTitleConstructor.getFileHash(): " + docTitleConstructor.getFileHash());
+        assertNotNull(docAllArgsConstructor);
+        assertEquals("Russia-Trump: FBI chief Wray defends agency", docAllArgsConstructor.getTitle());
+        logger.info("docAllArgsConstructor.getFileHash(): " + docAllArgsConstructor.getFileHash());
 
         assertNotNull(docTitleContentsConstructor);
         assertEquals("Russia-Trump: FBI chief Wray defends agency", docTitleContentsConstructor.getTitle());
         logger.info("docTitleContentsConstructor.getFileHash(): " + docTitleContentsConstructor.getFileHash());
 
-        assertEquals(docTitleConstructor.getFileHash(), docTitleContentsConstructor.getFileHash());
+        assertEquals(docAllArgsConstructor.getFileHash(), docTitleContentsConstructor.getFileHash());
     }
 
     @Test
@@ -140,14 +143,14 @@ public class DocumentTest {
         Keyword k2 = new Keyword("test1", 1.0);
         Keyword k3 = new Keyword("test2", 2.0);
         Keyword k4 = new Keyword("test2", 1.5);
-        docTitleConstructor.addKeyword(k1);
-        docTitleConstructor.addKeyword(k2);
-        docTitleConstructor.addKeyword(k3);
-        docTitleConstructor.addKeyword(k4);
-        assertEquals("keyword score validation", 2.0, docTitleConstructor.getKeyWords().first().getScore(), 0.0);
-        for (Iterator<Keyword> iterator = docTitleConstructor.getKeyWords().iterator(); iterator.hasNext();) {
+        docAllArgsConstructor.addKeyword(k1);
+        docAllArgsConstructor.addKeyword(k2);
+        docAllArgsConstructor.addKeyword(k3);
+        docAllArgsConstructor.addKeyword(k4);
+        assertEquals("keyword score validation", 2.0, docAllArgsConstructor.getKeyWords().first().getScore(), 0.0);
+        for (Iterator<Keyword> iterator = docAllArgsConstructor.getKeyWords().iterator(); iterator.hasNext();) {
             Keyword type = iterator.next();
-            logger.info("docTitleConstructor.getKeyWords(): " + type);
+            logger.info("docAllArgsConstructor.getKeyWords(): " + type);
         }
     }
 
@@ -157,44 +160,44 @@ public class DocumentTest {
         Sentence s2 = new Sentence("test1", 1.0, 4);
         Sentence s3 = new Sentence("test2", 2.0, 2);
         Sentence s4 = new Sentence("test2", 1.5, 2);
-        docTitleConstructor.addSentence(s1);
-        docTitleConstructor.addSentence(s2);
-        docTitleConstructor.addSentence(s3);
-        docTitleConstructor.addSentence(s4);
-        assertEquals("addSentence score validation", 2.0, docTitleConstructor.getRelevantSentences().first().getScore(), 0.0);
-        for (Iterator<Sentence> iterator = docTitleConstructor.getRelevantSentences().iterator(); iterator.hasNext();) {
+        docAllArgsConstructor.addSentence(s1);
+        docAllArgsConstructor.addSentence(s2);
+        docAllArgsConstructor.addSentence(s3);
+        docAllArgsConstructor.addSentence(s4);
+        assertEquals("addSentence score validation", 2.0, docAllArgsConstructor.getRelevantSentences().first().getScore(), 0.0);
+        for (Iterator<Sentence> iterator = docAllArgsConstructor.getRelevantSentences().iterator(); iterator.hasNext();) {
             Sentence type = iterator.next();
-            logger.info("docTitleConstructor.getRelevantSentences(): " + type);
+            logger.info("docAllArgsConstructor.getRelevantSentences(): " + type);
         }
     }
 
     @Test
     public void testGetOriginalFileContents() throws IOException {
-        assertNotNull(docTitleConstructor);
-        FileUtils.writeByteArrayToFile(new File("target/test-file.pdf"), docTitleConstructor.getOriginalFileContents());
+        assertNotNull(docAllArgsConstructor);
+        FileUtils.writeByteArrayToFile(new File("target/test-file.pdf"), docAllArgsConstructor.getOriginalFileContents());
         assertTrue(new File("target/test-file.pdf").exists());
         assertEquals(new File("target/test-classes/pdf/bbc-news-1.pdf").length(), new File("target/test-file.pdf").length());
     }
 
     @Test
     public void testEqualsObject() throws NoSuchAlgorithmException {
-        assertNotNull(docTitleConstructor);
+        assertNotNull(docAllArgsConstructor);
         assertNotNull(docTitleContentsConstructor);
 
-        assertEquals(docTitleConstructor, docTitleContentsConstructor);
-        assertTrue(docTitleConstructor.equals(docTitleConstructor));
+        assertEquals(docAllArgsConstructor, docTitleContentsConstructor);
+        assertTrue(docAllArgsConstructor.equals(docAllArgsConstructor));
 
-        assertNotEquals(docTitleConstructor, anotherDocument);
+        assertNotEquals(docAllArgsConstructor, anotherDocument);
         assertNotEquals(docTitleContentsConstructor, anotherDocument);
         assertNotEquals(docTitleContentsFromStreamConstructor, anotherDocument);
 
-        assertNotEquals(docTitleConstructor, null);
-        assertNotEquals(docTitleConstructor, new Object());
+        assertNotEquals(docAllArgsConstructor, null);
+        assertNotEquals(docAllArgsConstructor, new Object());
 
         // this object is different, since it does not have contents
         Document d = new Document("Russia-Trump: FBI chief Wray defends agency");
-        assertFalse(docTitleConstructor.equals(d));
-        assertFalse(d.equals(docTitleConstructor));
+        assertFalse(docAllArgsConstructor.equals(d));
+        assertFalse(d.equals(docAllArgsConstructor));
     }
 
     @Test
@@ -214,27 +217,42 @@ public class DocumentTest {
         assertEquals(DocumentStatus.DEQUEUED_FOR_INDEXING, d.getDocumentStatus());
     }
 
+    /** A document queued again starts over: NEUTRAL from a later status would not queue it. */
+    @Test
+    public void testResetStatus() throws Exception {
+        Document d = new Document("Reset test document");
+        d.transitionStatus(TransitionType.NEUTRAL);
+        d.transitionStatus(TransitionType.ERROR);
+        assertEquals(DocumentStatus.QUEUED_FOR_INDEXING_ERROR, d.getDocumentStatus());
+
+        d.resetStatus();
+
+        assertEquals(DocumentStatus.CREATED, d.getDocumentStatus());
+        assertEquals(DocumentStatus.CREATED.getStatusMessage(), d.getDocumentStatusMessage());
+        d.transitionStatus(TransitionType.NEUTRAL);
+        assertEquals(DocumentStatus.QUEUED_FOR_INDEXING, d.getDocumentStatus());
+    }
+
     @Test
     public void testToString() {
-        assertNotNull(docTitleConstructor);
-        String s = docTitleConstructor.toString();
+        assertNotNull(docAllArgsConstructor);
+        String s = docAllArgsConstructor.toString();
         assertNotNull(s);
         assertTrue(s.contains("Russia-Trump"));
     }
 
-    /** Covers the no-arg constructor and direct setters / getters. */
+    /** Covers the id setter and getter. */
     @Test
-    public void testNoArgConstructorAndSettersGetters() {
-        Document d = new Document();
-        assertNotNull(d);
+    public void testSetId() throws NoSuchAlgorithmException {
+        Document d = new Document(TITLE);
         d.setId("some-id");
         assertEquals("some-id", d.getId());
     }
 
-    /** Covers the full-args constructor. */
+    /** Covers the full-args constructor: the file hash is the SHA-256 of the contents given. */
     @Test
-    public void testFullArgsConstructor() {
-        Document d = new Document("id1", "title1", "token1", "hash1",
+    public void testFullArgsConstructor() throws NoSuchAlgorithmException {
+        Document d = new Document("id1", "title1", "token1",
                 new TreeSet<>(KeywordSorter.getInstance()),
                 new TreeSet<>(SentenceSorter.getInstance()),
                 new byte[]{1, 2, 3},
@@ -243,7 +261,7 @@ public class DocumentTest {
         assertEquals("id1", d.getId());
         assertEquals("title1", d.getTitle());
         assertEquals("token1", d.getToken());
-        assertEquals("hash1", d.getFileHash());
+        assertEquals("039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81", d.getFileHash());
         assertEquals(DocumentStatus.CREATED, d.getDocumentStatus());
         assertNotNull(d.getDocumentStatusMessage());
         assertNotNull(d.getOriginalFileContents());
@@ -268,11 +286,11 @@ public class DocumentTest {
         assertEquals(31, d.hashCode());
     }
 
-    /** Covers Document.getNewFileHash() null branch via setOriginalFileContents(null). */
+    /** A document built from a title alone has no contents, so no file hash. */
     @Test
-    public void testSetOriginalFileContentsNull() throws NoSuchAlgorithmException {
+    public void testTitleConstructorHasNoFileHash() throws NoSuchAlgorithmException {
         Document d = new Document("test");
-        d.setOriginalFileContents(null);
+        assertNull(d.getOriginalFileContents());
         assertNull(d.getFileHash());
     }
 

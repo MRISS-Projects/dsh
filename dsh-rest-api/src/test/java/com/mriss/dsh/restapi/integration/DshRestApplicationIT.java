@@ -17,8 +17,8 @@ import com.mriss.dsh.restapi.service.DocumentQueueService;
 
 /**
  * Smoke test for the Spring application context.
- * MongoDB and RabbitMQ are mocked because both infrastructures are deprecated
- * for this project – no real connections are required during testing.
+ * The document store and RabbitMQ are mocked, so that no broker connection
+ * is required during testing.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,7 +26,7 @@ public class DshRestApplicationIT {
 
     final static Logger logger = LoggerFactory.getLogger(DshRestApplicationIT.class);
 
-    /** Mock MongoDB – prevents the DAO impl from trying to reach a real MongoDB instance. */
+    /** Mock document store – stands in for the selected implementation. */
     @MockBean
     private DocumentDao documentDao;
 
@@ -39,7 +39,7 @@ public class DshRestApplicationIT {
 
     /**
      * Verifies that the Spring application context loads successfully without
-     * requiring any external infrastructure (MongoDB, RabbitMQ).
+     * requiring any external infrastructure (RabbitMQ).
      */
     @Test
     public void contextLoads() {

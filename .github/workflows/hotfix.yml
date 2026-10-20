@@ -24,12 +24,5 @@ jobs:
       development_branch: DEVELOP
       branch_name: ${{ inputs.branch_name }}
       dry_run: ${{ inputs.dry_run }}
-      # #114: same as release.yml — release:prepare forks `clean install`, which filters
-      # dsh-data's mongo.properties. Nothing connects to Mongo on this path.
-      maven_properties: |
-        mongo.host=localhost
-        mongo.port=27017
-        mongo.user=dshuser
-        mongo.password=dshpass
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

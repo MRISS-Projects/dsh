@@ -24,7 +24,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -48,19 +48,7 @@
 				<includes>
 					<include>**</include>
 				</includes>
-				<excludes>
-					<exclude>dshApplicationContext.xml</exclude>
-				</excludes>
 				<filtering>true</filtering>
-			</resource>
-			<!-- #46: unfiltered, so its placeholders resolve at runtime from mongo.properties and the
-			     Environment. It used to name applicationContext.xml, which no longer exists. -->
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>dshApplicationContext.xml</include>
-				</includes>
-				<filtering>false</filtering>
 			</resource>
 			<!-- FR009: .apt filter replaced with .md -->
 			<resource>
