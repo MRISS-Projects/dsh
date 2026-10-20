@@ -36,7 +36,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-integration</artifactId>
 		</dependency>
-		<!-- #177: arrived through dsh-data's spring-data-solr until it was removed. DocumentResource uses it directly. -->
+		<!-- #177: DocumentResource uses it directly. It arrived transitively through dsh-data until #177 removed the dependency that brought it. -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>

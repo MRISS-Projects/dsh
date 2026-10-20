@@ -21,7 +21,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
-		<!-- #177: both arrived through spring-data-solr until it was removed. Document uses each directly. -->
+		<!-- #177: Document uses both directly. They arrived transitively until #177 removed the dependency that brought them. -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
