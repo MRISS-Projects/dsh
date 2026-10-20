@@ -188,7 +188,7 @@ Java 17.
 
 ### Task 1: Baseline
 
-- [ ] **Step 1:** Gate 1 on the untouched branch, which also installs every upstream module:
+- [x] **Step 1:** Gate 1 on the untouched branch, which also installs every upstream module:
 
   ```bash
   mkdir -p .logs
@@ -205,7 +205,7 @@ Java 17.
 **Files:** create `TestConfigurationFilesTest.java`; modify `DshRestApplicationIT.java`,
 `DocumentResourceIT.java`, `PersistenceSelectionIT.java` (new checks only).
 
-- [ ] **Step 1:** Create
+- [x] **Step 1:** Create
   `dsh-rest-api/src/test/java/com/mriss/dsh/restapi/TestConfigurationFilesTest.java`:
 
   ```java
@@ -279,7 +279,7 @@ Java 17.
   }
   ```
 
-- [ ] **Step 2:** In `DshRestApplicationIT`, add the imports
+- [x] **Step 2:** In `DshRestApplicationIT`, add the imports
   `static org.junit.Assert.assertArrayEquals` and `org.springframework.core.env.Environment`, the
   field, and the case, after `mockedInfrastructureBeansArePresent`:
 
@@ -297,7 +297,7 @@ Java 17.
       }
   ```
 
-- [ ] **Step 3:** In `DocumentResourceIT`, add the import `static org.junit.Assert.assertArrayEquals`
+- [x] **Step 3:** In `DocumentResourceIT`, add the import `static org.junit.Assert.assertArrayEquals`
   and, before the `POST /v1/dsh/document/submit` banner, the case:
 
   ```java
@@ -311,7 +311,7 @@ Java 17.
       }
   ```
 
-- [ ] **Step 4:** In `PersistenceSelectionIT`, after
+- [x] **Step 4:** In `PersistenceSelectionIT`, after
   `startup_whenPersistenceMatchesNoStore_shouldFail`:
 
   ```java
@@ -323,7 +323,7 @@ Java 17.
       }
   ```
 
-- [ ] **Step 5:** Run red. Both test layers must run, so failures are recorded rather than fatal:
+- [x] **Step 5:** Run red. Both test layers must run, so failures are recorded rather than fatal:
 
   ```bash
   mvn -B clean verify -DintegrationTests -pl dsh-rest-api -Dmaven.test.failure.ignore=true \
@@ -341,22 +341,22 @@ Java 17.
   lines in §7. The Maven exit code may be non-zero if the coverage check fails; that is not the
   evidence here.
 
-- [ ] **Step 6:** Commit: `test(#140): pin the test profile and the configuration files, red`.
+- [x] **Step 6:** Commit: `test(#140): pin the test profile and the configuration files, red`.
 
 ### Task 3: The profile's file and the profile, green (AC001, AC002)
 
 **Files:** rename `application.properties` → `application-test.properties`; modify the three ITs
 (profile) and `ClasspathResourceFilteringTest.java` (Javadoc).
 
-- [ ] **Step 1:** `git mv dsh-rest-api/src/test/resources/application.properties
+- [x] **Step 1:** `git mv dsh-rest-api/src/test/resources/application.properties
   dsh-rest-api/src/test/resources/application-test.properties`, then replace its content with
   §3.2's comment.
 
-- [ ] **Step 2:** On `DshRestApplicationIT` and `DocumentResourceIT`, add
+- [x] **Step 2:** On `DshRestApplicationIT` and `DocumentResourceIT`, add
   `import org.springframework.test.context.ActiveProfiles;` and `@ActiveProfiles("test")` directly
   after `@SpringBootTest`.
 
-- [ ] **Step 3:** In `PersistenceSelectionIT`, `start()` becomes:
+- [x] **Step 3:** In `PersistenceSelectionIT`, `start()` becomes:
 
   ```java
       private static ConfigurableApplicationContext start(String... arguments) {
@@ -373,11 +373,11 @@ Java 17.
   reach a {@link SpringApplicationBuilder}, and an argument outranks a profile leaked from the
   environment (#140)."
 
-- [ ] **Step 4:** In `ClasspathResourceFilteringTest`, the Javadoc's second sentence becomes: "The
+- [x] **Step 4:** In `ClasspathResourceFilteringTest`, the Javadoc's second sentence becomes: "The
   files are read from the directory {@link DshRestApplication} was loaded from, so that nothing on
   the test classpath can stand in for the main output."
 
-- [ ] **Step 5:** Run green, failures fatal this time:
+- [x] **Step 5:** Run green, failures fatal this time:
 
   ```bash
   mvn -B clean verify -DintegrationTests -pl dsh-rest-api > .logs/mvn-verify-green.log 2>&1 &
@@ -388,12 +388,12 @@ Java 17.
 
   Expected: `maven exit=0`, and the five cases of Task 2 pass. Record in §7.
 
-- [ ] **Step 6:** Commit: `test(#140): read the main application.properties under a test profile`.
+- [x] **Step 6:** Commit: `test(#140): read the main application.properties under a test profile`.
 
 ### Task 4: Documentation (AC005)
 
-- [ ] **Step 1:** Make §3.5's two edits to `specs/architecture/profiles-and-configuration.md`.
-- [ ] **Step 2:** markdownlint:
+- [x] **Step 1:** Make §3.5's two edits to `specs/architecture/profiles-and-configuration.md`.
+- [x] **Step 2:** markdownlint:
 
   ```bash
   PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH" markdownlint 'specs/**/*.md' '.github/**/*.md' \
@@ -401,16 +401,16 @@ Java 17.
   ```
 
   Expected: no output, exit 0.
-- [ ] **Step 3:** Commit: `docs(#140): record that dsh-rest-api's context tests name their profile`.
+- [x] **Step 3:** Commit: `docs(#140): record that dsh-rest-api's context tests name their profile`.
 
 ### Task 5: The gates and the leak (AC003, AC004)
 
-- [ ] **Step 1:** Gate 1, `mvn -B clean install`, logged to `.logs/mvn-clean-install.log` as in
+- [x] **Step 1:** Gate 1, `mvn -B clean install`, logged to `.logs/mvn-clean-install.log` as in
   Task 1. Expected: `maven exit=0`.
-- [ ] **Step 2:** Gate 3, logged to `.logs/mvn-verify-integration.log`:
+- [x] **Step 2:** Gate 3, logged to `.logs/mvn-verify-integration.log`:
   `mvn -B clean verify -DintegrationTests -pl dsh-rest-api -amd`. No module depends on
   `dsh-rest-api`, so `-amd` adds none. Expected: `maven exit=0`.
-- [ ] **Step 3:** The leak, logged to `.logs/mvn-verify-leak.log`:
+- [x] **Step 3:** The leak, logged to `.logs/mvn-verify-leak.log`:
 
   ```bash
   SPRING_PROFILES_ACTIVE=other mvn -B clean verify -DintegrationTests -pl dsh-rest-api \
@@ -422,8 +422,42 @@ Java 17.
 
   Expected: `maven exit=0`; the three profile checks pass, so each context ran with `test` and not
   `other`. The forked server inherits `other`, which has no file and selects nothing (P31).
-- [ ] **Step 4:** Fill in §7 and commit: `docs(#140): record the verification`.
+- [x] **Step 4:** Fill in §7 and commit: `docs(#140): record the verification`.
 
 ## 7. Verification results
 
-Filled in during step 4.
+Run on 2026-10-20, in Git Bash on Windows 11, Maven 3.9.16, Java 17, Docker Desktop running.
+
+| Step | Command | Result |
+|---|---|---|
+| Task 1, baseline | `mvn -B clean install`, at `a97b44e0f` | `maven exit=0`, BUILD SUCCESS |
+| Task 2, red | `mvn -B clean verify -DintegrationTests -pl dsh-rest-api -Dmaven.test.failure.ignore=true` | `maven exit=0`; the five new cases fail, and no other (below) |
+| Task 3, green | `mvn -B clean verify -DintegrationTests -pl dsh-rest-api` | `maven exit=0`; 44 unit and 19 integration tests pass; "All coverage checks have been met." |
+| Task 4, AC005 | markdownlint, the command in `CLAUDE.md` | no output, exit 0 |
+| Task 5, gate 1 (AC004) | `mvn -B clean install` | `maven exit=0`, BUILD SUCCESS |
+| Task 5, gate 3 (AC004) | `mvn -B clean verify -DintegrationTests -pl dsh-rest-api -amd` | `maven exit=0`; 44 unit and 19 integration tests pass |
+| Task 5, the leak (AC003) | `SPRING_PROFILES_ACTIVE=other mvn -B clean verify -DintegrationTests -pl dsh-rest-api -Dspring.profiles.active=other` | `maven exit=0`; the four ITs pass, the three profile checks among them |
+
+The red failures, each for the reason §6 expects:
+
+```text
+TestConfigurationFilesTest.applicationProperties_onlyTheMainFileIsOnTheClasspath
+  expected:<[…\target\classes\application.properties]>
+  but was:<[…\target\test-classes\application.properties, …\target\classes\application.properties]>
+TestConfigurationFilesTest.testProfileFile_repeatsNoKeyOfTheMainFile
+  application-test.properties is missing from the test classpath (#140)
+DshRestApplicationIT.activeProfileIsTestOnly
+  expected.length=1 actual.length=0; expected:<test> but was:<end of array>
+DocumentResourceIT.testActiveProfile
+  expected.length=1 actual.length=0; expected:<test> but was:<end of array>
+PersistenceSelectionIT.startup_shouldRunWithTheTestProfileOnly
+  Expecting actual: [] to contain exactly (and in same order): ["test"]
+```
+
+The leak reached the build: `.logs/mvn-verify-leak.log` has "The following 1 profile is active:
+"other"" once, from the server the `http-integration-tests` profile forks, and "The following 1
+profile is active: "test"" six times, once per context started in the test JVM.
+
+One correction to Task 5, step 2: `-amd` does add a module. `dsh-coverage-report` depends on
+`dsh-rest-api`, so the reactor was `dsh-rest-api` then `dsh-coverage-report`. It has no
+integration tests, and the run is unaffected.
