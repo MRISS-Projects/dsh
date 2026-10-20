@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.mriss.mriss-parent</groupId>
         <artifactId>products</artifactId>
-        <version>3.10.0</version>
+        <version>3.11.1</version>
     </parent>
 
     <!-- THE BASICS -->
@@ -107,28 +107,6 @@
 
     <!-- BUILD SETTINGS -->
     <build>
-        <!-- FR009: resource filters updated from .apt to .md -->
-        <resources>
-            <resource>
-                <directory>src/site</directory>
-                <includes>
-                    <include>**/*.md</include>
-                </includes>
-                <targetPath>${project.build.directory}/generated-site</targetPath>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/site</directory>
-                <includes>
-                    <include>**</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*.md</exclude>
-                </excludes>
-                <targetPath>${project.build.directory}/generated-site</targetPath>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
         <plugins>
             <!-- FR004: copy-site-resources-for-pdf updated to use .md only -->
             <plugin>
@@ -192,7 +170,7 @@
                     <!-- DSH-specific: site descriptor lives in src/site-desc -->
                     <siteDirectory>src/site-desc</siteDirectory>
                     <!-- DSH-specific: the markdown and FAQ pages are rendered from target/generated-site,
-                         where the <resources> blocks copy src/site filtered. parent-poms' 'deployment' profile
+                         where copy-site-resources-for-pdf copies src/site filtered. parent-poms' 'deployment' profile
                          (products/pom.xml, 2b342fba, parent-poms#55) redirects generatedSiteDirectory away from
                          it, which is right for a product rendering from src/site but left every DSH module
                          without index.html under -Ddeployment (MRISS-Projects/dsh#90). siteDirectory above holds

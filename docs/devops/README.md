@@ -288,7 +288,7 @@ the `MRISS-Projects/maven-repo` GitHub Packages registry (see the `<parent>` blo
 builds with `mvn -B install`, as does `api-testing.yml`. Parent version upgrades are a deliberate,
 manual edit to the root `pom.xml`, not something a workflow does automatically.
 
-The current pin is the released `com.mriss.mriss-parent:products:3.10.0`, since `#150`. A released
+The current pin is the released `com.mriss.mriss-parent:products:3.11.1`, since `#158`. A released
 parent resolves to the same POM on every run, so the build is reproducible, and neither workflow
 passes `-U`.
 
