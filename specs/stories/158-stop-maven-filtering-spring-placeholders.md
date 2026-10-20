@@ -473,7 +473,7 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
   `mvn -B clean install > ../dsh/.logs/mvn-parent-poms-install.log 2>&1; echo "maven exit=$?"`.
   Expected: `maven exit=0`, and `D:\.m2\repository\com\mriss\mriss-parent\products\3.11.1-SNAPSHOT`
   exists. Commit `build(#<p>): filter classpath resources with @...@ only`.
-- [ ] **Step 5:** Push, and open the pull request into `master` once the owner approves its text.
+- [x] **Step 5:** Push, and open the pull request into `master` once the owner approves its text.
   After the owner merges it, dispatch `deploy.yml` with `release_type: snapshots` once the owner
   says go, so that DSH's CI can resolve `3.11.1-SNAPSHOT`.
 
@@ -662,7 +662,8 @@ The timestamp line is the only difference. Every `generated-site` tree is byte-i
 
 - parent-poms Task 3 Step 5: the branch is pushed and its pull request is
   [`#111`](https://github.com/MRISS-Projects/parent-poms/pull/111), with commits `1cb701e4` (spec),
-  `efe85b4e` (re-version) and `c4a9931f` (the rule). The merge and the snapshot deploy remain.
-  `3.11.1-SNAPSHOT` is so far installed only in the local repository, so DSH's CI cannot resolve
-  it until the deploy.
+  `efe85b4e` (re-version) and `c4a9931f` (the rule). It merged as `becc1602`. Done: the snapshot
+  deploy, [run 39439724416](https://github.com/MRISS-Projects/parent-poms/actions/runs/39439724416)
+  on `becc1602`, `success` at 14:33:39Z. GitHub Packages lists `products` `3.11.1-SNAPSHOT`,
+  updated 14:32:50Z, so DSH's CI can resolve it.
 - Task 7, the release and the re-pin.
