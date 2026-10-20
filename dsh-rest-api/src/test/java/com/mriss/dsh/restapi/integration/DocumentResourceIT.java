@@ -1,6 +1,7 @@
 package com.mriss.dsh.restapi.integration;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -117,6 +118,15 @@ public class DocumentResourceIT {
             return null;
         }).when(documentQueueService).enqueueDocumentId(
                 org.mockito.ArgumentMatchers.nullable(String.class), any());
+    }
+
+    /**
+     * The context must run with the test profile it names, and no other (#140).
+     */
+    @Test
+    public void testActiveProfile() {
+        assertArrayEquals("the context must run with the test profile only",
+                new String[] {"test"}, webApplicationContext.getEnvironment().getActiveProfiles());
     }
 
     // -------------------------------------------------------------------------

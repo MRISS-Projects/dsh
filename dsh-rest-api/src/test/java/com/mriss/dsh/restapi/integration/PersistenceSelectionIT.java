@@ -58,6 +58,13 @@ public class PersistenceSelectionIT {
 		assertThat(((NoSuchBeanDefinitionException) cause).getBeanType()).isEqualTo(DocumentDao.class);
 	}
 
+	@Test
+	public void startup_shouldRunWithTheTestProfileOnly() {
+		context = start();
+
+		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("test");
+	}
+
 	private void assertOnlyStoreIsInMemory() {
 		Map<String, DocumentDao> stores = context.getBeansOfType(DocumentDao.class);
 		assertThat(stores).hasSize(1);
