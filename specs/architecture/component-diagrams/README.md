@@ -19,8 +19,7 @@ This directory contains component-level architecture diagrams for the DSH system
 ```mermaid
 graph TD
     A[dsh-rest-api] -->|delegates to| B[dsh-doc-analyser]
-    A -->|queues work to| C[dsh-doc-indexer-worker]
+    A -->|depends on| C[dsh-doc-indexer]
     B --> D[dsh-data]
     C --> D
-    C --> E[dsh-solr]
 ```

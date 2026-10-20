@@ -55,18 +55,11 @@ Project Development Documentation: <https://mriss-projects.github.io/dsh-docs/>
 * **dsh-rest-api**: the application. A Spring Boot jar exposing the REST API: document submission
   and processing status. Querying the results (keywords and relevant sentences) is not available
   yet.
-* **dsh-solr**: a parent module grouping two Solr plugins, plus a `solrconfig.xml`. Nothing in
-  0.3.0 runs Solr, and replacing it is proposed in
-  [ADR-001](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-001-GCP-based-components.md).
-  * **solr-terms-vector-order**: a search component that returns a document's term vector ordered
-    by term statistics such as term and document frequency.
-  * **solr-advanced-numbers-filter**: a token filter for tokens made of digits.
-* **dsh-doc-indexer-worker**: a Spring Boot application holding only its main class so far. Its job
-  will be to take a document id off the indexing queue, read the document from the database, send
-  it to the indexer, and split its text into paragraphs, sentences and terms.
-* **dsh-doc-analyser**: a parent module grouping the analysis modules below.
-  * **dsh-doc-processor-worker**: an empty Spring Boot application for now; the plan is for it to
-    take indexed documents off a queue and run both extractors on them.
+* **dsh-doc-indexer**: a library, empty so far, that will hold the indexing stage: extracting a
+  document's text and counting its terms. The document pipeline in `dsh-rest-api` will call it.
+  It was `dsh-doc-indexer-worker`, a Spring Boot application holding only its main class, until
+  `#177` made it a library.
+* **dsh-doc-analyser**: a parent module grouping the two extractor libraries below.
   * **dsh-keyword-extractor**: not implemented yet. It will score each term of a document with
     combinations of TF/IDF and return the best ranked terms as keywords.
   * **dsh-top-sentences-extractor**: not implemented yet; planned to rank sentences with
@@ -74,6 +67,12 @@ Project Development Documentation: <https://mriss-projects.github.io/dsh-docs/>
     and return the most relevant ones.
 * **dsh-coverage-report**: aggregates the test coverage of every module into one report and the
   coverage badge.
+
+`#177` removed two modules, following
+[ADR-003](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-003-document-pipeline.md)
+section 2: **dsh-solr**, with its two Solr plugins, which nothing called, and
+**dsh-doc-processor-worker**, an empty application whose only job, running the two extractors one
+after the other, is now the pipeline's.
 
 ## Installation
 

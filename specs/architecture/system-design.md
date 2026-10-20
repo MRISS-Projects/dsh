@@ -20,11 +20,11 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 └────────────┬────────────────────────┬───────────────────┘
              │                        │
              ▼                        ▼
-┌────────────────────┐   ┌────────────────────────────────┐
-│  dsh-doc-analyser  │   │    dsh-doc-indexer-worker      │
-│  Analysis Engine   │   │  Background Indexing Worker    │
-│  (sync analysis)   │   │  (async document processing)   │
-└────────────┬───────┘   └────────────┬───────────────────┘
+┌──────────────────────┐   ┌──────────────────────────────┐
+│  dsh-doc-analyser    │   │       dsh-doc-indexer        │
+│  Analysis Engine     │   │    Indexing stage library    │
+│ (extractor libraries)│   │   (called by the pipeline)   │
+└────────────┬─────────┘   └──────────┬───────────────────┘
              │                        │
              └────────────┬───────────┘
                           ▼
@@ -34,23 +34,21 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
           │  Persistence Layer            │
           └───────────┬───────────────────┘
                       │
-             ┌────────┴────────┐
-             ▼                 ▼
-     ┌───────────────────┐  ┌───────────────────┐
-     │  Document store   │  │     dsh-solr      │
-     │  (in memory by    │  │  (removal         │
-     │   default)        │  │   decided)        │
-     │  (documents)      │  │ (full-text        │
-     │                   │  │  indexing)        │
-     └───────────────────┘  └───────────────────┘
+                      ▼
+            ┌───────────────────┐
+            │  Document store   │
+            │  (in memory by    │
+            │   default)        │
+            │  (documents)      │
+            └───────────────────┘
 ```
 
 > **Migration note:** [ADR-001](./ADR-001-GCP-based-components.md) (Status: Proposed) proposes
 > a Firestore + GCS document store, and replacing RabbitMQ with Cloud Pub/Sub.
 > [ADR-003](./ADR-003-document-pipeline.md) (Status: Accepted) decides how the pipeline is built:
 > the MongoDB, RabbitMQ and Solr code is removed, not migrated, and no search engine replaces
-> Solr. The MongoDB code was removed by `#167` (ADR-003 section 8), and the RabbitMQ and Solr code
-> is still in the repository.
+> Solr. The MongoDB code was removed by `#167` (ADR-003 section 8), `#177` removed the Solr code
+> (section 2), and the RabbitMQ code is still in the repository.
 > See `specs/product/PRD.md` for the delivery waves.
 
 ## Module Responsibilities
@@ -59,7 +57,7 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 
 - Exposes the public REST API (see `../api/openapi/dsh-rest-api.yaml`)
 - Handles authentication, request validation, and routing
-- Delegates business logic to `dsh-doc-analyser` and `dsh-doc-indexer-worker`
+- Delegates business logic to `dsh-doc-analyser` and `dsh-doc-indexer`
 
 ### dsh-doc-analyser
 
@@ -67,11 +65,10 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 - Implements keyword, semantic, pattern, and entity analysis algorithms
 - Produces `Highlight` objects with confidence scores
 
-### dsh-doc-indexer-worker
+### dsh-doc-indexer
 
-- Processes document indexing tasks asynchronously
-- Integrates with Apache Solr via `dsh-solr` module for full-text search
-- Updates document status in the persistence layer
+- A library with no `Application` class (ADR-003 section 2), empty until Wave 3
+- Will hold the indexing stage: text extraction and the document's term frequencies, to the file store
 
 ### dsh-data
 
@@ -80,11 +77,6 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 - Manages document status transitions. The state machine is drawn in
   [`document-status-workflow.md`](document-status-workflow.md), which is generated from
   `DocumentStatus` and checked by the build.
-
-### dsh-solr
-
-- Apache Solr configuration and integration utilities
-- Manages Solr core configuration and indexing schemas
 
 ### dsh-coverage-report
 
@@ -98,7 +90,7 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 | Language | Java 17 |
 | Framework | Spring Boot, Spring Framework |
 | Build | Maven (multi-module) |
-| Persistence | In memory (default); Apache Solr (unused, removal decided) |
+| Persistence | In memory (default) |
 | CI | GitHub Actions |
 | Testing | JUnit 5, Mockito, AssertJ |
 

@@ -27,7 +27,7 @@ This directory contains sequence diagrams illustrating the process flows in the 
 sequenceDiagram
     participant Client
     participant API as dsh-rest-api
-    participant Worker as dsh-doc-indexer-worker
+    participant Worker as dsh-doc-indexer
     participant Analyser as dsh-doc-analyser
 
     Client->>API: POST /api/v1/documents (file)

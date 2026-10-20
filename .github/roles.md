@@ -30,7 +30,7 @@ This document defines the main roles within the DSH (Document Smart Highlights) 
 - Maintain and evolve the following modules:
   - `dsh-rest-api` – REST API service layer
   - `dsh-doc-analyser` – Document analysis engine
-  - `dsh-doc-indexer-worker` – Background indexing worker
+  - `dsh-doc-indexer` – Indexing stage library
   - `dsh-data` – Shared data models and persistence
 - Implement features according to specifications in `specs/features/` and `specs/api/`
 - Write unit and integration tests following patterns in `specs/testing/`
