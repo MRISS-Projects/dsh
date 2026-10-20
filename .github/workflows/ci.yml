@@ -214,7 +214,7 @@ jobs:
       # restored by setup-java varies in age, so the parent moves invisibly. See
       # docs/devops/README.md, "Parent POM".
       - name: Build and test all modules
-        run: mvn -B -U install --file pom.xml
+        run: mvn -B install --file pom.xml
 
       - name: Upload test reports
         if: always()
