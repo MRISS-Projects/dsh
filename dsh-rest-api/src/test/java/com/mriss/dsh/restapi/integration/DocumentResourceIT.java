@@ -2,6 +2,7 @@ package com.mriss.dsh.restapi.integration;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -65,6 +67,7 @@ import com.mriss.dsh.restapi.service.DocumentEnqueueMessageHandler;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ActiveProfiles("test")
 @WebAppConfiguration
 @ContextConfiguration(locations = {"classpath:/abstract-web-request-context.xml"}, classes = {DshRestApplication.class})
 public class DocumentResourceIT {
@@ -117,6 +120,15 @@ public class DocumentResourceIT {
             return null;
         }).when(documentQueueService).enqueueDocumentId(
                 org.mockito.ArgumentMatchers.nullable(String.class), any());
+    }
+
+    /**
+     * The context must run with the test profile it names, and no other (#140).
+     */
+    @Test
+    public void testActiveProfile() {
+        assertArrayEquals("the context must run with the test profile only",
+                new String[] {"test"}, webApplicationContext.getEnvironment().getActiveProfiles());
     }
 
     // -------------------------------------------------------------------------

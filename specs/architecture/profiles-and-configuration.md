@@ -37,7 +37,8 @@
    command line reached the test JVM and changed which beans the test got (P22). Only a test with
    a named `@ActiveProfiles` was immune (P23, P29).
 8. **A test `application.properties` replaces the main one entirely** (P24). That is why
-   `dsh-rest-api`'s repeats it line for line. `application-test.properties` merges instead (P25).
+   `dsh-rest-api`'s repeated it line for line, until `#140`. `application-test.properties` merges
+   instead (P25).
 9. **The build may stamp the version and the commit, and nothing else.** The running application
    read both (P21). The release gate and the production smoke check need exactly these.
 10. **`dsh` cannot be a Firestore database id.** An id needs at least four characters (G2). The
@@ -607,7 +608,7 @@ the ADRs to settle; the rules are what the findings support.
 | R7 | Only the deployable module has `application*.properties`. A library module's defaults are in a file named after the module, loaded by `@PropertySource`, and do not vary by profile | S6 |
 | R8 | The build supplies no environment value. It stamps the version and the commit | M1, M2 |
 | R9 | Spring configuration files are filtered with `@…@` only, or not at all | M1 |
-| R10 | Every context test names its profile with `@ActiveProfiles`. Test values go in a profile's file, never in a test `application.properties` | S8, M3 |
+| R10 | Every context test names its profile with `@ActiveProfiles`, or `--spring.profiles.active` where the test builds the application itself. Test values go in a profile's file, never in a test `application.properties` | S8, M3 |
 | R11 | Each profile has a context test that activates it. Each selectable interface has a consumer that is always present | S2, S4 |
 | R12 | Profile files do not set the same key | S2 |
 
@@ -666,14 +667,16 @@ which no wave plans, and the Firestore emulator, which R4 makes a `gcp` run.
 | Layer | Target | Profile | Where its values come from |
 |---|---|---|---|
 | 1. Unit | no Spring context | none | nothing to configure. A leaked profile cannot reach it |
-| 2. Spring context | a context in the test JVM, `@MockBean` for every external service | named by `@ActiveProfiles` on every test (R10) | `application.properties`, then `application-test.properties` (P25) |
+| 2. Spring context | a context in the test JVM, `@MockBean` for every external service | named by every test, with `@ActiveProfiles` or `--spring.profiles.active` (R10) | `application.properties`, then `application-test.properties` (P25) |
 | 3. Over the wire | the application forked by Maven, real services in Docker | passed as an argument by the Maven profile | arguments, as `--mongo.*` are today (`#46`); emulators replace the containers with `#49` |
 | 4. External client | the same forked server | the same | the base URL only |
 | 5a. Acceptance, deployed | `dsh-dev` after a `DEVELOP` deploy; `dsh-staging` after a staging deploy | `gcp`, set by the deployment | the layer-3 or layer-4 tests with their base URL pointed at the deployment; they write data |
 | 5b. Smoke, production | `dsh`, after a release or hotfix deploy | `gcp`, set by the deployment | health, and the released version and commit (M2). It reads and writes no document |
 
-Rows 1 to 4 show each layer as the convention would have it, not as it is. Today no layer-2 test
-has `@ActiveProfiles`, no profile is passed to the forked server, and layer 4 has no collection:
+Rows 1 to 4 show each layer as the convention would have it, not as it is. Since `#140`, every
+layer-2 test of `dsh-rest-api` names the `test` profile, and its test values have
+`application-test.properties` to go in. No profile is passed to the forked server, and layer 4 has
+no collection:
 `api-testing.yml` starts the application with `java -jar`, not through Maven (`#137`).
 
 Rows 5a and 5b start from a stopped service, so their first request is a cold start, and their

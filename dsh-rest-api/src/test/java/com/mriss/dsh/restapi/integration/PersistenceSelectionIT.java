@@ -18,7 +18,11 @@ import com.mriss.dsh.restapi.DshRestApplication;
 
 /**
  * Which {@link DocumentDao} the application runs with, by {@code dsh.persistence} (ADR-003,
- * section 3). Starts the application as {@code main} does, once per case.
+ * section 3). Starts the application as {@code main} does, once per case, with the {@code test}
+ * profile as an argument: {@code @ActiveProfiles} does not reach a {@link SpringApplicationBuilder},
+ * and an argument outranks a profile leaked from the environment (#140). A case that passes its
+ * own {@code --spring.profiles.active} adds to {@code test} rather than replacing it: Spring joins
+ * a repeated option's values.
  */
 public class PersistenceSelectionIT {
 
@@ -58,6 +62,13 @@ public class PersistenceSelectionIT {
 		assertThat(((NoSuchBeanDefinitionException) cause).getBeanType()).isEqualTo(DocumentDao.class);
 	}
 
+	@Test
+	public void startup_shouldRunWithTheTestProfileOnly() {
+		context = start();
+
+		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("test");
+	}
+
 	private void assertOnlyStoreIsInMemory() {
 		Map<String, DocumentDao> stores = context.getBeansOfType(DocumentDao.class);
 		assertThat(stores).hasSize(1);
@@ -65,9 +76,10 @@ public class PersistenceSelectionIT {
 	}
 
 	private static ConfigurableApplicationContext start(String... arguments) {
-		String[] all = new String[arguments.length + 1];
+		String[] all = new String[arguments.length + 2];
 		all[0] = "--server.port=0";
-		System.arraycopy(arguments, 0, all, 1, arguments.length);
+		all[1] = "--spring.profiles.active=test";
+		System.arraycopy(arguments, 0, all, 2, arguments.length);
 		return new SpringApplicationBuilder(DshRestApplication.class).run(all);
 	}
 }
