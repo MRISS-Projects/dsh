@@ -687,6 +687,9 @@ The timestamp line is the only difference. Every `generated-site` tree is byte-i
   `SUCCESS`, the coverage checks met. The log shows `products-3.11.1.pom` downloaded from GitHub
   Packages, and `ClasspathResourceFilteringTest` ran with `Tests run: 3, Failures: 0`, so the
   published release carries the rule.
+- **Step 6, on `25ba6ffda`, after the review fixes.** `mvn -B clean install`: `maven exit=0`, all
+  13 modules `SUCCESS`, the coverage checks met. `mvn -B clean install -DintegrationTests`:
+  `maven exit=0` in 2 min 31 s, with every `*IT` passing, as in §7.6.
 
 ### 7.8 Step 5 review
 
