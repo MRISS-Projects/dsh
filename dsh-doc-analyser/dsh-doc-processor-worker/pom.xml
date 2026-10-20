@@ -26,11 +26,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- spring-boot-starter-data-solr removed in Spring Boot 2.6; use spring-data-solr directly -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-solr</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
 			<artifactId>dsh-keyword-extractor</artifactId>

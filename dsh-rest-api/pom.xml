@@ -16,10 +16,6 @@
 	<artifactId>dsh-rest-api</artifactId>
 	<packaging>jar</packaging>
 	<dependencies>
-		<!-- <dependency> -->
-		<!-- <groupId>org.springframework.boot</groupId> -->
-		<!-- <artifactId>spring-boot-starter-data-solr</artifactId> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -39,6 +35,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-integration</artifactId>
+		</dependency>
+		<!-- #177: arrived through dsh-data's spring-data-solr until it was removed. DocumentResource uses it directly. -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
