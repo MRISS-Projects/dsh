@@ -608,7 +608,7 @@ the ADRs to settle; the rules are what the findings support.
 | R7 | Only the deployable module has `application*.properties`. A library module's defaults are in a file named after the module, loaded by `@PropertySource`, and do not vary by profile | S6 |
 | R8 | The build supplies no environment value. It stamps the version and the commit | M1, M2 |
 | R9 | Spring configuration files are filtered with `@…@` only, or not at all | M1 |
-| R10 | Every context test names its profile with `@ActiveProfiles`. Test values go in a profile's file, never in a test `application.properties` | S8, M3 |
+| R10 | Every context test names its profile with `@ActiveProfiles`, or `--spring.profiles.active` where the test builds the application itself. Test values go in a profile's file, never in a test `application.properties` | S8, M3 |
 | R11 | Each profile has a context test that activates it. Each selectable interface has a consumer that is always present | S2, S4 |
 | R12 | Profile files do not set the same key | S2 |
 
@@ -667,7 +667,7 @@ which no wave plans, and the Firestore emulator, which R4 makes a `gcp` run.
 | Layer | Target | Profile | Where its values come from |
 |---|---|---|---|
 | 1. Unit | no Spring context | none | nothing to configure. A leaked profile cannot reach it |
-| 2. Spring context | a context in the test JVM, `@MockBean` for every external service | named by `@ActiveProfiles` on every test (R10) | `application.properties`, then `application-test.properties` (P25) |
+| 2. Spring context | a context in the test JVM, `@MockBean` for every external service | named by every test, with `@ActiveProfiles` or `--spring.profiles.active` (R10) | `application.properties`, then `application-test.properties` (P25) |
 | 3. Over the wire | the application forked by Maven, real services in Docker | passed as an argument by the Maven profile | arguments, as `--mongo.*` are today (`#46`); emulators replace the containers with `#49` |
 | 4. External client | the same forked server | the same | the base URL only |
 | 5a. Acceptance, deployed | `dsh-dev` after a `DEVELOP` deploy; `dsh-staging` after a staging deploy | `gcp`, set by the deployment | the layer-3 or layer-4 tests with their base URL pointed at the deployment; they write data |

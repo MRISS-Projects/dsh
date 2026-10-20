@@ -408,8 +408,9 @@ Java 17.
 - [x] **Step 1:** Gate 1, `mvn -B clean install`, logged to `.logs/mvn-clean-install.log` as in
   Task 1. Expected: `maven exit=0`.
 - [x] **Step 2:** Gate 3, logged to `.logs/mvn-verify-integration.log`:
-  `mvn -B clean verify -DintegrationTests -pl dsh-rest-api -amd`. No module depends on
-  `dsh-rest-api`, so `-amd` adds none. Expected: `maven exit=0`.
+  `mvn -B clean verify -DintegrationTests -pl dsh-rest-api -amd`. `-amd` adds
+  `dsh-coverage-report`, which depends on `dsh-rest-api` and has no integration tests. Expected:
+  `maven exit=0`.
 - [x] **Step 3:** The leak, logged to `.logs/mvn-verify-leak.log`:
 
   ```bash
@@ -458,6 +459,30 @@ The leak reached the build: `.logs/mvn-verify-leak.log` has "The following 1 pro
 "other"" once, from the server the `http-integration-tests` profile forks, and "The following 1
 profile is active: "test"" six times, once per context started in the test JVM.
 
-One correction to Task 5, step 2: `-amd` does add a module. `dsh-coverage-report` depends on
-`dsh-rest-api`, so the reactor was `dsh-rest-api` then `dsh-coverage-report`. It has no
-integration tests, and the run is unaffected.
+### 7.1 Step 5 review fixes
+
+The local review found nothing critical or important. The owner had these minor findings applied:
+
+- `TestConfigurationFilesTest` compares paths as strings, and a resource inside a jar by its URI,
+  so a jar that ships an `application.properties` fails the assertion and names the jar. Before,
+  `Paths.get` threw on the `jar:` URI. It is a refactor of the failure report: no such jar exists to
+  watch it fail, so it was verified by staying green.
+- `PersistenceSelectionIT`'s Javadoc says that a case passing its own `--spring.profiles.active`
+  adds to `test` rather than replacing it.
+- R10 and row 2 of §7's table in `profiles-and-configuration.md` name the argument besides
+  `@ActiveProfiles`. §3.5 had missed them.
+- `DocumentResourceIT`'s new import is in order, and Task 5, step 2 no longer says `-amd` adds
+  nothing: it adds `dsh-coverage-report`, which has no integration tests.
+
+The owner left the guard's scope as it is: a test `config/application.properties` or an
+`application*.yml` is not checked, and no follow-up was opened.
+
+After the fixes, gate 1 exited 0. The first gate 3 run exited 1, on
+`DocumentResourceHttpIT.submit_whenSameFileTwice_shouldReturnTheSameTokenAndQueueItAgain`: the
+document's status was `DEQUEUED_FOR_INDEXING`, not `QUEUED_FOR_INDEXING_SUCCESS`. That is `#142`,
+not this story. The forked server runs on the main classpath, which this story does not change.
+The server's log shows `toRabbitResponse` still had a subscriber after the first confirm was
+handled, so the second confirm reached two handlers holding the same document, and the document
+moved two steps. `#142` records the bug as not yet reproduced, and the test as safe because it
+never submits in parallel; this run reproduced it with serial submissions. The repeated gate 3 run
+exited 0, with 44 unit and 19 integration tests passing.
