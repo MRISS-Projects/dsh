@@ -157,8 +157,8 @@ In `products/pom.xml`, `<build><pluginManagement><plugins>` gains this entry, af
 proves that the merge reaches a product, because it fails on 3.10.0 and passes on 3.11.1-SNAPSHOT.
 
 The rest follows parent-poms' own conventions: a task branch off `master`, a spec at
-`specs/<n>-<slug>.md` (parent-poms keeps its specs on `master`), and the re-version commit made with
-`set-version.sh` on the same branch.
+`specs/<n>-<slug>.md` (parent-poms keeps its specs on `master`), and the re-version commit on the
+same branch, made by hand on the eight POMs at `3.12.0-SNAPSHOT`, as for 3.9.2 (§7.2).
 
 ### 3.3 DSH: the `<resources>` blocks
 
@@ -353,7 +353,7 @@ and milestone `3.11.1-SNAPSHOT`, which is created first:
 | File | Change |
 |---|---|
 | `products/pom.xml` | the `maven-resources-plugin` entry of §3.2 |
-| every `pom.xml` | `3.12.0-SNAPSHOT` → `3.11.1-SNAPSHOT`, by `set-version.sh` |
+| the eight `pom.xml` at `3.12.0-SNAPSHOT` | `3.12.0-SNAPSHOT` → `3.11.1-SNAPSHOT`, by hand (§7.2) |
 | `specs/<n>-<slug>.md` | its spec |
 
 **DSH:**
@@ -408,13 +408,13 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
 
 ### Task 0: The issues
 
-- [ ] **Step 1:** Edit `#158`'s body as in §3.7. Read it back with `gh issue view 158`.
-- [ ] **Step 2:** Create parent-poms milestone `3.11.1-SNAPSHOT`, then the issue of §3.7 on it,
+- [x] **Step 1:** Edit `#158`'s body as in §3.7. Read it back with `gh issue view 158`.
+- [x] **Step 2:** Create parent-poms milestone `3.11.1-SNAPSHOT`, then the issue of §3.7 on it,
   labelled `enhancement`. Record its number as `<p>` in §7.
 
 ### Task 1: Baseline (AC003)
 
-- [ ] **Step 1:** On the task branch, before any POM change:
+- [x] **Step 1:** On the task branch, before any POM change:
 
   ```bash
   mkdir -p .logs
@@ -425,9 +425,9 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
 
   Expected: `maven exit=0`.
 
-- [ ] **Step 2:** Copy every module's `target/generated-site` into
+- [x] **Step 2:** Copy every module's `target/generated-site` into
   `<scratchpad>/158-baseline/<module path>/`, using `find . -path '*/target/generated-site' -prune`.
-- [ ] **Step 3:** Generate the README and keep a copy, then restore it:
+- [x] **Step 3:** Generate the README and keep a copy, then restore it:
 
   ```bash
   mvn -B -Ddeployment -N process-resources > .logs/mvn-baseline-readme.log 2>&1; echo "maven exit=$?"
@@ -441,10 +441,10 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
 - Modify: `dsh-rest-api/src/main/resources/application.properties` (top of file)
 - Create: `dsh-rest-api/src/test/java/com/mriss/dsh/restapi/ClasspathResourceFilteringTest.java`
 
-- [ ] **Step 1:** Add the three comment lines of §3.4 at the top of `application.properties`, then
+- [x] **Step 1:** Add the three comment lines of §3.4 at the top of `application.properties`, then
   an empty line, before the existing first comment.
-- [ ] **Step 2:** Create the test exactly as in §3.4.
-- [ ] **Step 3:** Run it on 3.10.0, where the POMs are unchanged:
+- [x] **Step 2:** Create the test exactly as in §3.4.
+- [x] **Step 3:** Run it on 3.10.0, where the POMs are unchanged:
 
   ```bash
   mvn -B clean test -pl dsh-rest-api -Dtest=ClasspathResourceFilteringTest \
@@ -456,19 +456,20 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
   `applicationProperties_springPlaceholder_reachesTheJarAsWritten` with "Maven replaced
   ${project.version}". Record the lines in §7.
 
-- [ ] **Step 4:** Commit: `test(#158): pin Spring placeholders in dsh-rest-api's classpath output`.
+- [x] **Step 4:** Commit: `test(#158): pin Spring placeholders in dsh-rest-api's classpath output`.
 
 ### Task 3: parent-poms, the rule and the `SNAPSHOT` (in `../parent-poms`)
 
-- [ ] **Step 1:** `git checkout master && git pull && git checkout -b issue-<p>-filter-classpath-resources-with-at-delimiter`.
-- [ ] **Step 2:** Write `specs/<p>-filter-classpath-resources-with-at-delimiter.md`, short, in the
+- [x] **Step 1:** `git checkout master && git pull && git checkout -b issue-<p>-filter-classpath-resources-with-at-delimiter`.
+- [x] **Step 2:** Write `specs/<p>-filter-classpath-resources-with-at-delimiter.md`, short, in the
   form of `specs/98-retry-transient-registry-errors.md`, from §3.2 and §3.7. Commit
   `docs(#<p>): spec for filtering classpath resources with @...@ only`.
-- [ ] **Step 3:** `./set-version.sh 3.11.1-SNAPSHOT`, check with
+- [x] **Step 3:** Re-version the eight POMs at `3.12.0-SNAPSHOT` by hand, not with
+  `./set-version.sh 3.11.1-SNAPSHOT` (§7.2). Check with
   `git grep -n '3.12.0-SNAPSHOT' -- '*pom.xml'`, which should find nothing. Commit
   `build(#<p>): re-version master to 3.11.1-SNAPSHOT for the hotfix line`, with a body that gives
   the 3.9.2 precedent of §2.2.
-- [ ] **Step 4:** Add the entry of §3.2 to `products/pom.xml`. Then
+- [x] **Step 4:** Add the entry of §3.2 to `products/pom.xml`. Then
   `mvn -B clean install > ../dsh/.logs/mvn-parent-poms-install.log 2>&1; echo "maven exit=$?"`.
   Expected: `maven exit=0`, and `D:\.m2\repository\com\mriss\mriss-parent\products\3.11.1-SNAPSHOT`
   exists. Commit `build(#<p>): filter classpath resources with @...@ only`.
@@ -480,37 +481,37 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
 
 **Files:** every POM of §5, `.github/workflows/ci.yml`, `.github/workflows/api-testing.yml`
 
-- [ ] **Step 1:** Root `pom.xml`: parent `3.10.0` → `3.11.1-SNAPSHOT`. Add `-U` to
+- [x] **Step 1:** Root `pom.xml`: parent `3.10.0` → `3.11.1-SNAPSHOT`. Add `-U` to
   `mvn -B install --file pom.xml` (`ci.yml:217`) and to `mvn -B install -DskipTests`
   (`api-testing.yml:208`).
-- [ ] **Step 2:** Rerun Task 2 Step 3's command into `.logs/mvn-test-filtering-snapshot.log`.
+- [x] **Step 2:** Rerun Task 2 Step 3's command into `.logs/mvn-test-filtering-snapshot.log`.
   Expected: `maven exit=0`, `Tests run: 3, Failures: 0`. The POMs' `<resources>` are still unchanged,
   so this proves the inherited rule on its own.
-- [ ] **Step 3:** Apply §3.3 to every POM. Then
+- [x] **Step 3:** Apply §3.3 to every POM. Then
   `git grep -n '<filtering>true</filtering>' -- '*pom.xml'`. Expected: `dsh-rest-api/pom.xml`'s
   `src/main/resources` block, and the Markdown and `site.xml` of the `copy-resources` executions:
   two in the root's `copy-site-resources-for-pdf`, and the `copy-resources` executions of
   `dsh-doc-analyser/pom.xml` and `dsh-solr/pom.xml`. Nothing else.
-- [ ] **Step 4:** Rerun the test into `.logs/mvn-test-filtering-green.log`. Expected: `maven exit=0`,
+- [x] **Step 4:** Rerun the test into `.logs/mvn-test-filtering-green.log`. Expected: `maven exit=0`,
   `Tests run: 3, Failures: 0`.
-- [ ] **Step 5:** Extract the `maven-resources-plugin` section of `dsh-rest-api`'s effective POM
+- [x] **Step 5:** Extract the `maven-resources-plugin` section of `dsh-rest-api`'s effective POM
   (constraint above), and check that `default-resources` and `default-testResources` carry the
   `@` delimiter and `copy-site-resources-for-pdf` does not. Record that section in §7, then delete
   the effective POM file.
-- [ ] **Step 6:** Commit: `build(#158): filter classpath resources with @...@ only, through parent-poms 3.11.1-SNAPSHOT`.
+- [x] **Step 6:** Commit: `build(#158): filter classpath resources with @...@ only, through parent-poms 3.11.1-SNAPSHOT`.
 
 ### Task 5: Markdown and README unchanged (AC003)
 
-- [ ] **Step 1:** Repeat Task 1 Steps 1 to 3 into `<scratchpad>/158-after/`.
-- [ ] **Step 2:** `diff -r <scratchpad>/158-baseline <scratchpad>/158-after`. Expected: no
+- [x] **Step 1:** Repeat Task 1 Steps 1 to 3 into `<scratchpad>/158-after/`.
+- [x] **Step 2:** `diff -r <scratchpad>/158-baseline <scratchpad>/158-after`. Expected: no
   difference except the timestamp lines that `create-time-stamp` writes. Record the diff in §7. Any
   other difference stops the task.
 
 ### Task 6: Documentation and gate 1 (AC004, AC005)
 
-- [ ] **Step 1:** Add the bullet of §3.5 to `.github/copilot/rules/java-conventions.md`.
-- [ ] **Step 2:** Run markdownlint (`CLAUDE.md`, Commands). Expected: no output.
-- [ ] **Step 3:** Gate 1 and 2:
+- [x] **Step 1:** Add the bullet of §3.5 to `.github/copilot/rules/java-conventions.md`.
+- [x] **Step 2:** Run markdownlint (`CLAUDE.md`, Commands). Expected: no output.
+- [x] **Step 3:** Gate 1 and 2:
 
   ```bash
   mvn -B clean install > .logs/mvn-clean-install.log 2>&1 &
@@ -520,9 +521,9 @@ filters, takes Markdown out of the classpath executions, and keeps one filtered 
 
   Expected: `maven exit=0`.
 
-- [ ] **Step 4:** Start Docker Desktop if `docker info` fails, then the same with
+- [x] **Step 4:** Start Docker Desktop if `docker info` fails, then the same with
   `-DintegrationTests` into `.logs/mvn-clean-install-it.log`. Expected: `maven exit=0`.
-- [ ] **Step 5:** Commit: `docs(#158): write down the @...@ rule for classpath resources`.
+- [x] **Step 5:** Commit: `docs(#158): write down the @...@ rule for classpath resources`.
 
 ### Task 7: The release and the re-pin, during step 6 or 7
 
@@ -542,4 +543,125 @@ this task is done.
 
 ## 7. Verification results
 
-To be filled in during the build.
+Run on 2026-10-20, Maven 3.9.16, Docker running. Logs in `.logs/`, named as in §6.
+
+### 7.1 The issues (Task 0)
+
+Both were done before the build started. `#158`'s body already carried the two §3.7 edits. The
+parent-poms issue is [`#110`](https://github.com/MRISS-Projects/parent-poms/issues/110), so
+`<p>` is `110`, the only issue on milestone `3.11.1-SNAPSHOT`.
+
+### 7.2 Deviations from the plan
+
+- **The parent-poms re-version was made by hand, not with `set-version.sh`.** Run on the branch,
+  the script changed 15 files, 49 lines in and 71 out: `release:update-versions` also moved the
+  seven independently released modules' parents and reformatted every POM. That is the reason the
+  3.9.2 precedent (`d5a80948`) gives for not using it, and the script has not changed since. The
+  tree was restored and the eight POMs at `3.12.0-SNAPSHOT` were edited, one line each, the same
+  eight files as `d5a80948`. `git grep '3.12.0-SNAPSHOT' -- '*pom.xml'` finds nothing. The text of
+  §3.2, §5 and Task 3 Step 3 now says so, and parent-poms' spec records it too.
+- **Six POMs lost an empty `<build>`.** Once `<resources>` was deleted, `dsh-doc-processor-worker`,
+  `dsh-keyword-extractor`, `dsh-top-sentences-extractor`, `dsh-doc-indexer-worker` and the two
+  `dsh-solr` children held `<build></build>` and nothing else, so the element went too.
+- **The root's `FR009` comment went with its blocks.** It sat above `<plugins>` once the
+  `<resources>` it described was gone. The `FR009` comments inside `copy-resources` executions
+  (`dsh-doc-analyser/pom.xml`) stay.
+- **`dsh-test-dataset` has no `src/main` directory.** Its block keeps the `src/main/resources` entry
+  as §3.3 says, unfiltered; it matches nothing.
+
+### 7.3 Red, then green (AC001, AC002)
+
+| Run | Parent | POM `<resources>` | Result |
+|---|---|---|---|
+| `mvn-test-filtering-red.log` | `3.10.0` | unchanged | `maven exit=1`, `Tests run: 3, Failures: 1` |
+| `mvn-test-filtering-snapshot.log` | `3.11.1-SNAPSHOT` | unchanged | `maven exit=0`, `Tests run: 3, Failures: 0` |
+| `mvn-test-filtering-green.log` | `3.11.1-SNAPSHOT` | §3.3 applied | `maven exit=0`, `Tests run: 3, Failures: 0` |
+
+The red run failed the one test it was meant to, for the reason it was meant to:
+
+```text
+[ERROR] com.mriss.dsh.restapi.ClasspathResourceFilteringTest.applicationProperties_springPlaceholder_reachesTheJarAsWritten -- Time elapsed: 0.008 s <<< FAILURE!
+java.lang.AssertionError: Maven replaced ${project.version} in application.properties: classpath resources must be filtered with @...@ only (#158)
+```
+
+The middle run proves the inherited rule on its own, before any DSH POM changed.
+
+After §3.3, `git grep -n '<filtering>true</filtering>' -- '*pom.xml'` finds exactly five lines:
+`dsh-rest-api/pom.xml:114` (its `src/main/resources`), `pom.xml:135` and `pom.xml:159` (the
+Markdown and `site.xml` of `copy-site-resources-for-pdf`), `dsh-doc-analyser/pom.xml:51` and
+`dsh-solr/pom.xml:84` (their `copy-resources`).
+
+### 7.4 The effective POM of `dsh-rest-api` (AC002)
+
+Extracted to a scratch file, narrowed to `maven-resources-plugin`, and deleted. The `<build><plugins>`
+entry, shortened where marked:
+
+```xml
+<artifactId>maven-resources-plugin</artifactId>
+<version>3.3.1</version>
+<executions>
+  <execution>
+    <id>default-testResources</id>
+    <phase>process-test-resources</phase>
+    <goals><goal>testResources</goal></goals>
+    <configuration>
+      <useDefaultDelimiters>false</useDefaultDelimiters>
+      <delimiters><delimiter>@</delimiter></delimiters>
+    </configuration>
+  </execution>
+  <execution>
+    <id>default-resources</id>
+    <phase>process-resources</phase>
+    <goals><goal>resources</goal></goals>
+    <configuration>
+      <useDefaultDelimiters>false</useDefaultDelimiters>
+      <delimiters><delimiter>@</delimiter></delimiters>
+    </configuration>
+  </execution>
+  <execution>
+    <id>copy-site-resources-for-pdf</id>
+    <phase>process-resources</phase>
+    <goals><goal>copy-resources</goal></goals>
+    <configuration>
+      <encoding>UTF-8</encoding>
+      <outputDirectory>.</outputDirectory>
+      <resources><!-- src/site **/*.md filtered, src/site the rest unfiltered,
+                      src/site-desc site.xml filtered; all to target/generated-site --></resources>
+    </configuration>
+  </execution>
+</executions>
+```
+
+`copy-site-resources-for-pdf` carries no delimiter, so it keeps both defaults.
+
+### 7.5 Markdown and README unchanged (AC003)
+
+`diff -r` of `158-baseline` (3.10.0, POMs unchanged) against `158-after` (3.11.1-SNAPSHOT, §3.3
+applied), covering the 13 `target/generated-site` trees and the generated `README.md`:
+
+```text
+diff -r .../158-baseline/README.md .../158-after/README.md
+7c7
+< 0.4.0-SNAPSHOT - dev - 20261020-104937
+---
+> 0.4.0-SNAPSHOT - dev - 20261020-105504
+```
+
+The timestamp line is the only difference. Every `generated-site` tree is byte-identical.
+
+### 7.6 The gates (AC004, AC005)
+
+- markdownlint, as in `CLAUDE.md`: no output, exit 0, with the §3.5 bullet in place.
+- `mvn -B clean install` (`mvn-clean-install.log`): `maven exit=0`, all 13 modules `SUCCESS`, the
+  coverage checks met, and `ClasspathResourceFilteringTest` run with `Tests run: 3, Failures: 0`.
+- `mvn -B clean install -DintegrationTests` (`mvn-clean-install-it.log`): `maven exit=0`, in
+  2 min 33 s. Every `*IT` passed: `DocumentResourceHttpIT` 5, `DocumentResourceIT` 6,
+  `DshRestApplicationIT` 2, `PersistenceSelectionIT` 3, and the four workers' application ITs.
+
+### 7.7 Still to do
+
+- parent-poms Task 3 Step 5: push `issue-110-filter-classpath-resources-with-at-delimiter` and
+  open its pull request, then the snapshot deploy. Its commits: `1cb701e4` (spec), `efe85b4e`
+  (re-version), `c4a9931f` (the rule). `3.11.1-SNAPSHOT` is so far installed only in the local
+  repository, so DSH's CI cannot resolve it until the deploy.
+- Task 7, the release and the re-pin.
