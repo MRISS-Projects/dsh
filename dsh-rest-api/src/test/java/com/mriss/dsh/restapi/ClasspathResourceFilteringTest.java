@@ -36,8 +36,12 @@ public class ClasspathResourceFilteringTest {
     @Test
     public void enqueueContext_springPlaceholders_reachTheJarAsWritten() throws Exception {
         String context = mainResource("enqueue-docId-context.xml");
-        assertTrue(context.contains("${spring.rabbitmq.host:localhost}"));
-        assertTrue(context.contains("${spring.rabbitmq.port:5672}"));
+        assertTrue("Maven replaced ${spring.rabbitmq.host:localhost} in enqueue-docId-context.xml: "
+                + "classpath resources must be filtered with @...@ only (#158)",
+                context.contains("${spring.rabbitmq.host:localhost}"));
+        assertTrue("Maven replaced ${spring.rabbitmq.port:5672} in enqueue-docId-context.xml: "
+                + "classpath resources must be filtered with @...@ only (#158)",
+                context.contains("${spring.rabbitmq.port:5672}"));
     }
 
     private static String mainResource(String name) throws IOException, URISyntaxException {
