@@ -481,8 +481,10 @@ After the fixes, gate 1 exited 0. The first gate 3 run exited 1, on
 `DocumentResourceHttpIT.submit_whenSameFileTwice_shouldReturnTheSameTokenAndQueueItAgain`: the
 document's status was `DEQUEUED_FOR_INDEXING`, not `QUEUED_FOR_INDEXING_SUCCESS`. That is `#142`,
 not this story. The forked server runs on the main classpath, which this story does not change.
-The server's log shows `toRabbitResponse` still had a subscriber after the first confirm was
-handled, so the second confirm reached two handlers holding the same document, and the document
-moved two steps. `#142` records the bug as not yet reproduced, and the test as safe because it
-never submits in parallel; this run reproduced it with serial submissions. The repeated gate 3 run
+The server's log shows the test's two submissions subscribing two handlers to `toRabbitResponse`
+before either confirm arrived: each HTTP call returns before its broker confirm. The first confirm
+reached both handlers, which hold the same document, so the document moved two steps, and the
+second confirm reached none. `#142` records the bug as not yet reproduced, and the test as safe
+because it never submits in parallel; this run reproduced it with two submissions made one after
+the other. The repeated gate 3 run
 exited 0, with 44 unit and 19 integration tests passing.
