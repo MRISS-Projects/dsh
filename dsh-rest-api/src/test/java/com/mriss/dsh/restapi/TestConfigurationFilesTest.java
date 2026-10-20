@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -31,14 +32,16 @@ public class TestConfigurationFilesTest {
 
     @Test
     public void applicationProperties_onlyTheMainFileIsOnTheClasspath() throws Exception {
-        List<Path> found = new ArrayList<>();
+        List<String> found = new ArrayList<>();
         for (URL url : Collections.list(
                 getClass().getClassLoader().getResources("application.properties"))) {
-            found.add(Paths.get(url.toURI()));
+            // A file inside a jar has no Path of its own; its URI names the jar.
+            URI uri = url.toURI();
+            found.add("file".equals(uri.getScheme()) ? Paths.get(uri).toString() : uri.toString());
         }
         assertEquals("only the main application.properties may be on the test classpath: "
                 + "test values go in application-test.properties (#140)",
-                Collections.singletonList(mainDirectory().resolve("application.properties")),
+                Collections.singletonList(mainDirectory().resolve("application.properties").toString()),
                 found);
     }
 

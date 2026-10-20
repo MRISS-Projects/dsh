@@ -20,7 +20,9 @@ import com.mriss.dsh.restapi.DshRestApplication;
  * Which {@link DocumentDao} the application runs with, by {@code dsh.persistence} (ADR-003,
  * section 3). Starts the application as {@code main} does, once per case, with the {@code test}
  * profile as an argument: {@code @ActiveProfiles} does not reach a {@link SpringApplicationBuilder},
- * and an argument outranks a profile leaked from the environment (#140).
+ * and an argument outranks a profile leaked from the environment (#140). A case that passes its
+ * own {@code --spring.profiles.active} adds to {@code test} rather than replacing it: Spring joins
+ * a repeated option's values.
  */
 public class PersistenceSelectionIT {
 
