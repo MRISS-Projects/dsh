@@ -824,7 +824,7 @@ its consequences table, naming the task that now carries it.
 ADR-003's eight follow-up candidates were settled in the same session:
 
 1. `#157`: superseded (decision 3).
-2. `#140`: reduced (decision 3).
+2. `#140`: reduced (decision 3). `#140` — **closed** — PR #176.
 3. `#158`, `#137` and `#120`: still valid, each with less to cover. Wave 1's triaged issues say
    what.
 4. The PRD re-plan: this one.
@@ -1025,7 +1025,8 @@ are.
    so `#120` carries fewer settings. Wave 2 task 3 removes `dsh-solr` and the stub applications.
    It depends on no other task, and it comes here so that `#119` migrates no Solr test and `#120`
    carries no `spring-data-solr`. **`#158` was done on 2026-10-20:** `#158` — **closed** — PR #175,
-   with its upstream half, `parent-poms#110`, released as parent-poms 3.11.1.
+   with its upstream half, `parent-poms#110`, released as parent-poms 3.11.1. **`#140` was done on
+   2026-10-20:** `#140` — **closed** — PR #176.
 5. `#120`, after `#119` for the reason given with the triaged issues.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
 7. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
@@ -1093,8 +1094,8 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   repurposed. The analysers it did not cover became this new issue. Their configuration belongs
   in parent-poms, which is why it waits for 0.3.0.
 - `#137` — Run the Postman collections against a lifecycle-managed server.
-- `#140` — Give dsh-rest-api's tests a `test` profile file, so that it stops replacing the main
-  `application.properties`.
+- `#140` — **closed** — PR #176. Give dsh-rest-api's tests a `test` profile file, so that it stops
+  replacing the main `application.properties`.
 
   Neither is an ADR-001 phase task. Both came out of `#46` on 2026-09-28. `#137` is the open
   question `#46`'s spec deferred rather than answered: whether newman joins the Maven lifecycle,
