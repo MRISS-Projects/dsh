@@ -7,7 +7,7 @@ Use these prompt templates with GitHub Copilot Chat to generate consistent tests
 ## Unit Test for Service
 
 ```text
-As a Backend Developer (see /.github/roles.md), generate JUnit 4 unit tests for
+As a Backend Developer (see /.github/roles.md), generate JUnit 5 (Jupiter) unit tests for
 [ServiceName] in the DSH project.
 
 Requirements:
@@ -15,7 +15,8 @@ Requirements:
 - No Spring context: no @SpringBootTest, no slice annotation, no @MockBean
   (see "Unit vs integration" in testing-patterns.md)
 - Follow Arrange/Act/Assert pattern
-- Use Mockito (@Mock, @InjectMocks) to mock: [list dependencies]
+- Use Mockito (@ExtendWith(MockitoExtension.class), @Mock, @InjectMocks) to mock:
+  [list dependencies]
 - Test cases:
   - Happy path: [describe expected success scenario]
   - Validation failure: [describe invalid input scenario]
@@ -112,8 +113,8 @@ As a Backend Developer (see /.github/roles.md), generate a performance test for
 [OperationName] in the DSH project.
 
 Requirements:
-- Mark with a JUnit 4 @Category(PerformanceTest.class)
-- Measure execution time using [JUnit 4 @Test(timeout = ...) / Micrometer]
+- Mark with a JUnit 5 @Tag("performance")
+- Measure execution time using [JUnit 5 assertTimeout(...) / Micrometer]
 - Target: complete [operation] within [X] ms for [input size]
 - Test with dataset from /dsh-test-dataset/
 - Reference benchmark targets in /specs/testing/performance-benchmarks/
