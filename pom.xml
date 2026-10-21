@@ -56,21 +56,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- JUnit 4: removed from spring-boot-starter-test in Spring Boot 2.4+; declared here so all DSH modules inherit it -->
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- junit-vintage-engine: required for Surefire to discover and run JUnit 4 tests on JUnit Platform -->
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <properties>
         <!-- Encoding: must be declared here (not inherited from parent) to prevent
              maven-resources-plugin from defaulting to the platform encoding (Cp1252
@@ -183,7 +168,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
-            <!-- DSH-specific enforcer rules: lowercase artifactId; no Solr (ADR-003 section 2) -->
+            <!-- DSH-specific enforcer rules: lowercase artifactId; no Solr (ADR-003 section 2); no JUnit 4 (#119) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -217,6 +202,24 @@
                                         <exclude>org.springframework.data:spring-data-solr</exclude>
                                     </excludes>
                                     <message>Solr was removed by ADR-003 section 2 (#177): no module may depend on it, directly or transitively. Lucene's own artifacts (org.apache.lucene) remain allowed.</message>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-no-junit4</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>junit:junit</exclude>
+                                        <exclude>org.junit.vintage:*</exclude>
+                                    </excludes>
+                                    <message>Every DSH test is JUnit 5 (#119): no module may depend on JUnit 4 or the vintage engine, directly or transitively. A library that drags junit:junit in needs an exclusion, or a version that does not.</message>
                                 </bannedDependencies>
                             </rules>
                             <fail>true</fail>

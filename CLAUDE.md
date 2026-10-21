@@ -137,7 +137,8 @@ genuinely exempt.
 `-Denforcer.skip=true` is the wrong tool, in both directions. It does **not** disable the coverage
 guard: that execution sets `<skip>` explicitly, and explicit configuration beats the parameter's
 `enforcer.skip` user property. It **does** disable this repository's own rules in the root
-`pom.xml`, `enforce-lowercase-artifact-id` and `enforce-no-solr`, neither of which sets `<skip>`. So
+`pom.xml`, `enforce-lowercase-artifact-id`, `enforce-no-solr` and `enforce-no-junit4`, none of which
+sets `<skip>`. So
 reaching for it silently drops checks you wanted while leaving the one you were trying to bypass
 armed. Both halves verified by running it.
 
