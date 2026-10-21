@@ -474,7 +474,7 @@ owner approves this spec, which approves §3.2's text.
 
   Expected: `maven exit=0`, and `products-3.11.2-SNAPSHOT.pom` present. Commit
   `build(#112): manage mockito-junit-jupiter at mockito-core's version`.
-- [ ] **Step 5:** Push and open the pull request into `master`, after the owner approves its text.
+- [x] **Step 5:** Push and open the pull request into `master`, after the owner approves its text.
   Its merge and the snapshot deploy (Task 9) are needed only before DSH pushes.
 
 ### Task 3: DSH re-pins to 3.11.2-SNAPSHOT (AC006)
@@ -677,7 +677,8 @@ Branch `issue-112-manage-mockito-junit-jupiter`, cut from `master` at `1dab0893`
 (`ee41dbb5`), the re-version of the eight POMs, 8 lines each way (`4e0aa3b3`), the managed entry
 (`6073d6ce`), and the spec's Task 1 ticked (`5b87fa15`). `mvn -B clean install` there exited 0, and
 the installed `mriss-parent-3.11.2-SNAPSHOT.pom` carries `mockito-junit-jupiter` at
-`${mockito.version}`. The push, the pull request and the snapshot deploy are step 5's and Task 9's.
+`${mockito.version}`. Pushed, and opened as pull request `parent-poms#113` on 2026-10-21, after the
+owner approved its text. Its merge and the snapshot deploy are Task 9's.
 
 ### Tasks 3 to 8, 2026-10-21
 
