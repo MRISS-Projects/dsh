@@ -73,11 +73,12 @@ status. `.logs/` is gitignored; never commit a build log. In `ci.yml` do **not**
 GitHub Actions already captures the output.
 
 Upgrading the parent version is a deliberate, manual edit to the root `pom.xml`. CI never
-rebuilds `parent-poms`. The parent is the released `3.11.1`, so the two Maven invocations in this
-repository's workflows (`ci.yml`, `api-testing.yml`) do not pass `-U`. Whenever the parent is pinned
-to a `SNAPSHOT` again, to validate parent-poms work end to end, both get `-U` back for as long as
-the pin lasts. The release wrappers build through reusable workflows in `parent-poms`, which set
-their own flags. See `docs/devops/README.md`, "Parent POM", for why.
+rebuilds `parent-poms`. The parent is `3.11.2-SNAPSHOT` since `#119`, the parent-poms hotfix line
+that carries `#119`'s and `#120`'s upstream changes, so the two Maven invocations in this
+repository's workflows (`ci.yml`, `api-testing.yml`) pass `-U`. `#120` re-pins to the released
+3.11.2 and drops `-U` from both; a released parent never needs it. The release wrappers build
+through reusable workflows in `parent-poms`, which set their own flags. See `docs/devops/README.md`,
+"Parent POM", for why.
 
 ## Branch rules
 

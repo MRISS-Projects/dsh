@@ -5,13 +5,13 @@
 
     <!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <!-- #150: the released parent-poms version. To validate parent-poms work end to end, the parent is
-         pinned to its -SNAPSHOT for a while, and CI passes -U while it is; see docs/devops/README.md,
-         "Parent POM". -->
+    <!-- #119: parent-poms 3.11.2-SNAPSHOT, the hotfix line that carries #119's and #120's upstream
+         changes. #120 re-pins to the released 3.11.2. CI passes -U while the pin lasts; see
+         docs/devops/README.md, "Parent POM". -->
     <parent>
         <groupId>com.mriss.mriss-parent</groupId>
         <artifactId>products</artifactId>
-        <version>3.11.1</version>
+        <version>3.11.2-SNAPSHOT</version>
     </parent>
 
     <!-- THE BASICS -->
