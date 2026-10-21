@@ -399,7 +399,7 @@ parent-poms, Spring Boot 2.7.18 (Jupiter 5.8.2), Mockito 5.17.0, Java 17.
 
 ### Task 1: Baseline (AC003, AC004, AC006)
 
-- [ ] **Step 1:** Gate 1 on the untouched branch:
+- [x] **Step 1:** Gate 1 on the untouched branch:
 
   ```bash
   mkdir -p .logs
@@ -410,7 +410,7 @@ parent-poms, Spring Boot 2.7.18 (Jupiter 5.8.2), Mockito 5.17.0, Java 17.
   ```
 
   Expected: `maven exit=0`.
-- [ ] **Step 2:** The integration baseline, Docker running:
+- [x] **Step 2:** The integration baseline, Docker running:
 
   ```bash
   mvn -B clean install -DintegrationTests > .logs/mvn-clean-install-it-baseline.log 2>&1 &
@@ -420,7 +420,7 @@ parent-poms, Spring Boot 2.7.18 (Jupiter 5.8.2), Mockito 5.17.0, Java 17.
   ```
 
   Expected: `maven exit=0`.
-- [ ] **Step 3:** Record the totals, one per module for surefire and one for failsafe (per-class
+- [x] **Step 3:** Record the totals, one per module for surefire and one for failsafe (per-class
   lines carry " - in "), and the Mockito tree:
 
   ```bash
@@ -453,16 +453,16 @@ owner approves this spec, which approves §3.2's text.
 
   Done on 2026-10-21: milestone 26, issue `parent-poms#112`. Its number was written into this spec,
   and the spec was committed only then.
-- [ ] **Step 2:** Branch: `git checkout master && git pull && git checkout -b issue-112-manage-mockito-junit-jupiter`.
+- [x] **Step 2:** Branch: `git checkout master && git pull && git checkout -b issue-112-manage-mockito-junit-jupiter`.
   Write the spec at `specs/112-manage-mockito-junit-jupiter.md` in `#110`'s layout: the header
   table (issue, milestone `3.11.2-SNAPSHOT`, branch, "Asked for by `MRISS-Projects/dsh#119`"), goal,
   "What is true today" from §2.1's Mockito rows and §2.2, the design of §3.2, ACs (the entry is
   managed; DSH resolves `mockito-junit-jupiter` 5.17.0 against `3.11.2-SNAPSHOT`), and tasks. Commit
   `docs(#112): spec for managing mockito-junit-jupiter`.
-- [ ] **Step 3:** Re-version the eight POMs from `3.12.0-SNAPSHOT` to `3.11.2-SNAPSHOT` by hand.
+- [x] **Step 3:** Re-version the eight POMs from `3.12.0-SNAPSHOT` to `3.11.2-SNAPSHOT` by hand.
   `git grep -n '3.12.0-SNAPSHOT' -- '*pom.xml'` finds nothing; `git diff --stat` shows 8 files, 8
   lines each way. Commit `build(#112): re-version master to 3.11.2-SNAPSHOT for the hotfix line`.
-- [ ] **Step 4:** Add the entry of §3.2 after `mockito-core`'s, then install:
+- [x] **Step 4:** Add the entry of §3.2 after `mockito-core`'s, then install:
 
   ```bash
   mvn -B install > .logs/mvn-install.log 2>&1 &
@@ -482,13 +482,13 @@ owner approves this spec, which approves §3.2's text.
 **Files:** `pom.xml`, `.github/workflows/ci.yml`, `.github/workflows/api-testing.yml`, `CLAUDE.md`,
 `docs/devops/README.md`.
 
-- [ ] **Step 1:** In `pom.xml`, the `<parent>` version becomes `3.11.2-SNAPSHOT` and the comment above
+- [x] **Step 1:** In `pom.xml`, the `<parent>` version becomes `3.11.2-SNAPSHOT` and the comment above
   it is §3.3's.
-- [ ] **Step 2:** `ci.yml`: `run: mvn -B -U install --file pom.xml`, and the comment above it is
+- [x] **Step 2:** `ci.yml`: `run: mvn -B -U install --file pom.xml`, and the comment above it is
   §3.3's. `api-testing.yml`: `mvn -B -U install -DskipTests \`.
-- [ ] **Step 3:** `CLAUDE.md` and `docs/devops/README.md` as §3.5 says for the pin, `-U` and the
+- [x] **Step 3:** `CLAUDE.md` and `docs/devops/README.md` as §3.5 says for the pin, `-U` and the
   workflow table. Leave `CLAUDE.md`'s enforcer paragraph for Task 7.
-- [ ] **Step 4:** Verify, against the parent installed by Task 2:
+- [x] **Step 4:** Verify, against the parent installed by Task 2:
 
   ```bash
   mvn -B -o dependency:tree -pl dsh-data,dsh-rest-api -Dincludes=org.mockito > .logs/mvn-dependency-tree-pinned.log 2>&1; echo "maven exit=$?"
@@ -501,15 +501,15 @@ owner approves this spec, which approves §3.2's text.
 
   Expected: `mockito-junit-jupiter:5.17.0` in both modules; `maven exit=0`, with the baseline's test
   totals (JUnit 4 still runs through the vintage engine and the 5.17.0 jar is unused so far).
-- [ ] **Step 5:** Commit `build(#119): pin the parent to parent-poms 3.11.2-SNAPSHOT, with -U while it lasts`.
+- [x] **Step 5:** Commit `build(#119): pin the parent to parent-poms 3.11.2-SNAPSHOT, with -U while it lasts`.
 
 ### Task 4: The ban, red (AC001, AC002)
 
 **Files:** `pom.xml`.
 
-- [ ] **Step 1:** Insert §3.3's `enforce-no-junit4` execution after `enforce-no-solr`'s
+- [x] **Step 1:** Insert §3.3's `enforce-no-junit4` execution after `enforce-no-solr`'s
   `</execution>`.
-- [ ] **Step 2:** Run it, expecting failure:
+- [x] **Step 2:** Run it, expecting failure:
 
   ```bash
   mvn -B clean install > .logs/mvn-clean-install-red.log 2>&1 &
@@ -521,7 +521,7 @@ owner approves this spec, which approves §3.2's text.
 
   Expected: `maven exit=1`, at the first module, in `enforce (enforce-no-junit4)`, naming
   `junit:junit:jar:4.13.2` and `junit-vintage-engine`. Record the lines in §7.
-- [ ] **Step 3:** Remove the execution again (`git checkout -- pom.xml`; Task 3 is committed, so
+- [x] **Step 3:** Remove the execution again (`git checkout -- pom.xml`; Task 3 is committed, so
   only the execution is undone). The ban returns in Task 7, so that Tasks 5 and 6 each commit a
   building tree.
 
@@ -529,13 +529,13 @@ owner approves this spec, which approves §3.2's text.
 
 **Files:** the nine `dsh-data` classes of §3.4.
 
-- [ ] **Step 1:** Apply §3.4's mapping to each class, and move the message last at every
+- [x] **Step 1:** Apply §3.4's mapping to each class, and move the message last at every
   `dsh-data` line of §3.4's table. The two silent ones become
   `assertNotEquals(ends[0], ends[1], "self-loop: " + line);` (`DocumentStatusDiagramTest:68`) and
   `assertNotNull(message, status + " has no message");` (`DocumentStatusTest:29`). In `DocumentTest`
   lines 150 and 167, `KeywordTest:28` and `SentenceTest:33`, the double form, e.g.
   `assertEquals(2.0, docAllArgsConstructor.getKeyWords().first().getScore(), 0.0, "keyword score validation");`.
-- [ ] **Step 2:** Check no JUnit 4 is left and every message is last:
+- [x] **Step 2:** Check no JUnit 4 is left and every message is last:
 
   ```bash
   git grep -n -E 'org\.junit\.(Test|Assert|Before|After|runner|Rule)\b' -- dsh-data
@@ -544,7 +544,7 @@ owner approves this spec, which approves §3.2's text.
 
   Expected: no hit on the first. The second lists only calls whose first argument is a genuine
   expected value (a string literal compared to an actual one, as `DocumentTest:101`). Read each.
-- [ ] **Step 3:** Build the module:
+- [x] **Step 3:** Build the module:
 
   ```bash
   mvn -B clean install -pl dsh-data > .logs/mvn-clean-install-dsh-data.log 2>&1 &
@@ -555,13 +555,13 @@ owner approves this spec, which approves §3.2's text.
   ```
 
   Expected: `maven exit=0`, and the total equal to `dsh-data`'s baseline.
-- [ ] **Step 4:** Commit `test(#119): move dsh-data's tests to JUnit 5`.
+- [x] **Step 4:** Commit `test(#119): move dsh-data's tests to JUnit 5`.
 
 ### Task 6: Migrate `dsh-rest-api` (AC001, AC003, AC004)
 
 **Files:** the thirteen `dsh-rest-api` classes of §3.4.
 
-- [ ] **Step 1:** Apply §3.4's mapping. In `DocumentSubmissionServiceImplTest`, `testException`
+- [x] **Step 1:** Apply §3.4's mapping. In `DocumentSubmissionServiceImplTest`, `testException`
   becomes:
 
   ```java
@@ -583,8 +583,8 @@ owner approves this spec, which approves §3.2's text.
   (`DocumentQueueServiceImplTest:73`) and
   `assertEquals(cached.getToken(), token, "Should return cached document token");`
   (`DocumentSubmissionServiceImplTest:106`).
-- [ ] **Step 2:** The two checks of Task 5 step 2, over `dsh-rest-api`.
-- [ ] **Step 3:** Build, unit then integration, Docker running:
+- [x] **Step 2:** The two checks of Task 5 step 2, over `dsh-rest-api`.
+- [x] **Step 3:** Build, unit then integration, Docker running:
 
   ```bash
   mvn -B clean install -pl dsh-rest-api > .logs/mvn-clean-install-dsh-rest-api.log 2>&1 &
@@ -599,17 +599,17 @@ owner approves this spec, which approves §3.2's text.
 
   Expected: both `maven exit=0`; the surefire total and the failsafe total equal to the baseline's.
   A `PotentialStubbingProblem` or `UnnecessaryStubbingException` is fixed as §3.4 says.
-- [ ] **Step 4:** Commit `test(#119): move dsh-rest-api's tests to JUnit 5`.
+- [x] **Step 4:** Commit `test(#119): move dsh-rest-api's tests to JUnit 5`.
 
 ### Task 7: JUnit 4 out, the ban in, green (AC001, AC002)
 
 **Files:** `pom.xml`, `CLAUDE.md`.
 
-- [ ] **Step 1:** Delete the root `pom.xml`'s `<dependencies>` block (§3.3). Re-insert
+- [x] **Step 1:** Delete the root `pom.xml`'s `<dependencies>` block (§3.3). Re-insert
   `enforce-no-junit4` after `enforce-no-solr`. Update the enforcer plugin's comment to name the three
   DSH rules, and `CLAUDE.md`'s `-Denforcer.skip=true` paragraph to name `enforce-no-junit4` with
   `enforce-lowercase-artifact-id` and `enforce-no-solr`.
-- [ ] **Step 2:** Gate 1:
+- [x] **Step 2:** Gate 1:
 
   ```bash
   mvn -B clean install > .logs/mvn-clean-install.log 2>&1 &
@@ -620,15 +620,15 @@ owner approves this spec, which approves §3.2's text.
 
   Expected: `maven exit=0`; every module's surefire total equal to its baseline. A compile error
   here is a JUnit 4 import Tasks 5 and 6 missed.
-- [ ] **Step 3:** Commit `build(#119): ban JUnit 4 and the vintage engine`.
+- [x] **Step 3:** Commit `build(#119): ban JUnit 4 and the vintage engine`.
 
 ### Task 8: Documents and the gates (all ACs)
 
 **Files:** `.github/copilot/rules/testing-patterns.md`.
 
-- [ ] **Step 1:** Edit `testing-patterns.md` as §3.5 says. Check its examples against §3.5's AC007
+- [x] **Step 1:** Edit `testing-patterns.md` as §3.5 says. Check its examples against §3.5's AC007
   reading. Commit `docs(#119): testing patterns describe JUnit 5`.
-- [ ] **Step 2:** The gates and the checks of §4:
+- [x] **Step 2:** The gates and the checks of §4:
 
   ```bash
   mvn -B clean install -DintegrationTests > .logs/mvn-clean-install-it.log 2>&1 &
@@ -645,7 +645,7 @@ owner approves this spec, which approves §3.2's text.
   Expected: `maven exit=0` with the baseline's failsafe total and every coverage check passing; the
   tree lists `mockito-core:5.17.0` and `mockito-junit-jupiter:5.17.0` and no `junit:junit` or
   `junit-vintage`; no grep hit; the checker passes; lint exit 0.
-- [ ] **Step 3:** Fill §7 with the numbers, and commit `docs(#119): record the verification`.
+- [x] **Step 3:** Fill §7 with the numbers, and commit `docs(#119): record the verification`.
 
 ### Task 9: Before step 6
 
@@ -661,4 +661,50 @@ owner approves this spec, which approves §3.2's text.
 
 ## 7. Verification results
 
-Filled in by Tasks 1 to 8.
+### Task 1: baseline, 2026-10-21, at `cea54730f`
+
+| Run | Log | Result |
+|---|---|---|
+| `mvn -B clean install` | `.logs/mvn-clean-install-baseline.log` | `maven exit=0`; surefire `dsh-data` 71, `dsh-rest-api` 44 |
+| `mvn -B clean install -DintegrationTests` | `.logs/mvn-clean-install-it-baseline.log` | `maven exit=0`; surefire as above; failsafe `dsh-rest-api` 19: `DocumentResourceHttpIT` 5, `DocumentResourceIT` 7, `DshRestApplicationIT` 3, `PersistenceSelectionIT` 4 |
+| `dependency:tree -Dincludes=org.mockito` | `.logs/mvn-dependency-tree-baseline.log` | both modules: `mockito-core:5.17.0`, `mockito-junit-jupiter:4.5.1` |
+
+The totals equal §3.4's `@Test` counts.
+
+### Task 2: upstream, parent-poms `#112`
+
+Branch `issue-112-manage-mockito-junit-jupiter`, cut from `master` at `1dab0893`: its spec
+(`ee41dbb5`), the re-version of the eight POMs, 8 lines each way (`4e0aa3b3`), the managed entry
+(`6073d6ce`), and the spec's Task 1 ticked (`5b87fa15`). `mvn -B clean install` there exited 0, and
+the installed `mriss-parent-3.11.2-SNAPSHOT.pom` carries `mockito-junit-jupiter` at
+`${mockito.version}`. The push, the pull request and the snapshot deploy are step 5's and Task 9's.
+
+### Tasks 3 to 8, 2026-10-21
+
+| AC | Run | Result |
+|---|---|---|
+| AC006 | `dependency:tree` after the re-pin (`a6cc15bea`), `.logs/mvn-dependency-tree-pinned.log` | both modules: `mockito-core:5.17.0`, `mockito-junit-jupiter:5.17.0`. `mvn -B clean install` on the pin: exit 0, 71 and 44 |
+| AC001, AC002 | the ban, red, `.logs/mvn-clean-install-red.log` | `maven exit=1` at the root module `dsh`, `enforce (enforce-no-junit4)`: `junit:junit:jar:4.13.2` and `org.junit.vintage:junit-vintage-engine:jar:5.8.2 <--- banned` |
+| AC003 | `dsh-data` migrated (`3bed51faa`), `.logs/mvn-clean-install-dsh-data.log` | exit 0; 71 tests; coverage met |
+| AC003, AC004 | `dsh-rest-api` migrated (`53a351157`), `.logs/mvn-clean-install-dsh-rest-api.log`, `.logs/mvn-clean-verify-it-dsh-rest-api.log` | exit 0 both; 44 unit tests, 19 ITs. No `PotentialStubbingProblem` or `UnnecessaryStubbingException` under STRICT_STUBS |
+| AC001, AC002 | JUnit 4 out, the ban in (`200fae117`), `.logs/mvn-clean-install.log` | exit 0; `enforce-no-junit4` ran in all 9 modules; 71 and 44; coverage met in both |
+| AC001–AC006 | `mvn -B clean install -DintegrationTests` at `efa82b08a`, `.logs/mvn-clean-install-it.log` | exit 0; 71, 44 and 19, each equal to the baseline; coverage met; no `dsh-it-` container left |
+| AC002, AC006 | `dependency:tree -Dincludes=junit,org.junit.vintage,org.mockito` over the reactor | no `junit:junit` or `junit-vintage` in any of the 9 modules; `mockito-core` and `mockito-junit-jupiter` 5.17.0 |
+| AC001 | `git grep` for JUnit 4 imports | no hit |
+| AC007 | §3.1 decision 1; `testing-patterns.md` read against §3.5 | no JUnit version in parent-poms. The examples use `@Test`, `@WebMvcTest`, `@MockBean`, `@Autowired`, MockMvc's builders and matchers, Mockito's `when`/`any` and AssertJ's `assertThat`, all on the resulting classpath; none uses a JUnit 4 type |
+| — | `check-unit-tests-context-free.test.sh` and `.sh`; markdownlint; `check-spec-references.sh` | 12 cases pass, 1 skipped on Windows as before; the checker passes; lint exit 0; 0 missing paths |
+
+**The message order.** Every one of §3.4's 35 calls was reordered. A parse of every test class after
+Task 6, the same parse that produced §3.4's list, counted the 35 calls carrying a message and found
+none with a string message still in first place.
+
+### 7.1 What the spec missed
+
+- **`.github/copilot/prompts/test-generation.md`** asked for JUnit 4 tests, `@Category` and
+  `@Test(timeout = …)`, which no longer compile here. It asks for Jupiter's now (`bbd379e56`).
+- **`check-unit-tests-context-free.test.sh`** built its cases from `SpringRunner` and
+  `MockitoJUnitRunner`. They use `SpringExtension` and `MockitoExtension` now, and the checker's
+  comment names `SpringExtension` (`efa82b08a`). The checker's pattern is unchanged; §2.1 was right
+  that it covers the Jupiter form, and the violating cases, which expect exit 1, prove it.
+- **`testing-patterns.md`'s `-Denforcer.skip=true` line** named only `enforce-lowercase-artifact-id`,
+  stale since `#177`. It names the three DSH rules now, with `CLAUDE.md`'s.
