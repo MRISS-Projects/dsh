@@ -649,14 +649,14 @@ owner approves this spec, which approves §3.2's text.
 
 ### Task 9: Before step 6
 
-- [ ] **Step 1:** After the owner merges the parent-poms pull request, dispatch its `deploy.yml`
+- [x] **Step 1:** After the owner merges the parent-poms pull request, dispatch its `deploy.yml`
   with `release_type: snapshots`, and wait for the run to succeed:
 
   ```bash
   gh workflow run deploy.yml -R MRISS-Projects/parent-poms --ref master -f release_type=snapshots
   ```
 
-- [ ] **Step 2:** Comment on `#119` naming `parent-poms#112`, its merge commit and the deploy run.
+- [x] **Step 2:** Comment on `#119` naming `parent-poms#112`, its merge commit and the deploy run.
   Post §3.8's comment on `#120`, approved on 2026-10-21.
 
 ## 7. Verification results
@@ -709,3 +709,12 @@ none with a string message still in first place.
   that it covers the Jupiter form, and the violating cases, which expect exit 1, prove it.
 - **`testing-patterns.md`'s `-Denforcer.skip=true` line** named only `enforce-lowercase-artifact-id`,
   stale since `#177`. It names the three DSH rules now, with `CLAUDE.md`'s.
+
+### Task 9, 2026-10-21
+
+The owner merged `parent-poms#113` as `e38be1c8`. `deploy.yml` with `release_type: snapshots` ran
+as 39611868727 and succeeded. Resolved into an empty local repository
+(`mvn -B -N -U validate -Dmaven.repo.local=…`, `.logs/mvn-validate-remote-parent.log`), the parent
+downloaded from GitHub Packages as `products-3.11.2-20261021.135351-1.pom`, and its root POM
+carries `mockito-junit-jupiter`. The record is commented on `#119`, and §3.8's comment is posted on
+`#120`.
