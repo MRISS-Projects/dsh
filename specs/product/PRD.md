@@ -833,7 +833,8 @@ ADR-003's eight follow-up candidates were settled in the same session:
 7. `CLAUDE.md` and `system-design.md` describing MongoDB, RabbitMQ and Solr as current: each is
    corrected by the story that removes the code. Those are Wave 1 task 8, Wave 2 task 1 and Wave 2
    task 3. `CLAUDE.md`'s paragraph on what was stale until this re-plan was removed with it.
-   `#167` — **closed** — PR #168 corrected both for MongoDB.
+   `#167` — **closed** — PR #168 corrected both for MongoDB, and `#177` — **closed** — PR #178 for
+   Solr.
 8. The OpenAPI document and the feature specs: Wave 1 task 11 (decision 5).
 
 ### Wave 1 — Pipeline design, documentation and upstream catch-up
@@ -1026,7 +1027,8 @@ are.
    It depends on no other task, and it comes here so that `#119` migrates no Solr test and `#120`
    carries no `spring-data-solr`. **`#158` was done on 2026-10-20:** `#158` — **closed** — PR #175,
    with its upstream half, `parent-poms#110`, released as parent-poms 3.11.1. **`#140` was done on
-   2026-10-20:** `#140` — **closed** — PR #176.
+   2026-10-20:** `#140` — **closed** — PR #176. **Wave 2 task 3 was done on 2026-10-21:**
+   `#177` — **closed** — PR #178.
 5. `#120`, after `#119` for the reason given with the triaged issues.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
 7. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
@@ -1389,7 +1391,14 @@ runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1
    `/submit` and `/status/{token}` and nothing that returns a result. It returns empty lists until
    Wave 3 fills them, but its contract is fixed here. The contract is written in the OpenAPI
    document first, from the baseline Wave 1 task 11 leaves.
-3. **The modules, per ADR-003 section 2.** `dsh-doc-indexer-worker` is renamed
+3. **Done on 2026-10-21: the modules, per ADR-003 section 2.** `#177` — **closed** — PR #178.
+   Reduce the worker modules to libraries and remove dsh-solr, per ADR-003 section 2. The story's
+   spec, `specs/stories/177-worker-modules-to-libraries-remove-solr.md`, holds the evidence. It
+   added an enforcer rule, `enforce-no-solr`, that fails any module depending on Solr, and it
+   declared three libraries `dsh-data` and `dsh-rest-api` use, which had arrived only through
+   `spring-data-solr`. The plan as written is kept below.
+
+   `dsh-doc-indexer-worker` is renamed
    `dsh-doc-indexer`. It, `dsh-keyword-extractor` and `dsh-top-sentences-extractor` become
    libraries with no `Application` class. `dsh-doc-processor-worker` is removed. `dsh-solr` is
    removed with its two plugins, and the `spring-data-solr` declarations go with it. The story
