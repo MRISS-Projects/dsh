@@ -15,8 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.mriss.dsh.data.models.Document;
 import com.mriss.dsh.data.models.DocumentStatus;
@@ -25,7 +25,7 @@ public class InMemoryDocumentDaoTest {
 
 	private InMemoryDocumentDao dao;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		dao = new InMemoryDocumentDao();
 	}

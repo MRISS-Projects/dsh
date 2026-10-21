@@ -2,7 +2,8 @@ package com.mriss.dsh.restapi.integration;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -19,9 +20,8 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -65,7 +64,6 @@ import com.mriss.dsh.restapi.service.DocumentEnqueueMessageHandler;
  * The RabbitMQ mock simulates an ACK to drive the document through its
  * full status lifecycle, exercising all production code paths.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
 @WebAppConfiguration
@@ -97,7 +95,7 @@ public class DocumentResourceIT {
     @Autowired
     private File testFile2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(webApplicationContext)
@@ -127,8 +125,8 @@ public class DocumentResourceIT {
      */
     @Test
     public void testActiveProfile() {
-        assertArrayEquals("the context must run with the test profile only",
-                new String[] {"test"}, webApplicationContext.getEnvironment().getActiveProfiles());
+        assertArrayEquals(new String[] {"test"}, webApplicationContext.getEnvironment().getActiveProfiles(),
+                "the context must run with the test profile only");
     }
 
     // -------------------------------------------------------------------------
@@ -308,7 +306,7 @@ public class DocumentResourceIT {
 
         TokenDto result = resource.submitDocument(new MockHttpServletRequest(), "Valid Title", null);
 
-        org.junit.Assert.assertEquals("ERROR", result.getToken());
+        assertEquals("ERROR", result.getToken());
     }
 
     private void setField(Object target, String fieldName, Object value) throws Exception {

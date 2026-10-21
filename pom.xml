@@ -5,13 +5,13 @@
 
     <!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <!-- #150: the released parent-poms version. To validate parent-poms work end to end, the parent is
-         pinned to its -SNAPSHOT for a while, and CI passes -U while it is; see docs/devops/README.md,
-         "Parent POM". -->
+    <!-- #119: parent-poms 3.11.2-SNAPSHOT, the hotfix line that carries #119's and #120's upstream
+         changes. #120 re-pins to the released 3.11.2. CI passes -U while the pin lasts; see
+         docs/devops/README.md, "Parent POM". -->
     <parent>
         <groupId>com.mriss.mriss-parent</groupId>
         <artifactId>products</artifactId>
-        <version>3.11.1</version>
+        <version>3.11.2-SNAPSHOT</version>
     </parent>
 
     <!-- THE BASICS -->
@@ -55,21 +55,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <!-- JUnit 4: removed from spring-boot-starter-test in Spring Boot 2.4+; declared here so all DSH modules inherit it -->
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- junit-vintage-engine: required for Surefire to discover and run JUnit 4 tests on JUnit Platform -->
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <properties>
         <!-- Encoding: must be declared here (not inherited from parent) to prevent
@@ -183,7 +168,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
-            <!-- DSH-specific enforcer rules: lowercase artifactId; no Solr (ADR-003 section 2) -->
+            <!-- DSH-specific enforcer rules: lowercase artifactId; no Solr (ADR-003 section 2); no JUnit 4 (#119) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -217,6 +202,24 @@
                                         <exclude>org.springframework.data:spring-data-solr</exclude>
                                     </excludes>
                                     <message>Solr was removed by ADR-003 section 2 (#177): no module may depend on it, directly or transitively. Lucene's own artifacts (org.apache.lucene) remain allowed.</message>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-no-junit4</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>junit:junit</exclude>
+                                        <exclude>org.junit.vintage:*</exclude>
+                                    </excludes>
+                                    <message>Every DSH test is JUnit 5 (#119): no module may depend on JUnit 4 or the vintage engine, directly or transitively. A library that drags junit:junit in needs an exclusion, or a version that does not.</message>
                                 </bannedDependencies>
                             </rules>
                             <fail>true</fail>

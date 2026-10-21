@@ -1,11 +1,11 @@
 package com.mriss.dsh.data.models;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,8 +16,8 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class DocumentTest {
 
     private Document anotherDocument;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         docAllArgsConstructor = documentWithAllArgs();
         docTitleContentsConstructor = documentWithTitleAndContents();
@@ -147,7 +147,7 @@ public class DocumentTest {
         docAllArgsConstructor.addKeyword(k2);
         docAllArgsConstructor.addKeyword(k3);
         docAllArgsConstructor.addKeyword(k4);
-        assertEquals("keyword score validation", 2.0, docAllArgsConstructor.getKeyWords().first().getScore(), 0.0);
+        assertEquals(2.0, docAllArgsConstructor.getKeyWords().first().getScore(), 0.0, "keyword score validation");
         for (Iterator<Keyword> iterator = docAllArgsConstructor.getKeyWords().iterator(); iterator.hasNext();) {
             Keyword type = iterator.next();
             logger.info("docAllArgsConstructor.getKeyWords(): " + type);
@@ -164,7 +164,7 @@ public class DocumentTest {
         docAllArgsConstructor.addSentence(s2);
         docAllArgsConstructor.addSentence(s3);
         docAllArgsConstructor.addSentence(s4);
-        assertEquals("addSentence score validation", 2.0, docAllArgsConstructor.getRelevantSentences().first().getScore(), 0.0);
+        assertEquals(2.0, docAllArgsConstructor.getRelevantSentences().first().getScore(), 0.0, "addSentence score validation");
         for (Iterator<Sentence> iterator = docAllArgsConstructor.getRelevantSentences().iterator(); iterator.hasNext();) {
             Sentence type = iterator.next();
             logger.info("docAllArgsConstructor.getRelevantSentences(): " + type);

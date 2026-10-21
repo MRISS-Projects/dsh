@@ -1,16 +1,16 @@
 package com.mriss.dsh.data.models;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DocumentStatusTest {
 
@@ -26,10 +26,10 @@ public class DocumentStatusTest {
         Map<String, DocumentStatus> owners = new HashMap<>();
         for (DocumentStatus status : DocumentStatus.values()) {
             String message = status.getStatusMessage();
-            assertNotNull(status + " has no message", message);
-            assertFalse(status + " has a blank message", message.trim().isEmpty());
+            assertNotNull(message, status + " has no message");
+            assertFalse(message.trim().isEmpty(), status + " has a blank message");
             DocumentStatus owner = owners.putIfAbsent(message, status);
-            assertNull(status + " shares its message with " + owner, owner);
+            assertNull(owner, status + " shares its message with " + owner);
         }
     }
 

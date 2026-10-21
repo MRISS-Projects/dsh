@@ -37,9 +37,14 @@ Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does
 
 ## Frameworks & Libraries
 
-- **JUnit 4** (`@Test`, `@Before`, `@RunWith`) — every test in the repository is JUnit 4; match the
-  module, and do not mix in JUnit 5. Migrating is a separate decision
-- **Mockito** for mocking dependencies (`@Mock`, `@InjectMocks`, `MockitoJUnitRunner`)
+- **JUnit 5 (Jupiter)** (`@Test`, `@BeforeEach`, `@ExtendWith`, `Assertions`) — every test in the
+  repository is Jupiter, since `#119`. JUnit 4 and the vintage engine are banned by the root
+  `pom.xml`'s `enforce-no-junit4`, so a JUnit 4 import does not compile. Jupiter's version is the one
+  Spring Boot's BOM manages. `Assertions` takes the message **last**, `assertEquals(expected, actual,
+  message)`, where JUnit 4 took it first
+- **Mockito** for mocking dependencies (`@Mock`, `@InjectMocks`, `@ExtendWith(MockitoExtension.class)`).
+  The extension's default strictness, `STRICT_STUBS`, stays: a stub it rejects is corrected, or
+  marked `lenient()` on that one stubbing, never loosened for the whole class
 - **AssertJ** for fluent assertions (`assertThat(...)`)
 - **Spring Boot Test** for slice and integration tests
 - **MockMvc** for controller integration tests
@@ -115,7 +120,6 @@ is an `*IT` in the `integration` package, as `DocumentResourceIT` does:
 - Test validation errors by sending invalid payloads
 
 ```java
-@RunWith(SpringRunner.class)
 @WebMvcTest(DocumentController.class)
 public class DocumentControllerIT {
 
@@ -142,7 +146,9 @@ public class DocumentControllerIT {
 - Every external service is a `@MockBean`; nothing leaves the JVM
 - Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for a full context in the test JVM. That is
   still in-process, with `@MockBean`s standing in for RabbitMQ; it is not layer 3
-- Clean up test data in `@After`
+- Clean up test data in `@AfterEach`
+- No `@RunWith` or `@ExtendWith(SpringExtension.class)`: `@SpringBootTest` and every slice, such as
+  `@WebMvcTest`, already register `SpringExtension`
 
 ## Layer 3: over the wire
 
@@ -197,15 +203,15 @@ lifecycle is `#137`. Until then no story is required to add one.
   a genuinely exempt module
 - `-Denforcer.skip=true` does **not** disable the guard — that execution sets `<skip>` explicitly,
   which beats the parameter's `enforcer.skip` user property — but it *does* disable this
-  repository's own `enforce-lowercase-artifact-id` rule, which sets none. It is the wrong tool in
-  both directions
+  repository's own rules, `enforce-lowercase-artifact-id`, `enforce-no-solr` and
+  `enforce-no-junit4`, which set none. It is the wrong tool in both directions
 - All critical paths (error handling, edge cases) must be explicitly tested
 
 ## Performance Tests
 
 - Reference benchmark targets in `/specs/testing/performance-benchmarks/`
 - Use JMeter or Gatling for load tests; store scripts in `/specs/testing/performance-benchmarks/`
-- Annotate performance-sensitive tests with a JUnit 4 `@Category(PerformanceTest.class)`
+- Annotate performance-sensitive tests with a JUnit 5 `@Tag("performance")`
 
 ## Test Execution
 

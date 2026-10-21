@@ -1,9 +1,9 @@
 package com.mriss.dsh.restapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
@@ -39,7 +39,7 @@ public class DshRestApplicationTest {
     public void testConfigure() {
         SpringApplicationBuilder builder = new SpringApplicationBuilder();
         SpringApplicationBuilder result = new DshRestApplication().configure(builder);
-        assertNotNull("configure() must return a non-null builder", result);
+        assertNotNull(result, "configure() must return a non-null builder");
     }
 
     /**
@@ -80,6 +80,6 @@ public class DshRestApplicationTest {
     @Test
     public void testSwaggerConfig() {
         SwaggerConfig config = new SwaggerConfig();
-        assertNotNull("Docket must not be null", config.newsApi());
+        assertNotNull(config.newsApi(), "Docket must not be null");
     }
 }

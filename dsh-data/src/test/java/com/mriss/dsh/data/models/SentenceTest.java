@@ -1,11 +1,11 @@
 package com.mriss.dsh.data.models;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SentenceTest {
 
@@ -30,7 +30,7 @@ public class SentenceTest {
 	@Test
 	public void testGetScore() {
 		Sentence s1 = new Sentence("test", 0.1, 1);
-		assertEquals("sentence score test", 0.1, s1.getScore(), 0.0);
+		assertEquals(0.1, s1.getScore(), 0.0, "sentence score test");
 	}
 
 	@Test
