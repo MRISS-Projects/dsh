@@ -7,8 +7,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -54,7 +54,7 @@ public class DocumentResourceHttpIT {
 
 	private String baseUrl;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		baseUrl = System.getProperty(BASE_URL_PROPERTY);
 		if (baseUrl == null) {

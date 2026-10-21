@@ -1,10 +1,9 @@
 package com.mriss.dsh.restapi.integration;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.restapi.DshRestApplication;
@@ -23,7 +21,6 @@ import com.mriss.dsh.restapi.service.DocumentQueueService;
  * The document store and RabbitMQ are mocked, so that no broker connection
  * is required during testing.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
 public class DshRestApplicationIT {
@@ -47,7 +44,7 @@ public class DshRestApplicationIT {
      */
     @Test
     public void contextLoads() {
-        assertNotNull("Spring application context must be loaded", application);
+        assertNotNull(application, "Spring application context must be loaded");
     }
 
     /**
@@ -56,8 +53,8 @@ public class DshRestApplicationIT {
     @Test
     public void mockedInfrastructureBeansArePresent() {
         logger.info("Testing mocked infrastructure beans");
-        assertNotNull("DocumentDao mock must be present", documentDao);
-        assertNotNull("DocumentQueueService mock must be present", documentQueueService);
+        assertNotNull(documentDao, "DocumentDao mock must be present");
+        assertNotNull(documentQueueService, "DocumentQueueService mock must be present");
     }
 
     @Autowired
@@ -68,7 +65,7 @@ public class DshRestApplicationIT {
      */
     @Test
     public void activeProfileIsTestOnly() {
-        assertArrayEquals("the context must run with the test profile only",
-                new String[] {"test"}, environment.getActiveProfiles());
+        assertArrayEquals(new String[] {"test"}, environment.getActiveProfiles(),
+                "the context must run with the test profile only");
     }
 }

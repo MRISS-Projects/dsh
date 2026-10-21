@@ -1,16 +1,16 @@
 package com.mriss.dsh.restapi.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
@@ -24,7 +24,7 @@ import org.springframework.messaging.SubscribableChannel;
  * ({@link SubscribableChannel}) are replaced with Mockito mocks so no
  * real broker connection is required.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentQueueServiceImplTest {
 
     /** Mock for the outbound Spring Integration channel (was backed by RabbitMQ). */
@@ -42,7 +42,7 @@ public class DocumentQueueServiceImplTest {
     @InjectMocks
     private DocumentQueueServiceImpl service;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // Ensure a clean state before each test.
     }
@@ -69,7 +69,7 @@ public class DocumentQueueServiceImplTest {
         String payload = "doc-id-abc sent ok";
         Message<String> result = service.processEnqueueingResponse(payload);
 
-        assertNotNull("Result message must not be null", result);
-        assertEquals("Payload must be preserved", payload, result.getPayload());
+        assertNotNull(result, "Result message must not be null");
+        assertEquals(payload, result.getPayload(), "Payload must be preserved");
     }
 }

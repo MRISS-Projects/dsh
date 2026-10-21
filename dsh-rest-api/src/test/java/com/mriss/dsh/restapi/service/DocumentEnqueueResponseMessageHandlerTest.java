@@ -1,17 +1,17 @@
 package com.mriss.dsh.restapi.service;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.GenericMessage;
 
@@ -23,12 +23,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link DocumentEnqueueResponseMessageHandler}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentEnqueueResponseMessageHandlerTest {
 
     @Mock
@@ -42,7 +42,7 @@ public class DocumentEnqueueResponseMessageHandlerTest {
 
     private Document document;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         try (InputStream is = new FileInputStream(new File("target/test-classes/pdf/bbc-news-1.pdf"))) {
             document = new Document(is, "Russia-Trump: FBI chief Wray defends agency");

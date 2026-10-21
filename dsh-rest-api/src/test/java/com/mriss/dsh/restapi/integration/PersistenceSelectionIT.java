@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -28,7 +28,7 @@ public class PersistenceSelectionIT {
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (context != null) {
 			context.close();

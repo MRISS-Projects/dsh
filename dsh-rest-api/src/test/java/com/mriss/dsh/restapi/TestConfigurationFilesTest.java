@@ -1,8 +1,8 @@
 package com.mriss.dsh.restapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -20,7 +20,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Checks the configuration files dsh-rest-api's context tests read (#140, rule R10 of
@@ -39,21 +39,21 @@ public class TestConfigurationFilesTest {
             URI uri = url.toURI();
             found.add("file".equals(uri.getScheme()) ? Paths.get(uri).toString() : uri.toString());
         }
-        assertEquals("only the main application.properties may be on the test classpath: "
-                + "test values go in application-test.properties (#140)",
-                Collections.singletonList(mainDirectory().resolve("application.properties").toString()),
-                found);
+        assertEquals(Collections.singletonList(mainDirectory().resolve("application.properties").toString()),
+                found,
+                "only the main application.properties may be on the test classpath: "
+                + "test values go in application-test.properties (#140)");
     }
 
     @Test
     public void testProfileFile_repeatsNoKeyOfTheMainFile() throws Exception {
         URL testFile = getClass().getClassLoader().getResource("application-test.properties");
-        assertNotNull("application-test.properties is missing from the test classpath (#140)",
-                testFile);
+        assertNotNull(testFile,
+                "application-test.properties is missing from the test classpath (#140)");
         Set<String> repeated = new TreeSet<>(load(Paths.get(testFile.toURI())).stringPropertyNames());
         repeated.retainAll(load(mainDirectory().resolve("application.properties")).stringPropertyNames());
-        assertTrue("application-test.properties repeats keys of the main application.properties, "
-                + "which it is merged with (P25): " + repeated, repeated.isEmpty());
+        assertTrue(repeated.isEmpty(), "application-test.properties repeats keys of the main application.properties, "
+                + "which it is merged with (P25): " + repeated);
     }
 
     private static Properties load(Path file) throws IOException {

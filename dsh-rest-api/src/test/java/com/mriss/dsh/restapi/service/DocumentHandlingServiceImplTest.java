@@ -1,8 +1,8 @@
 package com.mriss.dsh.restapi.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,12 +10,12 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ import com.mriss.dsh.data.models.Document;
  * The document store ({@link DocumentDao}) is mocked; the real service logic is exercised
  * through the mocked DAO, with no Spring context.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentHandlingServiceImplTest {
 
     final static Logger logger = LoggerFactory.getLogger(DocumentHandlingServiceImplTest.class);
@@ -42,7 +42,7 @@ public class DocumentHandlingServiceImplTest {
 
     private Document docForTest1;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         docForTest1 = new Document(
                 FileUtils.readFileToByteArray(new File("target/test-classes/pdf/bbc-news-1.pdf")),
@@ -60,7 +60,7 @@ public class DocumentHandlingServiceImplTest {
 
         String id = service.storeDocument(docForTest1);
 
-        assertNotNull("Returned id must not be null", id);
+        assertNotNull(id, "Returned id must not be null");
         verify(dao).storeDocument(docForTest1);
     }
 
@@ -78,12 +78,12 @@ public class DocumentHandlingServiceImplTest {
         // No document → null
         when(dao.findDocumentByHash(hash)).thenReturn(null);
         Document result = service.getDocumentByHash(hash);
-        assertNull("Should return null when no document matches", result);
+        assertNull(result, "Should return null when no document matches");
 
         // A document not processed yet is still the document with that hash
         when(dao.findDocumentByHash(hash)).thenReturn(docForTest1);
         result = service.getDocumentByHash(hash);
-        assertSame("Should return the document whatever its keywords and sentences", docForTest1, result);
+        assertSame(docForTest1, result, "Should return the document whatever its keywords and sentences");
     }
 
     /**
