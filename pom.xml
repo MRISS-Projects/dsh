@@ -183,7 +183,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
-            <!-- DSH-specific enforcer: artifactId lowercase naming convention -->
+            <!-- DSH-specific enforcer rules: lowercase artifactId; no Solr (ADR-003 section 2) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
