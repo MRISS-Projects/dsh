@@ -86,52 +86,52 @@ check() {
   fi
 }
 
-SPRING_RUNNER_TEST='import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+SPRING_EXTENSION_TEST='import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class Foo {
 }'
 
 # --- 1. a Mockito unit test is clean ------------------------------------------
 d="$(new_case)"
 write "$d" FooTest.java <<'INNER'
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FooTest {
 }
 INNER
 run_checker "$d"
 check "a Mockito unit test is clean" 0
 
-# --- 2. SpringRunner in a *Test is a violation --------------------------------
+# --- 2. SpringExtension in a *Test is a violation -----------------------------
 d="$(new_case)"
-printf '%s\n' "$SPRING_RUNNER_TEST" | write "$d" FooTest.java
+printf '%s\n' "$SPRING_EXTENSION_TEST" | write "$d" FooTest.java
 run_checker "$d"
-check "SpringRunner in a unit test is a violation" 1 "FooTest.java"
+check "SpringExtension in a unit test is a violation" 1 "FooTest.java"
 
 # --- 3. the same content in a *IT in an integration package is allowed --------
 d="$(new_case)"
-printf '%s\n' "$SPRING_RUNNER_TEST" | write_integration "$d" FooIT.java
+printf '%s\n' "$SPRING_EXTENSION_TEST" | write_integration "$d" FooIT.java
 add_clean_unit_test "$d"
 run_checker "$d"
-check "SpringRunner in an integration *IT is allowed" 0
+check "SpringExtension in an integration *IT is allowed" 0
 
 # --- 4. ... and in a *IntegrationTest in an integration package ---------------
 d="$(new_case)"
-printf '%s\n' "$SPRING_RUNNER_TEST" | write_integration "$d" FooIntegrationTest.java
+printf '%s\n' "$SPRING_EXTENSION_TEST" | write_integration "$d" FooIntegrationTest.java
 add_clean_unit_test "$d"
 run_checker "$d"
-check "SpringRunner in an integration *IntegrationTest is allowed" 0
+check "SpringExtension in an integration *IntegrationTest is allowed" 0
 
 # --- 4b. a *IT outside an integration package is not exempt -------------------
 # The rule is name *and* package: a misplaced *IT that starts a context is flagged.
 d="$(new_case)"
-printf '%s\n' "$SPRING_RUNNER_TEST" | write "$d" FooIT.java
+printf '%s\n' "$SPRING_EXTENSION_TEST" | write "$d" FooIT.java
 run_checker "$d"
-check "SpringRunner in a *IT outside an integration package is a violation" 1 "FooIT.java"
+check "SpringExtension in a *IT outside an integration package is a violation" 1 "FooIT.java"
 
 # --- 5. a @MockBean import alone is a violation -------------------------------
 d="$(new_case)"
@@ -188,7 +188,7 @@ check "MockMultipartFile and ReflectionTestUtils are allowed" 0
 # --- 9. build output under target/ is ignored ---------------------------------
 d="$(new_case)"
 mkdir -p "${d}/mod/target/src/test/java/com/example"
-printf '%s\n' "$SPRING_RUNNER_TEST" > "${d}/mod/target/src/test/java/com/example/FooTest.java"
+printf '%s\n' "$SPRING_EXTENSION_TEST" > "${d}/mod/target/src/test/java/com/example/FooTest.java"
 add_clean_unit_test "$d"
 run_checker "$d"
 check "a violation under target/ is ignored" 0
