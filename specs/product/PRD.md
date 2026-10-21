@@ -87,6 +87,7 @@ a milestone.
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
 | 1, upstream step 6 | `3.11.0-SNAPSHOT`, now `3.11.0` | `#98`, `#106`; both closed; released on 2026-10-04, DSH not re-pinned |
 | 1, for `#158` | `3.11.1-SNAPSHOT`, a hotfix line opened on 2026-10-20 | `#110`; closed; released as `3.11.1` on 2026-10-20, DSH re-pinned by `#158` |
+| 1, for `#119` and `#120` | `3.11.2-SNAPSHOT`, a hotfix line opened on 2026-10-21 | `#112`; closed; DSH pinned to the SNAPSHOT by `#119`, released as `3.11.2` by `#120` |
 | 4 | `3.12.0-SNAPSHOT` | `#90`; `#109` joined on 2026-10-10 |
 | 7 | `3.13.0-SNAPSHOT` | `#91`, since 2026-10-10 |
 | 10 | `3.14.0-SNAPSHOT` | `#92`, since 2026-10-10 |
@@ -1028,7 +1029,9 @@ are.
    carries no `spring-data-solr`. **`#158` was done on 2026-10-20:** `#158` — **closed** — PR #175,
    with its upstream half, `parent-poms#110`, released as parent-poms 3.11.1. **`#140` was done on
    2026-10-20:** `#140` — **closed** — PR #176. **Wave 2 task 3 was done on 2026-10-21:**
-   `#177` — **closed** — PR #178.
+   `#177` — **closed** — PR #178. **`#119` was done on 2026-10-21:**
+   `#119` — **closed** — PR #179, with its upstream half, `parent-poms#112`, on the hotfix line
+   3.11.2-SNAPSHOT. Step 4 is complete.
 5. `#120`, after `#119` for the reason given with the triaged issues.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
 7. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
@@ -1062,7 +1065,7 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
 - `#48` — **closed** — PR #159. Investigate how to use profiles (dev, staging, production) with
   Spring and Maven. It underpins selecting a transport or a persistence implementation by profile,
   which ADR-003 (task 2 below) relies on.
-- `#119` — Migrate every test to JUnit 5 and drop the vintage engine.
+- `#119` — **closed** — PR #179. Migrate every test to JUnit 5 and drop the vintage engine.
 - `#120` — Upgrade Spring Boot to a supported line, version chosen by analysis.
 
   Like `#48`, neither is an ADR-001 phase task. Both were raised on 2026-09-25, while
@@ -1074,6 +1077,14 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   Neither issue names a target version. Both leave it to their spec's analysis, and for `#120` that
   includes whether the version moves in parent-poms `products/pom.xml`, where it is managed today
   for every product.
+
+  **`parent-poms#112` was opened from `#119` on 2026-10-21.** Manage `mockito-junit-jupiter` at
+  `mockito-core`'s version. `#119`'s spec found the extension at 4.5.1 under a 5.17.0 core,
+  because parent-poms manages `mockito-core` and left the extension to Spring Boot's BOM. It could
+  not be folded into `#119`, because the change lives in another repository. It went on a new
+  hotfix line, 3.11.2-SNAPSHOT, rather than `3.12.0-SNAPSHOT`, which carries Wave 4's work. DSH
+  stays pinned to that SNAPSHOT until `#120`, which opens its own upstream issue on the same
+  milestone, releases it as 3.11.2 and re-pins.
 - `#127` — **closed** — PR #149. Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does.
 - `#128` — **closed** — PR #156. Point the wiki's release link at releases/products/dsh once 0.3.0 is released.
 
