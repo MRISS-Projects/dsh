@@ -39,9 +39,8 @@ assignees: ''
 
 - [ ] dsh-rest-api
 - [ ] dsh-doc-analyser
-- [ ] dsh-doc-indexer-worker
+- [ ] dsh-doc-indexer
 - [ ] dsh-data
-- [ ] dsh-solr (replacement proposed - see ADR-001)
 - [ ] CI / build
 
 ## Out of Scope

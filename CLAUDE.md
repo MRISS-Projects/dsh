@@ -2,8 +2,8 @@
 
 Document Smart Highlights (DSH) is a Java 17 / Spring Boot multi-module Maven system that
 analyses documents and produces smart highlights. It keeps documents in memory by default
-(`dsh.persistence`) and queues them on a self-managed RabbitMQ; the Solr code is still here, but
-nothing runs it. A migration to managed GCP services (Firestore, Pub/Sub, Cloud Storage) is
+(`dsh.persistence`) and queues them on a self-managed RabbitMQ; Solr was removed by `#177`.
+A migration to managed GCP services (Firestore, Pub/Sub, Cloud Storage) is
 **proposed** in `specs/architecture/ADR-001-GCP-based-components.md` — status Proposed. Its
 Phase 1 in-memory store is in place (`#167`), and nothing runs on GCP. How the document pipeline
 is built, with and without GCP, is decided in `specs/architecture/ADR-003-document-pipeline.md`.
@@ -34,10 +34,9 @@ agent in this repo: commands, branch rules, gates, the GCP cost rule, and the de
 | Module | Responsibility |
 |---|---|
 | `dsh-rest-api` | Public REST API, Spring Boot |
-| `dsh-doc-analyser` | Analysis engine; sub-modules for keyword extraction, top-sentence extraction, and doc processing (`dsh-doc-processor-worker`) |
-| `dsh-doc-indexer-worker` | Async indexing worker |
+| `dsh-doc-analyser` | Parent of the two extractor libraries, keyword extraction and top-sentence extraction |
+| `dsh-doc-indexer` | A library: the indexing stage, empty until Wave 3 |
 | `dsh-data` | Shared models and persistence |
-| `dsh-solr` | Solr integration and custom plugins (to be removed — see ADR-003) |
 | `dsh-test-dataset` | PDF fixtures used by tests |
 | `dsh-coverage-report` | Aggregates JaCoCo coverage across modules |
 
@@ -55,7 +54,7 @@ The parent POM `com.mriss.mriss-parent:products` resolves from GitHub Packages v
 
 ### Always log local Maven runs
 
-This is a 13-module reactor and a full build is slow. **Never run `mvn` locally as a silent
+This is a 9-module reactor and a full build is slow. **Never run `mvn` locally as a silent
 blocking command.** Redirect to `.logs/` and print a `tail` command first, so progress is
 watchable:
 
@@ -107,7 +106,7 @@ each is and when each is required — are in `.github/copilot/rules/testing-patt
    module which produced no coverage data at all. **Both are inherited from
    `MRISS-Projects/parent-poms`, not declared here — grepping this repository will not find them.**
 3. **The local integration gate, conditional.** When a story changes code that touches an external
-   system (RabbitMQ, Solr, or any other service outside the JVM) or a REST API entry point,
+   system (RabbitMQ, or any other service outside the JVM) or a REST API entry point,
    run `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd` after gate 1 passes. The
    changed modules are the ones whose code changed; `-amd` adds every module that depends on them,
    because a change to shared code (`dsh-data`) breaks only in its consumers. There is no `-am`,
@@ -136,10 +135,10 @@ genuinely exempt.
 
 `-Denforcer.skip=true` is the wrong tool, in both directions. It does **not** disable the coverage
 guard: that execution sets `<skip>` explicitly, and explicit configuration beats the parameter's
-`enforcer.skip` user property. It **does** disable this repository's own
-`enforce-lowercase-artifact-id` rule in the root `pom.xml`, which sets no `<skip>`. So reaching for
-it silently drops a check you wanted while leaving the one you were trying to bypass armed. Both
-halves verified by running it.
+`enforcer.skip` user property. It **does** disable this repository's own rules in the root
+`pom.xml`, `enforce-lowercase-artifact-id` and `enforce-no-solr`, neither of which sets `<skip>`. So
+reaching for it silently drops checks you wanted while leaving the one you were trying to bypass
+armed. Both halves verified by running it.
 
 **Hard rules.** PowerMock is forbidden here and in parent-poms, enforced by the `ban-powermock`
 enforcer execution inherited from parent-poms; Mockito, `mockStatic` included, is the sanctioned tool.

@@ -11,7 +11,7 @@ follow on the open pull request are step 7 — see `dsh-pr-cycle`.
 ## Step 5 - review
 
 1. **Run the local integration gate if it applies** — gate 3 in CLAUDE.md's *Quality gates*. It
-   applies when the diff touches code that talks to an external system (RabbitMQ, Solr, or any
+   applies when the diff touches code that talks to an external system (RabbitMQ, or any
    other service outside the JVM) or a REST API entry point. The changed modules are the ones
    whose code changed. After the root `mvn -B clean install` has passed:
 

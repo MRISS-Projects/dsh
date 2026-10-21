@@ -15,7 +15,7 @@ Requirements:
 - Implement changes in the appropriate DSH modules:
   - dsh-rest-api – for REST endpoint changes
   - dsh-doc-analyser – for document analysis logic
-  - dsh-doc-indexer-worker – for indexing workflow changes
+  - dsh-doc-indexer – for indexing workflow changes
   - dsh-data – for data model changes
 - Follow Java conventions in /.github/copilot/rules/java-conventions.md
 - Follow API standards in /.github/copilot/rules/api-standards.md

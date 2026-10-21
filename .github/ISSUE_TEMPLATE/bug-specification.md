@@ -37,9 +37,8 @@ Paste stack trace or error output here
 
 - [ ] dsh-rest-api
 - [ ] dsh-doc-analyser
-- [ ] dsh-doc-indexer-worker
+- [ ] dsh-doc-indexer
 - [ ] dsh-data
-- [ ] dsh-solr
 - [ ] Frontend
 
 ## Severity

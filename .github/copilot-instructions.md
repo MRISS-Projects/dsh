@@ -7,10 +7,9 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 ## Architecture Summary
 
 - **dsh-doc-analyser** – Core document analysis engine
-- **dsh-doc-indexer-worker** – Background indexing worker
+- **dsh-doc-indexer** – Indexing stage library
 - **dsh-rest-api** – REST API service layer
 - **dsh-data** – Shared data models and persistence
-- **dsh-solr** – Apache Solr integration
 - **dsh-coverage-report** – Aggregated test coverage reporting
 
 ## Development Standards
@@ -91,7 +90,7 @@ The `/docs/wiki/` directory contains Markdown copies of the [DSH GitHub Wiki](ht
 - Implement endpoints per `/specs/features/rest-api-endpoints.md`
 - Use Spring Boot patterns and annotations as described in `/.github/copilot/rules/java-conventions.md`
 
-### Indexer Worker (dsh-doc-indexer-worker)
+### Indexer (dsh-doc-indexer)
 
 - Follow workflow specification: `/specs/features/indexing-workflow.md`
 - Reference performance benchmarks: `/specs/testing/performance-benchmarks/`

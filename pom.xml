@@ -30,7 +30,7 @@
             </dependency>
             <dependency>
                 <groupId>com.mriss.products.dsh</groupId>
-                <artifactId>dsh-doc-indexer-worker</artifactId>
+                <artifactId>dsh-doc-indexer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -51,21 +51,6 @@
             <dependency>
                 <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
                 <artifactId>dsh-top-sentences-extractor</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mriss.products.dsh.dsh-doc-analyser</groupId>
-                <artifactId>dsh-doc-processor-worker</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mriss.products.dsh.dsh-solr</groupId>
-                <artifactId>solr-terms-vector-order</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mriss.products.dsh.dsh-solr</groupId>
-                <artifactId>solr-advanced-numbers-filter</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
@@ -198,7 +183,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
-            <!-- DSH-specific enforcer: artifactId lowercase naming convention -->
+            <!-- DSH-specific enforcer rules: lowercase artifactId; no Solr (ADR-003 section 2) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -215,6 +200,24 @@
                                     <regex>^[a-z][a-z0-9\-]*$</regex>
                                     <regexMessage>Maven artifactId must follow naming convention: only lowercase letters, digits, and hyphens are allowed. Found: '${project.artifactId}'</regexMessage>
                                 </requireProperty>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-no-solr</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.apache.solr:*</exclude>
+                                        <exclude>org.springframework.data:spring-data-solr</exclude>
+                                    </excludes>
+                                    <message>Solr was removed by ADR-003 section 2 (#177): no module may depend on it, directly or transitively. Lucene's own artifacts (org.apache.lucene) remain allowed.</message>
+                                </bannedDependencies>
                             </rules>
                             <fail>true</fail>
                         </configuration>
@@ -301,8 +304,7 @@
         <module>dsh-test-dataset</module>
         <module>dsh-data</module>
         <module>dsh-rest-api</module>
-        <module>dsh-solr</module>
-        <module>dsh-doc-indexer-worker</module>
+        <module>dsh-doc-indexer</module>
         <module>dsh-doc-analyser</module>
         <module>dsh-coverage-report</module>
     </modules>

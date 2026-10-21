@@ -34,9 +34,8 @@ assignees: ''
 <!-- Check all that apply -->
 - [ ] dsh-rest-api
 - [ ] dsh-doc-analyser
-- [ ] dsh-doc-indexer-worker
+- [ ] dsh-doc-indexer
 - [ ] dsh-data
-- [ ] dsh-solr
 - [ ] Frontend (TBD)
 - [ ] Infrastructure / CI/CD
 

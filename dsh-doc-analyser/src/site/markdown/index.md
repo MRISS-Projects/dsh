@@ -2,6 +2,5 @@
 
 ## Document Smart Highlights Analyser
 
-This is a container module for the keyword and relevant sentences extractor modules.
-One extra module dequeues documents to be analysed and calls the extractors.
-
+This is a parent module for the keyword and top-sentences extractor libraries.
+The document pipeline in `dsh-rest-api` will call them; neither runs on its own.

@@ -24,8 +24,8 @@ Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does
 - **Staging:** every staging build passes `-DintegrationTests`.
 - **Deploy:** a deploy workflow from `DEVELOP`. It does not exist yet.
 - **The local gate**, in addition to the unit gate:
-  - **When it applies:** a story changes code that touches an external system (RabbitMQ, Solr, or
-    any other service outside the JVM) or a REST API entry point.
+  - **When it applies:** a story changes code that touches an external system (RabbitMQ, or any
+    other service outside the JVM) or a REST API entry point.
   - **What runs:** after the root `mvn -B clean install` passes,
     `mvn -B clean verify -DintegrationTests -pl <changed modules> -amd`. The changed modules are
     the ones whose code changed.
