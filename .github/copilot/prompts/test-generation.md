@@ -78,7 +78,7 @@ Requirements:
 - Test class name: [FeatureName]IT, in the module's integration package
   (e.g. com.mriss.dsh.restapi.integration); the name is the selector, no tag is needed
 - Test the full flow: [describe end-to-end scenario]
-- Clean up test data in @After
+- Clean up test data in @AfterEach
 - Reference acceptance criteria in /specs/requirements/acceptance-criteria/[feature].md
 - Use @SpringBootTest(webEnvironment = RANDOM_PORT)
 ```

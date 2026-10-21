@@ -702,7 +702,9 @@ none with a string message still in first place.
 ### 7.1 What the spec missed
 
 - **`.github/copilot/prompts/test-generation.md`** asked for JUnit 4 tests, `@Category` and
-  `@Test(timeout = …)`, which no longer compile here. It asks for Jupiter's now (`bbd379e56`).
+  `@Test(timeout = …)`, which no longer compile here. It asks for Jupiter's now (`bbd379e56`). Its
+  integration-test prompt kept "Clean up test data in @After" until step 5's review found it; that
+  is `@AfterEach` too, and nothing else of JUnit 4 is left in `.github/copilot/prompts/`.
 - **`check-unit-tests-context-free.test.sh`** built its cases from `SpringRunner` and
   `MockitoJUnitRunner`. They use `SpringExtension` and `MockitoExtension` now, and the checker's
   comment names `SpringExtension` (`efa82b08a`). The checker's pattern is unchanged; §2.1 was right
