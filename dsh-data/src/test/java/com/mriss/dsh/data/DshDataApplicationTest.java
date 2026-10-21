@@ -1,10 +1,10 @@
 package com.mriss.dsh.data;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +16,12 @@ public class DshDataApplicationTest {
 
     final static Logger logger = LoggerFactory.getLogger(DshDataApplicationTest.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         logger.info("DshDataApplicationTest setup");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         logger.info("DshDataApplicationTest teardown");
     }

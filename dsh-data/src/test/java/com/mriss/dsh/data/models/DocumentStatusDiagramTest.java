@@ -1,11 +1,11 @@
 package com.mriss.dsh.data.models;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Generates the Mermaid diagram of the {@link DocumentStatus} state machine and checks it against
@@ -65,14 +65,14 @@ public class DocumentStatusDiagramTest {
             }
             String[] edgeAndLabel = line.trim().split(LABEL_SEPARATOR, 2);
             String[] ends = edgeAndLabel[0].split(ARROW);
-            assertNotEquals("self-loop: " + line, ends[0], ends[1]);
+            assertNotEquals(ends[0], ends[1], "self-loop: " + line);
             Set<String> types = edgeAndLabel.length == 2
                     ? new HashSet<>(Arrays.asList(edgeAndLabel[1].split(", ")))
                     : new HashSet<>();
-            assertNull("duplicate edge: " + line, edges.put(edgeAndLabel[0], types));
+            assertNull(edges.put(edgeAndLabel[0], types), "duplicate edge: " + line);
         }
 
-        assertTrue("missing entry edge", edges.containsKey(END + ARROW + DocumentStatus.CREATED.name()));
+        assertTrue(edges.containsKey(END + ARROW + DocumentStatus.CREATED.name()), "missing entry edge");
 
         int changingPairs = 0;
         for (DocumentStatus status : DocumentStatus.values()) {
@@ -83,15 +83,15 @@ public class DocumentStatusDiagramTest {
                     terminal = false;
                     changingPairs++;
                     Set<String> label = edges.get(status.name() + ARROW + target.name());
-                    assertNotNull("missing edge " + status + ARROW + target, label);
-                    assertTrue(status + ARROW + target + " lacks " + type, label.contains(type.name()));
+                    assertNotNull(label, "missing edge " + status + ARROW + target);
+                    assertTrue(label.contains(type.name()), status + ARROW + target + " lacks " + type);
                 }
             }
-            assertEquals("terminal edge of " + status, terminal, edges.containsKey(status.name() + ARROW + END));
+            assertEquals(terminal, edges.containsKey(status.name() + ARROW + END), "terminal edge of " + status);
         }
 
         int labelledTypes = edges.values().stream().mapToInt(Set::size).sum();
-        assertEquals("labelled types", changingPairs, labelledTypes);
+        assertEquals(changingPairs, labelledTypes, "labelled types");
     }
 
     static String generate() {

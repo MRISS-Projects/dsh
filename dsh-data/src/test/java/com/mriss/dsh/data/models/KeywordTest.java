@@ -1,11 +1,11 @@
 package com.mriss.dsh.data.models;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class KeywordTest {
 
@@ -25,7 +25,7 @@ public class KeywordTest {
 	@Test
 	public void testGetScore() {
 		Keyword k1 = new Keyword("test", 1.0);
-		assertEquals("keyword score test", 1.0, k1.getScore(), 0.0);
+		assertEquals(1.0, k1.getScore(), 0.0, "keyword score test");
 	}
 
 	@Test
