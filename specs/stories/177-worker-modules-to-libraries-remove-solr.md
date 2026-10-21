@@ -617,3 +617,35 @@ before either confirm arrived. The first confirm reached both handlers, which ho
 document, so the document moved two steps, and the second confirm reached none. The only
 `dsh-rest-api` change between the two runs was deleting the inert property of §7.1. The third run
 exited 0.
+
+### 7.3 Step 5 review fixes
+
+The local review found nothing critical. One important finding and six minor ones were applied, on
+2026-10-21, at the owner's call:
+
+- **`dsh-data/src/site/markdown/index.md`** still described "an empty interface for a SOLR index".
+  It now names `IndexedDocumentDao`, for the indexing stage. §3.6 had not listed the page, and
+  AC004's grep covered `src/main` only. A grep of the whole tree, less the historical records of
+  §3.7, finds no other live Solr text.
+- **`CLAUDE.md`**: `-Denforcer.skip=true` disables `enforce-no-solr` as well as
+  `enforce-lowercase-artifact-id`. Verified: `mvn -B validate -pl dsh-data -Denforcer.skip=true`
+  prints "Skipping Rule Enforcement." for both, and runs `ban-powermock`.
+- **`pom.xml`**: the enforcer plugin's comment names both rules.
+- **`specs/architecture/component-diagrams/README.md`**: the example's edge to `dsh-doc-indexer`
+  says "will call", not "depends on", since `dsh-rest-api` does not depend on it yet.
+- **`dsh-doc-analyser/src/site/markdown/index.md`**: "will call them". §3.6's wording put the
+  pipeline in the present tense.
+- **`specs/features/document-analysis.md`**: "Today" says the three stage modules are libraries with
+  no code and the processor worker is gone; the "Planned" item for it is removed. §3.7 excluded the
+  feature specs' Solr text only, and these sentences were about modules.
+- **`specs/architecture/data-models/README.md`**: "Solr schemas" dropped from the entities to
+  document.
+
+Not applied: declaring `commons-io` in `dsh-rest-api`, whose tests import it and receive it through
+`dsh-data`. A direct declaration at `test` scope would win over the transitive `compile` one, and
+take the library off the API's runtime classpath, where `Document(InputStream, String)` needs it.
+Verified with the declaration added and then reverted: `mvn dependency:list -pl dsh-rest-api
+-DincludeScope=runtime` no longer listed `commons-io`, which it lists without it.
+
+The root `README.md` still lists the removed modules until the next snapshot deploy regenerates it
+(§2.1); check it then, with follow-up 2 of §3.9.

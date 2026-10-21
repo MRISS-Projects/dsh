@@ -24,8 +24,8 @@ The document is stored in MongoDB with the original file's bytes in the record.
 
 - **Nothing consumes the queue**, so a document is never analysed.
 - **The analysis modules are not wired to anything.** `dsh-keyword-extractor`,
-  `dsh-top-sentences-extractor` and `dsh-doc-processor-worker` each hold one `Application` class and
-  no analysis code.
+  `dsh-top-sentences-extractor` and `dsh-doc-indexer` are libraries with no code yet, and
+  `dsh-doc-processor-worker` is gone (`#177`, ADR-003 section 2).
 - **No text is extracted** from a file.
 
 ## Planned
@@ -35,8 +35,6 @@ The document is stored in MongoDB with the original file's bytes in the record.
 - **MongoDB is replaced** by an in-memory `DocumentDao`, selected by `dsh.persistence` (Wave 1 task
   8), and the original file leaves the record for a file store, selected by `dsh.file-store` (Wave
   1 task 10).
-- **The analysis modules become libraries** with no `Application` class, and
-  `dsh-doc-processor-worker` is removed (Wave 2 task 3, ADR-003 section 2).
 - **Text extraction** from PDF and HTML into title, paragraphs, sentences and terms (Wave 3 task 1).
 - **Corpus term statistics**: term frequency per document and document frequency across the corpus
   (Wave 3 task 2, ADR-003 section 5).
