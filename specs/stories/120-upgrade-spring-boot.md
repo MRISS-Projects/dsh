@@ -668,11 +668,11 @@ spec, which approves §3.2's text.
 
 - [x] **Step 1:** Build the harness of §3.6 in `<scratchpad>/profile-probes-boot4`, its own git
   repository, with `spring-boot.version` 4.1.1. Run P0. Expected: §5.3's 25 lines exactly.
-- [ ] **Step 2:** Run P1 to P31 with P3b and P4b, as the findings' appendix records each, reverting
+- [x] **Step 2:** Run P1 to P31 with P3b and P4b, as the findings' appendix records each, reverting
   the tree between probes. Keep each probe's output in `<scratchpad>/profile-probes-boot4/logs`.
-- [ ] **Step 3:** Compare each output with the one the findings quote; give each finding its verdict.
-- [ ] **Step 4:** Edit the document as §3.6 says. markdownlint it.
-- [ ] **Step 5:** Commit `docs(#120): the #48 findings re-run on Spring Boot 4.1.1`.
+- [x] **Step 3:** Compare each output with the one the findings quote; give each finding its verdict.
+- [x] **Step 4:** Edit the document as §3.6 says. markdownlint it.
+- [x] **Step 5:** Commit `docs(#120): the #48 findings re-run on Spring Boot 4.1.1`.
 
 ### Task 8: The gates (AC002 to AC005)
 
@@ -751,3 +751,18 @@ in order.
 | Gate 1, `mvn -B clean install` | `maven exit=0`; `dsh-data` 71, `dsh-rest-api` 43, the baseline less 1; "All coverage checks have been met" in both |
 | Gate 3, `mvn -B clean install -DintegrationTests` | `maven exit=0`; 20 ITs, the baseline plus 1; no `#142` red |
 | AC002, `mvn -B -o dependency:tree` | `maven exit=0`; 66 `org.springframework.boot` artifacts, all 4.1.1; 0 hits for `io.springfox` or `spring-data-solr`, and 0 for `javax.servlet`, `javax.xml.bind`, `jackson-module-kotlin`, `spring-ws`, `junit:junit` or the vintage engine; `byte-buddy` 1.18.11, `mockito-core` 5.17.0, springdoc 3.1.1 |
+
+### 7.5 Task 7, the `#48` probes on 4.1.1
+
+- The harness of `#48` §5.2 in the session scratchpad, its own git repository, with
+  `spring-boot.version` 4.1.1. Every build stopped at `package`; nothing was installed.
+- P0 printed §5.3's 25 lines exactly (`diff` empty). Then P1 to P31 with P3b and P4b: 34 runs. The
+  builds exited 0 except P19's first, which exited 1 on the circular placeholder, as on 2.7.18.
+- Verdicts, recorded in `profiles-and-configuration.md` section 3, "Re-run on Spring Boot 4.1.1":
+  S1 to S6, S8, M2 to M4 and section 5's P31 unchanged. S7 and M1 changed in wording only: Spring
+  Framework 7 reports an unresolved or circular placeholder as `PlaceholderResolutionException`,
+  P19's message ends `in value "${probe.lib.host}" <-- "${probe.lib.host}"` where it ended `in
+  property definitions`, and P28a's report no longer names the `BindException`. No rule of 6.1 and
+  no row of 6.2 to 6.4 changes, and nothing moves `ADR-003`.
+- Departures, recorded in the document's appendix: P28's class prints its bucket when bound; P21's
+  `build-info.properties` was first read from a wrong path and read again after one more build.

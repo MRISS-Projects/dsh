@@ -64,18 +64,18 @@ On `DEVELOP` at `a760552f8`.
 | Six workflows carry dummy `mongo.*` values so that the build does not fail | `ci.yml`, `api-testing.yml`, `deploy.yml`, `staging.yml`, `release.yml`, `hotfix.yml` |
 | Every module filters `src/main/resources` with both default delimiters, `${…}` and `@…@` | `dsh-rest-api/pom.xml:113-120`; no `delimiter` in either parent POM |
 | One Spring placeholder already sits in a filtered file: `${spring.rabbitmq.host:localhost}`, and the port beside it. `dsh-data` takes its own XML context out of filtering | `dsh-rest-api/src/main/resources/enqueue-docId-context.xml:45`; `dsh-data/pom.xml:46-64`. Why the two survive filtering was not probed; presumably no Maven property has a name that includes the `:default` part |
-| Spring Boot is `2.7.18`, managed in parent-poms | `products-3.10.0.pom:80` |
+| Spring Boot is `4.1.1` since `#120`, managed in parent-poms | `products-3.11.2.pom:49` |
 | MongoDB and RabbitMQ are wired in XML through `@ImportResource`, unconditionally | `dshApplicationContext.xml`, `enqueue-docId-context.xml` |
 | `dsh-rest-api`'s test `application.properties` repeats the main one | the two files; P24 explains why it has to |
 
 ## 3. Findings: Spring
 
 Measured on 2026-10-07 with Spring Boot 2.7.18, Apache Maven 3.9.16 and JDK 17.0.20.1 (Eclipse
-Adoptium), on Windows 11. The harness is in the appendix. In the outputs, `PROBE` lines are printed
-by the harness, and only the lines that matter to the finding are shown.
-
-**Not checked against Spring Boot 3.** `#120` moves the Boot line. The harness takes the version
-from one property, so re-running it there is cheap, and section 9 lists it as a candidate.
+Adoptium), on Windows 11. Re-run on 2026-10-28 with Spring Boot 4.1.1 by `#120`, with the same
+Maven, JDK and machine; the verdicts are in "Re-run on Spring Boot 4.1.1", at the end of this
+section. The harness is in the appendix. In the outputs, `PROBE` lines are printed by the harness,
+and only the lines that matter to the finding are shown. The outputs quoted are 2.7.18's unless a
+finding says otherwise.
 
 ### S1. How is a profile activated, and which source wins?
 
@@ -349,14 +349,31 @@ Update your application's configuration
 
 **Prediction.** Confirmed.
 
+**On Spring Boot 4.1.1** the answer holds; the two failures read differently. P11a's cause is
+`org.springframework.util.PlaceholderResolutionException`, a subclass of
+`IllegalArgumentException`, with the same message, and still no "APPLICATION FAILED TO START"
+report. P28a's report no longer names the `BindException`:
+
+```text
+APPLICATION FAILED TO START
+Description:
+Binding to target probe.app.RequiredProps failed:
+    Property: probe.required.bucket
+    Value: "null"
+    Reason: <the @NotBlank message, in the JVM's locale>
+Action:
+Update your application's configuration
+```
+
 **Consequence for DSH.**
 
 - One environment variable carries the tier, and the names derived from it are written once, in
   one file.
 - Required values are bound through a validated `@ConfigurationProperties` class, so that a
   missing one is reported as in P28a and not as in P11a, or as today's circular-placeholder error.
-- On Spring Boot 3 the validation annotations are in `jakarta.validation`, not `javax.validation`.
-  That is stated from knowledge of the migration, not from a run.
+- The validation annotations are in `jakarta.validation`, not `javax.validation`, as DSH's servlet
+  API is in `jakarta.servlet` since `#120`. P28's re-run on Spring Boot 4.1.1 imported them from
+  there.
 
 ### S8. What configuration does a test get?
 
@@ -395,6 +412,31 @@ P29  @ActiveProfiles with no value, SPRING_PROFILES_ACTIVE=gcp mvn
   replaces it. Renamed to a profile's file, it would hold only what differs.
 - Every context test names its profile. That is the only thing that kept a leaked `gcp` out (P23
   against P22 and P29).
+
+### Re-run on Spring Boot 4.1.1
+
+Run by `#120` on 2026-10-28: the appendix's harness with `spring-boot.version` 4.1.1 and P28's
+import in `jakarta.validation`, every probe of the appendix, 34 runs. P0 printed the 25 baseline
+lines exactly. A verdict compares each probe's output with what the finding quotes; the Maven
+findings of section 4 are included.
+
+| Finding | Probes | Verdict | On 4.1.1 |
+|---|---|---|---|
+| S1 | P1 to P4, P3b, P4b, P14, P15 | unchanged | |
+| S2 | P0, P1, P5, P16 | unchanged | P16's message ends with an `[origin: …]` suffix; the quoted text is unchanged |
+| S3 | P6 | unchanged | |
+| S4 | P0, P1, P7, P8 | unchanged | |
+| S5 | P0, P1, P9 | unchanged | |
+| S6 | P0, P1, P13, P17, P30 | unchanged | |
+| S7 | P10 to P13, P28 | **changed**, in wording | P11a's cause is `PlaceholderResolutionException`; P28a's report is shorter (S7). The answer, R6 and R5 stand |
+| S8 | P22 to P26, P29 | unchanged | |
+| M1 | P18, P19, P20 | **changed**, in wording | P19's circular reference is reported differently (M1). The answer, R8 and R9 stand |
+| M2 | P21 | unchanged | |
+| M3 | P22 | unchanged | |
+| M4 | P27 | unchanged | P27d's two checksums differ again, as two builds do |
+| Section 5 | P31 | unchanged | `active=typo`, with no warning |
+
+No rule of section 6.1 and no row of sections 6.2 to 6.4 changes.
 
 ## 4. Findings: Maven
 
@@ -457,6 +499,19 @@ PROBE probe.prefix=dsh-dev/
 ```
 
 **Prediction.** Confirmed.
+
+**On Spring Boot 4.1.1** the answer holds, and every value above is the same. P19's failure, in
+the build's test and in P19a, now reads:
+
+```text
+BeanDefinitionStoreException: Invalid bean definition with name 'xmlAlways' defined in class path
+resource [lib-context.xml]: Circular placeholder reference 'probe.lib.host' in value
+"${probe.lib.host}" <-- "${probe.lib.host}"
+Caused by: org.springframework.util.PlaceholderResolutionException: Circular placeholder reference ...
+```
+
+So a search for DSH's circular-placeholder error should match `Circular placeholder reference`
+alone; the rest of the message changed.
 
 **Consequence for DSH.**
 
@@ -847,14 +902,15 @@ Each was a draft for the owner to accept, change or drop. The owner accepted all
 5. **parent-poms: expose the build number and the version as workflow outputs**, beside
    `parent-poms#91`. Now `parent-poms#109`, for the staging workflow.
 6. **Re-run the harness on the Spring Boot line `#120` chooses.** One property selects the
-   version. P28's validation import changes package on Boot 3. Added to `#120`, as its AC007.
+   version. P28's validation import changes package on Boot 3. Added to `#120`, as its AC007. Done
+   by `#120` on 2026-10-28, on Spring Boot 4.1.1: see "Re-run on Spring Boot 4.1.1", section 3.
 
 ## 10. Appendix: the probe harness
 
 A throwaway two-module Maven project, kept outside the repository and never installed. `lib`
 stands for `dsh-data`: a library with an XML context and a filtered properties file. `app` stands
-for `dsh-rest-api`: the deployable. It imports `spring-boot-dependencies:2.7.18` and has no parent.
-Both modules filter `src/main/resources` with the default delimiters, as DSH's do.
+for `dsh-rest-api`: the deployable. It imports `spring-boot-dependencies:4.1.1`, as `#120` re-ran
+it; the first run, on 2026-10-07, imported 2.7.18. It has no parent. Both modules filter `src/main/resources` with the default delimiters, as DSH's do.
 
 `app` prints one report at startup, and every probe is that report under different arguments,
 environment or files. The full sources are in the story's spec,
@@ -916,3 +972,8 @@ question:
 - **P30** was added. No planned probe showed `application.properties` beating a `@PropertySource`
   file directly, which the prediction for S6 claims.
 - **P31** was added for section 5: what a profile name that matches nothing does.
+
+**Departures in `#120`'s re-run.** P28's `RequiredProps` is a `@Component` and prints its bucket
+when bound, so that P28b shows the value arrived; its constraint is `jakarta.validation`'s
+`@NotBlank`. P21's `build-info.properties` was first read from the wrong path in the jar and was
+read again, from `META-INF/`, after one more build.
