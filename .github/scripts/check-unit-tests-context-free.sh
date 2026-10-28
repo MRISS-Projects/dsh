@@ -15,9 +15,10 @@
 #
 # Signal: a reference to a package whose purpose is to build, bootstrap or
 # populate a test context --
-#   org.springframework.test.context            SpringExtension, @ContextConfiguration, ...
+#   org.springframework.test.context            SpringExtension, @ContextConfiguration, @MockitoBean, ...
 #   org.springframework.boot.test.context       @SpringBootTest, @TestConfiguration
 #   org.springframework.boot.test.autoconfigure every slice: @WebMvcTest, @DataMongoTest, ...
+#   org.springframework.boot.<tech>.test.autoconfigure  Boot 4's slices: @WebMvcTest, ...
 #   org.springframework.boot.test.mock.mockito  @MockBean, @SpyBean
 # plus webAppContextSetup (the MockMvc builder that needs a WebApplicationContext)
 # and a hand-built context, "new <Something>ApplicationContext(".
@@ -45,7 +46,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${1:-${SCRIPT_DIR}/../..}" && pwd)"
 
-PATTERN='org\.springframework\.test\.context|org\.springframework\.boot\.test\.(context|autoconfigure|mock\.mockito)|webAppContextSetup|new [A-Za-z]*ApplicationContext\('
+PATTERN='org\.springframework\.test\.context|org\.springframework\.boot\.test\.(context|autoconfigure|mock\.mockito)|org\.springframework\.boot\.[a-z0-9.]+\.test\.autoconfigure|webAppContextSetup|new [A-Za-z]*ApplicationContext\('
 
 # The list goes through a file, not a process substitution, so that find failing
 # (an unreadable directory, say) is seen rather than yielding a partial list.
