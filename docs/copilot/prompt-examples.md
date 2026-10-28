@@ -44,7 +44,7 @@ DocumentController in the DSH project.
 
 Requirements:
 - Test class name: DocumentControllerTest
-- Mock service dependencies with @MockBean
+- Mock service dependencies with @MockitoBean
 - Test cases for each endpoint:
   - POST /api/v1/documents: success (expected status 202)
   - POST /api/v1/documents: validation error (expected status 400)

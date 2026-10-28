@@ -667,7 +667,7 @@ which no wave plans, and the Firestore emulator, which R4 makes a `gcp` run.
 | Layer | Target | Profile | Where its values come from |
 |---|---|---|---|
 | 1. Unit | no Spring context | none | nothing to configure. A leaked profile cannot reach it |
-| 2. Spring context | a context in the test JVM, `@MockBean` for every external service | named by every test, with `@ActiveProfiles` or `--spring.profiles.active` (R10) | `application.properties`, then `application-test.properties` (P25) |
+| 2. Spring context | a context in the test JVM, `@MockitoBean` for every external service | named by every test, with `@ActiveProfiles` or `--spring.profiles.active` (R10) | `application.properties`, then `application-test.properties` (P25) |
 | 3. Over the wire | the application forked by Maven, real services in Docker | passed as an argument by the Maven profile | arguments, as `--mongo.*` are today (`#46`); emulators replace the containers with `#49` |
 | 4. External client | the same forked server | the same | the base URL only |
 | 5a. Acceptance, deployed | `dsh-dev` after a `DEVELOP` deploy; `dsh-staging` after a staging deploy | `gcp`, set by the deployment | the layer-3 or layer-4 tests with their base URL pointed at the deployment; they write data |

@@ -12,7 +12,7 @@ As a Backend Developer (see /.github/roles.md), generate JUnit 5 (Jupiter) unit 
 
 Requirements:
 - Test class name: [ServiceName]Test
-- No Spring context: no @SpringBootTest, no slice annotation, no @MockBean
+- No Spring context: no @SpringBootTest, no slice annotation, no @MockitoBean
   (see "Unit vs integration" in testing-patterns.md)
 - Follow Arrange/Act/Assert pattern
 - Use Mockito (@ExtendWith(MockitoExtension.class), @Mock, @InjectMocks) to mock:
@@ -56,7 +56,7 @@ Requirements:
 - Test class name: [ControllerName]IT, in the module's integration package
   (e.g. com.mriss.dsh.restapi.integration); a slice starts a Spring context, so it is a
   layer-2 integration test
-- Mock service dependencies with @MockBean
+- Mock service dependencies with @MockitoBean
 - Test cases for each endpoint:
   - [HTTP method] [path]: success (expected status [code])
   - [HTTP method] [path]: validation error (expected status 400)
