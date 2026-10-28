@@ -9,14 +9,12 @@ import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import com.mriss.dsh.restapi.config.SwaggerConfig;
 import com.mriss.dsh.restapi.dto.DocumentStatusDto;
 import com.mriss.dsh.restapi.dto.TokenDto;
 
 /**
- * Unit tests for {@link DshRestApplication}, its DTOs and {@link SwaggerConfig},
- * with no Spring context. The context itself is exercised by
- * {@code integration.DshRestApplicationIT}.
+ * Unit tests for {@link DshRestApplication} and its DTOs, with no Spring context.
+ * The context itself is exercised by {@code integration.DshRestApplicationIT}.
  */
 public class DshRestApplicationTest {
 
@@ -72,14 +70,5 @@ public class DshRestApplicationTest {
         TokenDto dto2 = new TokenDto("T2", "M2");
         assertEquals("T2", dto2.getToken());
         assertEquals("M2", dto2.getMessage());
-    }
-
-    /**
-     * Verifies SwaggerConfig produces a non-null Docket bean.
-     */
-    @Test
-    public void testSwaggerConfig() {
-        SwaggerConfig config = new SwaggerConfig();
-        assertNotNull(config.newsApi(), "Docket must not be null");
     }
 }

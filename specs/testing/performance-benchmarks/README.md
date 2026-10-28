@@ -30,7 +30,7 @@ This directory contains performance benchmark specifications and targets for the
 
 - **JMeter** – load testing scripts (`.jmx` files)
 - **Gatling** – Scala-based load tests (`.scala` files)
-- **JUnit 5 `@Timeout`** – per-test SLA enforcement in integration tests
+- **JUnit Jupiter `@Timeout`** – per-test SLA enforcement in integration tests
 
 ## References
 

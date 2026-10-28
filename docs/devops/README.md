@@ -71,7 +71,7 @@ table below) and matches it; no trigger shown here is invented.
 
 | Workflow | Trigger(s) | What it gates / does |
 | --- | --- | --- |
-| `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B -U install` while the parent is a `SNAPSHOT`, `mvn -B install` otherwise). That single command *is* the coverage gate: `jacoco:check` enforces a 95% LINE and BRANCH minimum per module, and `enforce-coverage-data-exists` fails a module that produced no coverage data at all. Both are bound to `verify` and inherited from `parent-poms` rather than declared here. This is the primary correctness gate. |
+| `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B install`). That single command *is* the coverage gate: `jacoco:check` enforces a 95% LINE and BRANCH minimum per module, and `enforce-coverage-data-exists` fails a module that produced no coverage data at all. Both are bound to `verify` and inherited from `parent-poms` rather than declared here. This is the primary correctness gate. |
 | `spec-validation.yml` | `push` and `pull_request`, both scoped to paths `specs/**`, `docs/**`, `.github/copilot-instructions.md`, `.github/copilot/**`, `.github/roles.md`, `.github/scripts/**`, `.github/skills/**`, `.github/workflows/spec-validation.yml`, `.markdownlint.json`, `CLAUDE.md`, `.claude/**` | Lints the OpenAPI spec with Redocly, lints Markdown under `specs/`, `.github/`, `docs/` (excluding `docs/wiki/**`), `CLAUDE.md` and `.claude/` with markdownlint, and verifies that every path referenced from `copilot-instructions.md` resolves. That last check is enforcing: it fails the job on an unresolved reference, on a source file it cannot read, and when it extracts no references at all. Its logic is covered by `.github/scripts/check-spec-references.test.sh`, which the same job runs first. |
 | `api-testing.yml` | `push` to `DEVELOP` and `pull_request`, both scoped to paths `dsh-rest-api/**`, `specs/api/**`; `workflow_dispatch` | Builds the full project, boots `dsh-rest-api` against a RabbitMQ service container, and runs the Postman collections in `specs/api/postman/` via Newman. |
 | `documentation-sync.yml` | `push` to `DEVELOP`, scoped to paths `specs/api/openapi/**`, `specs/architecture/**`, `specs/features/**`, `docs/wiki/**`; `workflow_dispatch` | Two jobs: regenerates HTML API docs from the OpenAPI spec into `docs/api/`, and refreshes the table of contents in `specs/features/*.md` and `specs/architecture/*.md`. Both auto-commit with `[skip ci]`. |
@@ -285,14 +285,13 @@ registry.
 Every module in this repository inherits from `com.mriss.mriss-parent:products`, resolved from
 the `MRISS-Projects/maven-repo` GitHub Packages registry (see the `<parent>` block in the root
 `pom.xml`). CI (`ci.yml`) configures a Maven `settings.xml` with credentials for that registry and
-builds with `mvn -B -U install`, as does `api-testing.yml`. Parent version upgrades are a
+builds with `mvn -B install`, as does `api-testing.yml`. Parent version upgrades are a
 deliberate, manual edit to the root `pom.xml`, not something a workflow does automatically.
 
-The current pin is `com.mriss.mriss-parent:products:3.11.2-SNAPSHOT`, since `#119`: a parent-poms
-hotfix line that carries `#119`'s and `#120`'s upstream changes (`parent-poms#112`, and `#120`'s
-own issue in milestone `3.11.2-SNAPSHOT`). Both workflows pass `-U` while it lasts. Its exit is
-`#120`, which releases 3.11.2, re-pins to it and drops `-U`. A released parent resolves to the same
-POM on every run, so the build is reproducible, and then neither workflow passes `-U`.
+The current pin is `com.mriss.mriss-parent:products:3.11.2`, since `#120`: the parent-poms hotfix
+release of 2026-10-28 that carries `#119`'s and `#120`'s upstream changes (`parent-poms#112` and
+`parent-poms#114`, Spring Boot 4.1.1). A released parent resolves to the same POM on every run, so
+the build is reproducible, and neither workflow passes `-U`.
 
 **A temporary `SNAPSHOT` pin is how parent-poms work is validated end to end.** `CLAUDE.md`'s round
 trip points the root `pom.xml` at parent-poms' `-SNAPSHOT` before parent-poms releases. `#127` did so

@@ -43,8 +43,8 @@ As a Backend Developer (see /.github/roles.md), generate @WebMvcTest tests for
 DocumentController in the DSH project.
 
 Requirements:
-- Test class name: DocumentControllerTest
-- Mock service dependencies with @MockBean
+- Test class name: DocumentControllerIT, in an integration package (a slice starts a context)
+- Mock service dependencies with @MockitoBean
 - Test cases for each endpoint:
   - POST /api/v1/documents: success (expected status 202)
   - POST /api/v1/documents: validation error (expected status 400)
@@ -56,7 +56,7 @@ Requirements:
 - Follow patterns in /.github/copilot/rules/testing-patterns.md
 ```
 
-**Expected Output:** A complete `DocumentControllerTest` class with test methods following the AAA pattern.
+**Expected Output:** A complete `DocumentControllerIT` class with test methods following the AAA pattern.
 
 ---
 

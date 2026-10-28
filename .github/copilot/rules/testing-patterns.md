@@ -7,7 +7,7 @@ Four layers, most tests in the first. Each has a trigger that makes it required.
 | Layer | What | Required when | Runs |
 |---|---|---|---|
 | 1. Unit | Mockito, no Spring context, REST entry points included | always; the 95% gate counts only this layer | everywhere, `mvn -B clean install` |
-| 2. Spring context | `*IT`, full or sliced context, `@MockBean` for every external service, MockMvc or Spring's test framework for REST entry points | a story creates or changes a Spring bean class, REST entry points included | staging, deploy, local gate |
+| 2. Spring context | `*IT`, full or sliced context, `@MockitoBean` for every external service, MockMvc or Spring's test framework for REST entry points | a story creates or changes a Spring bean class, REST entry points included | staging, deploy, local gate |
 | 3. Over the wire | `*HttpIT`, the application forked by Maven, real ports, real external services in Docker | a story adds a REST endpoint or changes one's contract | staging, deploy, local gate |
 | 4. External client | Postman collections run by newman: a consumer that sees only the API contract, not the internals | when collections exist, `#137` | staging, deploy, local gate |
 
@@ -37,7 +37,7 @@ Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does
 
 ## Frameworks & Libraries
 
-- **JUnit 5 (Jupiter)** (`@Test`, `@BeforeEach`, `@ExtendWith`, `Assertions`) — every test in the
+- **JUnit Jupiter** (`@Test`, `@BeforeEach`, `@ExtendWith`, `Assertions`) — every test in the
   repository is Jupiter, since `#119`. JUnit 4 and the vintage engine are banned by the root
   `pom.xml`'s `enforce-no-junit4`, so a JUnit 4 import does not compile. Jupiter's version is the one
   Spring Boot's BOM manages. `Assertions` takes the message **last**, `assertEquals(expected, actual,
@@ -72,9 +72,10 @@ Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does
   test that genuinely exercises the context becomes an `*IT`.
 - CI enforces the rule with `.github/scripts/check-unit-tests-context-free.sh`. It exempts only an
   `*IT` or `*IntegrationTest` inside an `integration` package, and fails any other test
-  referencing `org.springframework.test.context`,
+  referencing `org.springframework.test.context` (`@MockitoBean` among them),
   `org.springframework.boot.test.context`, `org.springframework.boot.test.autoconfigure` (every
-  slice), `org.springframework.boot.test.mock.mockito` (`@MockBean`, `@SpyBean`),
+  slice before Boot 4), `org.springframework.boot.<tech>.test.autoconfigure` (Boot 4's slices,
+  such as `@WebMvcTest`), `org.springframework.boot.test.mock.mockito` (`@MockBean`, `@SpyBean`),
   `webAppContextSetup`, or a hand-built `new …ApplicationContext(`.
 
 ## Naming Conventions
@@ -119,14 +120,20 @@ is an `*IT` in the `integration` package, as `DocumentResourceIT` does:
 - Verify HTTP status codes, response body structure, and headers
 - Test validation errors by sending invalid payloads
 
+On Spring Boot 4 each slice lives in its technology's test module, which `spring-boot-starter-test`
+does not bring: `@WebMvcTest` needs `spring-boot-webmvc-test` in test scope.
+
 ```java
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 @WebMvcTest(DocumentController.class)
 public class DocumentControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private DocumentService documentService;
 
     @Test
@@ -143,9 +150,9 @@ public class DocumentControllerIT {
 
 - Named `*IT`, in the module's `integration` package — the name is the selector, no tag is needed
 - **Required when a story creates or changes a Spring bean class**, REST entry points included
-- Every external service is a `@MockBean`; nothing leaves the JVM
+- Every external service is a `@MockitoBean`; nothing leaves the JVM
 - Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` for a full context in the test JVM. That is
-  still in-process, with `@MockBean`s standing in for RabbitMQ; it is not layer 3
+  still in-process, with `@MockitoBean`s standing in for RabbitMQ; it is not layer 3
 - Clean up test data in `@AfterEach`
 - No `@RunWith` or `@ExtendWith(SpringExtension.class)`: `@SpringBootTest` and every slice, such as
   `@WebMvcTest`, already register `SpringExtension`
@@ -211,7 +218,7 @@ lifecycle is `#137`. Until then no story is required to add one.
 
 - Reference benchmark targets in `/specs/testing/performance-benchmarks/`
 - Use JMeter or Gatling for load tests; store scripts in `/specs/testing/performance-benchmarks/`
-- Annotate performance-sensitive tests with a JUnit 5 `@Tag("performance")`
+- Annotate performance-sensitive tests with a JUnit Jupiter `@Tag("performance")`
 
 ## Test Execution
 

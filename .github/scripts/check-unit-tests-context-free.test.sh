@@ -144,6 +144,30 @@ INNER
 run_checker "$d"
 check "a @MockBean import is a violation" 1 "FooTest.java"
 
+# --- 5b. a Boot 4 slice import is a violation ---------------------------------
+# Boot 4 moved each slice to org.springframework.boot.<tech>.test.autoconfigure.
+d="$(new_case)"
+write "$d" FooTest.java <<'INNER'
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+
+public class FooTest {
+}
+INNER
+run_checker "$d"
+check "a Boot 4 @WebMvcTest import is a violation" 1 "FooTest.java"
+
+# --- 5c. a @MockitoBean import is a violation ---------------------------------
+# Matched by org.springframework.test.context; kept so a narrowing cannot drop it.
+d="$(new_case)"
+write "$d" FooTest.java <<'INNER'
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+public class FooTest {
+}
+INNER
+run_checker "$d"
+check "a @MockitoBean import is a violation" 1 "FooTest.java"
+
 # --- 6. webAppContextSetup is a violation; standaloneSetup is not -------------
 d="$(new_case)"
 write "$d" FooTest.java <<'INNER'

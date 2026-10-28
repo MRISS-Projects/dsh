@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.restapi.DshRestApplication;
@@ -28,11 +28,11 @@ public class DshRestApplicationIT {
     final static Logger logger = LoggerFactory.getLogger(DshRestApplicationIT.class);
 
     /** Mock document store – stands in for the selected implementation. */
-    @MockBean
+    @MockitoBean
     private DocumentDao documentDao;
 
     /** Mock RabbitMQ – prevents the queue service impl from connecting to a broker. */
-    @MockBean
+    @MockitoBean
     private DocumentQueueService documentQueueService;
 
     @Autowired

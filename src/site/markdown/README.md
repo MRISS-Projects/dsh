@@ -373,8 +373,8 @@ curl -F title="My document" -F contents=@/path/to/file.pdf \
 curl http://localhost:8080/v1/dsh/document/status/<token>
 ```
 
-The API description, in Swagger 2 format, is served at
-`http://localhost:8080/v2/api-docs?group=dsh-app`. The Swagger UI is not served in 0.3.0; see
+The API description, in OpenAPI 3 format, is served at
+`http://localhost:8080/v3/api-docs`. The Swagger UI is not served; see
 [#144](https://github.com/MRISS-Projects/dsh/issues/144).
 
 ## Release Notes

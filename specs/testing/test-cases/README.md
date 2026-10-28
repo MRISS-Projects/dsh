@@ -24,6 +24,6 @@ Each test case should include:
 
 ## Automated vs Manual Tests
 
-- Automated test cases should be implemented in JUnit 5 following `/.github/copilot/rules/testing-patterns.md`
+- Automated test cases should be implemented in JUnit Jupiter following `/.github/copilot/rules/testing-patterns.md`
 - Manual test cases are documented here for exploratory and UAT testing
 - Postman-based API test cases are stored in `../../api/postman/`
