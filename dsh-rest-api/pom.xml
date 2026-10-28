@@ -64,6 +64,10 @@
 		<!-- <artifactId>spring-boot-starter-tomcat</artifactId> -->
 		<!-- <scope>provided</scope> -->
 		<!-- </dependency> -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+		</dependency>
 	</dependencies>
 	<!-- <dependencyManagement>...</dependencyManagement> -->
 	<!-- <modules>...</modules> -->

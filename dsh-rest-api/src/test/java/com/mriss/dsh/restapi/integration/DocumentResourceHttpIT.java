@@ -148,6 +148,16 @@ public class DocumentResourceHttpIT {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void apiDocs_shouldListTheDocumentEndpoints() {
+		ResponseEntity<Map<String, Object>> response = rest.exchange(baseUrl + "/v3/api-docs", HttpMethod.GET, null, JSON);
+
+		assertJson(response, HttpStatus.OK);
+		assertThat((Map<String, Object>) response.getBody().get("paths"))
+				.containsOnlyKeys("/v1/dsh/document/submit", "/v1/dsh/document/status/{token}");
+	}
+
 	private ResponseEntity<Map<String, Object>> submit(String title, boolean withContents) {
 		MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
 		form.add("title", title);
