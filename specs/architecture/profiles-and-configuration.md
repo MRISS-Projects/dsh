@@ -64,7 +64,7 @@ On `DEVELOP` at `a760552f8`.
 | Six workflows carry dummy `mongo.*` values so that the build does not fail | `ci.yml`, `api-testing.yml`, `deploy.yml`, `staging.yml`, `release.yml`, `hotfix.yml` |
 | Every module filters `src/main/resources` with both default delimiters, `${…}` and `@…@` | `dsh-rest-api/pom.xml:113-120`; no `delimiter` in either parent POM |
 | One Spring placeholder already sits in a filtered file: `${spring.rabbitmq.host:localhost}`, and the port beside it. `dsh-data` takes its own XML context out of filtering | `dsh-rest-api/src/main/resources/enqueue-docId-context.xml:45`; `dsh-data/pom.xml:46-64`. Why the two survive filtering was not probed; presumably no Maven property has a name that includes the `:default` part |
-| Spring Boot is `4.1.1` since `#120`, managed in parent-poms | `products-3.11.2.pom:49` |
+| Spring Boot is `4.1.1`, managed in parent-poms. Updated by `#120`; at `a760552f8` it was `2.7.18`, at `products-3.10.0.pom:80` | `products-3.11.2.pom:49` |
 | MongoDB and RabbitMQ are wired in XML through `@ImportResource`, unconditionally | `dshApplicationContext.xml`, `enqueue-docId-context.xml` |
 | `dsh-rest-api`'s test `application.properties` repeats the main one | the two files; P24 explains why it has to |
 
