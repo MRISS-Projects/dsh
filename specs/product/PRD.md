@@ -87,7 +87,7 @@ a milestone.
 | 1, through upstream step 5 | `3.10.0-SNAPSHOT`, now `3.10.0` | all six closed; released on 2026-10-03 |
 | 1, upstream step 6 | `3.11.0-SNAPSHOT`, now `3.11.0` | `#98`, `#106`; both closed; released on 2026-10-04, DSH not re-pinned |
 | 1, for `#158` | `3.11.1-SNAPSHOT`, a hotfix line opened on 2026-10-20 | `#110`; closed; released as `3.11.1` on 2026-10-20, DSH re-pinned by `#158` |
-| 1, for `#119` and `#120` | `3.11.2-SNAPSHOT`, a hotfix line opened on 2026-10-21 | `#112`; closed; DSH pinned to the SNAPSHOT by `#119`, released as `3.11.2` by `#120` |
+| 1, for `#119` and `#120` | `3.11.2-SNAPSHOT`, a hotfix line opened on 2026-10-21 | `#112`, `#114`; both closed; DSH pinned to the SNAPSHOT by `#119`, released as `3.11.2` on 2026-10-28, DSH re-pinned by `#120` |
 | 4 | `3.12.0-SNAPSHOT` | `#90`; `#109` joined on 2026-10-10 |
 | 7 | `3.13.0-SNAPSHOT` | `#91`, since 2026-10-10 |
 | 10 | `3.14.0-SNAPSHOT` | `#92`, since 2026-10-10 |
@@ -1032,10 +1032,12 @@ are.
    `#177` — **closed** — PR #178. **`#119` was done on 2026-10-21:**
    `#119` — **closed** — PR #179, with its upstream half, `parent-poms#112`, on the hotfix line
    3.11.2-SNAPSHOT. Step 4 is complete.
-5. `#120`, after `#119` for the reason given with the triaged issues.
+5. `#120`, after `#119` for the reason given with the triaged issues. **Done on 2026-10-28:**
+   `#120` — **closed** — PR #180, with its upstream half, `parent-poms#114`, released with
+   `parent-poms#112` as parent-poms 3.11.2.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
-7. `#144`, then `#137`. Both are about the REST API, and both want the Spring Boot line `#120`
-   settles.
+7. `#144`, then `#137`. Both are about the REST API, and both waited for the Spring Boot line,
+   which `#120` settled at 4.1.1.
 8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
    the wiki's source moves into `docs/wiki/`, and task 4's reachability check needs that answer.
    That move would also retire `wiki-sync.yml`, so its disabling for inactivity (task 1's outcome)
@@ -1066,7 +1068,7 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   Spring and Maven. It underpins selecting a transport or a persistence implementation by profile,
   which ADR-003 (task 2 below) relies on.
 - `#119` — **closed** — PR #179. Migrate every test to JUnit 5 and drop the vintage engine.
-- `#120` — Upgrade Spring Boot to a supported line, version chosen by analysis.
+- `#120` — **closed** — PR #180. Upgrade Spring Boot to a supported line, version chosen by analysis.
 
   Like `#48`, neither is an ADR-001 phase task. Both were raised on 2026-09-25, while
   specifying `#112`, and they are ordered: `#119` lands first, because Spring Boot 3's
@@ -1083,8 +1085,13 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   because parent-poms manages `mockito-core` and left the extension to Spring Boot's BOM. It could
   not be folded into `#119`, because the change lives in another repository. It went on a new
   hotfix line, 3.11.2-SNAPSHOT, rather than `3.12.0-SNAPSHOT`, which carries Wave 4's work. DSH
-  stays pinned to that SNAPSHOT until `#120`, which opens its own upstream issue on the same
-  milestone, releases it as 3.11.2 and re-pins.
+  stayed pinned to that SNAPSHOT until `#120`.
+
+  **`parent-poms#114` was opened from `#120` on 2026-10-28.** Move `products` to Spring Boot 4.1.1
+  and drop what Boot 4 leaves dead. `#120`'s analysis chose 4.1.1, and found that the version moves
+  in parent-poms, where it is managed for every product. It could not be folded into `#120`, because
+  the change lives in another repository. It went on the same hotfix line as `parent-poms#112`, and
+  parent-poms released both as 3.11.2 on 2026-10-28. `#120` merged pinned to that release.
 - `#127` — **closed** — PR #149. Deploy the snapshot site from DEVELOP, as parent-poms' deploy.yml does.
 - `#128` — **closed** — PR #156. Point the wiki's release link at releases/products/dsh once 0.3.0 is released.
 
@@ -1126,7 +1133,9 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   changed documentation only, and the fix is a change to `dsh-rest-api`, so the 0.3.0 README says
   the UI is not served. It sits in this wave rather than Wave 2 because it does not depend on
   ADR-003, and because the choice it leaves open, Springfox's starter or springdoc-openapi, turns on
-  the Spring Boot line `#120` settles.
+  the Spring Boot line `#120` settles. `#120` settled that choice on 2026-10-28: it replaced
+  Springfox with springdoc-openapi, which serves the description at `/v3/api-docs`, and left the
+  UI to this issue.
 
 - `#148` — A dsh-release skill that runs a DSH release or hotfix end to end, with the checks 0.3.0
   and 0.3.2 taught us.
@@ -1832,6 +1841,11 @@ naming the task. It came out of `#48` three days earlier and was never started.
     to a fix, and shipped as a patch so that 3.12.0's open issues did not hold it up. Its
     `SNAPSHOT` pin also did not last to the end of Wave 1: parent-poms released 3.11.1 within the
     story, and `#158` merged pinned to the release.
+  - **3.11.2 departed from the same two rules, by the owner's decision of 2026-10-21 (`#119`'s
+    spec, §3.1, decision 3).** It put `#120`'s upstream change on 3.11.2 before `#120`'s analysis
+    had chosen a version, so that 3.12.0's open issues did not hold `#119` and `#120` up. The
+    analysis chose Spring Boot 4.1.1, so a major upgrade shipped as a patch. Its pin also ended
+    within Wave 1: parent-poms released 3.11.2 within `#120`, and `#120` merged pinned to the release.
   - **A patch version carries fixes only.** A wave that needs new upstream behaviour, rather than a
     fix, uses the full round trip in `CLAUDE.md` against parent-poms' next minor version.
   - **The snapshot must be deployed before it is pinned.** As the entry above records, a hotfix
