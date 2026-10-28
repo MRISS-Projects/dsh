@@ -721,7 +721,8 @@ Desktop running.
 
 - Branch `issue-114-spring-boot-4-1-1` off `master` at `dfe8ecb2`. `5548ebe4` is the spec,
   `specs/114-spring-boot-4-1-1.md`; `98d2c84b` the change to `products/pom.xml`, 9 lines in and 48
-  out.
+  out. Opened on 2026-10-28 as
+  [`parent-poms#115`](https://github.com/MRISS-Projects/parent-poms/pull/115), into `master`.
 - `mvn -B install` there: `maven exit=0`. The installed `products-3.11.2-SNAPSHOT.pom` holds
   `spring-boot.version` 4.1.1, `springdoc.version` 3.1.1 and both `springdoc` entries; the grep for
   `springfox`, `solr`, `byte-buddy`, `jaxb` and `swagger-annotations` finds nothing.
