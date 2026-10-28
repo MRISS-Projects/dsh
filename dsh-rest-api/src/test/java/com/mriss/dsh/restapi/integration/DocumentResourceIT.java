@@ -26,13 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,7 +44,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.RequestContextFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mriss.dsh.data.document.dao.DocumentDao;
 import com.mriss.dsh.data.models.Document;
 import com.mriss.dsh.data.models.DocumentStatus;
@@ -55,6 +54,8 @@ import com.mriss.dsh.restapi.dto.TokenDto;
 import com.mriss.dsh.restapi.rest.DocumentResource;
 import com.mriss.dsh.restapi.service.DocumentQueueService;
 import com.mriss.dsh.restapi.service.DocumentEnqueueMessageHandler;
+
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for {@link DocumentResource} using Spring MockMvc.
@@ -82,11 +83,11 @@ public class DocumentResourceIT {
     protected MockHttpServletRequest request;
 
     /** Mock document store – the tests set the statuses it returns. */
-    @MockBean
+    @MockitoBean
     private DocumentDao dao;
 
     /** Mock RabbitMQ queue service – prevents any real broker connection. */
-    @MockBean
+    @MockitoBean
     private DocumentQueueService documentQueueService;
 
     @Autowired
