@@ -596,7 +596,7 @@ spec, which approves §3.2's text.
   Expected: `maven exit=0`; the installed POM shows `spring-boot.version` 4.1.1 and the two
   `springdoc` entries, and none of the deleted names. Commit
   `build(#114): move products to Spring Boot 4.1.1 and manage springdoc`.
-- [ ] **Step 4:** Push and open the pull request into `master`, after the owner approves its text.
+- [x] **Step 4:** Push and open the pull request into `master`, after the owner approves its text.
   Its merge is needed only before §3.8 step 3.
 
 ### Task 3: DSH migrates to Boot 4.1.1 (AC003)
