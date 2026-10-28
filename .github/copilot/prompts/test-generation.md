@@ -7,7 +7,7 @@ Use these prompt templates with GitHub Copilot Chat to generate consistent tests
 ## Unit Test for Service
 
 ```text
-As a Backend Developer (see /.github/roles.md), generate JUnit 5 (Jupiter) unit tests for
+As a Backend Developer (see /.github/roles.md), generate JUnit Jupiter unit tests for
 [ServiceName] in the DSH project.
 
 Requirements:
@@ -113,8 +113,8 @@ As a Backend Developer (see /.github/roles.md), generate a performance test for
 [OperationName] in the DSH project.
 
 Requirements:
-- Mark with a JUnit 5 @Tag("performance")
-- Measure execution time using [JUnit 5 assertTimeout(...) / Micrometer]
+- Mark with a JUnit Jupiter @Tag("performance")
+- Measure execution time using [JUnit Jupiter assertTimeout(...) / Micrometer]
 - Target: complete [operation] within [X] ms for [input size]
 - Test with dataset from /dsh-test-dataset/
 - Reference benchmark targets in /specs/testing/performance-benchmarks/

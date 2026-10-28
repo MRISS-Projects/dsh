@@ -37,7 +37,7 @@ Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does
 
 ## Frameworks & Libraries
 
-- **JUnit 5 (Jupiter)** (`@Test`, `@BeforeEach`, `@ExtendWith`, `Assertions`) — every test in the
+- **JUnit Jupiter** (`@Test`, `@BeforeEach`, `@ExtendWith`, `Assertions`) — every test in the
   repository is Jupiter, since `#119`. JUnit 4 and the vintage engine are banned by the root
   `pom.xml`'s `enforce-no-junit4`, so a JUnit 4 import does not compile. Jupiter's version is the one
   Spring Boot's BOM manages. `Assertions` takes the message **last**, `assertEquals(expected, actual,
@@ -119,6 +119,9 @@ is an `*IT` in the `integration` package, as `DocumentResourceIT` does:
 - Test only the web layer; mock all service dependencies
 - Verify HTTP status codes, response body structure, and headers
 - Test validation errors by sending invalid payloads
+
+On Spring Boot 4 each slice lives in its technology's test module, which `spring-boot-starter-test`
+does not bring: `@WebMvcTest` needs `spring-boot-webmvc-test` in test scope.
 
 ```java
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -215,7 +218,7 @@ lifecycle is `#137`. Until then no story is required to add one.
 
 - Reference benchmark targets in `/specs/testing/performance-benchmarks/`
 - Use JMeter or Gatling for load tests; store scripts in `/specs/testing/performance-benchmarks/`
-- Annotate performance-sensitive tests with a JUnit 5 `@Tag("performance")`
+- Annotate performance-sensitive tests with a JUnit Jupiter `@Tag("performance")`
 
 ## Test Execution
 

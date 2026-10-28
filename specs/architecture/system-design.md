@@ -92,7 +92,7 @@ Document Smart Highlights (DSH) is a multi-module Java/Spring Boot application t
 | Build | Maven (multi-module) |
 | Persistence | In memory (default) |
 | CI | GitHub Actions |
-| Testing | JUnit 5, Mockito, AssertJ |
+| Testing | JUnit Jupiter, Mockito, AssertJ |
 
 ## Cross-Cutting Concerns
 

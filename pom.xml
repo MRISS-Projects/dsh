@@ -219,7 +219,7 @@
                                         <exclude>junit:junit</exclude>
                                         <exclude>org.junit.vintage:*</exclude>
                                     </excludes>
-                                    <message>Every DSH test is JUnit 5 (#119): no module may depend on JUnit 4 or the vintage engine, directly or transitively. A library that drags junit:junit in needs an exclusion, or a version that does not.</message>
+                                    <message>Every DSH test is JUnit Jupiter (#119): no module may depend on JUnit 4 or the vintage engine, directly or transitively. A library that drags junit:junit in needs an exclusion, or a version that does not.</message>
                                 </bannedDependencies>
                             </rules>
                             <fail>true</fail>
