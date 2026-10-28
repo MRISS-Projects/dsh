@@ -530,7 +530,7 @@ documents and the probes. The release and the re-pin come after step 5's review.
 
 ### Task 1: Baseline (AC003, AC004)
 
-- [ ] **Step 1:** Gate 1 on the untouched branch:
+- [x] **Step 1:** Gate 1 on the untouched branch:
 
   ```bash
   mkdir -p .logs
@@ -541,7 +541,7 @@ documents and the probes. The release and the re-pin come after step 5's review.
   ```
 
   Expected: `maven exit=0`.
-- [ ] **Step 2:** The integration baseline, Docker running:
+- [x] **Step 2:** The integration baseline, Docker running:
 
   ```bash
   mvn -B clean install -DintegrationTests > .logs/mvn-clean-install-it-baseline.log 2>&1 &
@@ -551,7 +551,7 @@ documents and the probes. The release and the re-pin come after step 5's review.
   ```
 
   Expected: `maven exit=0`, or a `#142` red, rerun once.
-- [ ] **Step 3:** Record the per-module surefire and failsafe totals in §7:
+- [x] **Step 3:** Record the per-module surefire and failsafe totals in §7:
 
   ```bash
   grep -E '^\[(INFO|WARNING|ERROR)\] (Building DSH|Tests run: [0-9]+)' .logs/mvn-clean-install-baseline.log | grep -v ' - in '
@@ -577,12 +577,12 @@ spec, which approves §3.2's text.
 
   Done on 2026-10-28: [`parent-poms#114`](https://github.com/MRISS-Projects/parent-poms/issues/114).
   Its number was written into this spec, and the spec was committed only then.
-- [ ] **Step 2:** Branch: `git checkout master && git pull && git checkout -b issue-114-spring-boot-4-1-1`.
+- [x] **Step 2:** Branch: `git checkout master && git pull && git checkout -b issue-114-spring-boot-4-1-1`.
   Write the spec in `#112`'s layout: the header table (issue, milestone `3.11.2-SNAPSHOT`, branch,
   "Asked for by `MRISS-Projects/dsh#120`"), goal, "What is true today" from §2.1's parent-poms rows,
   the design of §3.2, ACs (the entries are as §3.2 says; DSH builds green against
   `3.11.2-SNAPSHOT`), and tasks. Commit `docs(#114): spec for moving products to Spring Boot 4.1.1`.
-- [ ] **Step 3:** Make §3.2's change, then install:
+- [x] **Step 3:** Make §3.2's change, then install:
 
   ```bash
   mvn -B install > .logs/mvn-install.log 2>&1 &
@@ -605,23 +605,23 @@ spec, which approves §3.2's text.
 `application.properties`, `SwaggerConfigTest.java`, `DshRestApplicationTest.java`,
 `DshRestApplicationIT.java`, `DocumentResourceIT.java`.
 
-- [ ] **Step 1, red:** against Task 2's installed parent, `mvn -B clean install` to
+- [x] **Step 1, red:** against Task 2's installed parent, `mvn -B clean install` to
   `.logs/mvn-clean-install-red.log`. Expected: `maven exit=1`, failing on `dsh-rest-api`'s
   `io.springfox` dependencies having no version. Record the error line in §7.
-- [ ] **Step 2:** §3.3's POM changes, without the springdoc dependency. §3.4's `jakarta.servlet`
+- [x] **Step 2:** §3.3's POM changes, without the springdoc dependency. §3.4's `jakarta.servlet`
   import, the deletions of `SwaggerConfig`, `SwaggerConfigTest`, `testSwaggerConfig` and the two
   Springfox keys, `@MockitoBean`, and Jackson 3 in `DocumentResourceIT`.
-- [ ] **Step 3, green:** `mvn -B clean install` to `.logs/mvn-clean-install-boot4.log`. Expected:
+- [x] **Step 3, green:** `mvn -B clean install` to `.logs/mvn-clean-install-boot4.log`. Expected:
   `maven exit=0`; `dsh-data`'s total equal to the baseline; `dsh-rest-api`'s the baseline less 2.
-- [ ] **Step 4:** Commit `build(#120): move dsh-rest-api to Spring Boot 4.1.1 and drop Springfox`.
+- [x] **Step 4:** Commit `build(#120): move dsh-rest-api to Spring Boot 4.1.1 and drop Springfox`.
 
 ### Task 4: The OpenAPI description (AC005)
 
 **Files:** `DocumentResourceHttpIT.java`, `OpenApiConfigTest.java`, `OpenApiConfig.java`,
 `dsh-rest-api/pom.xml`, `application.properties`.
 
-- [ ] **Step 1:** Add §3.4's `apiDocs_shouldListTheDocumentEndpoints`.
-- [ ] **Step 2, red:** Docker running,
+- [x] **Step 1:** Add §3.4's `apiDocs_shouldListTheDocumentEndpoints`.
+- [x] **Step 2, red:** Docker running,
 
   ```bash
   mvn -B clean verify -DintegrationTests -pl dsh-rest-api -Dit.test=DocumentResourceHttpIT > .logs/mvn-verify-it-api-docs-red.log 2>&1 &
@@ -632,41 +632,41 @@ spec, which approves §3.2's text.
 
   Expected: `maven exit=1`, `apiDocs_shouldListTheDocumentEndpoints` failing on status 404, the
   other tests of the class passing (or a `#142` red, rerun once).
-- [ ] **Step 3, red:** add §3.4's `OpenApiConfigTest`; `mvn -B clean install -pl dsh-rest-api` to
+- [x] **Step 3, red:** add §3.4's `OpenApiConfigTest`; `mvn -B clean install -pl dsh-rest-api` to
   `.logs/mvn-clean-install-openapi-red.log`. Expected: `maven exit=1`, a compilation error naming
   `OpenApiConfig`.
-- [ ] **Step 4, green:** add the springdoc dependency of §3.3, `OpenApiConfig` and the
+- [x] **Step 4, green:** add the springdoc dependency of §3.3, `OpenApiConfig` and the
   `springdoc.paths-to-match` key. Run step 3's build, then step 2's. Expected: `maven exit=0` both.
-- [ ] **Step 5:** Commit `feat(#120): serve the OpenAPI description with springdoc at /v3/api-docs`.
+- [x] **Step 5:** Commit `feat(#120): serve the OpenAPI description with springdoc at /v3/api-docs`.
 
 ### Task 5: The guard (AC003)
 
 **Files:** `.github/scripts/check-unit-tests-context-free.test.sh`, `check-unit-tests-context-free.sh`.
 
-- [ ] **Step 1, red:** add §3.5's cases 5b and 5c; `bash .github/scripts/check-unit-tests-context-free.test.sh`.
+- [x] **Step 1, red:** add §3.5's cases 5b and 5c; `bash .github/scripts/check-unit-tests-context-free.test.sh`.
   Expected: a non-zero exit, 5b failing, 5c passing.
-- [ ] **Step 2, green:** §3.5's `PATTERN` and header. Run the test script, then the guard over the
+- [x] **Step 2, green:** §3.5's `PATTERN` and header. Run the test script, then the guard over the
   repository: `bash .github/scripts/check-unit-tests-context-free.sh`. Expected: both exit 0.
-- [ ] **Step 3:** Commit `ci(#120): the context-free guard finds Boot 4's slice packages`.
+- [x] **Step 3:** Commit `ci(#120): the context-free guard finds Boot 4's slice packages`.
 
 ### Task 6: The documents (AC003)
 
 **Files:** the rows of §3.7 but the re-pin; of the profiles document, only line 670.
 
-- [ ] **Step 1:** Make §3.7's changes to the READMEs, `testing-patterns.md`, `test-generation.md`,
+- [x] **Step 1:** Make §3.7's changes to the READMEs, `testing-patterns.md`, `test-generation.md`,
   `prompt-examples.md` and line 670 of `profiles-and-configuration.md`.
-- [ ] **Step 2:** `git grep -n -E 'MockBean|v2/api-docs|Swagger 2' -- ':!specs/stories' ':!docs/superpowers' ':!docs/wiki' ':!specs/product/PRD.md' ':!specs/features' ':!specs/architecture/ADR-*'`.
+- [x] **Step 2:** `git grep -n -E 'MockBean|v2/api-docs|Swagger 2' -- ':!specs/stories' ':!docs/superpowers' ':!docs/wiki' ':!specs/product/PRD.md' ':!specs/features' ':!specs/architecture/ADR-*'`.
   Expected: every hit is `@MockitoBean`, or names the guard's `boot.test.mock.mockito` alternative:
   the guard's header, its test case 5, and `testing-patterns.md`'s list of the guard's packages.
-- [ ] **Step 3:** markdownlint over the changed files, with `--config .markdownlint.json`. Expected:
+- [x] **Step 3:** markdownlint over the changed files, with `--config .markdownlint.json`. Expected:
   no error.
-- [ ] **Step 4:** Commit `docs(#120): @MockitoBean and the /v3/api-docs description`.
+- [x] **Step 4:** Commit `docs(#120): @MockitoBean and the /v3/api-docs description`.
 
 ### Task 7: The `#48` probes on 4.1.1 (AC007)
 
 **Files:** `specs/architecture/profiles-and-configuration.md`.
 
-- [ ] **Step 1:** Build the harness of §3.6 in `<scratchpad>/profile-probes-boot4`, its own git
+- [x] **Step 1:** Build the harness of §3.6 in `<scratchpad>/profile-probes-boot4`, its own git
   repository, with `spring-boot.version` 4.1.1. Run P0. Expected: §5.3's 25 lines exactly.
 - [ ] **Step 2:** Run P1 to P31 with P3b and P4b, as the findings' appendix records each, reverting
   the tree between probes. Keep each probe's output in `<scratchpad>/profile-probes-boot4/logs`.
@@ -676,12 +676,12 @@ spec, which approves §3.2's text.
 
 ### Task 8: The gates (AC002 to AC005)
 
-- [ ] **Step 1:** Gate 1, `mvn -B clean install` to `.logs/mvn-clean-install.log`. Expected:
+- [x] **Step 1:** Gate 1, `mvn -B clean install` to `.logs/mvn-clean-install.log`. Expected:
   `maven exit=0`; `dsh-rest-api`'s unit total the baseline less 1.
-- [ ] **Step 2:** Gate 3 over the reactor, `mvn -B clean install -DintegrationTests` to
+- [x] **Step 2:** Gate 3 over the reactor, `mvn -B clean install -DintegrationTests` to
   `.logs/mvn-clean-install-it.log`. Expected: `maven exit=0`, the IT total the baseline plus 1, or a
   `#142` red, rerun once and recorded.
-- [ ] **Step 3:** AC002:
+- [x] **Step 3:** AC002:
 
   ```bash
   mvn -B -o dependency:tree > .logs/mvn-dependency-tree.log 2>&1; echo "maven exit=$?"
@@ -690,7 +690,7 @@ spec, which approves §3.2's text.
   ```
 
   Expected: one version, 4.1.1; a count of 0.
-- [ ] **Step 4:** Write the totals and results into §7. Commit `docs(#120): record the gates`.
+- [x] **Step 4:** Write the totals and results into §7. Commit `docs(#120): record the gates`.
 
 ### Task 9: Before step 6, after step 5's review (AC002 to AC004, AC006)
 
@@ -707,4 +707,47 @@ spec, which approves §3.2's text.
 
 ## 7. Verification results
 
-Filled in as the tasks run.
+Filled in as the tasks run. Run on 2026-10-28, Maven 3.9.16, JDK 17.0.20.1, Windows 11, Docker
+Desktop running.
+
+### 7.1 Task 1, the baseline, on Boot 2.7.18
+
+| Run | Result | Unit tests | ITs |
+|---|---|---|---|
+| `mvn -B clean install` | `maven exit=0` | `dsh-data` 71, `dsh-rest-api` 44 | — |
+| `mvn -B clean install -DintegrationTests` | `maven exit=0`, no `#142` red | the same | `dsh-rest-api` 19: `DocumentResourceHttpIT` 5, `DocumentResourceIT` 7, `DshRestApplicationIT` 3, `PersistenceSelectionIT` 4 |
+
+### 7.2 Task 2, parent-poms
+
+- Branch `issue-114-spring-boot-4-1-1` off `master` at `dfe8ecb2`. `5548ebe4` is the spec,
+  `specs/114-spring-boot-4-1-1.md`; `98d2c84b` the change to `products/pom.xml`, 9 lines in and 48
+  out.
+- `mvn -B install` there: `maven exit=0`. The installed `products-3.11.2-SNAPSHOT.pom` holds
+  `spring-boot.version` 4.1.1, `springdoc.version` 3.1.1 and both `springdoc` entries; the grep for
+  `springfox`, `solr`, `byte-buddy`, `jaxb` and `swagger-annotations` finds nothing.
+
+### 7.3 Tasks 3 to 6, red then green
+
+| Step | Run | Result |
+|---|---|---|
+| Task 3 step 1, red | `mvn -B clean install` | `maven exit=1`: "'dependencies.dependency.version' for io.springfox:springfox-swagger-ui:jar is missing. @ line 83", the same for `springfox-swagger2` and `javax.xml.bind:jaxb-api` |
+| Task 3 step 3, green | `mvn -B clean install` | `maven exit=0`; `dsh-data` 71, `dsh-rest-api` 42, the baseline less 2 |
+| Task 4 step 2, red | `-DintegrationTests -pl dsh-rest-api -Dit.test=DocumentResourceHttpIT` | `maven exit=1`; `apiDocs_shouldListTheDocumentEndpoints`: "expected: 200 OK but was: 404 NOT_FOUND"; the other 5 passed |
+| Task 4 step 3, red | `mvn -B clean install -pl dsh-rest-api` | `maven exit=1`; "cannot find symbol: class OpenApiConfig" |
+| Task 4 step 4, green | both runs again | `maven exit=0` both; 43 unit tests; `DocumentResourceHttpIT` 6 of 6 |
+| Task 5 step 1, red | the guard's test script | exit 1; 5b failed ("expected exit 1, got 0"), 5c passed |
+| Task 5 step 2, green | the test script; the guard over the repository | exit 0, 14 cases and 1 skipped; exit 0 |
+| Task 6 step 2 | §6's `git grep` | only the guard's `boot.test.mock.mockito` alternative: its header, case 5, and `testing-patterns.md`'s list |
+| Task 6 step 3 | markdownlint over the six changed files | the one error is `README.md:521` MD012, in the generated release notes. It is there at `HEAD` too, and the root README is outside `CLAUDE.md`'s lint globs |
+
+`DocumentResourceIT` places `tools.jackson.databind.ObjectMapper` in its own import group after
+`com.*`, and both ITs place the `MockitoBean` import after `ActiveProfiles`, so that each block stays
+in order.
+
+### 7.4 Task 8, the gates against `3.11.2-SNAPSHOT`
+
+| Run | Result |
+|---|---|
+| Gate 1, `mvn -B clean install` | `maven exit=0`; `dsh-data` 71, `dsh-rest-api` 43, the baseline less 1; "All coverage checks have been met" in both |
+| Gate 3, `mvn -B clean install -DintegrationTests` | `maven exit=0`; 20 ITs, the baseline plus 1; no `#142` red |
+| AC002, `mvn -B -o dependency:tree` | `maven exit=0`; 66 `org.springframework.boot` artifacts, all 4.1.1; 0 hits for `io.springfox` or `spring-data-solr`, and 0 for `javax.servlet`, `javax.xml.bind`, `jackson-module-kotlin`, `spring-ws`, `junit:junit` or the vintage engine; `byte-buddy` 1.18.11, `mockito-core` 5.17.0, springdoc 3.1.1 |
