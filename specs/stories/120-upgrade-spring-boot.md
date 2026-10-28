@@ -702,14 +702,14 @@ spec, which approves §3.2's text.
 
 ### Task 9: Before step 6, after step 5's review (AC002 to AC004, AC006)
 
-- [ ] **Step 1:** §3.8 steps 3 to 5, each on the owner's go. Then confirm the release resolves:
+- [x] **Step 1:** §3.8 steps 3 to 5, each on the owner's go. Then confirm the release resolves:
   `mvn -B -U dependency:get -Dartifact=com.mriss.mriss-parent:products:3.11.2:pom` to
   `.logs/mvn-get-products-3.11.2.log`, `maven exit=0`.
-- [ ] **Step 2:** The re-pin of §3.8. `git grep -n -E '3\.11\.2-SNAPSHOT|-B -U'` over `pom.xml`,
+- [x] **Step 2:** The re-pin of §3.8. `git grep -n -E '3\.11\.2-SNAPSHOT|-B -U'` over `pom.xml`,
   `.github/workflows`, `CLAUDE.md` and `docs/devops/README.md`. Expected: no hit.
-- [ ] **Step 3:** Gate 1 and gate 3 again, as in Task 8 steps 1 and 2, and Task 8 step 3's tree.
+- [x] **Step 3:** Gate 1 and gate 3 again, as in Task 8 steps 1 and 2, and Task 8 step 3's tree.
   Expected: the same results.
-- [ ] **Step 4:** Commit `build(#120): pin the parent to the released parent-poms 3.11.2 and drop -U`.
+- [x] **Step 4:** Commit `build(#120): pin the parent to the released parent-poms 3.11.2 and drop -U`.
 - [ ] **Step 5:** Post §3.11's comment on `#144` and a comment on `#120` naming `parent-poms#114` and
   3.11.2, each after the owner approves its text. Report §3.11's second item to the owner.
 
@@ -795,3 +795,21 @@ acted on and 8 verified first. Each was checked before anything changed:
 
 The reviewer also suggested deciding whether production serves `/v3/api-docs`, which Springfox's
 `/v2/api-docs` did too. Left for Wave 2's `gcp` profile or `#144`; not changed here.
+
+### 7.7 Task 9, the release and the re-pin
+
+- The owner merged `parent-poms#115` (`26d7be1e`) and closed `parent-poms#114`. Milestone 26 then
+  had 0 open and 4 closed, and was renamed `3.11.2` on the owner's go. `Build` on `26d7be1e`:
+  success.
+- On the owner's go, `deploy.yml` with `release_type: releases`, run `40700934642`: success. Tag
+  `mriss-parent-3.11.2`; `master` at `3.12.0-SNAPSHOT`. The milestone was left open, for the owner.
+- `mvn -B -U dependency:get -Dartifact=com.mriss.mriss-parent:products:3.11.2:pom`: `maven exit=0`,
+  downloaded from `MRISS-Projects/maven-repo`. Its POM equals the tested `3.11.2-SNAPSHOT`'s but for
+  the version (`diff` empty), with `spring-boot.version` 4.1.1 at line 49.
+- The re-pin of §3.8. `git grep -n -E '3\.11\.2-SNAPSHOT|-B -U'` over `pom.xml`, `.github/workflows`,
+  `CLAUDE.md` and `docs/devops/README.md`: no hit.
+- Against the released parent: gate 1 `maven exit=0`, 71 and 43 unit tests, coverage met in both;
+  gate 3 `maven exit=0`, 20 ITs (`DocumentResourceHttpIT` 6, `DocumentResourceIT` 7,
+  `DshRestApplicationIT` 3, `PersistenceSelectionIT` 4), no `#142` red; `dependency:tree`
+  `maven exit=0`, 66 `org.springframework.boot` artifacts at 4.1.1, 0 for `io.springfox` or
+  `spring-data-solr`. The same as §7.4.

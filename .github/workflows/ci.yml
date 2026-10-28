@@ -206,13 +206,8 @@ jobs:
       - name: Unit tests must not start a Spring context
         run: bash .github/scripts/check-unit-tests-context-free.sh
 
-      # -U while the parent is pinned to parent-poms 3.11.2-SNAPSHOT (#119, until
-      # #120 re-pins to the released 3.11.2), here and in api-testing.yml: Maven
-      # otherwise refreshes SNAPSHOT metadata on its own daily schedule, and the
-      # ~/.m2 cache restored by setup-java varies in age, so the parent moves
-      # invisibly. Drop it with the re-pin. See docs/devops/README.md, "Parent POM".
       - name: Build and test all modules
-        run: mvn -B -U install --file pom.xml
+        run: mvn -B install --file pom.xml
 
       - name: Upload test reports
         if: always()

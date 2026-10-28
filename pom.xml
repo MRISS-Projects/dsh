@@ -5,13 +5,12 @@
 
     <!-- The section order in all POMs follow the suggestion in this link: http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <!-- #119: parent-poms 3.11.2-SNAPSHOT, the hotfix line that carries #119's and #120's upstream
-         changes. #120 re-pins to the released 3.11.2. CI passes -U while the pin lasts; see
-         docs/devops/README.md, "Parent POM". -->
+    <!-- parent-poms 3.11.2, the hotfix release that carries #119's and #120's upstream changes
+         (parent-poms#112, #114): Mockito's extension at Mockito's version, and Spring Boot 4.1.1. -->
     <parent>
         <groupId>com.mriss.mriss-parent</groupId>
         <artifactId>products</artifactId>
-        <version>3.11.2-SNAPSHOT</version>
+        <version>3.11.2</version>
     </parent>
 
     <!-- THE BASICS -->
