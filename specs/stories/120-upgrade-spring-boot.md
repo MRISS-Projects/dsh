@@ -323,7 +323,10 @@ declaration without a version fails the build by itself, and AC002's tree shows 
       }
   ```
 
-  `containsOnlyKeys` also proves `paths-to-match`: without it the actuator's paths would be listed.
+  `containsOnlyKeys` does not prove `paths-to-match`, as first written here: springdoc 3.1.1
+  leaves the actuator out by default (`springdoc.show-actuator` is `false`), and the application run
+  with `--springdoc.paths-to-match=/**` listed the same two paths (§7.6). The key stays, so that a
+  later controller outside `/v1/dsh/**` is not described by accident; nothing tests it.
 
 ### 3.5 The context-free guard
 
@@ -442,9 +445,14 @@ The re-pin, in DSH:
 - **A released 3.11.2 is frozen.** A defect found after step 5 in the parent-poms change needs
   3.11.3. Hence the release waits for step 5's review (§3.8).
 - **The JSON key order may change.** Jackson 3 sorts properties alphabetically by default, so
-  `{"status","message"}` may arrive as `{"message","status"}`. Clients that read by name, the ITs and
-  `api-testing.yml`'s Postman suite among them, are unaffected; the Postman run on the pull request
-  is the check.
+  `{"status","message"}` may arrive as `{"message","status"}`. Clients that read by name are
+  unaffected; the ITs, which read every field by name, are the evidence. No external-client check
+  runs: `specs/api/postman/` holds no collection, and `api-testing.yml` skips the Newman step (`#137`).
+- **A trailing slash no longer matches.** Spring MVC 7 has no trailing-slash matching, which Spring
+  MVC 5.3 had on by default (`setUseTrailingSlashMatch`; 7.0.9 has no such option). So
+  `GET /v1/dsh/document/status/{token}/` and `POST /v1/dsh/document/submit/` matched on 2.7.18, by
+  that default, and are 404 on 4.1.1, as run (§7.6). A client that adds the slash breaks. The pull
+  request and the release notes say so.
 - **parent-poms `master` stays at `3.11.2-SNAPSHOT`** until step 5 of §3.8; `#109` and `#90` wait,
   as the owner accepted for `#119`.
 - **Stale `target/` trees** hold classes compiled against Boot 2.7. The gates always run `clean`.
@@ -767,3 +775,23 @@ in order.
   no row of 6.2 to 6.4 changes, and nothing moves `ADR-003`.
 - Departures, recorded in the document's appendix: P28's class prints its bucket when bound; P21's
   `build-info.properties` was first read from a wrong path and read again after one more build.
+
+### 7.6 Step 5, the local review
+
+One reviewer, over the DSH range `f5e1f9e5f..d6f059e53` and the parent-poms range
+`dfe8ecb2..cd82754d`: no Critical and no Important finding, eight Minor ones. The owner had 1 to 7
+acted on and 8 verified first. Each was checked before anything changed:
+
+| # | Finding | Checked | Outcome |
+|---|---|---|---|
+| 1 | The IT does not prove `springdoc.paths-to-match` | springdoc 3.1.1's metadata: `springdoc.show-actuator` defaults to `false`. Gate 3's jar, run with `--server.port=18089`, listed `/v1/dsh/document/submit` and `/v1/dsh/document/status/{token}` as built and with `--springdoc.paths-to-match=/**` | §3.4 corrected. The message of `4d9ff89de` makes the same claim and is not rewritten |
+| 2 | A trailing slash is now 404 | `javap`: `setUseTrailingSlashMatch` in spring-webmvc 5.3.31, nothing for trailing slash or suffix in 7.0.9. The same jar: `…/status/abc` 200, `…/status/abc/` 404 | added to §3.10, and to the pull request |
+| 3 | No Postman run exists | `specs/api/postman/` holds only `README.md`; `api-testing.yml` prints "No Postman collections found" | §3.10 corrected |
+| 4 | The slice example needs its module | `spring-boot-starter-test` 4.1.1 depends on neither `spring-boot-webmvc-test` nor any slice module; `WebMvcTest.class` is in `spring-boot-webmvc-test` | `testing-patterns.md` says so |
+| 5 | "JUnit 5" is stale; the BOM resolves Jupiter 6.0.3 | `git grep 'JUnit 5'` | "JUnit Jupiter" in the rules, the prompts, `system-design.md`, `specs/testing/` and the enforcer message in `pom.xml` |
+| 6 | A `@WebMvcTest` example named `*Test` | `prompt-examples.md:44` | renamed `DocumentControllerIT`, in an `integration` package |
+| 7 | Row 67 of a dated table | section 2 is headed "On `DEVELOP` at `a760552f8`" | the row says `#120` updated it |
+| 8 | Boot 4 test annotations outside `.test.autoconfigure` | the 4.1.1 jars: `@AutoConfigureTestRestTemplate`, `@AutoConfigureRestTestClient` (`resttestclient.autoconfigure`), `@AutoConfigureWebTestClient` (`webtestclient.autoconfigure`) and `@AutoConfigureWebServer` (`web.server.test`) are not matched. `javap -v`: each carries `@ImportAutoConfiguration` only, with `@PropertyMapping` or `@AutoConfigureJson`, and no `SpringExtension` or `@BootstrapWith`; `@WebMvcTest` carries both. Every slice sampled (`webmvc`, `restclient`, `webclient`, `data.jpa`, `jdbc`) is under `<tech>.test.autoconfigure` | real as a gap in the pattern, but none of the four starts a context, and what does start one is matched. The guard is not changed |
+
+The reviewer also suggested deciding whether production serves `/v3/api-docs`, which Springfox's
+`/v2/api-docs` did too. Left for Wave 2's `gcp` profile or `#144`; not changed here.
