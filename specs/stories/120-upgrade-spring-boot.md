@@ -710,7 +710,7 @@ spec, which approves §3.2's text.
 - [x] **Step 3:** Gate 1 and gate 3 again, as in Task 8 steps 1 and 2, and Task 8 step 3's tree.
   Expected: the same results.
 - [x] **Step 4:** Commit `build(#120): pin the parent to the released parent-poms 3.11.2 and drop -U`.
-- [ ] **Step 5:** Post §3.11's comment on `#144` and a comment on `#120` naming `parent-poms#114` and
+- [x] **Step 5:** Post §3.11's comment on `#144` and a comment on `#120` naming `parent-poms#114` and
   3.11.2, each after the owner approves its text. Report §3.11's second item to the owner.
 
 ## 7. Verification results
@@ -813,3 +813,8 @@ The reviewer also suggested deciding whether production serves `/v3/api-docs`, w
   `DshRestApplicationIT` 3, `PersistenceSelectionIT` 4), no `#142` red; `dependency:tree`
   `maven exit=0`, 66 `org.springframework.boot` artifacts at 4.1.1, 0 for `io.springfox` or
   `spring-data-solr`. The same as §7.4.
+- Task 9 step 5, on the owner's approval: §3.11's comment on `#144`
+  (<https://github.com/MRISS-Projects/dsh/issues/144#issuecomment-6471149194>) and the comment on
+  `#120` (<https://github.com/MRISS-Projects/dsh/issues/120#issuecomment-6471149978>). §3.11's second
+  item, `ADR-003`'s F8 rows against Spring Cloud GCP 8.x, was reported to the owner; the ADR is not
+  edited.
