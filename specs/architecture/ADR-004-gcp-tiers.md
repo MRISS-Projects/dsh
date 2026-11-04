@@ -23,7 +23,7 @@ to GCP.
 output of `#48`. Its probe ids (P0 to P31), finding ids (S1 to S8, M1 to M4), rule ids (R1 to R12)
 and GCP fact ids (G1 to G8) are used here as they are there. ADR-003's fact ids (F1 to F12) and
 assumption ids (A1 to A6) are used as they are there, and its assumptions are always written
-"ADR-003's A3". Facts read for this ADR are K1 to K19, and its assumptions are H1 to H6; both are
+"ADR-003's A3". Facts read for this ADR are K1 to K24, and its assumptions are H1 to H8; both are
 listed under [Evidence](#evidence) and [Assumptions](#assumptions).
 
 Wave and task numbers are those of the re-plan of 2026-10-10 in `specs/product/PRD.md`. A later
@@ -41,7 +41,8 @@ On `DEVELOP` at `30d97b8c6`, and on this ADR's task branch at `063582a62`, on 20
 | Stages are idempotent, because Pub/Sub delivers at least once | ADR-003, section 1, "A stage"; F3 |
 | `staging.yml` is dispatched by hand with a `branch_name` input. The run's own commit is that of the branch it was dispatched from, which need not be the branch it builds | `.github/workflows/staging.yml`, its `on:` block |
 | `release.yml` and `hotfix.yml` are dispatched by hand. `hotfix.yml` releases from a `<version>.x` branch and has no staging step | the two files; `docs/devops/README.md` |
-| `deploy.yml` is dispatched by hand, on `DEVELOP` | `.github/workflows/deploy.yml`, its `on:` block |
+| `deploy.yml` is dispatched by hand, and deploys whichever branch it is dispatched on: `DEVELOP`, or a task branch to prove a change before it merges. It has a concurrency group, `deploy-snapshot` | `.github/workflows/deploy.yml`, its header comment, `on:` and `concurrency:` blocks |
+| A staging run commits to the branch it stages. `project-staging.yml` ends with "Commit generated README.md", which pushes `Auto-generated README.md [skip jenkins]` whenever the generated README changed, and it changes on almost every run, because it carries the build number and a timestamp. After a staging run, the branch's head is that commit, not the one that was built | parent-poms `.github/workflows/project-staging.yml`, the step of that name, and its `commit-readme` action; `b199f7e92` and the four other commits of that title on this repository |
 | Each of these four workflows calls a reusable workflow of `parent-poms`. None deploys anything to GCP | the `uses:` line of each of the four files |
 
 ### Inputs
@@ -102,20 +103,27 @@ Nine sections, one for each question the issue asks (`#181`, AC003 to AC011), in
 
 ### 1. The tiers and the deploy
 
-**Decision.** One deploy, run under three base names. A script that is safe to run twice takes the
-base name, the image tag and the revision suffix, creates the tier's resources only if they are
-absent, and deploys. The workflows run it, and it is also the script an end user runs. Every tier
-is in `us-central1`. GitHub Actions authenticates through Workload Identity Federation and holds
-no key. Six kinds of identity exist, all of them service accounts, and none has a key.
+**Decision.** One script, in two parts, run under three base names. The **setup** creates a
+tier: its service accounts, every role grant, its data resources, and its Cloud Run service, by a
+first deploy straight to traffic. The owner runs it, with the owner's own account, and so does an
+end user. The **deploy** puts a new revision on a service that exists, and changes no IAM policy
+and no data resource. The workflows run the deploy, under a deployer identity of the tier's own.
+Both parts are safe to run twice. Every tier is in `us-central1`. GitHub Actions authenticates
+through Workload Identity Federation and holds no key. Five kinds of service account exist, none
+with a key, beside a developer's own account.
 
 **Reason.** Three runs of one script cannot drift apart, and an end user who runs it runs what CI
-runs on every deploy of `DEVELOP`. `us-central1` is one of the three regions where Cloud Storage's
-free tier applies (K4). The pipeline is asynchronous and its only callers are tests, so nothing in
-DSH needs a region close to anyone. A key stored as a secret is a long-lived credential (K11), and
-federation needs none. An identity per tier and per role is what lets IAM refuse a tier's service,
-or a test, access to another tier's data.
+runs on every deploy of `DEVELOP`. Granting a role means setting an IAM policy (K23), and an
+identity that sets a policy decides who holds every role in it, itself included. So no identity CI
+can impersonate holds that right: Cloud Run Developer deploys and lacks it, where Cloud Run Admin
+has it (K22). A deployer per tier means a workflow that may deploy `dsh-dev` cannot deploy `dsh`.
+`us-central1` is one of the three regions where Cloud Storage's free tier applies (K4). The
+pipeline is asynchronous and its only callers are tests, so nothing in DSH needs a region close to
+anyone. A key stored as a secret is a long-lived credential (K11), and federation needs none. An
+identity per tier and per role is what lets IAM refuse a tier's service, or a test, access to
+another tier's data.
 
-**Rejected.** Eight alternatives.
+**Rejected.** Eleven alternatives.
 
 - **A region near the owner, such as `southamerica-east1`.** It has no Cloud Storage free tier
   (K4), and buys latency that nothing in DSH needs.
@@ -128,21 +136,47 @@ or a test, access to another tier's data.
 - **One push identity for every tier.** It lets a `dsh-dev` subscription call `dsh`.
 - **One test identity for layers 5a and 5b.** It gives the identity that writes test data the
   right to call production.
+- **The deploy creating identities and granting roles.** Its identity would have to set IAM
+  policies (K23), and could then grant itself production's data. It would hold that right in every
+  CI run.
+- **One deployer for every tier.** `deploy.yml` deploys whichever branch it is dispatched on, so a
+  task branch could deploy code to `dsh` that runs as `dsh-run`.
+- **Developers impersonating `dsh-tester`.** It gives every developer `dsh-staging`'s data, for a
+  need that is `dsh-dev`'s alone.
+
+#### The setup
+
+- **Run by** the owner for each operated tier, `dsh-dev` first (section 6), and by an end user for
+  their own `dsh`, each with their own account. No CI identity runs it.
+- **It creates, only if absent:** the tier's service accounts, `<base>-deploy`, `<base>-run` and
+  `<base>-push`; every grant of the identities table, `dsh-tester`'s and `dsh-smoke`'s included;
+  the tier's database and managed folder; its topics and subscriptions; and the Cloud Run service,
+  by a first deploy, straight to traffic, with `--no-allow-unauthenticated` (K7).
+- **It grows with the waves.** Wave 4 task 3 writes it with the identities and the service. Wave 5
+  task 5 adds the database and the managed folder, and Wave 6 task 4 the topics and subscriptions.
+  The owner runs it again after each, for each tier that exists; a second run changes nothing it
+  already made.
+- **The project-wide part**, run once: the APIs, the Workload Identity pool, `dsh-tester`,
+  `dsh-smoke`, the Artifact Registry repository, the bucket and the budget alert. It is Wave 4 task
+  3's bootstrap.
 
 #### The deploy
 
-- **Inputs.** The base name, the image tag and the revision suffix. Where the script lives and what
-  it is written in are Wave 4 task 4's.
-- **Safe to run twice.** It creates each resource only if it is absent: the tier's service
-  accounts, database, managed folder, topics and subscriptions. Then it deploys a revision.
+- **Inputs.** The base name, the image tag, the revision suffix, and whether the new revision takes
+  traffic. Where the script lives and what it is written in are Wave 4 task 4's.
+- **What it does.** It deploys a revision to the tier's service, which the setup made. It creates
+  no resource and sets no IAM policy, so `<base>-deploy` needs only Cloud Run Developer on its own
+  service and Service Account User on `<base>-run` (K22). That this is enough is H7.
 - **Who runs it.** `deploy.yml` for `dsh-dev`, `staging.yml` for `dsh-staging`, and `release.yml`
   and `hotfix.yml` for `dsh`. Each runs it in a DSH job after the reusable workflow of
-  `parent-poms`.
-- **The end user.** Wave 10 task 3 adds checks of the prerequisites and the documentation. It does
-  not add a second deploy.
-- **Every deploy sets:** minimum instances 0; request-based billing (G8);
-  `--no-allow-unauthenticated` (K7); `DSH_NAME=<base>`; `SPRING_PROFILES_ACTIVE=gcp`; the tier's
-  runtime identity; and a maximum of instances.
+  `parent-poms`, as the tier's `<base>-deploy`.
+- **Traffic.** `dsh-dev` and `dsh-staging` take traffic at once. The operated `dsh` takes none
+  until layer 5b passes (section 2). An end user's deploy takes traffic at once: they have no layer
+  5b to move it.
+- **The end user.** Wave 10 task 3 adds checks of the prerequisites and the documentation, to the
+  setup and the deploy. It does not add a third part.
+- **Every deploy sets:** minimum instances 0; request-based billing (G8); `DSH_NAME=<base>`;
+  `SPRING_PROFILES_ACTIVE=gcp`; the tier's runtime identity; and a maximum of instances.
 - **The maximum of instances** is a parameter, 1 by default on every tier. It is a guard on cost,
   not a hard limit: Cloud Run can exceed it briefly, and answers a request it has no instance for
   with HTTP 429 (K18). Pub/Sub delivers again a push that is answered with anything but a success
@@ -155,26 +189,45 @@ or a test, access to another tier's data.
 A Workload Identity pool, limited by an attribute condition to the repository
 `MRISS-Projects/dsh`, lets a job impersonate the service accounts below. An ID token, which a job
 needs to call a private service, can only be had by impersonating a service account (K11), so
-every identity a job uses is a service account. No service account key exists. The finer
-conditions, such as which branches may impersonate `dsh-deployer`, are Wave 4 task 3's.
+every identity a job uses is a service account. No service account key exists.
+
+**Who may impersonate each deployer is decided here.** A condition can restrict the pool to a
+subset of workflows or branches, and impersonation of a service account can be granted to only the
+matching identities of the pool (K24). GitHub's token names the workflow and the ref that run the
+job (K24). So:
+
+- `dsh-dev-deploy` is impersonated by `deploy.yml`, from any branch, as `deploy.yml` intends.
+- `dsh-staging-deploy` is impersonated by `staging.yml`.
+- `dsh-deploy` is impersonated only by `release.yml` and `hotfix.yml`, as they stand on a branch
+  that a task branch cannot write to. A workflow file changed on a task branch never qualifies.
+
+The exact expressions are Wave 4 task 3's. That they hold is H8.
 
 #### The identities
 
 | Identity | Granted | Not granted | Used by |
 |---|---|---|---|
-| `dsh-deployer` | deploy Cloud Run services; create a tier's database, topics, subscriptions and managed folder; act as the runtime and push identities | read or write any document or object | the deploy |
+| `<base>-deploy`, one per tier | Cloud Run Developer on its own tier's service; Service Account User on its own `<base>-run` (K22) | setting any IAM policy; creating any resource; any document or object | the deploy |
 | `<base>-run`, one per tier | `roles/datastore.user` with a condition on its own database (K3); object access on its own managed folder (G4); publish to its own topics | anything of another tier | the service at run time |
 | `<base>-push`, one per tier | `roles/run.invoker` on its own tier's service (K7, K8) | anything else | the tier's push subscriptions |
 | `dsh-tester` | invoker on `dsh-dev` and `dsh-staging`; `roles/datastore.user` with a condition on `dsh-dev-db` and `dsh-staging-db`; object access on `dsh-dev/` and `dsh-staging/` | anything on `dsh` | layer 5a, its teardown, and the test of two callers (ADR-003's A3) |
-| `dsh-smoke` | invoker on all three services | any data | layer 5b, and the check of the build stamp in section 8 |
-| a developer's own account | invoker on `dsh-dev` | — | a local run through `gcloud run services proxy` (K9) |
+| `dsh-smoke` | invoker on all three services | direct access to any store | layer 5b, and the checks of the build stamp in section 8 |
+| a developer's own account | invoker on `dsh-dev`; `roles/datastore.user` with a condition on `dsh-dev-db`; object access on `dsh-dev/` | anything on `dsh-staging` or `dsh` | a local run through `gcloud run services proxy` (K9), with its teardown |
+
+The owner's account is not in the table: it runs the setup, and no workflow uses it.
 
 - **Splitting `dsh-smoke` from `dsh-tester`** means that a layer 5a test pointed at production by
   mistake is refused by the invoker check, which admits only identities granted on the service (K8).
+- **`dsh-smoke` can call `dsh`'s API.** It holds no grant on a store, but with invoker on `dsh` it
+  could submit a document through the API. Layer 5b submits none (PRD Wave 4 task 5), and only the
+  jobs that run layer 5b or section 8's checks of the build stamp may impersonate it.
+- **A developer's grants** are `dsh-tester`'s, limited to `dsh-dev`, so that a local run of layer
+  5a can check what exists and tear down what it created (section 7).
 - **The per-database condition** is an IAM condition on `resource.name` (K3). That it stops
   `dsh-tester` reading `dsh-db` is H3.
 - **The names fit.** A service account id has 6 to 30 characters, lowercase letters, digits and
-  dashes (K19). The longest here is `dsh-staging-push`, with 16, and the shortest `dsh-run`, with 7.
+  dashes (K19). The longest here is `dsh-staging-deploy`, with 18, and the shortest `dsh-run`, with
+  7.
 
 ### 2. The names
 
@@ -188,8 +241,8 @@ passes on it.
 allows it (G7). A revision name allows only lowercase letters, numbers and dashes (G1). One bucket
 with a managed folder per tier isolates the tiers (G4) without multiplying names that must be
 globally unique. A revision deployed with no traffic under a tag can be tested at its own URL
-(G5), so a bad production rebuild never serves. A revision that receives no requests is not billed
-(G8), so the wait costs nothing.
+(G5), so a production rebuild that fails to start, or reports the wrong version or commit, never
+serves. A revision that receives no requests is not billed (G8), so the wait costs nothing.
 
 **Rejected.** Three alternatives.
 
@@ -197,7 +250,8 @@ globally unique. A revision deployed with no traffic under a tag can be tested a
   the grammar (G7), and gives up the tag a user pulling the image expects.
 - **A bucket per tier.** The managed folder already isolates the tiers (G4), and bucket names are
   global.
-- **`dsh` deployed straight to traffic.** A bad rebuild serves until layer 5b fails.
+- **`dsh` deployed straight to traffic.** A rebuild that fails to start, or reports the wrong
+  version or commit, serves until layer 5b fails.
 
 #### The table
 
@@ -212,16 +266,29 @@ globally unique. A revision deployed with no traffic under a tag can be tested a
 | Image | `us-central1-docker.pkg.dev/<project>/dsh/dsh`, tagged with the dotted version (G7) | `:0.4.0-dev.54` | `:0.4.0-rc.54` | `:0.4.0` |
 | Runtime identity | the base name and `-run` (K19) | `dsh-dev-run` | `dsh-staging-run` | `dsh-run` |
 | Push identity | the base name and `-push` (K19) | `dsh-dev-push` | `dsh-staging-push` | `dsh-push` |
+| Deploy identity | the base name and `-deploy` (K19) | `dsh-dev-deploy` | `dsh-staging-deploy` | `dsh-deploy` |
 
 The bucket's name is proposed, not fixed: bucket names are global (G4), so an end user's project
 needs a name of its own, and the deploy passes it as a value. Nothing in the image names it.
 
 #### Production takes no traffic until it passes
 
-`dsh` is deployed with `--no-traffic` under the tag `candidate`. Layer 5b runs against the tag's
-URL (G5), with a token whose audience is the service's URL, which stays the audience when a tag is
-targeted (K10). That the tagged revision accepts such a token is H6. Traffic then moves to the
-revision. `dsh-dev` and `dsh-staging` are deployed straight to traffic.
+`dsh` is deployed with `--no-traffic` under the tag `candidate`: the traffic stays on the revision
+that served it before the deploy (K20). Layer 5b runs against the tag's URL (G5), with a token
+whose audience is the service's URL, which stays the audience when a tag is targeted (K10). That
+the tagged revision accepts such a token is H6. Traffic then moves to the revision. `dsh-dev` and
+`dsh-staging` are deployed straight to traffic.
+
+- **The first deploy of `dsh` is the setup's**, straight to traffic (section 1). A service that
+  does not exist has no revision to keep serving, and whether `--no-traffic` is accepted when a
+  service is created is not stated on the page read (K20). The rule above applies from the first
+  release on.
+- **Layer 5b is narrow.** It checks health, the version and the commit, and no document (PRD Wave 4
+  task 5). A rebuild that passes it but processes documents wrongly does take traffic.
+- **When layer 5b fails**, traffic stays where it was. The release is already tagged and its
+  artifacts published, so the remedy is a hotfix, deployed under a new revision suffix (H2). The
+  failed revision keeps the tag `candidate` until the next deploy moves it, and is not billed while
+  idle (G8).
 
 #### The five open points of the findings (§8.3)
 
@@ -255,6 +322,9 @@ once its startup probe passes, and one whose probe fails is shut down (K6).
 
 #### What the check changes
 
+- **When it runs.** Before the web server opens its port, and before any bean that writes is
+  created. The default startup probe is TCP on the port (K6), so a check that ran after the port
+  opened could let the probe pass first. How it is hooked into the startup is Wave 4 task 5's.
 - **Locally and in every test** `K_SERVICE` is absent, and nothing changes.
 - **An end user's deploy** names the service after the base name (section 1), so the check holds
   for them. A production deploy that leaves out `DSH_NAME` passes the check, because the default
@@ -268,14 +338,16 @@ once its startup probe passes, and one whose probe fails is shut down (K6).
 
 **Decision.** All three services are private. Cloud Run's invoker check stays on, and only the
 identities of section 1 hold `roles/run.invoker`, each on the services the table names (K8). The
-push endpoints are protected by IAM alone: only the tier's push identity, `dsh-tester`,
-`dsh-smoke` and, on `dsh-dev`, a developer hold invoker. ADR-003's requirement, "the endpoints
-accept requests from Pub/Sub only", is met in that form. A front end is not decided here.
+push endpoints are protected by IAM alone. On `dsh-dev` invoker is held by `dsh-dev-push`,
+`dsh-tester`, `dsh-smoke` and the developers; on `dsh-staging` by `dsh-staging-push`, `dsh-tester`
+and `dsh-smoke`; on `dsh` by `dsh-push` and `dsh-smoke` only. ADR-003's requirement, "the
+endpoints accept requests from Pub/Sub only", is met in that form. A front end is not decided here.
 
 **Reason.** A private service checks a push subscription's token itself, with no code in the
 application (K7). Invoker is granted per service (K8), so each tier admits only the identities
-chosen for it. A stray call to a push endpoint by one of those identities does no more than a
-redelivery does, and every stage already tolerates a redelivery (ADR-003, section 1; F3).
+chosen for it. A call to a push endpoint by one of those trusted identities, carrying a document's
+id as Pub/Sub's does, does no more than a redelivery does, and every stage already tolerates a
+redelivery (ADR-003, section 1; F3).
 
 **Rejected.** Five alternatives.
 
@@ -299,7 +371,9 @@ header, and nothing else in them changes.
 
 A developer reaches `dsh-dev` through `gcloud run services proxy dsh-dev`, which serves the private
 service on `http://localhost:8080` with the developer's token (K9). The layer 3 and 4 tests run
-unchanged with that base URL. A token printed by `gcloud` also works. The documentation marks it as
+unchanged with that base URL, and they are then layer 5a: they check what exists and tear down what
+they created as section 7 says, with the developer's own grants on `dsh-dev` (section 1). A token
+printed by `gcloud` also works. The documentation marks it as
 fit for development only, because such a token has no audience claim (K9).
 
 #### The push endpoints
@@ -328,9 +402,10 @@ owner under the cost rule.
 
 **Decision.** One bucket, in `us-central1`, Standard storage class, with uniform bucket-level
 access, no object versioning, and soft delete off. A managed folder per tier, `<base>/`.
-`<base>-run` holds object access on its own folder only, and `dsh-tester` on `dsh-dev/` and
-`dsh-staging/`. No identity holds object access on the bucket as a whole. `dsh-deployer` creates
-the folders and reads no object.
+`<base>-run` holds object access on its own folder only, `dsh-tester` on `dsh-dev/` and
+`dsh-staging/`, and a developer on `dsh-dev/`. No identity holds object access on the bucket as a
+whole. The bucket is the bootstrap's, and each folder the tier's setup's (section 1); no CI
+identity creates either.
 
 **Reason.** A managed folder is what lets a role be granted on a prefix, and it needs uniform
 bucket-level access (G4). Regional storage in `us-central1` is inside the free tier (K4). Soft
@@ -352,17 +427,22 @@ design has a fixed cost while idle, so no exception to the cost rule is needed.
 
 **Reason.** The free tier goes to the first database created in a project, and moves to the next
 one created if that database is deleted (K1). `dsh-dev` carries the most operations, and Wave 5
-task 5 creates `dsh-dev-db` a wave before the other two exist. Standard edition's free tier
-includes deletes, and Enterprise edition's has no delete allowance (K2); teardown deletes. Delete
-protection guards production and keeps the free tier where this section puts it (K17, K1). An end
-user's `dsh` gets the free tier in their own project, because it is the only database there (K1).
+task 5 creates `dsh-dev-db` a wave before the other two exist. Standard edition bills by the
+document: each document read, write and delete (F6, K2). Enterprise edition bills writes
+and deletes by the data they process, in 1 KiB tranches (K21). ADR-003 bounds the writes of the
+term statistics by grouping terms into a fixed number of records (ADR-003, section 5, and its A4),
+so those records are few and large: under Standard each write of one is one write, under
+Enterprise it is as many write units as it has KiB. Delete protection guards production and keeps
+the free tier where this section puts it (K17, K1). An end user's `dsh` gets the free tier in
+their own project if it is the first database created there (K1).
 
 **Rejected.** Five alternatives.
 
 - **The free database on `dsh`.** It would have to be created out of order to claim it (K1), for
   traffic that does not exist yet.
 - **The free database on `dsh-staging`.** It has the fewest operations.
-- **Enterprise edition.** Its free tier has no delete allowance (K2), and teardown deletes.
+- **Enterprise edition.** It bills a write by its size (K21), and the term statistics are written
+  as a few large records.
 - **Keeping every image.** Artifact Registry grows past its free 0.5 GB (K4) with images no one
   deploys.
 - **Deleting old revisions.** It saves nothing: a revision that receives no requests is not billed
@@ -373,7 +453,7 @@ user's `dsh` gets the free tier in their own project, because it is the only dat
 | Service | Settings | What an idle tier costs |
 |---|---|---|
 | Cloud Run | minimum instances 0 (G8); request-based billing (G8); a maximum of instances (section 1, K18); no tag left serving | nothing: CPU is allocated only while a request is processed (G8), and the free tier covers 2 million requests a month (K4) |
-| Firestore | Standard edition (K2). `dsh-dev-db` created first, and free (K1). No point-in-time recovery and no scheduled backups, which are billed (K17) and outside the free tier (K1). Delete protection on (K17) | what it stores. Firestore bills by document read, write and delete (F6) |
+| Firestore | Standard edition (K2, K21). `dsh-dev-db` created first, and free (K1). No point-in-time recovery and no scheduled backups, which are billed (K17) and outside the free tier (K1). Delete protection on (K17) | what it stores. Firestore bills by document read, write and delete (F6) |
 | Pub/Sub | no topic retention, no retention of acknowledged messages, no snapshots, each of which bills storage (K14). The retention of unacknowledged messages is Wave 6 task 4's | nothing: Pub/Sub bills the bytes published and delivered, and the messages it retains (K14). No message moves while a tier is idle |
 | Cloud Storage | section 5. Regional storage in `us-central1` is inside the free tier's 5 GB (K4) | what it stores |
 | Artifact Registry | a cleanup policy removes `dev` and `rc` tags older than 14 days, keeps the 5 most recent of each, and removes untagged images (G8). Release tags are kept, because a rollback deploys them | what it stores beyond 0.5 GB (K4) |
@@ -393,18 +473,21 @@ user's `dsh` gets the free tier in their own project, because it is the only dat
 created: the documents it created, their original files and indexing output, and their term
 statistics. A record that existed before the test ran is processed again and left in place. Data
 created by manual calls to the API, now or from a future front end, is never removed by a test.
-Teardown reaches the stores directly, under `dsh-tester`. The term statistics interface gains a
-removal: forget one document's terms, the mirror of recording them once.
+Teardown reaches the stores directly: under `dsh-tester` in CI, and under a developer's own
+account in a local run against `dsh-dev`. The term statistics interface gains a removal: forget
+one document's terms, the mirror of recording them once.
 
 **Reason.** A test that leaves nothing behind does not depend on what an earlier run left. Records
 are keyed by the file's hash (Context, "What exists today"), so a run whose teardown never happened
 processes its leftovers again rather than adding to them, and the data stays bounded by the fixture
 set even then. Term statistics count a document once and offer no removal (ADR-003, section 5), so
-without a removal every test document would stay counted on its tier. `dsh-tester` has no grant on
-`dsh`'s data (section 1), so teardown cannot reach production.
+without a removal every test document would stay counted on its tier. Neither `dsh-tester` nor a
+developer has a grant on `dsh`'s data (section 1), so teardown cannot reach production.
 
-**Rejected.** Three alternatives.
+**Rejected.** Four alternatives.
 
+- **Local runs against `dsh-dev` that do not tear down.** They would leave data behind on every
+  run, which is what this section forbids.
 - **Keeping all test data, bounded only by the fixtures.** It was the first proposal, and leaves
   tests that depend on what an earlier run left.
 - **Wiping a whole tier before each run.** It needs a tool able to delete a tier, and a guard
@@ -419,12 +502,41 @@ Before it submits a fixture, the test reads by the file's hash whether the docum
 Teardown removes only the documents the test created. Data a test did not create is left alone,
 whoever created it.
 
+#### When teardown removes a document
+
+A message can still be on its way, or be delivered again, after a test has stopped looking at its
+document (F3, F2). So:
+
+- **Teardown waits for a terminal status** before it removes a document: a success or an error
+  status from which `DocumentStatus` leads nowhere.
+- **A document that has not reached one when the test's time runs out is left in place.** The next
+  run finds it by its hash, processes it again, and counts it once (ADR-003, section 5). The data
+  stays bounded by the fixtures.
+- **A stage acknowledges a message whose document no longer exists**, with a success code (F2),
+  and does nothing else. Without that, a message for a document removed by hand would be
+  delivered again until its retention or its maximum of attempts runs out (F2, F4).
+- **The removal is a no-op for a document that was never counted**, so teardown can call it
+  whatever the document's status.
+
 #### The removal
 
 One operation on the term statistics interface, added by Wave 3 task 2 with its contract test,
 and implemented on Firestore by Wave 5 task 3. It takes the document's distinct terms, which the
 indexing stage already writes to the file store (ADR-003, section 1). So teardown removes the terms
 before it removes the indexing output.
+
+#### Runs that share a tier
+
+Records are keyed by the file's hash, so two runs of layer 5a on one tier share their documents,
+and one run's teardown can remove what the other is still asserting on.
+
+- **CI runs on one tier never overlap.** One concurrency group per tier, without cancelling a run
+  in progress, spans the deploy, layer 5a and the status of section 8. `deploy.yml`'s existing
+  group, `deploy-snapshot`, serves `dsh-dev`; `staging.yml` gains one for `dsh-staging`, which a
+  release candidate and a hotfix share.
+- **A developer's run against `dsh-dev` is not in that group.** It can overlap a CI run there, and
+  either can then fail. That is accepted for `dsh-dev`, and never happens on `dsh-staging`, where
+  developers hold no grant.
 
 #### The test of two callers
 
@@ -441,20 +553,23 @@ removes objects by age, for the reason given against expiry by age.
 ### 8. The release gate
 
 **Decision.** The record that a commit passed is a GitHub commit status, `dsh-staging/acceptance`.
-After layer 5a passes, `staging.yml` posts it, `success`, on the commit it deployed. The gate is a
-first job of `release.yml` and `hotfix.yml`, before the reusable workflow is called, and requires
-that status on the head of the branch being released. The `dsh-release` skill checks the same
-status before it dispatches. There is one staging tier, `staging.yml` also accepts a hotfix branch,
-and the last deploy wins `dsh-staging`.
+`staging.yml` posts it on the head of the branch it staged, after its own README commit, and only
+when the commits between the one it built and that head change `README.md` and nothing else. The
+gate is a first job of `release.yml` and `hotfix.yml`, before the reusable workflow is called, and
+requires that status, `success`, on the head of the branch being released. The `dsh-release` skill
+checks the same status before it dispatches. There is one staging tier, `staging.yml` also accepts
+a hotfix branch, and the last deploy wins `dsh-staging`.
 
-**Reason.** Nothing in the design withdraws a revision when layer 5a fails against it, and a `staging.yml` run's own
-commit is that of the branch it was dispatched from, not the commit it built (Context, "What exists
-today"). So neither "what staging runs now" nor "the last staging run" proves that a commit passed.
-A status on the commit records exactly that. A first job refuses before anything is written. A
-hotfix that displaces a release candidate on `dsh-staging` takes nothing from it: the gate asks
-whether a commit passed, not what staging runs.
+**Reason.** Nothing in the design withdraws a revision when layer 5a fails against it, and a
+`staging.yml` run's own commit is that of the branch it was dispatched from, not the commit it
+built (Context, "What exists today"). So neither "what staging runs now" nor "the last staging
+run" proves that a commit passed. A status on the commit records exactly that. The staging run
+itself moves the branch's head with its README commit (Context), so the status goes on that head,
+once it is shown to add nothing but the README; the gate then stays a plain lookup on the head. A
+first job refuses before anything is written. A hotfix that displaces a release candidate on
+`dsh-staging` takes nothing from it: the gate asks whether a commit passed, not what staging runs.
 
-**Rejected.** Six alternatives.
+**Rejected.** Seven alternatives.
 
 - **A fourth tier, `dsh-hotfix`.** A fourth database billed from its first operation (K1), for a
   tier idle almost always.
@@ -464,18 +579,38 @@ whether a commit passed, not what staging runs.
 - **The gate reading the last `staging.yml` run.** Its commit is that of the dispatching branch.
 - **The commit as a label on the revision.** A second claim, able to disagree with the status.
 - **The gate in the skill only.** A manual dispatch would bypass it.
+- **The gate accepting the status on an ancestor of the head**, when every commit between them
+  changes only `README.md`. It works, but it turns the gate into a walk of the history, in the one
+  place where a mistake releases a commit that never passed.
 
 #### The record
 
-After layer 5a passes, and before it posts the status, `staging.yml` checks under `dsh-smoke` that
-the running revision's build stamp names the commit it deployed (M2). The status is then posted on
-that commit. It is the one record: no label is put on the revision.
+`staging.yml`'s DSH job, inside the tier's concurrency group (section 7):
+
+1. Posts `dsh-staging/acceptance`, `pending`, on the branch's head when it starts.
+2. Reads, under `dsh-smoke`, the commit in the running revision's build stamp (M2), before layer
+   5a and again after it. If the two differ, the revision changed under the test, and the run
+   fails.
+3. Runs layer 5a.
+4. Reads the branch's head again. It posts `success` on that head only when the stamped commit is
+   an ancestor of the head and the commits between them change `README.md` and nothing else.
+   Otherwise, and whenever layer 5a fails, it posts `failure`, so that an earlier `success` for the
+   same context does not stand.
+
+The status is the one record: no label is put on the revision. A push of real work to the branch
+after the build leaves the head without `success`, and the branch is staged again.
 
 #### Where the gate runs
 
 In a first job of `release.yml` and of `hotfix.yml`, so that a refusal stops before any write. The
-job requires `dsh-staging/acceptance`, `success`, on the head of the branch being released. The
-`dsh-release` skill (`#148`, Wave 7 task 3) checks it too, before it dispatches.
+job requires `dsh-staging/acceptance`, `success`, on the head of the branch being released. It runs
+on a dry run as well, so that a rehearsal shows a refusal. The `dsh-release` skill (`#148`, Wave 7
+task 3) checks it too, before it dispatches.
+
+The reusable workflow checks the branch out after the gate has read its head, so a push between
+the two would be released unchecked. Wave 7 task 3 closes that window: by passing the commit the
+gate verified to the reusable workflow, which needs an input there beside `parent-poms#91`, or by
+checking in the deploy job that the release was built on it.
 
 #### A hotfix and a release candidate
 
@@ -484,14 +619,18 @@ release candidate whose head passed is released without being deployed again. On
 since is staged again first, which the gate enforces. This closes the point the PRD leaves open
 under Wave 7.
 
+Both lines share `dsh-staging-db`. Data a failed teardown left behind on it is then read by the
+other line's code, which may be older or newer than the code that wrote it.
+
 ### 9. The rules left to this ADR
 
 **Decision.** R5, R6, R8 and R10 of the findings are in force.
 
 **Reason.** They are what the findings' tier model needs (section 5, approach C): one image for
 every tier, the tier as one value set where the application is deployed, a missing required value
-that stops the startup, a build stamp that the release gate can read, and context tests that a
-profile leaked from the shell cannot change (M3).
+that stops the startup, a build stamp that `staging.yml` reads before it posts the status that the
+release gate requires (section 8), and context tests that a profile leaked from the shell cannot
+change (M3).
 
 **Rejected.** Two alternatives, both from the findings (section 5).
 
@@ -533,6 +672,8 @@ fact. What neither supports is an assumption, in the next section.
 | A push is acknowledged by a success code, and delivered again after any other | F2 |
 | Firestore bills by document read, write and delete | F6 |
 | Term statistics count a document once and offer no removal | ADR-003, section 5 |
+| The writes of the term statistics are bounded by grouping terms into a fixed number of records | ADR-003, section 5; ADR-003's A4 |
+| A subscription limits how long and how often a message is delivered again | F4 |
 
 ### GCP facts
 
@@ -563,6 +704,11 @@ read from their HTML with `curl`, because the fetching tool received none of the
 | K17 | Delete protection prevents a database's deletion and is off by default; point-in-time recovery and backups are billed | "Use delete protection to prevent accidental deletion of a database." "You cannot delete a database with delete protection enabled until you disable delete protection." "Delete protection is disabled by default." (databases). "If you enable PITR, you are charged for the storage of PITR data." "If you enable backups, you are charged for the storage of your database backups." (pricing) | <https://docs.cloud.google.com/firestore/native/docs/manage-databases>, <https://cloud.google.com/firestore/pricing> | 2026-11-03 | Not verified by a run |
 | K18 | A maximum of instances can be set, may be exceeded briefly, and a request with no instance to serve it is answered with HTTP 429 | "this maximum setting can be exceeded for a brief period due to circumstances such as traffic spikes" (maximum instances). HTTP 429: "The request was aborted because there was no available instance." "The Cloud Run service might have reached its maximum container instance limit" (troubleshooting) | <https://docs.cloud.google.com/run/docs/configuring/max-instances>, <https://docs.cloud.google.com/run/docs/troubleshooting> | 2026-11-03 | Not verified by a run |
 | K19 | A service account id has 6 to 30 characters, lowercase letters, digits and dashes | "The ID must be between 6 and 30 characters, and can contain lowercase alphanumeric characters and dashes." | <https://docs.cloud.google.com/iam/docs/service-accounts-create> | 2026-11-03 | Not verified by a run |
+| K20 | `--no-traffic` keeps the traffic on the revision that had it, and the new revision takes none. The flag's description says nothing about a service that does not exist yet | "True to avoid sending traffic to the revision being deployed." "Setting this flag assigns any traffic assigned to the LATEST revision to the specific revision bound to LATEST before the deployment." "The effect is that the revision being deployed will not receive traffic." `--tag`: "Traffic tag to assign to the newly created revision." | <https://docs.cloud.google.com/sdk/gcloud/reference/run/deploy> | 2026-11-03 | Not verified by a run |
+| K21 | Enterprise edition bills writes and deletes by size, in write units of 1 KiB | "Write and delete operations are charged in Write Units, which reflect the data processed to perform the operation, measured in 1 KiB tranches." "Each item deleted is charged as write units in 1 KiB tranches." | <https://cloud.google.com/firestore/enterprise/pricing> | 2026-11-03 | Not verified by a run |
+| K22 | Cloud Run Developer deploys and cannot set IAM policies; Cloud Run Admin can. A deployer needs Service Account User on the service's identity | Cloud Run Developer: "Read and write access to all Cloud Run resources", with `run.services.getIamPolicy` and not `run.services.setIamPolicy` among its permissions. Cloud Run Admin: "Full control over all Cloud Run resources", with `run.services.setIamPolicy`. Deploying needs "Service Account User (`roles/iam.serviceAccountUser`) on the Cloud Run service identity" | <https://docs.cloud.google.com/run/docs/reference/iam/roles> | 2026-11-03 | Not verified by a run |
+| K23 | Granting roles on a project means setting its IAM policy | "To manage access to a project: Project IAM Admin (`roles/resourcemanager.projectIamAdmin`)". The permissions listed "To manage access to projects:" are `resourcemanager.projects.getIamPolicy` and `resourcemanager.projects.setIamPolicy` | <https://docs.cloud.google.com/iam/docs/granting-changing-revoking-access> | 2026-11-03 | Not verified by a run |
+| K24 | A pool's condition can restrict it to some workflows or branches, impersonation can be granted to matching identities only, and GitHub's token names the workflow and the ref | "Optionally, extend the attribute condition to restrict access to a subset of workflows or branches." "To allow only specific identities of the workload identity pool to impersonate the service account" (federation). `workflow_ref`: "The ref path to the workflow." `job_workflow_ref`: "For jobs using a reusable workflow, the ref path to the reusable workflow." `ref`: "The git ref that triggered the workflow run." (GitHub) | <https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines>, <https://docs.github.com/en/actions/reference/security/oidc> | 2026-11-03 | Not verified by a run |
 
 ---
 
@@ -578,6 +724,8 @@ Each is something only a deploy can show.
 | H4 | Teardown and the test of two callers reach Firestore and Cloud Storage under `dsh-tester`, impersonated from GitHub Actions | Wave 5 tasks 6 and 7 |
 | H5 | An idle tier costs what section 6 says | Wave 4 task 3's budget alert, and the billing report through Wave 5 |
 | H6 | A revision tagged `candidate` with no traffic accepts a token whose audience is the service's URL | Wave 7 task 2 |
+| H7 | The deploy succeeds with Cloud Run Developer on the service and Service Account User on `<base>-run`, and nothing more, because it sets no IAM policy | Wave 4 task 4, at the first deploy by `dsh-dev-deploy` |
+| H8 | The conditions of section 1 refuse `dsh-deploy` to a workflow file changed on a task branch | Wave 4 task 3 for the pool, and Wave 7 task 2, by a dispatch from a task branch that expects the refusal |
 
 ---
 
@@ -585,27 +733,36 @@ Each is something only a deploy can show.
 
 ### Positive
 
-- **One deploy serves the three tiers and the end user**, so the end user runs what CI runs.
+- **One script serves the three tiers and the end user**, so the end user runs what CI runs.
 - **Nothing costs while idle**, and no exception to the cost rule is needed.
-- **No key exists.**
-- **Production's data cannot be reached by a test**, by IAM.
+- **No key exists, and no identity CI can use sets an IAM policy.**
+- **Production's data cannot be reached by a test**, by IAM, and production cannot be deployed from
+  a task branch (H8).
 - **A misconfigured revision never serves.**
-- **A bad production rebuild never takes traffic.**
+- **A production rebuild that fails to start, or reports the wrong version or commit, never takes
+  traffic.**
 - **The release gate records what passed**, and a release candidate displaced by a hotfix keeps
   its pass.
 
 ### Negative
 
 - **Every caller needs a token**, developers included, through the proxy.
-- **Six kinds of identity and per-database conditions** have to be kept right.
+- **Five kinds of service account and per-database conditions** have to be kept right.
+- **The owner runs the setup by hand**, for each tier, again after each wave that adds to it.
 - **The startup check ties the application to a variable Cloud Run sets** (K5).
 - **A front end will need a second service**, and the startup check has to accept its name.
-- **A test has to track what it created**, and a teardown that does not run leaves data behind,
-  bounded by the fixtures.
+- **A test has to track what it created** and wait for a terminal status. A teardown that does not
+  run, or a document that never finishes, leaves data behind, bounded by the fixtures.
+- **CI runs on one tier queue behind each other**, and a developer's run on `dsh-dev` can still
+  overlap one.
 - **A maximum of one instance answers a burst slowly**, and Pub/Sub delivers again what it refuses
   (K18, F2). A client of `/submit` sees the 429 itself.
 - **Two of the three databases are billed from their first operation** (K1).
+- **Layer 5b does not process a document**, so a production rebuild that starts and reports itself
+  correctly takes traffic however it processes documents.
 - **The gate trusts a commit status**, which anyone with write access to the repository can post.
+- **A push between the gate and the reusable workflow's checkout** would be released unchecked.
+  Wave 7 task 3 has to close that window before the first release through the tiers.
 
 ---
 
@@ -617,23 +774,25 @@ This ADR does not edit the PRD. It lists the consequences, and the PRD changes g
 | Where | Consequence |
 |---|---|
 | Wave 1 task 3 | Split. This ADR is its first half. ADR-005, the end user's packaging, is opened after this ADR merges |
-| Wave 3 task 2 | The term statistics interface gains a removal, and its contract test covers it (section 7) |
+| Wave 2 task 1 | A stage acknowledges a message whose document no longer exists, and does nothing else (section 7) |
+| Wave 3 task 2 | The term statistics interface gains a removal, a no-op for a document never counted, and its contract test covers both (section 7) |
 | Wave 4 task 2 | The image's path and tags (section 2) |
-| Wave 4 task 3 | The Workload Identity pool limited to the repository; `dsh-deployer`, `dsh-tester` and `dsh-smoke`; the Artifact Registry repository `dsh` in `us-central1` with its cleanup policy; the bucket with its settings (section 5); the budget alert |
-| Wave 4 task 4 | The deploy of section 1, with its settings. It creates `<base>-run` and `<base>-push`. It settles H2. The point on a traffic tag's first character is closed by section 2 |
-| Wave 4 task 5 | The startup check of section 3, and H1. The smoke check runs as `dsh-smoke`. R10 and layer 5 in `testing-patterns.md` |
+| Wave 4 task 3 | The project-wide bootstrap: the APIs; the Workload Identity pool limited to the repository, with the conditions on each deployer and H8; `dsh-tester` and `dsh-smoke`; the Artifact Registry repository `dsh` in `us-central1` with its cleanup policy; the bucket with its settings (section 5); the budget alert. The tier's setup, owner-run: `<base>-deploy`, `<base>-run`, `<base>-push`, their grants and the developers', and the service by a first deploy straight to traffic (section 1) |
+| Wave 4 task 4 | The deploy of section 1, with its settings, run by `dsh-dev-deploy` in `deploy.yml`. It creates nothing and sets no IAM policy. It settles H2 and H7. The point on a traffic tag's first character is closed by section 2 |
+| Wave 4 task 5 | The startup check of section 3, run before the port opens, and H1. The smoke check runs as `dsh-smoke`. R10 and layer 5 in `testing-patterns.md` |
 | Wave 5 task 1 | `dsh.storage.bucket` is required under `gcp` (R6) |
 | Wave 5 task 3 | The removal on Firestore |
-| Wave 5 task 5 | `dsh-dev-db` first, Standard edition, delete protection. The managed folder and the grants of section 1. H3. No lifecycle rule removes test objects by age: teardown does (section 7) |
-| Wave 5 task 6 | Layer 5a authenticates as `dsh-tester`, and tears down as section 7 says. H4 |
+| Wave 5 task 5 | The setup gains `dsh-dev-db`, created first, in Standard edition with delete protection, and the managed folder; the deploy does not create them. H3. No lifecycle rule removes test objects by age: teardown does (section 7) |
+| Wave 5 task 6 | Layer 5a authenticates as `dsh-tester`, waits for a terminal status, and tears down as section 7 says. H4 |
 | Wave 5 task 7 | The test of two callers runs under `dsh-tester`, directly against `dsh-dev-db` |
 | Wave 6 task 2 | The push endpoints are protected by IAM alone (section 4) |
-| Wave 6 task 4 | Topics and subscriptions named `<base>-<channel>`, pushed by `<base>-push` |
-| Wave 7 task 1 | `staging.yml` accepts hotfix branches and posts `dsh-staging/acceptance` |
-| Wave 7 task 2 | `dsh` is deployed with no traffic under `candidate`; layer 5b, then traffic moves. H6 |
-| Wave 7 task 3 | The gate is a first job of `release.yml` and `hotfix.yml` requiring the status, and the skill checks it too. The open point on a hotfix and `dsh-staging` is closed |
+| Wave 6 task 4 | The setup gains the topics and subscriptions, named `<base>-<channel>` and pushed by `<base>-push` |
+| Wave 7 task 1 | The owner runs the setup for `dsh-staging`. `staging.yml` accepts hotfix branches, gains a concurrency group, checks the build stamp before and after layer 5a, and posts `dsh-staging/acceptance` as section 8 says |
+| Wave 7 task 2 | The owner runs the setup for `dsh`. Later deploys of `dsh`, by `dsh-deploy`, take no traffic under `candidate`; layer 5b, then traffic moves. H6, and H8's refusal |
+| Wave 7 task 3 | The gate is a first job of `release.yml` and `hotfix.yml` requiring the status, dry runs included, and the skill checks it too. It closes the window between the gate and the reusable workflow's checkout. The open point on a hotfix and `dsh-staging` is closed |
 | Wave 9 task 1 | The maximum of instances is revisited |
-| Wave 10 task 3 | The end user's script is the deploy of section 1, with checks of its prerequisites |
+| Wave 10, its introduction and tasks 1 and 2 | What they leave to "ADR-004", the public image and the release zip's acceptance test, is ADR-005's |
+| Wave 10 task 3 | The end user's script is the setup and the deploy of section 1, with checks of their prerequisites |
 | Wave 10 task 6 | The two front-end patterns and the constraint between them (section 4, "A front end") |
 
 ### After the merge
@@ -659,9 +818,12 @@ This ADR records the consequences, and it changes no plan by itself.
 | One runtime identity for every tier | `<base>-run` per tier (section 1) | `dsh-dev` could write production's data |
 | One push identity for every tier | `<base>-push` per tier (section 1) | A `dsh-dev` subscription could call `dsh` |
 | One test identity for layers 5a and 5b | `dsh-tester` and `dsh-smoke` (section 1) | The identity that writes test data could call production |
+| The deploy creating identities and granting roles | An owner-run setup (section 1) | Its identity would set IAM policies (K23), and could grant itself production's data |
+| One deployer for every tier | `<base>-deploy` per tier (section 1) | A task branch could deploy code to `dsh` that runs as `dsh-run` |
+| Developers impersonating `dsh-tester` | A developer's own grants on `dsh-dev` (section 1) | Every developer would reach `dsh-staging`'s data |
 | One dashed string for the image tag and the revision | Dots in the tag, dashes in the revision (section 2) | It gives up the tag a user pulling the image expects |
 | A bucket per tier | One bucket, a managed folder per tier (section 2) | The folder already isolates the tiers (G4), and bucket names are global |
-| `dsh` deployed straight to traffic | No traffic under `candidate` until layer 5b passes (section 2) | A bad rebuild serves until layer 5b fails |
+| `dsh` deployed straight to traffic | No traffic under `candidate` until layer 5b passes (section 2) | A rebuild that fails to start, or misreports itself, serves until layer 5b fails |
 | A check after the deploy only | The startup check (section 3) | The bad revision serves first, and may write to production's database |
 | No default for `dsh.name` | The startup check (section 3) | The default lets anyone run DSH locally with no name |
 | `dsh` public and the other two private | All three private (section 4) | Anyone could write to production, and be billed for |
@@ -673,9 +835,10 @@ This ADR records the consequences, and it changes no plan by itself.
 | Soft delete left at its default | Soft delete off (section 5) | Every teardown would be billed for 7 more days (K16) |
 | The free database on `dsh` | The free database on `dsh-dev` (section 6) | Created out of order to claim it (K1), for traffic that does not exist yet |
 | The free database on `dsh-staging` | The free database on `dsh-dev` (section 6) | It has the fewest operations |
-| Firestore Enterprise edition | Standard edition (section 6) | Its free tier has no delete allowance (K2), and teardown deletes |
+| Firestore Enterprise edition | Standard edition (section 6) | It bills a write by its size (K21), and the term statistics are a few large records |
 | Keeping every image | A cleanup policy for `dev` and `rc` tags (section 6) | Artifact Registry grows past its free 0.5 GB (K4) |
 | Deleting old revisions | Revisions kept (section 6) | It saves nothing: an idle revision is not billed (G8) |
+| Local runs against `dsh-dev` that do not tear down | Teardown of what a test created (section 7) | Every local run would leave data behind |
 | Keeping all test data, bounded by the fixtures | Teardown of what a test created (section 7) | Tests depend on what an earlier run left |
 | Wiping a whole tier before each run | Teardown of what a test created (section 7) | A tool able to delete a tier, and a guard against `dsh` |
 | Expiry by age | Teardown of what a test created (section 7) | An expiry field, managed deletes outside the free tier (K1), and an expired fixture counted again |
@@ -685,6 +848,7 @@ This ADR records the consequences, and it changes no plan by itself.
 | The gate reading the last `staging.yml` run | A commit status (section 8) | Its commit is that of the dispatching branch |
 | The commit as a label on the revision | A commit status (section 8) | A second claim, able to disagree with the first |
 | The gate in the skill only | A first job of the release workflows (section 8) | A manual dispatch would bypass it |
+| The gate accepting the status on an ancestor of the head, past README commits | The status posted on the head (section 8) | A walk of the history, in the one place where a mistake releases a commit that never passed |
 | The tier as a Maven profile (findings approach A) | The tier as a value set at deploy (section 9) | A different jar per tier (P27a, P27b), and an unresolved token when the tier is left out (P27c) |
 | The tier as a Spring profile in the jar (findings approach B) | The tier as a value set at deploy (section 9) | A new name needs a new file in the jar, and a profile matching no file is silent (P31) |
 
