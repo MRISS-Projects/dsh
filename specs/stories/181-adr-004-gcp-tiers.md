@@ -868,12 +868,35 @@ Final run, after the gate build, at `f2d4ca6ee`.
 | C5 | one line, `26:`, in the router table; `the link resolves` |
 | C6 | `CLAUDE.md`, `specs/architecture/ADR-004-gcp-tiers.md` and `specs/stories/181-adr-004-gcp-tiers.md`, and no other |
 
-The read for GCP sentences without an id (T3 step 10) changed three: "refused with a 403", for a test pointed at
-production, became "refused by the invoker check" and cites K8; "it costs nothing" for a revision with no traffic now cites G8; and "a
-revision keeps serving when layer 5a fails" became "nothing in the design withdraws a revision".
+The read for GCP sentences without an id (T3 step 10) changed three. "Refused with a 403", for a
+test pointed at production, became "refused by the invoker check" and cites K8. "It costs nothing",
+for a revision with no traffic, now cites G8. "A revision keeps serving when layer 5a fails"
+became "nothing in the design withdraws a revision".
 
 ### 8.4 The gates
 
 - Gate 1 and 2: `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`, at `f2d4ca6ee`.
   `maven exit=0`, `BUILD SUCCESS`, all nine reactor modules `SUCCESS`.
 - Gate 3 does not apply: no code changed.
+
+### 8.5 The local review (step 5)
+
+A reviewer agent read `063582a62..13c2b0152` on 2026-11-03 and found one critical issue, six
+important and twelve minor. The critical one, and the facts the others rest on, were verified
+before the owner read them. The owner approved, on the same day, the three that change decisions
+of §2.2: the gate as option (a) below, identity creation and role grants moved out of CI, and the
+first deploy of `dsh` going straight to traffic. They also approved fixing every other finding.
+
+| Finding | Verified | What changed in the ADR |
+|---|---|---|
+| Critical: the gate refuses every release, because `project-staging.yml` commits the generated README to the staged branch | yes: its step "Commit generated README.md"; `b199f7e92` and four other commits | The fact is in "What exists today". Section 8: `staging.yml` posts the status on the head after the README commit, only when the commits since the built one change `README.md` alone. The ancestor walk is a rejected alternative. **Changes decision 13's mechanism, approved** |
+| `dsh-deployer` could grant itself production's data | yes: K22 (Cloud Run Developer has no `setIamPolicy`, Admin has) and K23 (granting is setting the policy) | Section 1 splits the script into an owner-run setup, which creates identities, grants, data resources and the service, and the deploy, which only deploys. One deployer per tier, `<base>-deploy`, and who may impersonate each (K24, H7, H8). **Changes decision 9, approved; the deployer per tier goes past the approved wording, because one deployer for every tier would leave a task branch able to deploy `dsh`** |
+| `--no-traffic` may be refused on a new service | not stated either way: K20 | The first deploy of `dsh` is the setup's, straight to traffic; `--no-traffic` applies from the first release. An end user's deploy takes traffic at once. **Changes decision 10, approved** |
+| Teardown races messages in flight | design, F2, F3, F4 | Teardown waits for a terminal status, leaves a document that never gets one, and calls a removal that is a no-op if the document was never counted; a stage acknowledges a message for a missing document. New rows for Wave 2 task 1 and Wave 3 task 2 |
+| Concurrent runs share fixtures | design | A concurrency group per tier; the build stamp read before and after layer 5a |
+| A developer's run cannot tear down | design | A developer's account holds `dsh-tester`'s grants on `dsh-dev` only. Impersonating `dsh-tester` and leaving data behind are rejected alternatives |
+| K2 does not show that Enterprise has no delete allowance | yes: K21, Enterprise bills writes and deletes in 1 KiB write units | Section 6's reason for Standard now rests on billing by document (F6) against billing by size (K21), given the few large records of ADR-003's A4 |
+| The twelve minor ones | each against the ADR | Five kinds of service account; layer 5b's narrowness and what a failed 5b leaves; `dsh-smoke` and its API; invoker holders per tier; the stamp read by `staging.yml`, not the gate; the startup check before the port opens; `pending` and `failure` statuses, the gate on dry runs, and the window before the reusable workflow's checkout, left to Wave 7 task 3; the end user's free tier as a condition; Wave 10's "as ADR-004 decides" rows pointed at ADR-005; `dsh-staging-db` shared by two lines; overlong lines; "a trusted identity" |
+
+After the fixes the ADR has 41 alternatives, so C1's `awk` prints `43`, not §7.2's `38`. It cites
+K1 to K24 and H1 to H8, and C2's loops were run over all of them.
