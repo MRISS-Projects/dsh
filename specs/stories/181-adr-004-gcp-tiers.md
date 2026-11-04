@@ -664,13 +664,13 @@ Expected: the three files of §4 and no other.
 
 ### 7.3 The tasks
 
-- [ ] **T1 — record the red state.** Before any file of §4 other than this spec is changed.
+- [x] **T1 — record the red state.** Before any file of §4 other than this spec is changed.
 
   1. Run C1 and C5. Expected: C1 prints nothing for `test -f` and an error for each `grep` and the
      `awk`, because the ADR does not exist. C5 prints nothing. Keep the outputs for §8.
   2. Nothing is committed by this task.
 
-- [ ] **T2 — establish K1 to K19.** Read each page, and note the URL, the date and the words that
+- [x] **T2 — establish K1 to K19.** Read each page, and note the URL, the date and the words that
   state the fact. The notes stay in the session's scratchpad until T3 writes them into the ADR.
   The pages for K1 to K13 were read on 2026-10-28 and are read again. The others are starting
   points and may have moved.
@@ -707,7 +707,7 @@ Expected: the three files of §4 and no other.
   3. If any other page contradicts a decision of §2.2, stop in the same way.
   4. Nothing is committed by this task.
 
-- [ ] **T3 — write `specs/architecture/ADR-004-gcp-tiers.md`.**
+- [x] **T3 — write `specs/architecture/ADR-004-gcp-tiers.md`.**
 
   1. Create the file with these headings, in this order, and the header table ADR-003 uses: date of
      the day, status `Accepted`, authors `Backend Development Team`, then the sentence "The owner's
@@ -797,7 +797,7 @@ Expected: the three files of §4 and no other.
   11. Run C1, C2, C3 and C4. Expected: as §7.2 states.
   12. Commit: `docs(#181): ADR-004, the GCP tiers`.
 
-- [ ] **T4 — `CLAUDE.md`.**
+- [x] **T4 — `CLAUDE.md`.**
 
   1. In the router table, add below the row for ADR-003:
      ``| The GCP tiers: deploy, identities, names, cost and the release gate | `specs/architecture/ADR-004-gcp-tiers.md` |``
@@ -806,7 +806,7 @@ Expected: the three files of §4 and no other.
   3. Run C5 and C4. Expected: as §7.2 states.
   4. Commit: `docs(#181): point CLAUDE.md at ADR-004`.
 
-- [ ] **T5 — gates and record.**
+- [x] **T5 — gates and record.**
 
   1. `mvn -B clean install`, logged to `.logs/mvn-clean-install.log` as `CLAUDE.md` requires, with
      the exit code reported. Expected: exit 0. Gate 3 does not apply: no code changed.
@@ -818,3 +818,62 @@ Expected: the three files of §4 and no other.
 - [ ] **T6 — hand over.** Show the owner the "After the merge" list, and post or change nothing
   without approval. The pull request is opened in step 6, by `dsh-ship-story`, and the owner's
   merge of it is ADR-004's acceptance.
+
+## 8. Verification results
+
+Built on 2026-11-03 by `dsh-build-story`. The task branch was at `063582a62` when the build
+started. The ADR is `6b5c7086b`, the router row `f2d4ca6ee`.
+
+### 8.1 T1, the red state
+
+At `063582a62`, before any file of §4 other than this spec changed.
+
+- C1: `test -f` printed nothing. Each of the six `grep`s printed
+  `grep: specs/architecture/ADR-004-gcp-tiers.md: No such file or directory`. The `awk` printed
+  `fatal: cannot open file ... No such file or directory`, and `wc -l` printed `0`.
+- C5: both commands printed nothing.
+
+### 8.2 T2, the facts
+
+Every page was read on 2026-11-03. **All nineteen facts are kept**, and none contradicts a decision
+of §2.2, so nothing went back to the owner. Notes on six of them:
+
+| Fact | Outcome |
+|---|---|
+| K3 | Kept, narrowed. The Firestore page documents the per-database condition on `resource.name`. It does not say that a grant with no condition covers every database, so the ADR does not say it either. The refusal it relies on is H3, unchanged |
+| K14 | Kept. `cloud.google.com/pubsub/pricing` again gave the fetching tool no text, so it was read from its HTML with `curl`. It lists throughput and retained-message storage, and no charge per topic or subscription. It confirms §3.8 |
+| K15, K17 | Kept. The pricing pages of Google Cloud Observability and Firestore were also read with `curl`. The free 50 GiB of logs is quoted from K4's page, which K15 cites as a third source |
+| K16 | Kept. Soft delete is on by default for 7 days, bills deleted objects, and is turned off by a retention of 0. It confirms §3.7 |
+| K18 | Kept. A maximum can be set, may be exceeded briefly, and a request with no instance is answered with HTTP 429; Pub/Sub delivers again on any code but success (F2). It confirms §3.2 |
+| K19 | Kept. 6 to 30 characters: `dsh-run`, the shortest, has 7 |
+
+Two sentences of §3 were corrected against the code rather than a page:
+
+- §3.2 says the end user runs "what CI runs on every push to `DEVELOP`". `deploy.yml` is dispatched
+  by hand, not run on push, so the ADR says "on every deploy of `DEVELOP`".
+- §3.13 does not mention Wave 5 task 5's "lifecycle rule that removes test objects" in the PRD.
+  Decision 5 rejects expiry by age, so the ADR's row for Wave 5 task 5 says that no lifecycle rule
+  removes test objects by age: teardown does.
+
+### 8.3 T3 to T5, the checks
+
+Final run, after the gate build, at `f2d4ca6ee`.
+
+| Check | Output |
+|---|---|
+| C1 | `the ADR exists`; the status line `6:\| **Status**  \| Accepted`; `9` four times; nothing from the fifth `grep`; `38` |
+| C2 | nothing from any loop |
+| C3 | four lines name minimum instances, each with 0: the Inputs, section 1's deploy settings, section 6's Cloud Run row, and the Evidence row for G1 to G8. The second `grep` printed only section 6's sentence on what is not used. Section 4's front-end note no longer names a load balancer: K12's quoted words do not support "with no load balancer", so it was removed |
+| C4 | `lint exit=0`, no finding |
+| C5 | one line, `26:`, in the router table; `the link resolves` |
+| C6 | `CLAUDE.md`, `specs/architecture/ADR-004-gcp-tiers.md` and `specs/stories/181-adr-004-gcp-tiers.md`, and no other |
+
+The read for GCP sentences without an id (T3 step 10) changed three: "refused with a 403", for a test pointed at
+production, became "refused by the invoker check" and cites K8; "it costs nothing" for a revision with no traffic now cites G8; and "a
+revision keeps serving when layer 5a fails" became "nothing in the design withdraws a revision".
+
+### 8.4 The gates
+
+- Gate 1 and 2: `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`, at `f2d4ca6ee`.
+  `maven exit=0`, `BUILD SUCCESS`, all nine reactor modules `SUCCESS`.
+- Gate 3 does not apply: no code changed.
