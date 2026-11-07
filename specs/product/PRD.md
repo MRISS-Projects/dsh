@@ -931,8 +931,9 @@ carries it.
 | Wave 10 task 6, a front end | Wave 10 task 6 |
 
 ADR-004's "After the merge" has three steps. Step 1 is this re-plan. Step 2, opening ADR-005
-through `dsh-new-story`, is not done; ADR-005 is Wave 10 task 7. Step 3 held: this re-plan opened
-and changed no issue.
+through `dsh-new-story`, was done after it the same day, with the owner's approval: `#183` —
+open — ADR-005: decide how an end user gets, builds and runs DSH. It is Wave 10 task 7, on
+`1.0.0-SNAPSHOT`. Step 3 held: this re-plan opened and changed no issue.
 
 ### Wave 1 — Pipeline design, documentation and upstream catch-up
 
@@ -1133,7 +1134,7 @@ are.
    `parent-poms#112` as parent-poms 3.11.2.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
    **Done on 2026-11-07:** `#181` — **closed** — PR #182. The task's second half, ADR-005, moved
-   to Wave 10 task 7 on the same day (§4, "The 2026-11-07 re-plan").
+   to Wave 10 task 7 on the same day (§4, "The 2026-11-07 re-plan"), and is `#183` — open.
 7. `#144`, then `#137`. Both are about the REST API, and both waited for the Spring Boot line,
    which `#120` settled at 4.1.1.
 8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
@@ -1388,8 +1389,8 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    story, and its two parts are needed at different times: the operated tiers by Waves 4 and 7,
    the end user's packaging only by Wave 10. `#181` took the tiers. The first three bullets, the
    run path, the release zip and local mode, are the second half, ADR-005. It builds on ADR-004's
-   deploy and names, and is opened through `dsh-new-story`; it is not yet an issue. The re-plan of
-   2026-11-07 moved it to Wave 10, as that wave's task 7, so this task is done with ADR-004.
+   deploy and names. The re-plan of 2026-11-07 moved it to Wave 10, as that wave's task 7, so this
+   task is done with ADR-004. It was opened the same day: `#183` — open.
 
    ADR-004's "Consequences for the waves" were applied to this document by the re-plan of
    2026-11-07 (§4).
@@ -2040,8 +2041,9 @@ wave yet plans. Task 7 moved here from Wave 1 task 3 on 2026-11-07.
      third-party fakes. Whether the Firestore emulator serves a named database is settled for
      layer 3 by Wave 5 task 1; local mode's half is this ADR's.
 
-   It is not yet an issue. It is opened through `dsh-new-story`, which ADR-004's "After the merge"
-   asks for.
+   `#183` — open — ADR-005: decide how an end user gets, builds and runs DSH. Opened on
+   2026-11-07 through `dsh-new-story`, as ADR-004's "After the merge" asks. The list above is the
+   plan as written before the issue; the issue is the source of truth for its criteria.
 
 ### Wave 11 — Product backlog
 
