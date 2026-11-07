@@ -23,6 +23,7 @@ agent in this repo: commands, branch rules, gates, the GCP cost rule, and the de
 | Who owns what | `.github/roles.md` |
 | Target architecture and migration phases | `specs/architecture/ADR-001-GCP-based-components.md` |
 | The document pipeline: flow, modules, transports and selection | `specs/architecture/ADR-003-document-pipeline.md` |
+| The GCP tiers: deploy, identities, names, cost and the release gate | `specs/architecture/ADR-004-gcp-tiers.md` |
 | Current architecture | `specs/architecture/system-design.md` |
 | Proposed profile and configuration convention | `specs/architecture/profiles-and-configuration.md` |
 | The development process, in full | `docs/process/ai-driven-development.md` |
