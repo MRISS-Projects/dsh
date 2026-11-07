@@ -158,6 +158,24 @@ public class DocumentResourceHttpIT {
 				.containsOnlyKeys("/v1/dsh/document/submit", "/v1/dsh/document/status/{token}");
 	}
 
+	@Test
+	public void swaggerUi_shouldBeServedAtTheReadmeLink() {
+		ResponseEntity<String> response = rest.exchange(baseUrl + "/swagger-ui.html", HttpMethod.GET, null, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getHeaders().getContentType()).isNotNull();
+		assertThat(MediaType.TEXT_HTML.isCompatibleWith(response.getHeaders().getContentType())).isTrue();
+		assertThat(response.getBody()).contains("swagger-ui");
+	}
+
+	@Test
+	public void swaggerConfig_shouldPointTheUiAtTheApiDocs() {
+		ResponseEntity<Map<String, Object>> response = rest.exchange(baseUrl + "/v3/api-docs/swagger-config", HttpMethod.GET, null, JSON);
+
+		assertJson(response, HttpStatus.OK);
+		assertThat(response.getBody()).containsEntry("url", "/v3/api-docs");
+	}
+
 	private ResponseEntity<Map<String, Object>> submit(String title, boolean withContents) {
 		MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
 		form.add("title", title);
