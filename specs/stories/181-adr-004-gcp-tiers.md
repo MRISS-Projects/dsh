@@ -900,3 +900,24 @@ first deploy of `dsh` going straight to traffic. They also approved fixing every
 
 After the fixes the ADR has 41 alternatives, so C1's `awk` prints `43`, not §7.2's `38`. It cites
 K1 to K24 and H1 to H8, and C2's loops were run over all of them.
+
+### 8.6 The pull request's first review round (step 7)
+
+Copilot reviewed `#182` at `bf82de3b4` on 2026-11-07, review `5812370772`, at the effort level
+`Balanced` that its footer names. It started without being requested, seconds after the pull
+request opened. It raised five findings, each marked low severity, and every one held when
+checked against Google's documentation, read with `curl` that day, and against ADR-003. The owner
+approved the triage, and recording, rather than splitting, `dsh-tester`'s reach from a task branch.
+
+| Thread | Finding | Verdict | Commit |
+|---|---|---|---|
+| `r4501843554` | The deployer lacks Artifact Registry Reader | Valid, and wider: Wave 4 task 4 pushes the image, which needs Writer, and one repository let a branch-run deployer push over a release tag. Two repositories, `dsh` with immutable tags and `dsh-ci`; Writer on its own one per deployer (K25, K26, H7) | `e607af753` |
+| `r4501843596` | The cleanup policy cannot be written | Valid: tag conditions match a tag's start, and keep counts are per artifact (K27). Age and count policies on `dsh-ci`, untagged images only on `dsh` | `598e144c1` |
+| `r4501843574` | Task branches can use `dsh-smoke` against production | Valid: GitHub's token has no claim for a job's name (K24). `<base>-smoke` per tier, impersonated like its deployer; H8 covers `dsh-smoke`. `dsh-tester`'s reach into `dsh-staging` is a recorded negative consequence | `e6ba3954b` |
+| `r4501843606` | A handler that outlives teardown can write after it | Valid: ADR-003 delivers again while a stage still runs (F2). Recording terms records nothing for a missing document (F12), a stage never creates one, teardown removes the document first; a delayed-duplicate contract test for Wave 3 task 2 and Wave 5 task 3 | `1087025c7` |
+| `r4501843621` | A check in the deploy job comes after publication | Valid: the deploy job runs after the reusable workflow. Only the input to the reusable workflow, checked before its first write, stays | `d7bce0649` |
+
+After the round C1 to C6 were run again. C1's `awk` prints `47`: the round added four
+alternatives, one smoke identity, one image repository, one repository cleaned by tag, and waiting
+for every handler to stop. Each section's count of rejected alternatives matches its bullets. C2's
+loops ran over K1 to K27 and H1 to H8 and printed nothing. C3, C4, C5 and C6 are as in §8.3.
