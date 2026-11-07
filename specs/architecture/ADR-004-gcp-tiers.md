@@ -23,7 +23,7 @@ to GCP.
 output of `#48`. Its probe ids (P0 to P31), finding ids (S1 to S8, M1 to M4), rule ids (R1 to R12)
 and GCP fact ids (G1 to G8) are used here as they are there. ADR-003's fact ids (F1 to F12) and
 assumption ids (A1 to A6) are used as they are there, and its assumptions are always written
-"ADR-003's A3". Facts read for this ADR are K1 to K26, and its assumptions are H1 to H8; both are
+"ADR-003's A3". Facts read for this ADR are K1 to K27, and its assumptions are H1 to H8; both are
 listed under [Evidence](#evidence) and [Assumptions](#assumptions).
 
 Wave and task numbers are those of the re-plan of 2026-10-10 in `specs/product/PRD.md`. A later
@@ -450,7 +450,7 @@ Enterprise it is as many write units as it has KiB. Delete protection guards pro
 the free tier where this section puts it (K17, K1). An end user's `dsh` gets the free tier in
 their own project if it is the first database created there (K1).
 
-**Rejected.** Five alternatives.
+**Rejected.** Six alternatives.
 
 - **The free database on `dsh`.** It would have to be created out of order to claim it (K1), for
   traffic that does not exist yet.
@@ -459,6 +459,9 @@ their own project if it is the first database created there (K1).
   as a few large records.
 - **Keeping every image.** Artifact Registry grows past its free 0.5 GB (K4) with images no one
   deploys.
+- **One repository, cleaned by tag.** A tag condition matches the start of a tag, and every tag
+  starts with the dotted version, so no condition picks out `dev` or `rc`. A count of recent
+  versions is kept per image, not per kind of tag (K27).
 - **Deleting old revisions.** It saves nothing: a revision that receives no requests is not billed
   (G8).
 
@@ -470,7 +473,7 @@ their own project if it is the first database created there (K1).
 | Firestore | Standard edition (K2, K21). `dsh-dev-db` created first, and free (K1). No point-in-time recovery and no scheduled backups, which are billed (K17) and outside the free tier (K1). Delete protection on (K17) | what it stores. Firestore bills by document read, write and delete (F6) |
 | Pub/Sub | no topic retention, no retention of acknowledged messages, no snapshots, each of which bills storage (K14). The retention of unacknowledged messages is Wave 6 task 4's | nothing: Pub/Sub bills the bytes published and delivered, and the messages it retains (K14). No message moves while a tier is idle |
 | Cloud Storage | section 5. Regional storage in `us-central1` is inside the free tier's 5 GB (K4) | what it stores |
-| Artifact Registry | a cleanup policy removes `dev` and `rc` tags older than 14 days, keeps the 5 most recent of each, and removes untagged images (G8). Release tags are kept, because a rollback deploys them | what it stores beyond 0.5 GB (K4) |
+| Artifact Registry | `dsh-ci`: a delete policy for every image older than 14 days, tagged or not, and a keep policy for its 10 most recent versions, which wins where both apply (K27). `dsh`: a delete policy for untagged images older than 14 days; its tagged images cannot be deleted (K26), and are kept because a rollback deploys them | what it stores beyond 0.5 GB (K4) |
 | Revisions | not deleted. Cloud Run removes the oldest past 1,000 (G8) | nothing (G8) |
 | Cloud Logging | the default retention of 30 days, which incurs no retention cost (K15) | ingestion beyond the free 50 GiB a month (K15) |
 
@@ -726,6 +729,7 @@ pages, Pub/Sub's, Firestore's and Google Cloud Observability's, were read from t
 | K24 | A pool's condition can restrict it to some workflows or branches, impersonation can be granted to matching identities only, and GitHub's token names the workflow and the ref | "Optionally, extend the attribute condition to restrict access to a subset of workflows or branches." "To allow only specific identities of the workload identity pool to impersonate the service account" (federation). `workflow_ref`: "The ref path to the workflow." `job_workflow_ref`: "For jobs using a reusable workflow, the ref path to the reusable workflow." `ref`: "The git ref that triggered the workflow run." (GitHub) | <https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines>, <https://docs.github.com/en/actions/reference/security/oidc> | 2026-11-03 | Not verified by a run |
 | K25 | Deploying needs three roles: Cloud Run Developer on the service, Service Account User on its identity, and Artifact Registry Reader on the image's repository | "To get the permissions that you need to deploy Cloud Run services, ask your administrator to grant you the following IAM roles:" "Cloud Run Developer (`roles/run.developer`) on the Cloud Run service"; "Service Account User (`roles/iam.serviceAccountUser`) on the service identity"; "Artifact Registry Reader (`roles/artifactregistry.reader`) on the Artifact Registry repository of the deployed container image" | <https://docs.cloud.google.com/run/docs/deploying> | 2026-11-07 | Not verified by a run |
 | K26 | Artifact Registry Writer reads and writes artifacts. In a repository with immutable tags, a tagged image cannot be deleted, untagged, or replaced under its tag | Artifact Registry Reader: "View and get artifacts, view repository metadata." Artifact Registry Writer: "Read and write artifacts." (access control). "If an Artifact Registry repository is configured for immutable image tags, the following actions are not permitted: Delete a tagged image. Deleting untagged images is still permitted. Remove a tag from an image. Push an image with a tag that is already used by another version of the image in the repository." (names) | <https://docs.cloud.google.com/artifact-registry/docs/access-control>, <https://docs.cloud.google.com/artifact-registry/docs/docker/names> | 2026-11-07 | Not verified by a run |
+| K27 | A cleanup policy deletes by tag state, tag prefix and age, keeps a count of recent versions per artifact, and a keep policy wins over a delete policy | "tagPrefixes : TAG_PREFIXES is a comma-separated list of tag prefixes. For example "test", "staging" would match images with tags "testenv" and "staging-1.5"." "tagState : TAG_STATUS indicates if the policy should check for tagged artifacts or untagged artifacts." "olderThan : OLDER_THAN_DURATION is the minimum time since the version of an artifact was created in the repository". Keep count: "the number of versions of an artifact to keep in your repository." "When an artifact matches the criteria for both a delete policy and a keep policy, the artifact is kept." | <https://docs.cloud.google.com/artifact-registry/docs/repositories/cleanup-policy> | 2026-11-07 | Not verified by a run |
 
 ---
 
@@ -854,7 +858,8 @@ This ADR records the consequences, and it changes no plan by itself.
 | The free database on `dsh` | The free database on `dsh-dev` (section 6) | Created out of order to claim it (K1), for traffic that does not exist yet |
 | The free database on `dsh-staging` | The free database on `dsh-dev` (section 6) | It has the fewest operations |
 | Firestore Enterprise edition | Standard edition (section 6) | It bills a write by its size (K21), and the term statistics are a few large records |
-| Keeping every image | A cleanup policy for `dev` and `rc` tags (section 6) | Artifact Registry grows past its free 0.5 GB (K4) |
+| Keeping every image | Cleanup policies on `dsh-ci` and on `dsh`'s untagged images (section 6) | Artifact Registry grows past its free 0.5 GB (K4) |
+| One repository, cleaned by tag | Cleanup policies on `dsh-ci` and on `dsh`'s untagged images (section 6) | No tag condition picks out `dev` or `rc`, and a recent-versions count is per image (K27) |
 | Deleting old revisions | Revisions kept (section 6) | It saves nothing: an idle revision is not billed (G8) |
 | Local runs against `dsh-dev` that do not tear down | Teardown of what a test created (section 7) | Every local run would leave data behind |
 | Keeping all test data, bounded by the fixtures | Teardown of what a test created (section 7) | Tests depend on what an earlier run left |
