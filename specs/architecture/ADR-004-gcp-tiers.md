@@ -23,7 +23,7 @@ to GCP.
 output of `#48`. Its probe ids (P0 to P31), finding ids (S1 to S8, M1 to M4), rule ids (R1 to R12)
 and GCP fact ids (G1 to G8) are used here as they are there. ADR-003's fact ids (F1 to F12) and
 assumption ids (A1 to A6) are used as they are there, and its assumptions are always written
-"ADR-003's A3". Facts read for this ADR are K1 to K24, and its assumptions are H1 to H8; both are
+"ADR-003's A3". Facts read for this ADR are K1 to K26, and its assumptions are H1 to H8; both are
 listed under [Evidence](#evidence) and [Assumptions](#assumptions).
 
 Wave and task numbers are those of the re-plan of 2026-10-10 in `specs/product/PRD.md`. A later
@@ -108,7 +108,9 @@ tier: its service accounts, every role grant, its data resources, and its Cloud 
 first deploy straight to traffic. The owner runs it, with the owner's own account, and so does an
 end user. The **deploy** puts a new revision on a service that exists, and changes no IAM policy
 and no data resource. The workflows run the deploy, under a deployer identity of the tier's own.
-Both parts are safe to run twice. Every tier is in `us-central1`. GitHub Actions authenticates
+Images are kept in two Artifact Registry repositories: `dsh`, for releases, with immutable tags,
+and `dsh-ci`, for the builds of `dsh-dev` and `dsh-staging`. Both parts are safe to run twice.
+Every tier is in `us-central1`. GitHub Actions authenticates
 through Workload Identity Federation and holds no key. Five kinds of service account exist, none
 with a key, beside a developer's own account.
 
@@ -117,13 +119,16 @@ runs on every deploy of `DEVELOP`. Granting a role means setting an IAM policy (
 identity that sets a policy decides who holds every role in it, itself included. So no identity CI
 can impersonate holds that right: Cloud Run Developer deploys and lacks it, where Cloud Run Admin
 has it (K22). A deployer per tier means a workflow that may deploy `dsh-dev` cannot deploy `dsh`.
-`us-central1` is one of the three regions where Cloud Storage's free tier applies (K4). The
+A deploy reads its image from Artifact Registry (K25), and the job that runs it pushes the image
+first, which needs Writer on the repository (K26). In a repository with immutable tags, a tagged
+image cannot be deleted or replaced (K26), so a release image stays what was released, and the
+deployers a task branch can use write only to `dsh-ci`. `us-central1` is one of the three regions where Cloud Storage's free tier applies (K4). The
 pipeline is asynchronous and its only callers are tests, so nothing in DSH needs a region close to
 anyone. A key stored as a secret is a long-lived credential (K11), and federation needs none. An
 identity per tier and per role is what lets IAM refuse a tier's service, or a test, access to
 another tier's data.
 
-**Rejected.** Eleven alternatives.
+**Rejected.** Twelve alternatives.
 
 - **A region near the owner, such as `southamerica-east1`.** It has no Cloud Storage free tier
   (K4), and buys latency that nothing in DSH needs.
@@ -141,6 +146,9 @@ another tier's data.
   CI run.
 - **One deployer for every tier.** `deploy.yml` deploys whichever branch it is dispatched on, so a
   task branch could deploy code to `dsh` that runs as `dsh-run`.
+- **One image repository for every tier.** `dsh-dev-deploy`, which any branch can use, would write
+  to the repository that holds the release images, and could push over a release tag that a
+  rollback deploys.
 - **Developers impersonating `dsh-tester`.** It gives every developer `dsh-staging`'s data, for a
   need that is `dsh-dev`'s alone.
 
@@ -157,16 +165,19 @@ another tier's data.
   The owner runs it again after each, for each tier that exists; a second run changes nothing it
   already made.
 - **The project-wide part**, run once: the APIs, the Workload Identity pool, `dsh-tester`,
-  `dsh-smoke`, the Artifact Registry repository, the bucket and the budget alert. It is Wave 4 task
+  `dsh-smoke`, the two Artifact Registry repositories, the bucket and the budget alert. It is Wave 4 task
   3's bootstrap.
 
 #### The deploy
 
 - **Inputs.** The base name, the image tag, the revision suffix, and whether the new revision takes
   traffic. Where the script lives and what it is written in are Wave 4 task 4's.
-- **What it does.** It deploys a revision to the tier's service, which the setup made. It creates
+- **What it does.** It deploys a revision to the tier's service, which the setup made, from an
+  image the job pushed just before, under the same identity, to the tier's repository. It creates
   no resource and sets no IAM policy, so `<base>-deploy` needs only Cloud Run Developer on its own
-  service and Service Account User on `<base>-run` (K22). That this is enough is H7.
+  service and Service Account User on `<base>-run` (K22, K25), and Artifact Registry Writer on its
+  tier's repository, which includes the Reader that a deploy needs (K25, K26). That this is enough
+  is H7.
 - **Who runs it.** `deploy.yml` for `dsh-dev`, `staging.yml` for `dsh-staging`, and `release.yml`
   and `hotfix.yml` for `dsh`. Each runs it in a DSH job after the reusable workflow of
   `parent-poms`, as the tier's `<base>-deploy`.
@@ -207,7 +218,7 @@ The exact expressions are Wave 4 task 3's. That they hold is H8.
 
 | Identity | Granted | Not granted | Used by |
 |---|---|---|---|
-| `<base>-deploy`, one per tier | Cloud Run Developer on its own tier's service; Service Account User on its own `<base>-run` (K22) | setting any IAM policy; creating any resource; any document or object | the deploy |
+| `<base>-deploy`, one per tier | Cloud Run Developer on its own tier's service; Service Account User on its own `<base>-run` (K22); Artifact Registry Writer on `dsh-ci` for `dsh-dev-deploy` and `dsh-staging-deploy`, and on `dsh` for `dsh-deploy` (K25, K26) | setting any IAM policy; creating any resource; writing to the other image repository; any document or object | the deploy, and the push of its image |
 | `<base>-run`, one per tier | `roles/datastore.user` with a condition on its own database (K3); object access on its own managed folder (G4); publish to its own topics | anything of another tier | the service at run time |
 | `<base>-push`, one per tier | `roles/run.invoker` on its own tier's service (K7, K8) | anything else | the tier's push subscriptions |
 | `dsh-tester` | invoker on `dsh-dev` and `dsh-staging`; `roles/datastore.user` with a condition on `dsh-dev-db` and `dsh-staging-db`; object access on `dsh-dev/` and `dsh-staging/` | anything on `dsh` | layer 5a, its teardown, and the test of two callers (ADR-003's A3) |
@@ -225,6 +236,9 @@ The owner's account is not in the table: it runs the setup, and no workflow uses
   5a can check what exists and tear down what it created (section 7).
 - **The per-database condition** is an IAM condition on `resource.name` (K3). That it stops
   `dsh-tester` reading `dsh-db` is H3.
+- **A release image cannot be replaced.** `dsh` has immutable tags, so a tagged image there cannot
+  be deleted, lose its tag, or have its tag pushed again with another image (K26), and only
+  `dsh-deploy` writes to it. `dsh-dev-deploy`, which any branch can use, writes to `dsh-ci` alone.
 - **The names fit.** A service account id has 6 to 30 characters, lowercase letters, digits and
   dashes (K19). The longest here is `dsh-staging-deploy`, with 18, and the shortest `dsh-run`, with
   7.
@@ -263,7 +277,7 @@ serves. A revision that receives no requests is not billed (G8), so the wait cos
 | Topic, subscription | the base name, a dash, the channel (G3). The channels are Wave 6's | `dsh-dev-<channel>` | `dsh-staging-<channel>` | `dsh-<channel>` |
 | Bucket | one per project, named by the deploy through `dsh.storage.bucket`; proposed `<project-id>-dsh` (G4) | the same | the same | the same |
 | Object prefix, managed folder | the base name and `/` (G4) | `dsh-dev/` | `dsh-staging/` | `dsh/` |
-| Image | `us-central1-docker.pkg.dev/<project>/dsh/dsh`, tagged with the dotted version (G7) | `:0.4.0-dev.54` | `:0.4.0-rc.54` | `:0.4.0` |
+| Image | `us-central1-docker.pkg.dev/<project>/<repository>/dsh`, tagged with the dotted version (G7). The repository is `dsh-ci` for the builds of `dsh-dev` and `dsh-staging`, and `dsh` for releases (section 1) | `dsh-ci/dsh:0.4.0-dev.54` | `dsh-ci/dsh:0.4.0-rc.54` | `dsh/dsh:0.4.0` |
 | Runtime identity | the base name and `-run` (K19) | `dsh-dev-run` | `dsh-staging-run` | `dsh-run` |
 | Push identity | the base name and `-push` (K19) | `dsh-dev-push` | `dsh-staging-push` | `dsh-push` |
 | Deploy identity | the base name and `-deploy` (K19) | `dsh-dev-deploy` | `dsh-staging-deploy` | `dsh-deploy` |
@@ -680,8 +694,9 @@ fact. What neither supports is an assumption, in the next section.
 **Not verified by a run.** No GCP project exists yet. Each fact is taken from the page named. The
 words in quotation marks are the page's; the rest is a paraphrase. The G facts are the findings',
 and the F facts ADR-003's; both are cited by id and not copied. The K facts were read for this ADR,
-on 2026-11-03. Three pricing pages, Pub/Sub's, Firestore's and Google Cloud Observability's, were
-read from their HTML with `curl`, because the fetching tool received none of their text.
+K1 to K24 on 2026-11-03 and the rest on 2026-11-07, in the pull request's review. Three pricing
+pages, Pub/Sub's, Firestore's and Google Cloud Observability's, were read from their HTML with
+`curl`, because the fetching tool received none of their text. So were the pages of K25 onwards.
 
 | Id | What it establishes | Words quoted | Source | Read | Status |
 |---|---|---|---|---|---|
@@ -709,6 +724,8 @@ read from their HTML with `curl`, because the fetching tool received none of the
 | K22 | Cloud Run Developer deploys and cannot set IAM policies; Cloud Run Admin can. A deployer needs Service Account User on the service's identity | Cloud Run Developer: "Read and write access to all Cloud Run resources", with `run.services.getIamPolicy` and not `run.services.setIamPolicy` among its permissions. Cloud Run Admin: "Full control over all Cloud Run resources", with `run.services.setIamPolicy`. Deploying needs "Service Account User (`roles/iam.serviceAccountUser`) on the Cloud Run service identity" | <https://docs.cloud.google.com/run/docs/reference/iam/roles> | 2026-11-03 | Not verified by a run |
 | K23 | Granting roles on a project means setting its IAM policy | "To manage access to a project: Project IAM Admin (`roles/resourcemanager.projectIamAdmin`)". The permissions listed "To manage access to projects:" are `resourcemanager.projects.getIamPolicy` and `resourcemanager.projects.setIamPolicy` | <https://docs.cloud.google.com/iam/docs/granting-changing-revoking-access> | 2026-11-03 | Not verified by a run |
 | K24 | A pool's condition can restrict it to some workflows or branches, impersonation can be granted to matching identities only, and GitHub's token names the workflow and the ref | "Optionally, extend the attribute condition to restrict access to a subset of workflows or branches." "To allow only specific identities of the workload identity pool to impersonate the service account" (federation). `workflow_ref`: "The ref path to the workflow." `job_workflow_ref`: "For jobs using a reusable workflow, the ref path to the reusable workflow." `ref`: "The git ref that triggered the workflow run." (GitHub) | <https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines>, <https://docs.github.com/en/actions/reference/security/oidc> | 2026-11-03 | Not verified by a run |
+| K25 | Deploying needs three roles: Cloud Run Developer on the service, Service Account User on its identity, and Artifact Registry Reader on the image's repository | "To get the permissions that you need to deploy Cloud Run services, ask your administrator to grant you the following IAM roles:" "Cloud Run Developer (`roles/run.developer`) on the Cloud Run service"; "Service Account User (`roles/iam.serviceAccountUser`) on the service identity"; "Artifact Registry Reader (`roles/artifactregistry.reader`) on the Artifact Registry repository of the deployed container image" | <https://docs.cloud.google.com/run/docs/deploying> | 2026-11-07 | Not verified by a run |
+| K26 | Artifact Registry Writer reads and writes artifacts. In a repository with immutable tags, a tagged image cannot be deleted, untagged, or replaced under its tag | Artifact Registry Reader: "View and get artifacts, view repository metadata." Artifact Registry Writer: "Read and write artifacts." (access control). "If an Artifact Registry repository is configured for immutable image tags, the following actions are not permitted: Delete a tagged image. Deleting untagged images is still permitted. Remove a tag from an image. Push an image with a tag that is already used by another version of the image in the repository." (names) | <https://docs.cloud.google.com/artifact-registry/docs/access-control>, <https://docs.cloud.google.com/artifact-registry/docs/docker/names> | 2026-11-07 | Not verified by a run |
 
 ---
 
@@ -724,7 +741,7 @@ Each is something only a deploy can show.
 | H4 | Teardown and the test of two callers reach Firestore and Cloud Storage under `dsh-tester`, impersonated from GitHub Actions | Wave 5 tasks 6 and 7 |
 | H5 | An idle tier costs what section 6 says | Wave 4 task 3's budget alert, and the billing report through Wave 5 |
 | H6 | A revision tagged `candidate` with no traffic accepts a token whose audience is the service's URL | Wave 7 task 2 |
-| H7 | The deploy succeeds with Cloud Run Developer on the service and Service Account User on `<base>-run`, and nothing more, because it sets no IAM policy | Wave 4 task 4, at the first deploy by `dsh-dev-deploy` |
+| H7 | The push and the deploy succeed with Cloud Run Developer on the service, Service Account User on `<base>-run` and Artifact Registry Writer on the tier's repository, and nothing more, because they set no IAM policy | Wave 4 task 4, at the first deploy by `dsh-dev-deploy` |
 | H8 | The conditions of section 1 refuse `dsh-deploy` to a workflow file changed on a task branch | Wave 4 task 3 for the pool, and Wave 7 task 2, by a dispatch from a task branch that expects the refusal |
 
 ---
@@ -776,9 +793,9 @@ This ADR does not edit the PRD. It lists the consequences, and the PRD changes g
 | Wave 1 task 3 | Split. This ADR is its first half. ADR-005, the end user's packaging, is opened after this ADR merges |
 | Wave 2 task 1 | A stage acknowledges a message whose document no longer exists, and does nothing else (section 7) |
 | Wave 3 task 2 | The term statistics interface gains a removal, a no-op for a document never counted, and its contract test covers both (section 7) |
-| Wave 4 task 2 | The image's path and tags (section 2) |
-| Wave 4 task 3 | The project-wide bootstrap: the APIs; the Workload Identity pool limited to the repository, with the conditions on each deployer and H8; `dsh-tester` and `dsh-smoke`; the Artifact Registry repository `dsh` in `us-central1` with its cleanup policy; the bucket with its settings (section 5); the budget alert. The tier's setup, owner-run: `<base>-deploy`, `<base>-run`, `<base>-push`, their grants and the developers', and the service by a first deploy straight to traffic (section 1) |
-| Wave 4 task 4 | The deploy of section 1, with its settings, run by `dsh-dev-deploy` in `deploy.yml`. It creates nothing and sets no IAM policy. It settles H2 and H7. The point on a traffic tag's first character is closed by section 2 |
+| Wave 4 task 2 | The image's path and tags, in `dsh-ci` or `dsh` (section 2) |
+| Wave 4 task 3 | The project-wide bootstrap: the APIs; the Workload Identity pool limited to the repository, with the conditions on each deployer and H8; `dsh-tester` and `dsh-smoke`; the Artifact Registry repositories in `us-central1`, `dsh` with immutable tags and `dsh-ci`, with their cleanup policies; the bucket with its settings (section 5); the budget alert. The tier's setup, owner-run: `<base>-deploy`, `<base>-run`, `<base>-push`, their grants and the developers', and the service by a first deploy straight to traffic (section 1) |
+| Wave 4 task 4 | The deploy of section 1, with its settings, run by `dsh-dev-deploy` in `deploy.yml`, after it pushes the image to `dsh-ci`. It creates nothing and sets no IAM policy. It settles H2 and H7. The point on a traffic tag's first character is closed by section 2 |
 | Wave 4 task 5 | The startup check of section 3, run before the port opens, and H1. The smoke check runs as `dsh-smoke`. R10 and layer 5 in `testing-patterns.md` |
 | Wave 5 task 1 | `dsh.storage.bucket` is required under `gcp` (R6) |
 | Wave 5 task 3 | The removal on Firestore |
@@ -820,6 +837,7 @@ This ADR records the consequences, and it changes no plan by itself.
 | One test identity for layers 5a and 5b | `dsh-tester` and `dsh-smoke` (section 1) | The identity that writes test data could call production |
 | The deploy creating identities and granting roles | An owner-run setup (section 1) | Its identity would set IAM policies (K23), and could grant itself production's data |
 | One deployer for every tier | `<base>-deploy` per tier (section 1) | A task branch could deploy code to `dsh` that runs as `dsh-run` |
+| One image repository for every tier | `dsh` for releases, with immutable tags, and `dsh-ci` (section 1) | A deployer any branch can use could push over a release tag that a rollback deploys |
 | Developers impersonating `dsh-tester` | A developer's own grants on `dsh-dev` (section 1) | Every developer would reach `dsh-staging`'s data |
 | One dashed string for the image tag and the revision | Dots in the tag, dashes in the revision (section 2) | It gives up the tag a user pulling the image expects |
 | A bucket per tier | One bucket, a managed folder per tier (section 2) | The folder already isolates the tiers (G4), and bucket names are global |
