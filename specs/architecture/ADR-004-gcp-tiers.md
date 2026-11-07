@@ -513,7 +513,7 @@ set even then. Term statistics count a document once and offer no removal (ADR-0
 without a removal every test document would stay counted on its tier. Neither `dsh-tester` nor a
 developer has a grant on `dsh`'s data (section 1), so teardown cannot reach production.
 
-**Rejected.** Four alternatives.
+**Rejected.** Five alternatives.
 
 - **Local runs against `dsh-dev` that do not tear down.** They would leave data behind on every
   run, which is what this section forbids.
@@ -524,6 +524,8 @@ developer has a grant on `dsh`'s data (section 1), so teardown cannot reach prod
 - **Expiry by age.** It needs an expiry field. Firestore's managed deletes are outside the free
   tier (K1). And the term statistics would count an expired fixture again when it is next
   submitted.
+- **Waiting, after the terminal status, for every handler to stop.** It has to outlast the longest
+  request a handler can make, on every document of every run, and a fence makes it unnecessary.
 
 #### How a test knows what it created
 
@@ -546,13 +548,30 @@ document (F3, F2). So:
   delivered again until its retention or its maximum of attempts runs out (F2, F4).
 - **The removal is a no-op for a document that was never counted**, so teardown can call it
   whatever the document's status.
+- **A handler still running when teardown starts writes nothing that counts.** A delivery that
+  outlives its acknowledgment deadline is delivered again while it still runs (ADR-003, section
+  1; F2), so a terminal status reached by the repeat does not prove that the first has stopped.
+  Waiting would have to outlast the longest request a handler can make. The writes are fenced
+  instead:
+  - **Recording a document's terms records nothing if the document no longer exists.** On
+    Firestore the update's transaction reads the document, and a transaction runs again when a
+    document it read was changed (F12), so a deletion that lands during the update is seen. How
+    the interface learns of the document is Wave 3 task 2's.
+  - **A stage never creates a document.** It advances one by ADR-003's conditional update, which
+    changes nothing once the document is gone.
+  - **An object a late handler writes** under the document's hash can outlive teardown. It stays
+    bounded by the fixtures: the next run that submits that fixture writes it again, and its
+    teardown removes it.
 
 #### The removal
 
 One operation on the term statistics interface, added by Wave 3 task 2 with its contract test,
 and implemented on Firestore by Wave 5 task 3. It takes the document's distinct terms, which the
-indexing stage already writes to the file store (ADR-003, section 1). So teardown removes the terms
-before it removes the indexing output.
+indexing stage already writes to the file store (ADR-003, section 1). Teardown removes, in order:
+the document, so that a late handler finds it gone; its terms; then the indexing output and the
+original file. A recording that commits before the document's deletion is undone by the removal
+that follows it, and one that would commit after it records nothing, so either way no count is
+left.
 
 #### Runs that share a tier
 
@@ -787,7 +806,10 @@ Each is something only a deploy can show.
 - **The startup check ties the application to a variable Cloud Run sets** (K5).
 - **A front end will need a second service**, and the startup check has to accept its name.
 - **A test has to track what it created** and wait for a terminal status. A teardown that does not
-  run, or a document that never finishes, leaves data behind, bounded by the fixtures.
+  run, a document that never finishes, or an object a late handler writes, leaves data behind,
+  bounded by the fixtures.
+- **Recording a document's terms depends on the document's existence**, so the term statistics
+  learn of the document store (section 7).
 - **CI runs on one tier queue behind each other**, and a developer's run on `dsh-dev` can still
   overlap one.
 - **A maximum of one instance answers a burst slowly**, and Pub/Sub delivers again what it refuses
@@ -809,16 +831,16 @@ This ADR does not edit the PRD. It lists the consequences, and the PRD changes g
 | Where | Consequence |
 |---|---|
 | Wave 1 task 3 | Split. This ADR is its first half. ADR-005, the end user's packaging, is opened after this ADR merges |
-| Wave 2 task 1 | A stage acknowledges a message whose document no longer exists, and does nothing else (section 7) |
-| Wave 3 task 2 | The term statistics interface gains a removal, a no-op for a document never counted, and its contract test covers both (section 7) |
+| Wave 2 task 1 | A stage acknowledges a message whose document no longer exists, and does nothing else. A stage never creates a document (section 7) |
+| Wave 3 task 2 | The term statistics interface gains a removal, a no-op for a document never counted. Recording records nothing for a document that no longer exists. Its contract test covers all three, and a delayed duplicate that records after the document is removed leaves no count (section 7) |
 | Wave 4 task 2 | The image's path and tags, in `dsh-ci` or `dsh` (section 2) |
 | Wave 4 task 3 | The project-wide bootstrap: the APIs; the Workload Identity pool limited to the repository, with the conditions on each deployer and smoke identity and H8; `dsh-tester`; the Artifact Registry repositories in `us-central1`, `dsh` with immutable tags and `dsh-ci`, with their cleanup policies; the bucket with its settings (section 5); the budget alert. The tier's setup, owner-run: `<base>-deploy`, `<base>-run`, `<base>-push`, `<base>-smoke`, their grants and the developers', and the service by a first deploy straight to traffic (section 1) |
 | Wave 4 task 4 | The deploy of section 1, with its settings, run by `dsh-dev-deploy` in `deploy.yml`, after it pushes the image to `dsh-ci`. It creates nothing and sets no IAM policy. It settles H2 and H7. The point on a traffic tag's first character is closed by section 2 |
 | Wave 4 task 5 | The startup check of section 3, run before the port opens, and H1. The smoke check runs as `dsh-dev-smoke`. R10 and layer 5 in `testing-patterns.md` |
 | Wave 5 task 1 | `dsh.storage.bucket` is required under `gcp` (R6) |
-| Wave 5 task 3 | The removal on Firestore |
+| Wave 5 task 3 | The removal on Firestore, and the fence: the recording's transaction reads the document. The contract test's delayed duplicate runs against the emulator |
 | Wave 5 task 5 | The setup gains `dsh-dev-db`, created first, in Standard edition with delete protection, and the managed folder; the deploy does not create them. H3. No lifecycle rule removes test objects by age: teardown does (section 7) |
-| Wave 5 task 6 | Layer 5a authenticates as `dsh-tester`, waits for a terminal status, and tears down as section 7 says. H4 |
+| Wave 5 task 6 | Layer 5a authenticates as `dsh-tester`, waits for a terminal status, and tears down as section 7 says, the document first. H4 |
 | Wave 5 task 7 | The test of two callers runs under `dsh-tester`, directly against `dsh-dev-db` |
 | Wave 6 task 2 | The push endpoints are protected by IAM alone (section 4) |
 | Wave 6 task 4 | The setup gains the topics and subscriptions, named `<base>-<channel>` and pushed by `<base>-push` |
@@ -880,6 +902,7 @@ This ADR records the consequences, and it changes no plan by itself.
 | Keeping all test data, bounded by the fixtures | Teardown of what a test created (section 7) | Tests depend on what an earlier run left |
 | Wiping a whole tier before each run | Teardown of what a test created (section 7) | A tool able to delete a tier, and a guard against `dsh` |
 | Expiry by age | Teardown of what a test created (section 7) | An expiry field, managed deletes outside the free tier (K1), and an expired fixture counted again |
+| Waiting after the terminal status for every handler to stop | A fence on the writes (section 7) | It outlasts the longest request on every document, and the fence makes it unnecessary |
 | A fourth tier, `dsh-hotfix` | One staging tier, the last deploy wins (section 8) | A fourth database billed from its first operation (K1), for a tier idle almost always |
 | A hotfix as a tagged revision on `dsh-staging`, with no traffic | One staging tier, the last deploy wins (section 8) | Pub/Sub pushes to the service's URL (G8), so the hotfix's pipeline runs on the candidate's revision |
 | The gate reading the commit from the running revision | A commit status (section 8) | It proves what runs, not what passed |
