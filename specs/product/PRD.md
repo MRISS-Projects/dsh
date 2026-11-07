@@ -22,7 +22,9 @@ records the operated tiers on GCP and the `0.6.0` milestone that first releases 
 "The 2026-10-13 re-plan" records what
 [ADR-003](../architecture/ADR-003-document-pipeline.md), **Status: Accepted**, changed in the
 waves. It decides how the pipeline is built, and it removes the legacy code where ADR-001
-planned to deprecate it.
+planned to deprecate it. "The 2026-11-07 re-plan" records what
+[ADR-004](../architecture/ADR-004-gcp-tiers.md), **Status: Accepted**, changed in the waves. It
+decides how DSH runs on its three GCP tiers.
 
 ## 2. How to read a wave
 
@@ -94,6 +96,8 @@ a milestone.
 | 11 | `3.15.0-SNAPSHOT` | `#85`, since 2026-10-10 |
 
 A wave with no row has no parent-poms work planned. When one gains some, it gets the next minor.
+Wave 7 gained a second upstream need on 2026-11-07, from ADR-004, which is not yet an issue (§4,
+Wave 7). When it is opened, it goes on `3.13.0-SNAPSHOT` beside `#91`.
 
 The last four rows were re-keyed by the re-plan of 2026-10-10. Until then `3.12.0-SNAPSHOT` was the
 distribution wave's and held `#90`, `#91` and `#92`, and `3.13.0-SNAPSHOT` was the backlog's and
@@ -838,6 +842,98 @@ ADR-003's eight follow-up candidates were settled in the same session:
    Solr.
 8. The OpenAPI document and the feature specs: Wave 1 task 11 (decision 5).
 
+### The 2026-11-07 re-plan
+
+Waves 1 onward were re-planned on 2026-11-07, after `#181` closed.
+[ADR-004](../architecture/ADR-004-gcp-tiers.md) decides how DSH runs on its three GCP tiers, and
+its "Consequences for the waves" table lists what each wave owes it. No wave was added or
+renumbered, and no milestone moved.
+
+What ADR-004 decides, as far as the waves show it:
+
+- **One script in two parts, run under three base names.** The setup creates a tier, and the owner
+  runs it, as an end user will. The deploy puts a new revision on a service that exists. It
+  creates no resource and sets no IAM policy. The workflows run the deploy only, each tier under a
+  deployer identity of its own, `<base>-deploy`.
+- **Every tier is private.** Only the identities chosen for a tier hold invoker on its service, and
+  the push endpoints are protected by IAM alone. GitHub Actions authenticates through Workload
+  Identity Federation, and no service account key exists.
+- **On Cloud Run the application refuses to start** unless `gcp` is active and `dsh.name` is the
+  service's name.
+- **Production takes no traffic until layer 5b passes** on the new revision, tagged `candidate`.
+- **A test removes exactly what it created**, and the term statistics gain a removal. No lifecycle
+  rule removes test data by age.
+- **The release gate is a commit status**, `dsh-staging/acceptance`. `staging.yml` posts it, and
+  the first job of `release.yml` and `hotfix.yml` requires it.
+
+The owner's decisions from that session:
+
+1. **ADR-005 is planned in Wave 10, first in its order of work**, not in Wave 1 as ADR-004's table
+   puts it. ADR-005 builds on ADR-004's deploy, and every GCP fact ADR-004 rests on is "not verified
+   by a run". Waves 4 to 7 prove its assumptions, H1 to H8, on real tiers first. Nothing before
+   Wave 10 needs ADR-005, and 0.4.0 does not wait for it. Its issue can be opened before then; its
+   milestone is Wave 10's. Rejected: Wave 1 task 13, which follows the table and the earliest-wave
+   rule, and holds the 0.4.0 release until the ADR is written.
+2. **Two tasks are split, because ADR-004 gave each a second story.** Wave 4 task 3 keeps the
+   project-wide bootstrap, and a new Wave 4 task 6 is the tier's setup. The two run differently:
+   the bootstrap once for the project, the setup once per tier and again after Waves 5 and 6 add to
+   it. Wave 7 task 1 keeps the deploy of `dsh-staging`, and a new Wave 7 task 4 is the acceptance
+   record that Wave 7 task 3's gate reads. Split now, each wave's order of work states that the
+   setup comes before the deploy, and the record before the gate. Wave 4 task 5 keeps the startup
+   check and the smoke check together: both are small, and both need `dsh.name`, which the task
+   introduces. Rejected: leaving both whole for `dsh-new-story` to split, which §2 allows, and
+   which leaves the order between the parts implicit.
+
+**Four placements are this re-plan's, not the table's.**
+
+- ADR-004's row for Wave 2 task 1 is carried in two places. The acknowledgement of a message whose
+  document no longer exists goes to Wave 2 task 4, which holds what a delivery does when the
+  document is not where the flow expects it. "A stage never creates a document" stays with task
+  1's status recorder.
+- Wave 5 task 1 gains two things the table does not list: R5's names derived from `dsh.name` in
+  `application-gcp.properties` (ADR-004, section 9), and named databases in the Firestore emulator,
+  which ADR-004's open points of section 2 give to that task with `#49`.
+- Wave 10 task 4, local mode, is ADR-005's: it was the third bullet of Wave 1 task 3. The table
+  does not list it.
+- Wave 7 task 3 needs an input in parent-poms that the table names and no issue tracks. It is
+  listed under Wave 7 as an upstream need, not yet an issue.
+
+**ADR-004's task numbers are those of 2026-10-13.** Its Context says they are those of the re-plan
+of 2026-10-10, but its rows use the later numbering: Wave 5 task 3 is the term statistics on
+Firestore and Wave 5 task 7 the test of two callers, which only the re-plan of 2026-10-13 numbered
+so. This re-plan renumbers no existing task, so the ADR reads true against this document.
+
+**The mapping.** One line for each row of ADR-004's consequences table, naming the task that now
+carries it.
+
+| Row of ADR-004's consequences table | Carried by |
+|---|---|
+| Wave 1 task 3, split | Wave 1 task 3, done as ADR-004. ADR-005 is Wave 10 task 7 (decision 1) |
+| Wave 2 task 1, a document that no longer exists | Wave 2 task 4 for the acknowledgement, Wave 2 task 1 for a stage never creating a document |
+| Wave 3 task 2, the removal and the fence | Wave 3 task 2 |
+| Wave 4 task 2, the image's path and tags | Wave 4 task 2 |
+| Wave 4 task 3, the bootstrap and the tier's setup | Split. The bootstrap is Wave 4 task 3, the setup Wave 4 task 6 (decision 2) |
+| Wave 4 task 4, the deploy | Wave 4 task 4 |
+| Wave 4 task 5, the startup check | Wave 4 task 5 |
+| Wave 5 task 1, R6 | Wave 5 task 1 |
+| Wave 5 task 3, the removal on Firestore | Wave 5 task 3 |
+| Wave 5 task 5, the database and the managed folder | Wave 5 task 5. The bucket itself is Wave 4 task 3's |
+| Wave 5 task 6, layer 5a and teardown | Wave 5 task 6 |
+| Wave 5 task 7, the test of two callers | Wave 5 task 7 |
+| Wave 6 task 2, the push endpoints | Wave 6 task 2 |
+| Wave 6 task 4, the topics and subscriptions | Wave 6 task 4 |
+| Wave 7 task 1, `dsh-staging` and the record | Split. The deploy and layer 5a are Wave 7 task 1, the record Wave 7 task 4 (decision 2) |
+| Wave 7 task 2, `dsh` | Wave 7 task 2 |
+| Wave 7 task 3, the gate | Wave 7 task 3, with an upstream need in parent-poms. The open point under Wave 7 is closed |
+| Wave 9 task 1, the maximum of instances | Wave 9 task 1 |
+| Wave 10, its introduction and tasks 1 and 2 | The same, now citing ADR-005, Wave 10 task 7 |
+| Wave 10 task 3, the end user's script | Wave 10 task 3 |
+| Wave 10 task 6, a front end | Wave 10 task 6 |
+
+ADR-004's "After the merge" has three steps. Step 1 is this re-plan. Step 2, opening ADR-005
+through `dsh-new-story`, is not done; ADR-005 is Wave 10 task 7. Step 3 held: this re-plan opened
+and changed no issue.
+
 ### Wave 1 — Pipeline design, documentation and upstream catch-up
 
 Milestone: `0.4.0-SNAPSHOT`.
@@ -1036,8 +1132,8 @@ are.
    `#120` — **closed** — PR #180, with its upstream half, `parent-poms#114`, released with
    `parent-poms#112` as parent-poms 3.11.2.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
-   **Its first half was done on 2026-11-07:** `#181` — **closed** — PR #182. The second half,
-   ADR-005, is not yet an issue (task 3, "Outcome").
+   **Done on 2026-11-07:** `#181` — **closed** — PR #182. The task's second half, ADR-005, moved
+   to Wave 10 task 7 on the same day (§4, "The 2026-11-07 re-plan").
 7. `#144`, then `#137`. Both are about the REST API, and both waited for the Spring Boot line,
    which `#120` settled at 4.1.1.
 8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
@@ -1241,7 +1337,10 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    merge of PR #161 on 2026-10-13. Every question listed above is decided there. ADR-001 was
    revised in place and keeps its status, Proposed. The re-plan of 2026-10-13 applied the ADR's
    "Consequences for the waves" to this document.
-3. **ADR-004 — distribution.** Decides:
+3. **Done on 2026-11-07: ADR-004 — the GCP tiers.** Planned as "ADR-004 — distribution". Its
+   outcome is at the end. The plan as written is kept below.
+
+   Decides:
    - A run path and a build path. Running DSH needs a container image, and a public GHCR image pulls
      without credentials. Cloud Run cannot deploy from ghcr.io directly, so the deploy script copies
      the image into the user's Artifact Registry or configures a remote repository there.
@@ -1289,11 +1388,11 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    story, and its two parts are needed at different times: the operated tiers by Waves 4 and 7,
    the end user's packaging only by Wave 10. `#181` took the tiers. The first three bullets, the
    run path, the release zip and local mode, are the second half, ADR-005. It builds on ADR-004's
-   deploy and names, and is opened through `dsh-new-story`; it is not yet an issue.
+   deploy and names, and is opened through `dsh-new-story`; it is not yet an issue. The re-plan of
+   2026-11-07 moved it to Wave 10, as that wave's task 7, so this task is done with ADR-004.
 
-   ADR-004's "Consequences for the waves" are not applied to this document yet. They reshape tasks
-   in Waves 1 to 10, so they go through a re-plan (`dsh-plan-wave`), as ADR-003's did on
-   2026-10-13.
+   ADR-004's "Consequences for the waves" were applied to this document by the re-plan of
+   2026-11-07 (§4).
 4. **Documentation map.** `CLAUDE.md` is the root of the developer documentation tree. A CI check,
    like `check-spec-references`, fails when a Markdown file under `docs/`, `specs/` or `.github/`
    cannot be reached from `CLAUDE.md` by links. The same task deletes the empty scaffolding READMEs
@@ -1410,7 +1509,8 @@ runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1
      A hop stays inside the JVM here. It is selected by `dsh.transport`, whose default is
      `memory`.
    - **The status recorder.** One component records every transition, at twelve points, through
-     the conditional advance of Wave 1 task 9. No stage writes a status.
+     the conditional advance of Wave 1 task 9. No stage writes a status, and no stage creates a
+     document: an advance changes nothing once the document is gone (ADR-004, section 7).
    - **`/submit` stores and sends before it answers.** The `@Async` call after the response is
      removed, and the document is stored as `CREATED` before the first point.
    - **The RabbitMQ enqueue path is deleted**: `enqueue-docId-context.xml`,
@@ -1451,6 +1551,10 @@ runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1
    - **A store's failure is told from a stage's own.** The first records nothing and leaves the
      message unconsumed. The second records the stage's error status and consumes the message. A
      stage's own failure is not retried.
+   - **A message whose document no longer exists is acknowledged**, and nothing else is done.
+     Without that, a message for a document a test's teardown removed would be delivered again
+     until its retention or its maximum of attempts ran out (ADR-004, section 7). Added on
+     2026-11-07.
 5. **The pipeline diagram is generated from the flow.** Split out of task 1 on 2026-10-13. An
    integration test reads the running flow's channels and endpoints from Spring Integration's
    `IntegrationGraphServer`, renders them as Mermaid, and fails with the regenerated text when
@@ -1498,6 +1602,13 @@ names its fields, before the recorder writes the success status.
    contract test. The update is atomic, and it counts a document once however often its stage
    runs. The statistics are stored where the documents are, so `dsh.persistence` selects both.
    Until 2026-10-13 this task read "stored where ADR-003 decides".
+
+   Since 2026-11-07 the interface also offers a removal, which forgets one document's terms, from
+   the distinct terms the indexing stage writes to the file store. It is a no-op for a document
+   that was never counted. Recording records nothing for a document that no longer exists; how the
+   interface learns of the document is this task's to choose. The contract test covers all three,
+   and a delayed duplicate that records after the document is removed leaves no count (ADR-004,
+   section 7). Layer 5a's teardown is the removal's caller (Wave 5 task 6).
 3. **TF and IDF variants**, as the keyword paper defines them.
 4. **Keyword ranking** by the meta-algorithmic combination of task 3's variants. It sets a limit on
    the number of keywords returned, which keeps the record bounded.
@@ -1507,9 +1618,10 @@ names its fields, before the recorder writes the success status.
 
 ### Wave 4 — GCP foundation and the development tier
 
-Milestone: `0.6.0-SNAPSHOT`. Added by the re-plan of 2026-10-10. It delivers the part of ADR-004
-(Wave 1 task 3) that the operated tiers need, and every task depends on that ADR. No GCP project
-exists before this wave.
+Milestone: `0.6.0-SNAPSHOT`. Added by the re-plan of 2026-10-10. It builds the project and
+`dsh-dev` as [ADR-004](../architecture/ADR-004-gcp-tiers.md) decides, and every task depends on
+that ADR. No GCP project exists before this wave. Every GCP fact ADR-004 rests on is "not
+verified by a run", and its assumptions H1, H2, H5, H7 and the pool's half of H8 are proved here.
 
 **At the end of this wave `dsh-dev` proves only that the image starts and reports itself.** No
 `gcp` implementation exists yet, so no document test runs there until Wave 5. The deployment sets
@@ -1536,30 +1648,81 @@ the distribution wave until 2026-10-10.
 
 **Tasks:**
 
+Tasks 1 and 2 come first, in either order. Then tasks 3, 6, 4 and 5, in that order: the setup
+needs the project, the deploy needs the service the setup creates, and the smoke check needs a
+deploy. Task 6 was split out of task 3 on 2026-11-07.
+
 1. **Version, commit and health** (`#45`). The build stamps the version and the commit into the jar
    with `spring-boot:build-info`, and stamps nothing else (findings M2, R8). The application serves
    health, and info carrying both values. Other actuator endpoints stay off. What health reports
    while persistence is in memory, which is the default from Wave 1 task 8 until Wave 5, is the
    spec's to settle.
 2. **The container image.** A Dockerfile, and an image named `dsh` and tagged with the dotted
-   version (findings §8.2), built as ADR-004 decides. One image serves every tier and local mode.
-   It runs locally before anything is deployed. Publishing it for end users is Wave 10 task 1.
-3. **The GCP project bootstrap.** The owner creates the project and its billing, with a budget
-   alert. A script that is safe to run twice creates the rest: the APIs, the image repository with
-   a cleanup policy for `dev` and `rc` tags (findings §8.4), and the identity GitHub Actions
-   deploys with. Every setting follows the cost rule in `CLAUDE.md`.
-4. **Deploy `dsh-dev` from `deploy.yml`.** A DSH job after the reusable workflow pushes the image
-   and deploys revision `dsh-dev-<version>-dev-<n>` (findings §8.1), with zero minimum instances,
-   `DSH_NAME=dsh-dev` and `SPRING_PROFILES_ACTIVE=gcp`. It takes the version and the build number
-   from `parent-poms#109`'s outputs. The first deploy settles two points the documentation leaves
-   open (findings §8.3): what a deploy does when the revision name already exists, and whether a
-   traffic tag may start with a digit.
-5. **The smoke check, layer 5b, against `dsh-dev`.** After each deploy it asks for health, the
-   version and the commit, and compares them with what was built. It also checks that the base name
-   the application reports is the service's, which is the check the findings (section 5) leave to
-   ADR-004. That introduces `dsh.name` (R5), so `#158` comes first (Wave 1). The check reads and
-   writes no document, and Wave 7 reuses it for production. The same story adds layer 5 and rule
-   R10 to `.github/copilot/rules/testing-patterns.md`.
+   version, built as ADR-004 decides (section 2). One image serves every tier and local mode. It
+   runs locally before anything is deployed. Its path is
+   `us-central1-docker.pkg.dev/<project>/<repository>/dsh`, where the repository is `dsh-ci` for
+   the builds of `dsh-dev` and `dsh-staging`, as in `dsh-ci/dsh:0.4.0-dev.54`, and `dsh` for
+   releases, as in `dsh/dsh:0.4.0`. Publishing it for end users is Wave 10 task 1.
+3. **The GCP project bootstrap**, the part of ADR-004's setup run once for the project (section 1).
+   The owner creates the project and its billing, with a budget alert whose amount is the owner's
+   to set. A script that is safe to run twice creates the rest, run by the owner with the owner's
+   own account:
+   - the APIs;
+   - the Workload Identity pool, limited by an attribute condition to `MRISS-Projects/dsh`. The
+     conditions on who may impersonate each deployer and smoke identity, and `dsh-tester`, are
+     ADR-004's (section 1, "Authentication from GitHub Actions"), and their exact expressions are
+     this task's. The pool's half of H8 is proved here;
+   - `dsh-tester`, the identity of layer 5a, its teardown and the test of two callers;
+   - two Artifact Registry repositories in `us-central1`. `dsh`, for releases, has immutable tags,
+     and a cleanup policy for untagged images older than 14 days. `dsh-ci`, for the builds of
+     `dsh-dev` and `dsh-staging`, deletes every image older than 14 days and keeps its 10 most
+     recent versions (section 6);
+   - the bucket, in `us-central1`, Standard storage class, with uniform bucket-level access, no
+     object versioning and soft delete off (section 5). Its name is proposed as `<project-id>-dsh`
+     and is passed as a value; nothing in the image names it.
+
+   No service account key exists. Every setting follows the cost rule in `CLAUDE.md`, and the
+   budget alert, with the billing report through Wave 5, confirms what ADR-004's section 6 says
+   an idle tier costs (H5). Until 2026-11-07 this task also created the identity GitHub Actions
+   deploys with, and one image repository with a cleanup policy for `dev` and `rc` tags. ADR-004
+   rejected one repository cleaned by tag: no tag condition picks those out (section 6).
+4. **Deploy `dsh-dev` from `deploy.yml`.** ADR-004's deploy (section 1), run in a DSH job after
+   the reusable workflow, as `dsh-dev-deploy`. It pushes the image to `dsh-ci` and deploys revision
+   `dsh-dev-<version>-dev-<n>` straight to traffic. Every deploy sets minimum instances 0,
+   request-based billing, `DSH_NAME=dsh-dev`, `SPRING_PROFILES_ACTIVE=gcp`, the runtime identity
+   `dsh-dev-run`, and a maximum of instances, a parameter that is 1 by default. It creates no
+   resource and sets no IAM policy. Its inputs are the base name, the image tag, the revision
+   suffix and whether the revision takes traffic; where the script lives and what it is written in
+   are this task's. It takes the version and the build number from `parent-poms#109`'s outputs. The
+   first deploy proves that Cloud Run Developer on the service, Service Account User on
+   `dsh-dev-run` and Artifact Registry Writer on `dsh-ci` are enough (H7). The first re-run settles
+   what a deploy does when the revision name already exists (H2); until then the deploy assumes it
+   fails. Until 2026-11-07 this task also settled whether a traffic tag may start with a digit.
+   ADR-004 avoids the question: the only tag is `candidate` (section 2).
+5. **The startup check, and the smoke check, layer 5b, against `dsh-dev`.** The task introduces
+   `dsh.name` (R5), set by `DSH_NAME` and `dsh` by default, so `#158` comes first (Wave 1).
+   - **The startup check** (ADR-004, section 3). When `K_SERVICE` is set, as Cloud Run sets it in
+     every container, the application refuses to start unless `gcp` is among the active profiles
+     and `dsh.name` equals `K_SERVICE`. It runs before the web server opens its port and before any
+     bean that writes is created, because the default startup probe is TCP on the port. Locally and
+     in every test `K_SERVICE` is absent, and nothing changes. A deliberate deploy that leaves out
+     `DSH_NAME` proves that the deploy then fails and the revision takes no traffic (H1).
+   - **The smoke check.** After each deploy it asks, as `dsh-dev-smoke`, for health, the version and
+     the commit, and compares them with what was built. It also checks that the base name the
+     application reports is the service's, the second line behind the startup check. It reads and
+     writes no document, and Wave 7 reuses it for `dsh-staging`'s build stamp and for production.
+
+   The same story adds layer 5 and rule R10 to `.github/copilot/rules/testing-patterns.md`. Until
+   2026-11-07 this task was the smoke check alone.
+6. **The tier's setup, run for `dsh-dev`.** Split out of task 3 on 2026-11-07. The part of
+   ADR-004's setup run once per tier (section 1), by the owner with the owner's own account, and
+   safe to run twice. Under a base name it creates, only if absent, `<base>-deploy`, `<base>-run`,
+   `<base>-push` and `<base>-smoke`, and every grant of ADR-004's identities table for the tier:
+   `dsh-tester`'s and the developers' included. It then creates the Cloud Run service by a first
+   deploy, straight to traffic, with `--no-allow-unauthenticated`. It grows with the waves: Wave 5
+   task 5 adds the tier's database and managed folder, and Wave 6 task 4 its topics and
+   subscriptions, and the owner runs it again for each tier that exists. It is the script an end
+   user runs too (Wave 10 task 3), so it names nothing of the owner's project.
 
 ### Wave 5 — GCP: Firestore and GCS
 
@@ -1598,6 +1761,13 @@ such layer, so the two are one task now, and task 3 is new.
    cannot compile against. The task also settles how the module's unit tests sit beside the
    contract tests, because a run against an emulator is an integration test and counts nothing
    toward the 95% gate.
+
+   Since 2026-11-07, from ADR-004: under `gcp`, `dsh.storage.bucket` is required, has no default,
+   and its absence stops the startup (R6, section 9). Every resource name derives from `dsh.name`
+   in `application-gcp.properties` (R5): here the database, `${dsh.name}-db`, and the object
+   prefix, `${dsh.name}/`; Wave 6 task 2 adds the topics' prefix. And the task settles, with `#49`, whether the Firestore emulator serves a
+   named database such as `dsh-dev-db`, for layer 3 (ADR-004, section 2, the findings' open
+   points). Local mode's half of that question is ADR-005's.
 2. **`FirestoreDocumentDao implements DocumentDao`**, selected by `dsh.persistence=firestore`.
    The mapping of `Document` to Firestore is inside the module, and `Document` carries no
    provider's annotation. The status advance is a transaction that reads the document and writes
@@ -1606,23 +1776,45 @@ such layer, so the two are one task now, and task 3 is new.
    the writes per document (ADR-003, section 5). It passes that task's contract test against the
    emulator. It proves assumption A4: a layout exists that bounds the writes, fits Firestore's
    limits, and lets one transaction cover the update.
+
+   Since 2026-11-07 it also implements Wave 3 task 2's removal, and the fence: the recording's
+   transaction reads the document, so a deletion that lands during the update is seen and the
+   transaction runs again (ADR-004, section 7). The contract test's delayed duplicate runs against
+   the emulator.
 4. **`GcsFileStorageService implements FileStorageService`**, selected by `dsh.file-store=gcs`.
    It uploads and downloads objects in a GCS bucket. Add a fixture above Firestore's 1 MiB
    document limit: the largest today, `The-Categories.pdf`, is 262 KiB.
-5. **The tier's data resources.** The deploy creates the Firestore database `dsh-dev-db`, the
-   bucket with uniform bucket-level access, the `dsh-dev/` managed folder with the tier's service
-   account granted on it alone, and a lifecycle rule that removes test objects (findings §8.1,
-   §8.4). Which tier holds the one free Firestore database is ADR-004's choice, and so is the
-   retention of the term statistics.
+5. **The tier's data resources**, added to the tier's setup (Wave 4 task 6) and run by the owner
+   for `dsh-dev`. The deploy creates none of them. The setup creates the Firestore database
+   `dsh-dev-db` in Standard edition, with delete protection on and no point-in-time recovery or
+   scheduled backups, and the `dsh-dev/` managed folder. It grants `dsh-dev-run` object access on
+   that folder alone, and `roles/datastore.user` with a condition on its own database (ADR-004,
+   sections 1, 5 and 6). `dsh-dev-db` is created first in the project, so it holds the one free
+   Firestore database, and no database is ever deleted. A test that expects the refusal proves
+   that `dsh-tester`'s conditions stop it reading `dsh-db` (H3). No lifecycle rule removes test
+   objects by age: teardown does (Wave 5 task 6). Until 2026-11-07 the deploy created these, the
+   bucket and a lifecycle rule included; the bucket is Wave 4 task 3's now.
 6. **Layer 5a begins.** The layer 3 tests run over the wire against `dsh-dev` after each deploy:
-   submission and status, with the document in Firestore and its file in the bucket. How they
-   authenticate, and how they clean up what they write, is ADR-004's to decide (findings §7). The
-   pipeline finishing on Cloud Run is asserted from Wave 6, not here.
+   submission and status, with the document in Firestore and its file in the bucket. They
+   authenticate as `dsh-tester`, with a Google-signed ID token whose audience is the service's URL,
+   and they run inside `deploy.yml`'s concurrency group (ADR-004, sections 4 and 7). Each test
+   removes exactly what it created:
+   - before it submits a fixture, it reads by the file's hash whether the document exists, and it
+     never removes a document it did not create;
+   - teardown waits for a terminal status, and leaves in place a document that has not reached one
+     when the test's time runs out;
+   - it removes, in order, the document, its terms through Wave 3 task 2's removal, then its
+     indexing output and its original file, reaching the stores directly as `dsh-tester`.
+
+   A developer runs the same tests locally through `gcloud run services proxy dsh-dev`, with their
+   own grants on `dsh-dev`. That teardown reaches Firestore and Cloud Storage under `dsh-tester`
+   from GitHub Actions is H4. The pipeline finishing on Cloud Run is asserted from Wave 6, not here.
 7. **Two callers against Firestore itself.** Added on 2026-10-13. The Firestore emulator does not
    implement all the transaction behaviour of production, so it proves the advance for one caller
    only. A test that calls the store directly, in `dsh-dev`, has two callers attempt one advance at
-   once, and one succeeds (assumption A3). Layer 5a goes over the wire and cannot run it. How the
-   test reaches `dsh-dev` is ADR-004's to decide (Wave 1 task 3).
+   once, and one succeeds (assumption A3). Layer 5a goes over the wire and cannot run it. It runs
+   from a GitHub Actions job under `dsh-tester`, directly against `dsh-dev-db`, as teardown does
+   (ADR-004, section 7; H4).
 
 ### Wave 6 — GCP: Pub/Sub
 
@@ -1640,15 +1832,24 @@ ADR-001 Phase 3, rewritten by ADR-003 for the flow Wave 2 builds. The Pub/Sub cl
    same Cloud Run service, so minimum instances stays 0. For each hop there is a publish to the
    topic, whose outcome is awaited inside the request, and a push endpoint that hands the
    document's id to the flow. The endpoint answers with a success code to consume the message,
-   and with a failure to have it delivered again. The endpoints are protected as ADR-004 decides
-   (Wave 1 task 3). Until 2026-10-13 this task read "The `gcp` transport for the channels between
-   stages, as ADR-003 decides", and until 2026-10-10 "Pub/Sub channel adapters for the channels
-   between stages, under `@Profile("gcp")`".
+   and with a failure to have it delivered again. The topics' prefix is `${dsh.name}-`, derived in
+   `application-gcp.properties` (R5). The endpoints are protected by IAM alone: the service is
+   private, Cloud Run checks the push token before the request reaches the application, and only
+   the tier's `<base>-push` and the identities ADR-004 names hold invoker (section 4). The
+   application has no token check of its own. The endpoint paths are this task's. Until 2026-11-07
+   this sentence read "as ADR-004 decides". Until 2026-10-13 this task read "The `gcp` transport
+   for the channels between stages, as ADR-003 decides", and until 2026-10-10 "Pub/Sub channel
+   adapters for the channels between stages, under `@Profile("gcp")`".
 3. **The Pub/Sub emulator**, added to `#49`'s structure, for layer 3.
-4. **The tier's topics and subscriptions.** The deploy creates two topics and two push
-   subscriptions for each tier, named `dsh-dev-<channel>` on the first (findings §8.1). It sets
-   what ADR-003 leaves to this wave: the retry policy, a dead-letter topic and its maximum of
-   delivery attempts, the message retention, and the acknowledgment deadline. The task also
+4. **The tier's topics and subscriptions**, added to the tier's setup (Wave 4 task 6) and run by
+   the owner for `dsh-dev`. The deploy creates none of them. The setup creates two topics and two
+   push subscriptions, named `<base>-<channel>`, `dsh-dev-<channel>` on the first tier. The
+   subscriptions push as `<base>-push`, and `<base>-run` is granted publish on its own topics
+   (ADR-004, sections 1 and 2). It sets what ADR-003 leaves to this wave: the retry policy, a
+   dead-letter topic and its maximum of delivery attempts, the retention of unacknowledged
+   messages, and the acknowledgment deadline. Nothing else is retained: no topic retention, no
+   retention of acknowledged messages, and no snapshots, each of which bills storage (ADR-004,
+   section 6). Until 2026-11-07 the deploy created these. The task also
    settles what the publisher tries again before it reports a failed send, because a failed send
    is final once it is recorded. Layer 5a then asserts that a submitted document reaches its final
    status on `dsh-dev`. That proves assumption A2: the outcome of a publish is known inside the
@@ -1658,35 +1859,85 @@ ADR-001 Phase 3, rewritten by ADR-003 for the flow Wave 2 builds. The Pub/Sub cl
 
 Milestone: `0.6.0-SNAPSHOT`. Added by the re-plan of 2026-10-10. It gives the release candidate and
 the release their own tiers, by running Wave 4's deploy twice more under other base names (findings,
-section 5). The gate is stated once in the findings (section 7), for a release and a hotfix alike.
+section 5). The gate is stated once in the findings (section 7), for a release and a hotfix alike,
+and ADR-004 decides it (section 8). Its assumptions H6 and the workflows' half of H8 are proved
+here.
 
-**Upstream issue:**
+**Upstream issues:**
 
 - [`parent-poms#91`](https://github.com/MRISS-Projects/parent-poms/issues/91) — expose the release
   tag and version as outputs of the reusable release and hotfix workflows. A DSH job after the
   reusable workflow cannot otherwise know which release to deploy. Needed by task 2. On parent-poms
   `3.13.0-SNAPSHOT`, this wave's milestone there (§3). It was listed under the distribution wave
   until 2026-10-10.
+- **Not yet an issue: the commit the gate verified, as an input of the reusable release and hotfix
+  workflows.** The reusable workflow checks the branch out after Wave 7 task 3's gate has read its
+  head, so a push between the two would be released unchecked. The input carries the commit the
+  gate verified, and the reusable workflow checks that its checkout is that commit before its first
+  write (ADR-004, section 8, "Where the gate runs"). Needed by task 3, before 0.6.0's release. It
+  is beside `#91` and not folded into it: `#91` adds outputs, and this adds an input with a refusal
+  of its own. Added on 2026-11-07. It goes on `3.13.0-SNAPSHOT` when it is opened.
 
 **Tasks:**
 
-1. **Deploy `dsh-staging` from `staging.yml`.** Revision `dsh-staging-<version>-rc-<n>`, with its
-   own database, managed folder, topics and subscriptions, and layer 5a against it.
-   `parent-poms#109` (Wave 4) already covers the outputs of a release-candidate build.
-2. **Deploy `dsh` from `release.yml` and `hotfix.yml`.** It is built from the release tag, so the
-   image is a rebuild, one release commit ahead of what staging tested. Layer 5b covers that
-   rebuild: health, the version and the commit, and no document. Production data is never used by a
-   test.
-3. **The commit gate, and the release skill.** A release or a hotfix goes ahead only when the
-   `dsh-staging` revision that passed layer 5a was built from the head of the branch being
-   released, read from its build stamp. If it was not, staging runs first. Where the gate runs is
-   ADR-004's to decide. The `dsh-release` skill (`#148`, Wave 1) gains the gate and the production
-   smoke check.
+Task 1 comes first, then tasks 4, 2 and 3, in that order: task 4's record needs task 1's staging
+run, and task 3 reads that record and gives the release skill task 2's production smoke check. All
+four land before 0.6.0's release, the first that goes through the gate. Task 4 was split out of
+task 1 on 2026-11-07.
+
+1. **Deploy `dsh-staging` from `staging.yml`.** The owner runs the tier's setup (Wave 4 task 6)
+   for `dsh-staging`, which creates its identities, database, managed folder, topics and
+   subscriptions, and its service. `staging.yml` then runs ADR-004's deploy as
+   `dsh-staging-deploy`, revision `dsh-staging-<version>-rc-<n>` from `dsh-ci`, straight to
+   traffic, and layer 5a against it as `dsh-tester`. `parent-poms#109` (Wave 4) already covers the
+   outputs of a release-candidate build. Since 2026-11-07, from ADR-004 (sections 7 and 8):
+   - `staging.yml` accepts a hotfix branch, `<version>.x`, as well as a release candidate. There is
+     one staging tier, and the last deploy wins it;
+   - it gains a concurrency group for `dsh-staging`, which does not cancel a run in progress and
+     spans the deploy, layer 5a and task 4's status, so that two runs never share the tier's test
+     documents.
+2. **Deploy `dsh` from `release.yml` and `hotfix.yml`.** The owner runs the tier's setup for `dsh`,
+   whose first deploy goes straight to traffic. Which image that first deploy takes, before any
+   release has pushed one to the `dsh` repository, ADR-004 does not say, and this task's spec
+   settles it. Every later deploy runs as `dsh-deploy`, which pushes the release image to `dsh`, the
+   repository with immutable tags, and deploys revision `dsh-<version>` with no traffic, under the
+   tag `candidate` (ADR-004, section 2). The image is built from the release tag, so it is a
+   rebuild, one release commit ahead of what staging tested. Layer 5b covers that rebuild, as
+   `dsh-smoke` against the tag's URL: health, the version and the commit, and no document. Only when
+   it passes does traffic move to the revision. When it fails, traffic stays where it was, and the
+   remedy is a hotfix. Production data is never used by a test. The task proves that the tagged
+   revision accepts a token whose audience is the service's URL (H6), and, by a dispatch from a
+   task branch that expects the refusal, that a workflow file changed there cannot impersonate
+   `dsh-deploy` or `dsh-smoke` (H8).
+3. **The commit gate, and the release skill.** A release or a hotfix goes ahead only when the head
+   of the branch being released carries `dsh-staging/acceptance`, `success`, which task 4 posts.
+   If it does not, staging runs first. The gate is a first job of `release.yml` and `hotfix.yml`,
+   before the reusable workflow is called, so that a refusal stops before any write, and it runs on
+   a dry run as well (ADR-004, section 8). It passes the commit it verified to the reusable
+   workflow, which checks its checkout against it before its first write: the upstream need above.
+   The `dsh-release` skill (`#148`, Wave 1) gains the same check before it dispatches, and the
+   production smoke check. Until 2026-11-07 the gate read the commit from the `dsh-staging`
+   revision's build stamp, and where it ran was ADR-004's to decide.
+4. **The acceptance record.** Split out of task 1 on 2026-11-07. `staging.yml`'s DSH job, inside
+   the tier's concurrency group, records whether the commit it staged passed (ADR-004, section 8,
+   "The record"):
+   - it posts the commit status `dsh-staging/acceptance`, `pending`, on the branch's head when it
+     starts;
+   - it reads, as `dsh-staging-smoke`, the commit in the running revision's build stamp before
+     layer 5a and again after it, and fails if the two differ;
+   - after layer 5a it reads the branch's head again. It posts `success` on that head only when the
+     stamped commit is an ancestor of the head and the commits between them change `README.md` and
+     nothing else, which covers the staging run's own README commit. Otherwise, and whenever layer
+     5a fails, it posts `failure`, so that an earlier `success` does not stand.
+
+   The status is the one record: no label is put on the revision.
 
 **0.6.0's release candidate and release are the first real run of this path** (§6).
 
-Left open, for ADR-004: how a hotfix branch reaches `dsh-staging` while a release candidate
-occupies it.
+**A hotfix and a release candidate share `dsh-staging`.** This was left open for ADR-004 until
+2026-11-07, and section 8 closes it. A release candidate whose head passed is released without
+being deployed again, even if a hotfix has since displaced it on the tier. One whose head moved
+since is staged again first, which the gate enforces. Both lines share `dsh-staging-db`.
 
 ### Wave 8 — Retired
 
@@ -1712,7 +1963,10 @@ Two of its four tasks were dropped on 2026-10-10, because earlier waves now do t
 
 1. Performance-test against `specs/testing/performance-benchmarks/` (FR004: 95% of documents under
    10 MB processed within 30 s). It runs against `dsh-staging`, and the cost rule in `CLAUDE.md`
-   holds for it as for everything else: minimum instances stays 0.
+   holds for it as for everything else: minimum instances stays 0. It also revisits the maximum of
+   instances, 1 by default on every tier since ADR-004 (section 1). That maximum is a guard on
+   cost: a burst beyond it is answered with HTTP 429, and Pub/Sub delivers a refused push again.
+   Added on 2026-11-07.
 2. **Dropped on 2026-10-13: nothing is left to remove.** MongoDB goes in Wave 1 task 8, RabbitMQ
    in Wave 2 task 1, and `dsh-solr` in Wave 2 task 3. A run with no profile persists in memory,
    also from Wave 1 task 8. Until then this task read "Remove `dsh-solr` and whatever remains of
@@ -1720,9 +1974,11 @@ Two of its four tasks were dropped on 2026-10-10, because earlier waves now do t
 
 ### Wave 10 — Distribution
 
-Milestone: `1.0.0-SNAPSHOT`. It was Wave 8 until 2026-10-10. Delivers what is left of ADR-004 after
-Waves 4 and 7: the end-user packaging. An end user downloads one zip from a GitHub Release and runs
-a script; the root `README.md` describes exactly that.
+Milestone: `1.0.0-SNAPSHOT`. It was Wave 8 until 2026-10-10. Delivers the end-user packaging, which
+ADR-005 (task 7) decides on top of ADR-004's deploy and names. An end user downloads one zip from a
+GitHub Release and runs a script; the root `README.md` describes exactly that. Until 2026-11-07
+this wave delivered "what is left of ADR-004 after Waves 4 and 7"; ADR-004 took the tiers, and
+left the packaging to ADR-005.
 
 **Upstream issue:**
 
@@ -1734,24 +1990,58 @@ a script; the root `README.md` describes exactly that.
 
 **Tasks:**
 
-1. Publish the container image publicly on every release, as ADR-004 decides. The Dockerfile and
+Task 7 comes first: every other task here follows from it. Task 6 waits for a front end, which no
+wave yet plans. Task 7 moved here from Wave 1 task 3 on 2026-11-07.
+
+1. Publish the container image publicly on every release, as ADR-005 decides. The Dockerfile and
    the image itself are Wave 4 task 2.
 2. The release zip: sources, binaries, the offline Maven repository and a build-from-sources script.
-   It passes ADR-004's acceptance test.
-3. The deploy script, for an end user. It is Wave 4's deploy in the form a user runs against a GCP
-   project of their own. It checks its prerequisites (gcloud installed, authenticated, a project
-   chosen) and tells the user what is missing. It creates each resource only if absent, so a second
-   run is safe, and it deploys the image under the default name, `dsh`. Whether it is the same
-   script that deploys the operated tiers is ADR-004's to decide.
+   It passes ADR-005's acceptance test.
+3. The deploy script, for an end user. It is ADR-004's script, the setup of Wave 4 task 6 and the
+   deploy of Wave 4 task 4, run by a user against a GCP project of their own, under the base name
+   `dsh`; there is no third part (ADR-004, section 1). This task adds checks of its prerequisites
+   (gcloud installed, authenticated, a project chosen), which tell the user what is missing, and
+   its documentation. The setup creates each resource only if absent, so a second run is safe.
+   The user's deploy takes traffic at once, since they have no layer 5b to move it, and passes a
+   bucket name of their own, since bucket names are global. Until 2026-11-07 whether this was the
+   script that deploys the operated tiers was ADR-004's to decide; it is.
 4. Local mode: the application in Docker on localhost, with each service on GCP or on an emulator,
-   by configuration. It reuses `#49` and Wave 6 task 3. The configuration is the three keys of
-   ADR-003, section 3, each of which can be set alone. Nothing in it needs a real GCP project
-   because of search.
+   by configuration, as ADR-005 decides. It reuses `#49` and Wave 6 task 3. The configuration is
+   the three keys of ADR-003, section 3, each of which can be set alone. Nothing in it needs a real
+   GCP project because of search.
 5. Rewrite the root `README.md` (its source is `src/site/markdown/README.md`) as the user guide for
    the zip and the script: prerequisites, credentials, deploy, local mode.
-6. Access through IAP for named Google accounts, which needs no Workspace domain. It waits for a
-   front end, which no wave yet plans. Anything it needs that has a fixed cost while idle, such as
-   a load balancer, needs the owner's approval under the cost rule.
+6. **Access for named users, through a front end.** It waits for a front end, which no wave yet
+   plans. ADR-004 left the choice to this task between two patterns that Cloud Run documents
+   (section 4, "A front end"):
+   - IAP on the service, for named Google accounts, which needs no Workspace domain. It replaces
+     the caller's identity, so Pub/Sub push to the same service may fail;
+   - a public service that verifies a user's token itself, through Identity Platform or Firebase
+     Authentication. A public service would expose the push endpoints with it.
+
+   Either way the likely shape is two services from one image: a public one for `/submit` and
+   `/status`, and a private one for the push endpoints, a split ADR-003 (section 2) allows. The
+   second service's name is not the base name, so the startup check of Wave 4 task 5 has to accept
+   it, and this task settles how. Identity Platform's free tier has not been checked against the
+   cost rule. Anything the front end needs that has a fixed cost while idle, such as a load
+   balancer, needs the owner's approval under the cost rule. Until 2026-11-07 this task read
+   "Access through IAP for named Google accounts".
+7. **ADR-005 — the end user's packaging.** The second half of Wave 1 task 3, moved here on
+   2026-11-07 (§4, "The 2026-11-07 re-plan", decision 1). It builds on ADR-004's deploy and names,
+   once Waves 4 to 7 have proved ADR-004's assumptions on real tiers. Decides:
+   - the run path: a public image, its registry and GHCR's tag rules, and how an end user's Cloud
+     Run reaches it, since Cloud Run cannot deploy from ghcr.io directly. The deploy can copy the
+     image into the user's Artifact Registry, or configure a remote repository there;
+   - the release zip, attached to the GitHub Release rather than published as a package: sources,
+     binaries, the deploy script, and an offline Maven repository of the MRISS artifacts the build
+     resolves (`parent-poms#92`). Its acceptance test is a build from the zip with an empty local
+     repository and no GitHub credentials;
+   - what local mode can and cannot do. Firestore and Pub/Sub have emulators, and GCS has only
+     third-party fakes. Whether the Firestore emulator serves a named database is settled for
+     layer 3 by Wave 5 task 1; local mode's half is this ADR's.
+
+   It is not yet an issue. It is opened through `dsh-new-story`, which ADR-004's "After the merge"
+   asks for.
 
 ### Wave 11 — Product backlog
 
