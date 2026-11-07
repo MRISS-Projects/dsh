@@ -1036,6 +1036,8 @@ are.
    `#120` — **closed** — PR #180, with its upstream half, `parent-poms#114`, released with
    `parent-poms#112` as parent-poms 3.11.2.
 6. Task 3 (ADR-004). It needed ADR-003's answers on search and on local mode, and it has them.
+   **Its first half was done on 2026-11-07:** `#181` — **closed** — PR #182. The second half,
+   ADR-005, is not yet an issue (task 3, "Outcome").
 7. `#144`, then `#137`. Both are about the REST API, and both waited for the Spring Boot line,
    which `#120` settled at 4.1.1.
 8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
@@ -1278,6 +1280,20 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
      operated tier, and their interface offers no removal.
    - **How a test that calls a store directly reaches `dsh-dev`.** Layer 5a goes over the wire
      and cannot run the two-caller case of Wave 5 task 7.
+
+   **Outcome, first half.** `#181` — **closed** — PR #182: ADR-004: decide how DSH runs on its
+   three GCP tiers. The ADR is `specs/architecture/ADR-004-gcp-tiers.md`, accepted by the merge of
+   PR #182 on 2026-11-07. It decides every point added above on 2026-10-10 and 2026-10-13.
+
+   The task was split when `#181` was written. As listed it had fifteen subjects, too many for one
+   story, and its two parts are needed at different times: the operated tiers by Waves 4 and 7,
+   the end user's packaging only by Wave 10. `#181` took the tiers. The first three bullets, the
+   run path, the release zip and local mode, are the second half, ADR-005. It builds on ADR-004's
+   deploy and names, and is opened through `dsh-new-story`; it is not yet an issue.
+
+   ADR-004's "Consequences for the waves" are not applied to this document yet. They reshape tasks
+   in Waves 1 to 10, so they go through a re-plan (`dsh-plan-wave`), as ADR-003's did on
+   2026-10-13.
 4. **Documentation map.** `CLAUDE.md` is the root of the developer documentation tree. A CI check,
    like `check-spec-references`, fails when a Markdown file under `docs/`, `specs/` or `.github/`
    cannot be reached from `CLAUDE.md` by links. The same task deletes the empty scaffolding READMEs
