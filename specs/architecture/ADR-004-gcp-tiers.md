@@ -656,9 +656,12 @@ on a dry run as well, so that a rehearsal shows a refusal. The `dsh-release` ski
 task 3) checks it too, before it dispatches.
 
 The reusable workflow checks the branch out after the gate has read its head, so a push between
-the two would be released unchecked. Wave 7 task 3 closes that window: by passing the commit the
-gate verified to the reusable workflow, which needs an input there beside `parent-poms#91`, or by
-checking in the deploy job that the release was built on it.
+the two would be released unchecked. Wave 7 task 3 closes that window by passing the commit the
+gate verified to the reusable workflow, which checks that its checkout is that commit before its
+first write. That needs an input in `parent-poms`, beside `parent-poms#91`. A check in the DSH
+deploy job would come too late: that job runs after the reusable workflow (section 1), which has
+already tagged the release and published its artifacts, so it could stop the deploy and not the
+release.
 
 #### A hotfix and a release candidate
 
@@ -819,7 +822,8 @@ Each is something only a deploy can show.
   correctly takes traffic however it processes documents.
 - **The gate trusts a commit status**, which anyone with write access to the repository can post.
 - **A push between the gate and the reusable workflow's checkout** would be released unchecked.
-  Wave 7 task 3 has to close that window before the first release through the tiers.
+  Wave 7 task 3 has to close that window inside the reusable workflow, before its first write and
+  before the first release through the tiers, which takes a change to `parent-poms`.
 
 ---
 
@@ -846,7 +850,7 @@ This ADR does not edit the PRD. It lists the consequences, and the PRD changes g
 | Wave 6 task 4 | The setup gains the topics and subscriptions, named `<base>-<channel>` and pushed by `<base>-push` |
 | Wave 7 task 1 | The owner runs the setup for `dsh-staging`. `staging.yml` accepts hotfix branches, gains a concurrency group, checks the build stamp before and after layer 5a, and posts `dsh-staging/acceptance` as section 8 says |
 | Wave 7 task 2 | The owner runs the setup for `dsh`. Later deploys of `dsh`, by `dsh-deploy`, take no traffic under `candidate`; layer 5b, then traffic moves. H6, and H8's refusal |
-| Wave 7 task 3 | The gate is a first job of `release.yml` and `hotfix.yml` requiring the status, dry runs included, and the skill checks it too. It closes the window between the gate and the reusable workflow's checkout. The open point on a hotfix and `dsh-staging` is closed |
+| Wave 7 task 3 | The gate is a first job of `release.yml` and `hotfix.yml` requiring the status, dry runs included, and the skill checks it too. It closes the window between the gate and the reusable workflow's checkout, by an input in `parent-poms` that the reusable workflow checks before its first write. The open point on a hotfix and `dsh-staging` is closed |
 | Wave 9 task 1 | The maximum of instances is revisited |
 | Wave 10, its introduction and tasks 1 and 2 | What they leave to "ADR-004", the public image and the release zip's acceptance test, is ADR-005's |
 | Wave 10 task 3 | The end user's script is the setup and the deploy of section 1, with checks of their prerequisites |
