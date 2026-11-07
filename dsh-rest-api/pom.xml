@@ -64,9 +64,10 @@
 		<!-- <artifactId>spring-boot-starter-tomcat</artifactId> -->
 		<!-- <scope>provided</scope> -->
 		<!-- </dependency> -->
+		<!-- #144: the UI starter serves the Swagger UI, and brings the API starter with it -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		</dependency>
 	</dependencies>
 	<!-- <dependencyManagement>...</dependencyManagement> -->
