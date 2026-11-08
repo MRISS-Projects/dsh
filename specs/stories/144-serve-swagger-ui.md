@@ -322,7 +322,7 @@ Produces nothing new.
   git commit -m "docs(#144): record the verification results"
   ```
 
-- [ ] **Step 6: The comment on `#144`,** posted after the owner approves its text:
+- [x] **Step 6: The comment on `#144`,** posted after the owner approves its text:
 
   > AC001 is restated by the spec, `specs/stories/144-serve-swagger-ui.md` §3.1 decision 1:
   > springdoc serves the UI at `/swagger-ui/index.html` and redirects `/swagger-ui.html` to it;
