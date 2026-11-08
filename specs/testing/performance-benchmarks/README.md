@@ -36,4 +36,4 @@ This directory contains performance benchmark specifications and targets for the
 
 - Non-functional requirements: `../../requirements/non-functional/`
 - Testing patterns: `/.github/copilot/rules/testing-patterns.md`
-- CI workflow: `/.github/workflows/api-testing.yml`
+- CI workflow: none yet; performance tests are meant to run on release

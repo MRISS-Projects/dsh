@@ -34,8 +34,8 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 
 - The four test layers, and when each is required: `/.github/copilot/rules/testing-patterns.md`
 - Integration tests: Reference `/specs/testing/test-plans/`
-- API tests as an external client (layer 4): Postman collections in `/specs/api/postman/`, not yet
-  in force (`#137`)
+- API tests as an external client (layer 4): Postman collections in `/specs/api/postman/`, run by
+  `PostmanCollectionsIT` under `-DintegrationTests`
 - Performance tests: Reference `/specs/testing/performance-benchmarks/`
 
 ### Documentation
