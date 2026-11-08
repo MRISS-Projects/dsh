@@ -32,6 +32,8 @@ public class PostmanCollectionsIT {
 	/** So that a newman run that hangs fails the test rather than the build. */
 	private static final long RUN_TIMEOUT_MINUTES = 5;
 
+	private static final long KILL_TIMEOUT_SECONDS = 30;
+
 	/** The read timeout DocumentResourceHttpIT uses. */
 	private static final String REQUEST_TIMEOUT_MILLIS = "60000";
 
@@ -76,7 +78,10 @@ public class PostmanCollectionsIT {
 		// To a file, not a pipe: a full pipe buffer would block newman.
 		Process process = new ProcessBuilder(command).redirectErrorStream(true).redirectOutput(log).start();
 		if (!process.waitFor(RUN_TIMEOUT_MINUTES, TimeUnit.MINUTES)) {
-			process.destroyForcibly();
+			// destroyForcibly only requests the kill: wait for it, so the next collection does not start
+			// beside a newman that still holds the server and its report files.
+			process.descendants().forEach(ProcessHandle::destroyForcibly);
+			process.destroyForcibly().waitFor(KILL_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 			fail("newman did not finish " + fileName + " within " + RUN_TIMEOUT_MINUTES + " minutes; see " + log);
 		}
 		String output = Files.readString(log.toPath(), StandardCharsets.UTF_8);
