@@ -165,7 +165,23 @@ public class DocumentResourceHttpIT {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getHeaders().getContentType()).isNotNull();
 		assertThat(MediaType.TEXT_HTML.isCompatibleWith(response.getHeaders().getContentType())).isTrue();
-		assertThat(response.getBody()).contains("swagger-ui");
+		assertThat(response.getBody()).contains("swagger-initializer.js");
+	}
+
+	@Test
+	public void swaggerInitializer_shouldReadTheUiConfiguration() {
+		ResponseEntity<String> response = swaggerInitializer();
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).contains("/v3/api-docs/swagger-config");
+	}
+
+	@Test
+	public void swaggerInitializer_shouldNotNameThePetstoreDescription() {
+		ResponseEntity<String> response = swaggerInitializer();
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).doesNotContain("petstore.swagger.io");
 	}
 
 	@Test
@@ -190,6 +206,11 @@ public class DocumentResourceHttpIT {
 
 	private ResponseEntity<Map<String, Object>> status(String token) {
 		return rest.exchange(baseUrl + "/v1/dsh/document/status/" + token, HttpMethod.GET, null, JSON);
+	}
+
+	/** The script the Swagger UI page runs to find its configuration. */
+	private ResponseEntity<String> swaggerInitializer() {
+		return rest.exchange(baseUrl + "/swagger-ui/swagger-initializer.js", HttpMethod.GET, null, String.class);
 	}
 
 	private static void assertJson(ResponseEntity<?> response, HttpStatus expected) {
