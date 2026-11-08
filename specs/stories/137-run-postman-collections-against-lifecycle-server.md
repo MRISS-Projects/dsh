@@ -1121,8 +1121,18 @@ Two failures in these runs are **not** caused by this story, and are recorded fo
 without this story's change: its stubbed-`200` case still expects the parent `3.8.0-SNAPSHOT`, and
 the pin is `3.11.2`. Pre-existing, outside this story.
 
-### 8.7 Pending the owner's approval
+### 8.7 Follow-ups
 
-- Task 1 Step 3, widening parent-poms `#90`.
-- Task 7 Step 6, the follow-up issue of §2.3.
-- Task 7 Step 7, planning the publication of newman's reports on the Maven site.
+Approved by the owner on 2026-11-08.
+
+- **Task 1 Step 3.** parent-poms `#90` is retitled "Manage docker-maven-plugin's and
+  frontend-maven-plugin's versions", with §1 Step 3's text appended.
+- **Task 7 Step 6.** `#185`, "The contract says every submission gets a new token; a resubmitted
+  file keeps its token", `bug`, milestone `0.4.0-SNAPSHOT`.
+- **§8.5's resubmission race is `#142`**, reproduced: a resubmitted file subscribes a second
+  `DocumentEnqueueResponseMessageHandler` for the same stored document, the first ack reaches both,
+  and two transitions take it past `QUEUED_FOR_INDEXING_SUCCESS`. Recorded as a comment on `#142`
+  rather than a new issue.
+- **§8.6's stale script case.** `#186`, `bug`, milestone `0.4.0-SNAPSHOT`.
+- **Task 7 Step 7**, the publication of newman's reports on the Maven site: held by the owner to the
+  end of the story, before step 8's reconcile.
