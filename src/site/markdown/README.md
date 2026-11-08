@@ -374,8 +374,8 @@ curl http://localhost:8080/v1/dsh/document/status/<token>
 ```
 
 The API description, in OpenAPI 3 format, is served at
-`http://localhost:8080/v3/api-docs`. The Swagger UI is not served; see
-[#144](https://github.com/MRISS-Projects/dsh/issues/144).
+`http://localhost:8080/v3/api-docs`. The Swagger UI, at
+`http://localhost:8080/swagger-ui.html`, lists both operations and can call them from the browser.
 
 ## Release Notes
 
