@@ -172,7 +172,8 @@
 		     spring-boot-maven-plugin precedes docker-maven-plugin. That order comes from this profile,
 		     not the main build: Maven inserts a profile's new plugins ahead of the first plugin the
 		     profile shares with the main build, so spring-boot-maven-plugin must stay declared before
-		     docker-maven-plugin here, or docker:stop runs before spring-boot:stop. -->
+		     docker-maven-plugin here, or docker:stop runs before spring-boot:stop.
+		     #137: frontend-maven-plugin is declared first and maven-resources-plugin last, for the same reason. -->
 		<profile>
 			<id>http-integration-tests</id>
 			<activation>
@@ -187,6 +188,43 @@
 			</properties>
 			<build>
 				<plugins>
+					<!-- #137: Node and newman for PostmanCollectionsIT, under target/newman, so neither has to be
+					     on the PATH. Declared first: Maven puts a profile's new plugins ahead of the plugins it
+					     shares with the main build, so in package this runs before docker:start, and a failed
+					     install leaks no container. -->
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
+						<!-- Not yet managed by parent-poms; see parent-poms#90. -->
+						<version>2.0.2</version>
+						<configuration>
+							<skip>${skipITs}</skip>
+							<installDirectory>${project.build.directory}/newman</installDirectory>
+							<workingDirectory>${project.build.directory}/newman</workingDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<id>install-node</id>
+								<phase>package</phase>
+								<goals>
+									<goal>install-node-and-npm</goal>
+								</goals>
+								<configuration>
+									<nodeVersion>v24.22.2</nodeVersion>
+								</configuration>
+							</execution>
+							<execution>
+								<id>install-newman</id>
+								<phase>package</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>ci --no-audit --no-fund</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>
@@ -287,14 +325,38 @@
 						<configuration>
 							<systemPropertyVariables>
 								<dsh.it.baseUrl>http://localhost:${dsh.it.http.port}</dsh.it.baseUrl>
-							<!-- #137: what PostmanCollectionsIT needs to run newman; the profile installs both under target/newman -->
-							<dsh.it.nodeDir>${project.build.directory}/newman/node</dsh.it.nodeDir>
-							<dsh.it.newman>${project.build.directory}/newman/node_modules/newman/bin/newman.js</dsh.it.newman>
-							<dsh.it.collections>${project.basedir}/../specs/api/postman</dsh.it.collections>
-							<dsh.it.fixtures>${project.build.directory}/test-classes/pdf</dsh.it.fixtures>
-							<dsh.it.newmanReports>${project.build.directory}/newman/reports</dsh.it.newmanReports>
+								<!-- #137: what PostmanCollectionsIT needs to run newman; the profile installs both under target/newman -->
+								<dsh.it.nodeDir>${project.build.directory}/newman/node</dsh.it.nodeDir>
+								<dsh.it.newman>${project.build.directory}/newman/node_modules/newman/bin/newman.js</dsh.it.newman>
+								<dsh.it.collections>${project.basedir}/../specs/api/postman</dsh.it.collections>
+								<dsh.it.fixtures>${project.build.directory}/test-classes/pdf</dsh.it.fixtures>
+								<dsh.it.newmanReports>${project.build.directory}/newman/reports</dsh.it.newmanReports>
 							</systemPropertyVariables>
 						</configuration>
+					</plugin>
+					<!-- #137: package.json and its lock into target/newman, so that npm ci leaves nothing in
+					     src and clean removes it all. Declared last, so it moves no other plugin. -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>stage-newman</id>
+								<phase>process-test-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<skip>${skipITs}</skip>
+									<outputDirectory>${project.build.directory}/newman</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/test/newman</directory>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
