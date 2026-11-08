@@ -1136,3 +1136,17 @@ Approved by the owner on 2026-11-08.
 - **§8.6's stale script case.** `#186`, `bug`, milestone `0.4.0-SNAPSHOT`.
 - **Task 7 Step 7**, the publication of newman's reports on the Maven site: held by the owner to the
   end of the story, before step 8's reconcile.
+
+### 8.8 The local review round
+
+`/code-review` at `medium` on `origin/DEVELOP...HEAD`, 2026-11-08. Seven findings.
+
+| # | Finding | Decision |
+|---|---|---|
+| 1 | The status poll settles only on the two `QUEUED_FOR_INDEXING_*` statuses, so a later status spins to the deadline | **Declined.** Nothing dequeues before Wave 3's indexer; the collection asserts the contract as written, and decision 7 makes the contract change and the collection change together. The failure already names the last status |
+| 2 | Removing `api-testing.yml` loses a pull-request signal | **Declined.** Decision 1, and `#46`'s "never on pull requests". The workflow asserted nothing |
+| 3 | A rejected `/submit` stores `ERROR` as the token, and the poll then spins on `/status/ERROR` and adds a second, misleading failure | **Fixed.** Request 1 skips the poll when it gets no real token. Red first, with request 1's title blanked: 48 requests, 44 of them `/status/ERROR`, 2 failed assertions, 15.5 s (`mvn-clean-verify-review3-red.log`). With the fix: 4 requests, 1 failed assertion, the real one, 410 ms (`mvn-clean-verify-review3-fixed.log`) |
+| 4 | `destroyForcibly()` is not awaited after the run timeout | **Fixed.** The IT kills newman's descendants and waits up to 30 s for newman to die. Not exercised: it needs a five-minute hang |
+| 5 | `npm ci` downloads newman on every clean build | **Declined.** npm's tarball cache is in the user's profile, outside `target/`; the registry dependency is §3.6's first limit |
+| 6 | A plugin version pinned in DSH | **Declined.** Decision 6: a snapshot deploy does not reach DSH, and parent-poms `#90` carries it |
+| 7 | The profile comment gives `maven-resources-plugin`'s position "the same reason" as `frontend-maven-plugin`'s | **Fixed.** The comment now gives each its own reason |
