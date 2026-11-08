@@ -1136,7 +1136,7 @@ are.
    **Done on 2026-11-07:** `#181` — **closed** — PR #182. The task's second half, ADR-005, moved
    to Wave 10 task 7 on the same day (§4, "The 2026-11-07 re-plan"), and is `#183` — open.
 7. `#144`, then `#137`. Both are about the REST API, and both waited for the Spring Boot line,
-   which `#120` settled at 4.1.1.
+   which `#120` settled at 4.1.1. **`#144` was done on 2026-11-07:** `#144` — **closed** — PR #184.
 8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
    the wiki's source moves into `docs/wiki/`, and task 4's reachability check needs that answer.
    That move would also retire `wiki-sync.yml`, so its disabling for inactivity (task 1's outcome)
@@ -1225,7 +1225,8 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   GitHub that day.
 - `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
   task 5 below is written as its body, so no new issue is opened for that task.
-- `#144` — Swagger UI is not served: `/swagger-ui/` returns 404 and the webjar page fails to load.
+- `#144` — **closed** — PR #184. Swagger UI is not served: `/swagger-ui/` returns 404 and the
+  webjar page fails to load.
 
   Not an ADR-001 phase task. It came out of `#143` on 2026-09-28, whose smoke run followed the
   README literally and found no Swagger UI at any path. It was not folded into `#143`: that story
@@ -1234,7 +1235,8 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   ADR-003, and because the choice it leaves open, Springfox's starter or springdoc-openapi, turns on
   the Spring Boot line `#120` settles. `#120` settled that choice on 2026-10-28: it replaced
   Springfox with springdoc-openapi, which serves the description at `/v3/api-docs`, and left the
-  UI to this issue.
+  UI to this issue. This issue served it on 2026-11-07, at springdoc's `/swagger-ui.html` rather
+  than the `/swagger-ui/` its title names.
 
 - `#148` — A dsh-release skill that runs a DSH release or hotfix end to end, with the checks 0.3.0
   and 0.3.2 taught us.
