@@ -1008,7 +1008,7 @@ each, `docker ps -a --filter name=dsh-it-` prints nothing, and `git status --sho
 - [ ] **Step 6: The follow-up issue of §2.3,** opened only after the owner approves its text. Title:
   "The contract says every submission gets a new token; a resubmitted file keeps its token".
   Labelled `bug`, milestone `0.4.0-SNAPSHOT`. Body: §2.3, with the evidence, and the question of
-  which side is right. Recorded in §8.6.
+  which side is right. Recorded in §8.7.
 - [ ] **Step 7: Plan the follow-up that publishes newman's reports on the Maven site.** This story
   writes the JSON and JUnit reports to `target/newman/reports/` and nothing reads them after the
   build. Run `dsh-plan-wave` to add a PRD task for publishing them on the Maven site, then
@@ -1033,4 +1033,96 @@ each, `docker ps -a --filter name=dsh-it-` prints nothing, and `git status --sho
 
 ## 8. Verification results
 
-Filled in by Tasks 1 to 7.
+Runs of 2026-11-08, on Windows 11 with Docker Desktop, logs in `.logs/`. Commits `14d8d4d1b` (Task 2),
+`420b552d1` (Task 3), `5d681be67` (Task 4), `7d7fcc56a` and `a09d74d66` (Task 5).
+
+### 8.1 Baseline
+
+`mvn-clean-install-baseline.log`: `maven exit=0`. No per-module `jacoco.csv` is written, so the
+figures come from `dsh-coverage-report/target/site/jacoco-aggregate/jacoco.csv`, rows of group
+`dsh-rest-api`: **LINE 126/129 (97.67%), BRANCH 29/30 (96.67%)**. No `dsh-it-` container before the
+first run.
+
+### 8.2 Task 2, red
+
+`mvn-clean-verify-it-red.log`: `maven exit=1`, in `failsafe:verify`, with
+`No *.postman_collection.json in C:\Users\marce\github\dsh\dsh-rest-api\..\specs\api\postman. An
+empty directory is a failure, not a pass (#137).` `stop-application` (line 1402) and
+`stop-it-infrastructure` (1431) follow the failure and precede `failsafe:verify` (1442).
+`DocumentResourceHttpIT` 10/10. No `dsh-it-` container afterwards.
+
+### 8.3 Task 3, the order
+
+`mvn-clean-verify-it-tooling.log`: `maven exit=1` with the same message. Order in the log:
+`stage-newman` (67), `install-node` (517), `install-newman` (556), `reserve-it-ports` (565),
+`start-it-infrastructure` (577), `start-application` (585), then after the failure
+`stop-application` (1460), `stop-it-infrastructure` (1489). The declaration-order rule of §3.2 holds.
+Node `v24.22.2` came from `node-v24.22.2-win-x64.zip`, cached in
+`D:\.m2\repository\com\github\eirslett\node\24.22.2`; `npm ci` added 148 packages.
+`target/newman/node/node.exe` and `target/newman/node_modules/newman/bin/newman.js` exist;
+`src/test/newman/` holds `package.json` and `package-lock.json` only.
+
+### 8.4 Task 4, green
+
+`mvn-clean-verify-it-green.log`: `maven exit=0`, failsafe 25 tests, 0 failures. newman: 1 iteration,
+5 requests, 5 test scripts, 2 pre-request scripts, **10 assertions, 0 failed**, 763 ms. The
+blank-title request answered `200` with the expected body, so the empty `title` part was sent and
+the single-space fallback was not needed.
+
+Two deviations from Task 4 Step 3's expectations, recorded rather than engineered around:
+
+- **The status request did not repeat.** `/status` already answered `QUEUED_FOR_INDEXING_SUCCESS`
+  on the first call, in this run and every later one. The polling path is therefore not exercised
+  by these runs; it rests on §2.2's first probe.
+- **The failsafe report names the test `everyCollection_shouldPassAgainstTheServer()[1]`**, not the
+  collection's file. JUnit's display name is the file name, but failsafe's XML reporter writes the
+  method name and index unless `usePhrasedTestCaseMethodName` is set, which would rename every IT in
+  the report and is reporter configuration inherited from parent-poms. A failure still names the
+  collection, in the assertion message (§8.5); newman's own reports are named after it.
+
+### 8.5 Task 6, the mutations
+
+| Mutation | Log | Result |
+|---|---|---|
+| 1, `'TOKEN_NOT_FOUNDX'` | `mvn-clean-verify-mutation-1-rerun.log` | `maven exit=1` in `failsafe:verify`. The failure reads `newman's exit code for dsh-rest-api.postman_collection.json. Its output:` and newman's `answers TOKEN_NOT_FOUND and names the token`, `expected 'TOKEN_NOT_FOUND' to equal 'TOKEN_NOT_FOUNDX'`. `stop-application`, then `stop-it-infrastructure` removed the container. No leftover |
+| 2, the empty directory | §8.2, §8.3 | as recorded there |
+| 3, `zz-empty.postman_collection.json` | `mvn-clean-verify-mutation-3.log` | `maven exit=1`. `[1]` passed; `[2]` failed on `assertions in zz-empty.postman_collection.json: newman passes a collection that asserts nothing`. Teardown as in mutation 1. No leftover |
+
+Each mutation was reverted, and `git status --short` was clean after each.
+
+Two failures in these runs are **not** caused by this story, and are recorded for the owner:
+
+- **Mutation 1's first run** (`mvn-clean-verify-mutation-1.log`) failed in `docker:stop` itself:
+  `Cannot create docker access object [\\.\pipe\docker_engine (Todas as instâncias de pipes estão
+  ocupadas)]`, all pipe instances busy. `spring-boot:stop` had run; the container leaked and was
+  removed by hand. Docker Desktop refused the named-pipe connection; nothing this story changed
+  talks to Docker. The re-run, identical, tore down cleanly.
+- **Mutation 3's run** also failed `DocumentResourceHttpIT.submit_whenSameFileTwice_shouldReturnTheSameTokenAndQueueItAgain`:
+  `did not reach QUEUED_FOR_INDEXING_SUCCESS within 15000 ms; last status was DEQUEUED_FOR_INDEXING`.
+  It ran before `PostmanCollectionsIT`. `QUEUED_FOR_INDEXING_SUCCESS.transition(…)` returns
+  `DEQUEUED_FOR_INDEXING` for every transition type, so when the two enqueue acks of a resubmitted
+  file land in that order, the second moves the document past the status the test waits for. A
+  pre-existing race in the resubmission path, beside §2.3 and `#142`; it passed in the other runs.
+
+### 8.6 Task 7, the gates and the checks
+
+| Check | Log | Result |
+|---|---|---|
+| Gate 1 | `mvn-clean-install.log` | `maven exit=0`. No `frontend` and no `stage-newman` in the log. `dsh-rest-api` LINE 126/129, BRANCH 29/30, equal to §8.1 |
+| Gate 3 | `mvn-clean-verify-it.log` | `maven exit=0`, failsafe 25 tests, 0 failures. No `dsh-it-` container afterwards |
+| `-DskipITs` | `mvn-clean-verify-skipits.log` | `maven exit=0`. `stage-newman` "Skipping the execution", `install-node` and `install-newman` "Skipping execution". `target/newman/` does not exist |
+| AC003 | | `.github/workflows/api-testing.yml` does not exist |
+| AC005 | | `grep -rn "spring.profiles.active" .github/` finds nothing |
+| AC004 | | `No Postman collections found` is in no `.yml` or `.java` |
+| Task 5 Step 8 | | only `profiles-and-configuration.md:711` and `:897`, both naming the workflow as removed. A wider `git grep` found one more live reference the spec had not listed, the usage comment of `scripts/test-credential-step.sh`; fixed in `a09d74d66` |
+| markdownlint | | no error |
+
+`scripts/test-credential-step.sh .github/workflows/ci.yml` reports 17 passed, 1 failed, with and
+without this story's change: its stubbed-`200` case still expects the parent `3.8.0-SNAPSHOT`, and
+the pin is `3.11.2`. Pre-existing, outside this story.
+
+### 8.7 Pending the owner's approval
+
+- Task 1 Step 3, widening parent-poms `#90`.
+- Task 7 Step 6, the follow-up issue of §2.3.
+- Task 7 Step 7, planning the publication of newman's reports on the Maven site.
