@@ -182,7 +182,7 @@ Docker, markdownlint.
 **Interfaces:** consumes the class's `rest`, `baseUrl`, `JSON` and `assertJson`, all existing.
 Produces nothing new.
 
-- [ ] **Step 1: Write the failing tests.** In `DocumentResourceHttpIT`, after
+- [x] **Step 1: Write the failing tests.** In `DocumentResourceHttpIT`, after
   `apiDocs_shouldListTheDocumentEndpoints`, add:
 
   ```java
@@ -208,7 +208,7 @@ Produces nothing new.
   No import is added: `ResponseEntity`, `HttpMethod`, `HttpStatus`, `MediaType` and `Map` are
   imported already.
 
-- [ ] **Step 2: Run gate 1, then gate 3, to see them fail.** Gate 1 installs the upstream modules
+- [x] **Step 2: Run gate 1, then gate 3, to see them fail.** Gate 1 installs the upstream modules
   that gate 3 resolves.
 
   ```bash
@@ -227,7 +227,7 @@ Produces nothing new.
   Gate 3 `maven exit=1`, with both new tests failing on `404 NOT_FOUND` and every other IT passing.
   Record the two failure lines in §8.1.
 
-- [ ] **Step 3: Swap the starter.** In `dsh-rest-api/pom.xml`, replace:
+- [x] **Step 3: Swap the starter.** In `dsh-rest-api/pom.xml`, replace:
 
   ```xml
         <dependency>
@@ -249,7 +249,7 @@ Produces nothing new.
   In `application.properties`, replace the comment above `springdoc.paths-to-match` with §3.2's
   two lines.
 
-- [ ] **Step 4: Run gate 3 to see them pass.** The same gate 3 command as Step 2, same log.
+- [x] **Step 4: Run gate 3 to see them pass.** The same gate 3 command as Step 2, same log.
 
   Expected: `maven exit=0`. If `swaggerConfig_shouldPointTheUiAtTheApiDocs` fails because springdoc
   3.1.1 shapes the configuration differently from §2.2's premise, fetch the endpoint from the
@@ -257,7 +257,7 @@ Produces nothing new.
   served JSON and the correction in §8.1. The test must still fail if the UI points anywhere but
   `/v3/api-docs`.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
 
   ```bash
   git add dsh-rest-api/src/test/java/com/mriss/dsh/restapi/integration/DocumentResourceHttpIT.java
@@ -273,9 +273,9 @@ Produces nothing new.
 - Modify: `src/site/markdown/README.md:376-378`
 - Modify: `README.md:377-379`
 
-- [ ] **Step 1: Replace the sentence in both files** with §3.2's text, verbatim.
+- [x] **Step 1: Replace the sentence in both files** with §3.2's text, verbatim.
 
-- [ ] **Step 2: Lint.**
+- [x] **Step 2: Lint.**
 
   ```bash
   PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH" markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' 'CLAUDE.md' '.claude/**/*.md' --ignore 'docs/wiki/**' --config .markdownlint.json
@@ -283,7 +283,7 @@ Produces nothing new.
 
   Expected: no output, exit 0. The READMEs are outside the lint's globs, as they were for `#120`.
 
-- [ ] **Step 3: Commit.**
+- [x] **Step 3: Commit.**
 
   ```bash
   git add src/site/markdown/README.md README.md
@@ -292,15 +292,15 @@ Produces nothing new.
 
 ### Task 3: The gates and the acceptance checks
 
-- [ ] **Step 1: Gates 1 and 2,** with the Task 1 Step 2 command for gate 1. Expected:
+- [x] **Step 1: Gates 1 and 2,** with the Task 1 Step 2 command for gate 1. Expected:
   `maven exit=0`. Record `dsh-rest-api`'s LINE and BRANCH coverage from
   `dsh-rest-api/target/site/jacoco/index.html` in §8.2. They match `DEVELOP`'s, because no
   production Java changed.
 
-- [ ] **Step 2: Gate 3,** with the Task 1 Step 2 command, after Step 1. Expected: `maven exit=0`,
+- [x] **Step 2: Gate 3,** with the Task 1 Step 2 command, after Step 1. Expected: `maven exit=0`,
   with the failsafe summary in §8.2.
 
-- [ ] **Step 3: AC003.**
+- [x] **Step 3: AC003.**
 
   ```bash
   grep -n 'swagger-ui.html' README.md src/site/markdown/README.md
@@ -309,13 +309,13 @@ Produces nothing new.
 
   Expected: one line in each file from the first, nothing from the second.
 
-- [ ] **Step 4: The smoke run, the browser half of AC001.** Start the jar with RabbitMQ in Docker,
+- [x] **Step 4: The smoke run, the browser half of AC001.** Start the jar with RabbitMQ in Docker,
   as the README's "Running the Jar" section says, open `http://localhost:8080/swagger-ui.html`, and check
   that the page lists `POST /v1/dsh/document/submit` and `GET /v1/dsh/document/status/{token}`,
   and nothing else. Call status with an unknown token from the page and check it returns
   `TOKEN_NOT_FOUND`. Stop the jar and the container. Record what was seen in §8.3.
 
-- [ ] **Step 5: Fill in §8 and commit.**
+- [x] **Step 5: Fill in §8 and commit.**
 
   ```bash
   git add specs/stories/144-serve-swagger-ui.md
@@ -347,6 +347,53 @@ Filled in by Task 1 and Task 3.
 
 ### 8.1 Task 1: red and green
 
+Red, on `6db6a7dfc` before the starter swap: gate 1 `maven exit=0`; gate 3 `maven exit=1`,
+`Tests run: 22, Failures: 2`, every other IT passing.
+
+```text
+DocumentResourceHttpIT.swaggerConfig_shouldPointTheUiAtTheApiDocs:175->assertJson:196 expected: 200 OK but was: 404 NOT_FOUND
+DocumentResourceHttpIT.swaggerUi_shouldBeServedAtTheReadmeLink:165 expected: 200 OK but was: 404 NOT_FOUND
+```
+
+Green, after the swap: gate 3 `maven exit=0`, `Tests run: 22, Failures: 0, Errors: 0`. The swap resolved
+`springdoc-openapi-starter-webmvc-ui` 3.1.1 and the `org.webjars:swagger-ui` 5.32.14 webjar. Step 4's
+fallback was not needed: springdoc 3.1.1 serves `/v3/api-docs/swagger-config` as
+
+```json
+{"configUrl":"/v3/api-docs/swagger-config","oauth2RedirectUrl":"http://localhost:8080/swagger-ui/oauth2-redirect.html","url":"/v3/api-docs","validatorUrl":""}
+```
+
+so the assertion on `url` stands as written.
+
 ### 8.2 Task 3 Steps 1 and 2: the gates
 
+On `85df5dac8`:
+
+- Gates 1 and 2: `mvn -B clean install`, `maven exit=0`. Every module `SUCCESS`; `jacoco:check` reports
+  "All coverage checks have been met" for `dsh-data` (71 tests) and `dsh-rest-api` (43 tests).
+- `dsh-rest-api` coverage, from `target/site/jacoco` (`jacoco:report` over the unit tests'
+  `jacoco.exec`): LINE 126/129 = 97.67%, BRANCH 29/30 = 96.67%. No production Java changed, so these
+  are `DEVELOP`'s by construction; `DEVELOP` was not re-measured.
+- Gate 3: `mvn -B clean verify -DintegrationTests -pl dsh-rest-api -amd`, `maven exit=0`, failsafe
+  `Tests run: 22, Failures: 0, Errors: 0, Skipped: 0` (`DocumentResourceHttpIT` 8,
+  `DocumentResourceIT` 7, `DshRestApplicationIT` 3, `PersistenceSelectionIT` 4). The
+  `APPLICATION FAILED TO START` in the log is `PersistenceSelectionIT`'s unknown-value case, which
+  passes.
+
 ### 8.3 Task 3 Step 4: the smoke run
+
+`dsh-rest-api-0.4.0-SNAPSHOT.jar` from `85df5dac8`, with RabbitMQ from the README's `docker run … rabbitmq:3`.
+
+Over HTTP: `/swagger-ui.html` answers 302 to `/swagger-ui/index.html`, which answers 200 `text/html`; the
+page's CSS, two bundles and `swagger-initializer.js` all answer 200. The initializer keeps the webjar's
+default Petstore `url` and springdoc adds `configUrl: /v3/api-docs/swagger-config` beside it, so only the
+browser could show which description the page draws.
+
+In Chrome: the page is titled "DSH - Document Smart Highlights API", OAS 3.1, loaded from `/v3/api-docs`,
+not the Petstore. Under `document-resource` it lists `POST /v1/dsh/document/submit` and
+`GET /v1/dsh/document/status/{token}` and nothing else, with the schemas `TokenDto` and
+`DocumentStatusDto`. "Try it out" on status with the token `not-a-real-token` sent
+`GET http://localhost:8080/v1/dsh/document/status/not-a-real-token` and showed 200 with
+`{"message": "No token was found with the contents: not-a-real-token", "status": "TOKEN_NOT_FOUND"}`.
+
+The jar and the container were stopped afterwards.
