@@ -287,6 +287,12 @@
 						<configuration>
 							<systemPropertyVariables>
 								<dsh.it.baseUrl>http://localhost:${dsh.it.http.port}</dsh.it.baseUrl>
+							<!-- #137: what PostmanCollectionsIT needs to run newman; the profile installs both under target/newman -->
+							<dsh.it.nodeDir>${project.build.directory}/newman/node</dsh.it.nodeDir>
+							<dsh.it.newman>${project.build.directory}/newman/node_modules/newman/bin/newman.js</dsh.it.newman>
+							<dsh.it.collections>${project.basedir}/../specs/api/postman</dsh.it.collections>
+							<dsh.it.fixtures>${project.build.directory}/test-classes/pdf</dsh.it.fixtures>
+							<dsh.it.newmanReports>${project.build.directory}/newman/reports</dsh.it.newmanReports>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
