@@ -173,7 +173,9 @@
 		     not the main build: Maven inserts a profile's new plugins ahead of the first plugin the
 		     profile shares with the main build, so spring-boot-maven-plugin must stay declared before
 		     docker-maven-plugin here, or docker:stop runs before spring-boot:stop.
-		     #137: frontend-maven-plugin is declared first and maven-resources-plugin last, for the same reason. -->
+		     #137: frontend-maven-plugin is declared first, so that by the same insertion rule its package
+		     executions run before docker:start. maven-resources-plugin is declared last, so that whether
+		     Maven treats it as new or shared, it moves no other plugin. -->
 		<profile>
 			<id>http-integration-tests</id>
 			<activation>
