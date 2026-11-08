@@ -72,9 +72,13 @@ milestone: 0.4.0-SNAPSHOT
 3. **One starter replaces the other.** `springdoc-openapi-starter-webmvc-ui` depends on
    `springdoc-openapi-starter-webmvc-api`, so `-webmvc-api` is removed rather than kept beside it.
    No version is written: parent-poms manages it. No parent-poms change is needed.
-4. **No new configuration.** springdoc's defaults serve the UI where decision 1 says.
-   `springdoc.paths-to-match` already limits what the UI shows to `/v1/dsh/**`. Only the comment
-   above it changes, to name the UI.
+4. **One new property, `springdoc.swagger-ui.disable-swagger-default-url=true`.** springdoc's
+   defaults serve the UI where decision 1 says, and `springdoc.paths-to-match` already limits what
+   the UI shows to `/v1/dsh/**`; its comment changes to name the UI. The property was added in step 5:
+   the served `swagger-initializer.js` keeps the webjar's Petstore `url` beside springdoc's
+   `configUrl`, so a page that lost its `configUrl` would draw the Petstore. With the property,
+   springdoc 3.1.1 blanks that `url` and `configUrl` is the page's only source. Chosen by the owner
+   on 2026-11-07, from the local review. It replaces "no new configuration".
 5. **No unit test.** The story adds no production Java, so there is nothing for layer 1 to cover
    and no coverage moves. The change is to what the server serves over HTTP, which is layer 3
    (`testing-patterns.md`, "Test layers"). Gate 3 applies, because the story changes a REST entry
@@ -122,7 +126,7 @@ measure. Gate 3 runs in Tasks 1 and 3.
 | AC | Check | Where |
 |---|---|---|
 | AC001 | `swaggerUi_shouldBeServedAtTheReadmeLink`: `GET /swagger-ui.html`, redirect followed, is 200 HTML from the Swagger UI. `swaggerConfig_shouldPointTheUiAtTheApiDocs`: the UI's configuration names `/v3/api-docs`. `apiDocs_shouldListTheDocumentEndpoints`, unchanged, lists the two operations. The smoke run sees them drawn | Task 1, Task 3 |
-| AC002 | The two tests above, in `DocumentResourceHttpIT`, run by gate 3 | Task 1, Task 3 |
+| AC002 | The two tests above, in `DocumentResourceHttpIT`, run by gate 3. From step 5, the page test looks for `swagger-initializer.js`, and `swaggerInitializer_shouldReadTheUiConfiguration` and `swaggerInitializer_shouldNotNameThePetstoreDescription` hold the script that links the page to its configuration (§8.4) | Task 1, Task 3, §8.4 |
 | AC003 | Both READMEs carry §3.2's text; `grep -n 'swagger-ui.html' README.md src/site/markdown/README.md` finds one line in each | Task 2, Task 3 |
 | AC004 | `mvn -B clean install` exits 0 | Task 3 |
 
@@ -135,7 +139,7 @@ already uses, so the first test asserts what the README's link leads to, not the
 |---|---|
 | `dsh-rest-api/src/test/java/com/mriss/dsh/restapi/integration/DocumentResourceHttpIT.java` | Two tests (§4) |
 | `dsh-rest-api/pom.xml` | `-webmvc-api` replaced by `-webmvc-ui` (§3.1 decision 3) |
-| `dsh-rest-api/src/main/resources/application.properties` | The comment (§3.2) |
+| `dsh-rest-api/src/main/resources/application.properties` | The comment (§3.2), and decision 4's property from step 5 |
 | `src/site/markdown/README.md`, `README.md` | §3.2's sentence |
 | `specs/stories/144-serve-swagger-ui.md` | This spec, §8 filled in |
 
@@ -397,3 +401,45 @@ not the Petstore. Under `document-resource` it lists `POST /v1/dsh/document/subm
 `{"message": "No token was found with the contents: not-a-real-token", "status": "TOKEN_NOT_FOUND"}`.
 
 The jar and the container were stopped afterwards.
+
+### 8.4 Step 5: the local review round
+
+The local review of `02fce2f75..952522b87` found nothing Critical or Important and five Minor points.
+The owner took three of them, which became the commits after `952522b87`:
+
+1. **No test linked the page to its configuration.** If springdoc stopped adding `configUrl` to
+   `swagger-initializer.js`, the page would draw the Petstore while both tests passed.
+   `swaggerInitializer_shouldReadTheUiConfiguration` now holds that the script names
+   `/v3/api-docs/swagger-config`.
+2. **The Petstore default stayed in the script.** `swaggerInitializer_shouldNotNameThePetstoreDescription`
+   holds its absence, and decision 4's property removes it.
+3. **The page check was loose.** `contains("swagger-ui")` became `contains("swagger-initializer.js")`, the
+   script the webjar's `index.html` loads.
+
+Not taken: the README still says it describes 0.3.0, which predates this story and belongs to the
+0.4.0 release; and the test names have no scenario part, as the class's existing
+`apiDocs_shouldListTheDocumentEndpoints` has none.
+
+Red, on `e20d5683d` with a temporary `springdoc.swagger-ui.config-url=/elsewhere/swagger-config`
+appended to `application.properties` and never committed: gate 3 `maven exit=1`,
+`Tests run: 24, Failures: 3`.
+
+- `swaggerInitializer_shouldNotNameThePetstoreDescription` failed on today's code: the script still
+  carried `url: "https://petstore.swagger.io/v2/swagger.json"`.
+- `swaggerInitializer_shouldReadTheUiConfiguration` failed on the mutation, which is the change it
+  exists to catch.
+- `swaggerConfig_shouldPointTheUiAtTheApiDocs` failed on it too: with `config-url` overridden,
+  springdoc leaves `url` out of `/v3/api-docs/swagger-config`.
+- `swaggerUi_shouldBeServedAtTheReadmeLink` passed with the stricter check.
+
+Green, with the mutation removed and decision 4's property added:
+
+- Gates 1 and 2: `mvn -B clean install`, `maven exit=0`; "All coverage checks have been met" for
+  `dsh-data` (71 tests) and `dsh-rest-api` (43 tests). No production Java changed, so coverage is
+  §8.2's.
+- Gate 3: `maven exit=0`, failsafe `Tests run: 24, Failures: 0, Errors: 0, Skipped: 0`
+  (`DocumentResourceHttpIT` 10, `DocumentResourceIT` 7, `DshRestApplicationIT` 3,
+  `PersistenceSelectionIT` 4).
+- In Chrome, against the rebuilt jar: the served script now reads `url: "",` beside
+  `"configUrl" : "/v3/api-docs/swagger-config"`, and the page still draws "DSH - Document Smart
+  Highlights API" with the same two operations. The jar and the container were stopped afterwards.
