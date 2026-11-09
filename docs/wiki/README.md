@@ -1,41 +1,32 @@
-# docs/wiki — Synced Wiki Pages
+# docs/wiki — the wiki's source
 
-This directory contains Markdown copies of the [DSH GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki) pages.
+The pages of the [DSH wiki](https://github.com/MRISS-Projects/dsh/wiki) are written here and
+published from here. Each top-level `.md` file except this README is one page, named after the
+file: `Home.md` is the wiki's Home page.
 
-## Purpose
+## How a page is published
 
-Wiki pages are automatically synced here so that they become part of the repository's
-`@workspace` context for GitHub Copilot. This means you can reference them in prompts
-just like any other spec or documentation file:
+`.github/workflows/wiki-publish.yml` runs on every push to `DEVELOP` that changes this directory,
+and can be dispatched by hand. It runs `.github/scripts/publish-wiki.sh`, which mirrors this
+directory into the wiki's own repository. A file added here adds a page, a file changed changes
+it, and a file deleted deletes it. This README is not published.
 
-```
-@workspace Based on /docs/wiki/Architecture-Decisions.md and
-/specs/features/document-analysis.md, explain how the analyser module fits
-into the overall architecture.
-```
+## Editing
 
-## How sync works
+Edit the pages here, by pull request, like any other file. They are reviewed, and markdownlint
+checks them with the rest of the repository's Markdown. Do not edit the wiki on GitHub: the next
+publish overwrites the edit.
 
-The `.github/workflows/wiki-sync.yml` workflow runs daily at 02:00 UTC (and can be
-triggered manually via **Actions → Wiki Sync → Run workflow**). It:
+## Writing a page
 
-1. Clones the wiki's separate Git repository (`MRISS-Projects/dsh.wiki.git`).
-2. Copies every top-level `.md` file into this directory.
-3. Prepends an auto-generation header to each file so editors know to edit the
-   canonical source in the wiki, not this copy.
-4. Commits any changes with `[skip ci]` so the sync does not trigger further
-   workflow runs.
-
-## Editing wiki content
-
-**Do not edit files in this directory directly.** All changes must be made in the
-[GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki). The next scheduled sync
-(or a manual workflow run) will propagate the changes here.
-
-## Available pages
-
-The files in this directory mirror the wiki pages one-for-one. If the wiki is empty
-or has not been synced yet, this directory will contain only this README.
-
-Once synced, refer to the [Wiki References table](../../.github/copilot-instructions.md)
-for the exact paths to use in Copilot prompts.
+- **Links between pages** use the wiki's form, the page's name without `.md`:
+  `[Architecture](Architecture)`. They resolve in the wiki, not in this directory.
+- **Links to repository files** are absolute, to
+  `https://github.com/MRISS-Projects/dsh/blob/DEVELOP/...`. A wiki page cannot resolve a path in
+  the repository.
+- **Names.** Home and Architecture use generic terms: queue, NoSQL store, file store. The products
+  behind them are changing, under ADR-001, and an overview that names them goes stale. Developer
+  pages keep the product names.
+- **Planned parts of a diagram** carry "(planned)" in their label, a dashed outline, and dashed
+  edges into them. A planned edge between two built parts is dashed, and carries "(planned)" in
+  its label.

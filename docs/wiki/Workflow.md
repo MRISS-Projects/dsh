@@ -1,4 +1,3 @@
-<!-- AUTO-GENERATED: do not edit directly. Source: https://github.com/MRISS-Projects/dsh/wiki/Workflow -->
 # Document Processing Workflow
 
 The statuses a document moves through, and the transitions between them, are drawn in
