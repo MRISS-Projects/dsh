@@ -1088,4 +1088,32 @@ merge:** §3.2's three steps.
 
 ## 8. Verification results
 
-Filled in by Task 5.
+Run on 2026-11-09, on `issue-44-restructure-wiki`.
+
+| Check | Result |
+|---|---|
+| Task 1, red | `publish-wiki.test.sh` before the script existed: `11 case(s), 11 failure(s)`, each with exit 127, `exit=1` |
+| Task 1, green | The same command after it: `11 case(s), 0 failure(s)`, `exit=0` |
+| Task 2 | The `docs/wiki/**` grep over `CLAUDE.md`, `spec-validation.yml` and `dsh-reconcile-prd`: nothing, `exit=1`. markdownlint over `docs/wiki/` then reported 37 errors, as §2.1 counted |
+| Task 3, red | `lint exit=1`; `names exit=2`, `SOLR` at `Home.md:38` and no `Architecture.md`; `pages exit=1` |
+| Task 3, green | `lint exit=0`; `names exit=1`, no output; `pages exit=0`; `dev exit=1`, no output |
+| Task 4, red | The `wiki-sync` grep matched in `copilot-instructions.md`, `docs/devops/README.md` and `development-guide.md`, `exit=0` |
+| Task 4, green | The same grep: no output, `exit=1`. `check-spec-references.test.sh` passes; `check-spec-references.sh`: `Checked 46 referenced path(s); 0 missing.`, `refs exit=0`, the five `/docs/wiki/` paths among them |
+| Lint, as `CLAUDE.md` gives it | `lint exit=0` |
+| AC001 | ADR-003 §1, "The flow at run time": gateway, hop 1, indexing, hop 2, keywords, sentences, the six nodes of Home's diagram in that order. Production code: `dsh-data/src` and `dsh-rest-api/src` only. The inbound-receiver grep: `exit=1`. Every planned label matches a stage with no code |
+| AC002 | `Architecture.md`'s sections: Request/Response, Event Driven, Batch, Components, The decisions behind it. Request/Response names `POST /submit` and `GET /status/{token}`; Event Driven the pipeline |
+| AC003 | The components diagram has `dsh-rest-api` and `dsh-data`, the three planned stage modules, the planned `dsh-gcp`, the queue, the NoSQL store and the file store. The page links ADR-001, ADR-003, ADR-004 and `system-design.md` |
+| AC004 | `grep -n -E 'mvn\|git \|branch' docs/wiki/Developers.md`: no output, `exit=1`. The page links `CLAUDE.md` |
+| AC005 | `index.md`: one paragraph and four links, the first the wiki's Home. No sentence of Home's overview appears in it |
+| AC006 | The product-name grep over `Home.md`, `Architecture.md` and `index.md`: no output, `exit=1` |
+| AC007, before the merge | The publisher's test passes; `wiki-sync.yml` is gone; the lint-scope grep returns nothing; lint exits 0 |
+| Dry run | Against a scratch clone of `dsh.wiki.git`, which held `Code-Based-Site-and-Reports.md`, `Home.md` and `Workflow.md`: `publish exit=0`; `status --short` showed `Code-Based-Site-and-Reports.md` and `Home.md` modified (`M`), `Architecture.md` and `Developers.md` untracked (`??`), and nothing else. `Workflow.md` is byte for byte the wiki's page. Nothing was pushed |
+| Gate 1 | `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`, `BUILD SUCCESS`, nine modules, 71 tests in `dsh-data` and 43 in `dsh-rest-api`, no failure, the coverage checks met in both |
+| Gate 3 | Not applicable: no code touches an external system or an API entry point |
+
+Still open, and not part of the build:
+
+- **Diagrams**: rendered on github.com in the branch's blob view, after the push (step 6).
+- **AC007, at the merge**: §3.2's three steps, then the wiki shows five pages and its Home matches
+  `docs/wiki/Home.md`.
+- **The follow-up issue (D9)**: drafted, and opened only once the owner approves its text.
