@@ -237,4 +237,15 @@ git commit -m "docs(#190): describe the in-memory store, and point the overview 
 
 ## 8. Verification results
 
-To be filled in by Task 2, Step 4.
+Run on 2026-11-09, on the task branch after Task 1's commit `99842e694`.
+
+| Check | Result |
+|---|---|
+| Red, Task 1 Step 1 | The grep found four lines, 16, 18, 27 and 364; `grep exit=0` |
+| AC001, green | The same grep found nothing; `grep exit=1` |
+| AC002 | Lines 11 to 26 of the source are identical to §3.2's block, by `diff`; the first paragraph links `https://github.com/MRISS-Projects/dsh/wiki` |
+| AC003 | The status bullet reads "a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`", as §3.2 gives it; `git diff DEVELOP` changes that one line in it and nothing else outside the Introduction |
+| AC004 | `git diff --stat DEVELOP` lists `specs/stories/190-readme-describes-dsh-today.md` and `src/site/markdown/README.md`, nothing else; the root `README.md` is unchanged |
+| AC005 | markdownlint over the source: `lint exit=0`. Over the `CLAUDE.md` scope: `lint exit=0` |
+| Gate 1 | `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`, `BUILD SUCCESS`, every module of the reactor `SUCCESS`. 71 tests in `dsh-data` and 43 in `dsh-rest-api`, none failing or skipped. "All coverage checks have been met" for both |
+| Gate 3 | Not run: no code changed |
