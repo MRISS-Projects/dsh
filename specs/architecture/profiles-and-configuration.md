@@ -708,8 +708,8 @@ which no wave plans, and the Firestore emulator, which R4 makes a `gcp` run.
 
 - **`mongo.*`.** The four filtered lines are removed and the values arrive at run time. Whether
   that is worth doing before the wave that removes MongoDB is a follow-up candidate (section 9).
-- **The `test` profile in `api-testing.yml`.** It selects nothing. Under R10 `test` gains a
-  meaning for context tests, and a forked server started for external tests should not carry it.
+- **The `test` profile in `api-testing.yml`.** Gone with the workflow (`#137`). Under R10 `test`
+  has a meaning for context tests, and the forked server that layers 3 and 4 use carries no profile.
 - **The XML contexts.** They can be placed under a profile as they are (S5). Today both load with
   no profile. Under R2 MongoDB stays the default persistence, so its context still loads then.
   RabbitMQ does not stay: the default transport is in memory, and ADR-001's task 1.3 already puts
@@ -730,9 +730,9 @@ which no wave plans, and the Firestore emulator, which R4 makes a `gcp` run.
 
 Rows 1 to 4 show each layer as the convention would have it, not as it is. Since `#140`, every
 layer-2 test of `dsh-rest-api` names the `test` profile, and its test values have
-`application-test.properties` to go in. No profile is passed to the forked server, and layer 4 has
-no collection:
-`api-testing.yml` starts the application with `java -jar`, not through Maven (`#137`).
+`application-test.properties` to go in. No profile is passed to the forked server. Since `#137`,
+layer 4 runs against it: `PostmanCollectionsIT` runs the collections in `specs/api/postman/` with
+newman.
 
 Rows 5a and 5b start from a stopped service, so their first request is a cold start, and their
 timeouts must allow for one (G8).
@@ -895,7 +895,8 @@ Each was a draft for the owner to accept, change or drop. The owner accepted all
    for the wave that removes MongoDB, and record that. Now `#157`, whose spec decides how far to
    go.
 3. **Remove `--spring.profiles.active=test` from `api-testing.yml`**, or fold it into `#137`,
-   which reworks that workflow. Added to `#137`, as its AC005.
+   which reworks that workflow. Added to `#137`, as its AC005. Done by `#137`, which removed the
+   workflow.
 4. **Rename `dsh-rest-api`'s test `application.properties` to `application-test.properties`**,
    keeping only what differs, and give its context tests `@ActiveProfiles("test")`. `#140` already
    edits both files and could carry it. Added to `#140`.

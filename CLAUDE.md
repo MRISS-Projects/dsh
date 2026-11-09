@@ -74,7 +74,7 @@ status. `.logs/` is gitignored; never commit a build log. In `ci.yml` do **not**
 GitHub Actions already captures the output.
 
 Upgrading the parent version is a deliberate, manual edit to the root `pom.xml`. CI never
-rebuilds `parent-poms`. The parent is the released 3.11.2 since `#120`, so neither workflow passes
+rebuilds `parent-poms`. The parent is the released 3.11.2 since `#120`, so `ci.yml` does not pass
 `-U`. The release wrappers build through reusable workflows in `parent-poms`, which set their own
 flags. See `docs/devops/README.md`, "Parent POM", for why.
 
@@ -98,8 +98,9 @@ each is and when each is required — are in `.github/copilot/rules/testing-patt
 1. All tests pass under `mvn -B clean install`. That runs unit tests only, under surefire. Integration
    tests are `*IT` in an `integration` package, run under `mvn -B clean install -DintegrationTests` and on
    every staging build, and are measured by `jacoco-it.exec` — never by the coverage gate below.
-   For `dsh-rest-api`, `-DintegrationTests` also starts RabbitMQ in Docker, so it needs a running
-   Docker daemon.
+   For `dsh-rest-api`, `-DintegrationTests` also starts RabbitMQ in Docker and installs Node and
+   newman under `target/newman/`, so it needs a running Docker daemon and access to nodejs.org and
+   registry.npmjs.org.
 2. Every module with production sources holds at least 95% LINE and 95% BRANCH coverage, enforced
    by `jacoco:check` bound to `verify`, plus the `enforce-coverage-data-exists` guard that fails a
    module which produced no coverage data at all. **Both are inherited from

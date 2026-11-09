@@ -1223,6 +1223,18 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   from dsh-rest-api". Since the re-plan of 2026-10-13 only the part `#48` added to it is left,
   the test profile's properties file, because task 8 removes those settings. It was retitled on
   GitHub that day.
+- `#185` — The contract says every submission gets a new token; a resubmitted file keeps its token.
+- `#186` — `test-credential-step.sh` expects the parent 3.8.0-SNAPSHOT; the pin is 3.11.2.
+- `#188` — Publish the Postman collections' results on the Maven site.
+
+  None is an ADR-001 phase task. All three came out of `#137` on 2026-11-08, and none was folded
+  into it. `#185` was found while writing `#137`'s spec: `/submit`'s contract text, from `#162`,
+  predates the code change that made a resubmitted file keep its token, and which side is right
+  is the owner's call, not `#137`'s. `#137`'s collection keeps clear of the case. `#186` was found
+  when `#137` edited the script's usage comment: one case hard-codes a parent version from before
+  `#120`. `#188` is `#137`'s Task 7 Step 7. `#137` writes newman's reports, but nothing publishes
+  them, and how they reach the site is a story of its own. The three sit in this wave because
+  none depends on ADR-003.
 - `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
   task 5 below is written as its body, so no new issue is opened for that task.
 - `#144` — **closed** — PR #184. Swagger UI is not served: `/swagger-ui/` returns 404 and the
@@ -1499,7 +1511,10 @@ status when submissions overlap. So it is not closed as won't-fix. Task 1's stor
 `#142` describes as an acceptance criterion against the new flow: two overlapping submissions, one
 forced to fail, each ending in its own status. That story closes `#142`. It was briefly proposed
 for won't-fix on 2026-09-28, and moved here the same day instead. **0.3.0 ships with the defect**,
-knowingly: status is wrong for overlapping submissions until Wave 2.
+knowingly: status is wrong for overlapping submissions until Wave 2. **On 2026-11-08 `#137`'s runs
+reproduced it without any overlap.** A resubmitted file reuses its stored document, so one ack
+reaches two handlers, and the document moves past `QUEUED_FOR_INDEXING_SUCCESS`. The evidence is in
+a comment on `#142`, and the contract side of resubmission is `#185`.
 
 **Tasks:**
 

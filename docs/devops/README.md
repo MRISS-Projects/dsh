@@ -50,7 +50,6 @@ flowchart LR
     subgraph gates["Gates - run per change"]
         CI["ci.yml<br/>PRs + DEVELOP/RC/hotfix pushes<br/>build, tests, inherited coverage gate"]
         SV["spec-validation.yml<br/>specs, docs, copilot files<br/>OpenAPI lint + markdownlint + spec references"]
-        AT["api-testing.yml<br/>dsh-rest-api + specs/api<br/>Postman/Newman"]
     end
     subgraph docs["Documentation - automated"]
         DS["documentation-sync.yml<br/>OpenAPI to HTML + specs TOC"]
@@ -73,7 +72,6 @@ table below) and matches it; no trigger shown here is invented.
 | --- | --- | --- |
 | `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B install`). That single command *is* the coverage gate: `jacoco:check` enforces a 95% LINE and BRANCH minimum per module, and `enforce-coverage-data-exists` fails a module that produced no coverage data at all. Both are bound to `verify` and inherited from `parent-poms` rather than declared here. This is the primary correctness gate. |
 | `spec-validation.yml` | `push` and `pull_request`, both scoped to paths `specs/**`, `docs/**`, `.github/copilot-instructions.md`, `.github/copilot/**`, `.github/roles.md`, `.github/scripts/**`, `.github/skills/**`, `.github/workflows/spec-validation.yml`, `.markdownlint.json`, `CLAUDE.md`, `.claude/**` | Lints the OpenAPI spec with Redocly, lints Markdown under `specs/`, `.github/`, `docs/` (excluding `docs/wiki/**`), `CLAUDE.md` and `.claude/` with markdownlint, and verifies that every path referenced from `copilot-instructions.md` resolves. That last check is enforcing: it fails the job on an unresolved reference, on a source file it cannot read, and when it extracts no references at all. Its logic is covered by `.github/scripts/check-spec-references.test.sh`, which the same job runs first. |
-| `api-testing.yml` | `push` to `DEVELOP` and `pull_request`, both scoped to paths `dsh-rest-api/**`, `specs/api/**`; `workflow_dispatch` | Builds the full project, boots `dsh-rest-api` against a RabbitMQ service container, and runs the Postman collections in `specs/api/postman/` via Newman. |
 | `documentation-sync.yml` | `push` to `DEVELOP`, scoped to paths `specs/api/openapi/**`, `specs/architecture/**`, `specs/features/**`, `docs/wiki/**`; `workflow_dispatch` | Two jobs: regenerates HTML API docs from the OpenAPI spec into `docs/api/`, and refreshes the table of contents in `specs/features/*.md` and `specs/architecture/*.md`. Both auto-commit with `[skip ci]`. |
 | `wiki-sync.yml` | `schedule` (`0 2 * * *`, daily 02:00 UTC); `workflow_dispatch` | Because the cron fires on the default branch (`master`), a `redispatch` job re-triggers the workflow on `DEVELOP` when it isn't already running there; the `sync-wiki` job then copies the GitHub wiki's Markdown pages into `docs/wiki/` via a pull request. |
 | `stage.yml` | `workflow_dispatch` only | Delegates to the reusable `project-stage.yml` workflow in `MRISS-Projects/parent-poms` to cut a `staging-<version>-SNAPSHOT-RC` branch from `DEVELOP`. |
@@ -122,13 +120,13 @@ build property is needed again.
 
 ### The Maven toolchain is pinned, in both repositories
 
-`ci.yml` and `api-testing.yml` — the only two workflows here that invoke `mvn` — provision Java 17
+`ci.yml` — the only workflow here that invokes `mvn` — provisions Java 17
 (Temurin) with `actions/setup-java@v4` and Maven **3.9.16** with `stCarolas/setup-maven@v5`, in that
-order, because the Maven action needs `JAVA_HOME` already set. Neither relies on the Maven bundled
+order, because the Maven action needs `JAVA_HOME` already set. It does not rely on the Maven bundled
 with the `ubuntu-latest` runner image, which GitHub changes without notice when the image is
 rebuilt.
 
-Each of the two then asserts the version before building, rather than trusting the pin. Maven prints
+It then asserts the version before building, rather than trusting the pin. Maven prints
 no version banner under `-B`, so a `setup-maven` step that failed to take effect would otherwise
 leave a green build silently back on the runner's Maven. The `Verify Maven version` step fails the
 run instead — the same present-versus-working distinction the credential check draws in the Secrets
@@ -231,7 +229,7 @@ environment is readable by it. The only credential such a job may hold is one th
 
 | Secret | Scope | Used by | Why |
 | --- | --- | --- | --- |
-| `PACKAGES_READ_TOKEN` | `read:packages` only | `ci.yml`, `api-testing.yml` | Resolving `com.mriss.mriss-parent:products` from the `MRISS-Projects/maven-repo` registry. Both workflows build pull-request code, so the credential they expose must not be able to write. |
+| `PACKAGES_READ_TOKEN` | `read:packages` only | `ci.yml` | Resolving `com.mriss.mriss-parent:products` from the `MRISS-Projects/maven-repo` registry. `ci.yml` builds pull-request code, so the credential it exposes must not be able to write. |
 | `DEPLOY_TOKEN` | write-capable | `documentation-sync.yml`, `stage.yml`, `staging.yml`, `release.yml`, `hotfix.yml` | Pushing auto-generated docs, and deploying artifacts via the reusable `parent-poms` workflows. None of these runs pull-request code on an automatic trigger — but see the dispatch caveat below. |
 
 **The caveat: manual dispatch.** `documentation-sync.yml` declares `workflow_dispatch` alongside
@@ -250,7 +248,7 @@ though `MRISS-Projects/maven-repo` is public — the GitHub Packages Maven regis
 credentials for anonymous-readable packages — which is why the credential is swapped here rather
 than dropped.
 
-Both `ci.yml` and `api-testing.yml` open with a `Verify package credentials work` step that fails
+`ci.yml` opens with a `Verify package credentials work` step that fails
 the job before Maven runs — both when the secret is missing and when it is present but unusable.
 The missing case is almost always a pull request from a fork, which receives no repository secrets.
 The unusable case is a token that has expired, been revoked, lost the `read:packages` scope, or lost
@@ -285,13 +283,13 @@ registry.
 Every module in this repository inherits from `com.mriss.mriss-parent:products`, resolved from
 the `MRISS-Projects/maven-repo` GitHub Packages registry (see the `<parent>` block in the root
 `pom.xml`). CI (`ci.yml`) configures a Maven `settings.xml` with credentials for that registry and
-builds with `mvn -B install`, as does `api-testing.yml`. Parent version upgrades are a
+builds with `mvn -B install`. Parent version upgrades are a
 deliberate, manual edit to the root `pom.xml`, not something a workflow does automatically.
 
 The current pin is `com.mriss.mriss-parent:products:3.11.2`, since `#120`: the parent-poms hotfix
 release of 2026-10-28 that carries `#119`'s and `#120`'s upstream changes (`parent-poms#112` and
 `parent-poms#114`, Spring Boot 4.1.1). A released parent resolves to the same POM on every run, so
-the build is reproducible, and neither workflow passes `-U`.
+the build is reproducible, and `ci.yml` does not pass `-U`.
 
 **A temporary `SNAPSHOT` pin is how parent-poms work is validated end to end.** `CLAUDE.md`'s round
 trip points the root `pom.xml` at parent-poms' `-SNAPSHOT` before parent-poms releases. `#127` did so
@@ -299,8 +297,8 @@ with `3.10.0-SNAPSHOT`: DSH's snapshot site deploy proved parent-poms' unrelease
 consumer, and `#150` re-pinned to the release. Such a pin is deliberate: do not "fix" it ahead of
 the exit its story names.
 
-**While a `SNAPSHOT` pin lasts, both workflows pass `-U`.** Add it back to `ci.yml` and
-`api-testing.yml` when the pin is taken, and drop it again with the re-pin. `-U` states the decision
+**While a `SNAPSHOT` pin lasts, `ci.yml` passes `-U`.** Add it back to `ci.yml` when the pin is
+taken, and drop it again with the re-pin. `-U` states the decision
 to track the current `SNAPSHOT`; it is not a mitigation of it. Omitting the flag never bought
 reproducibility, for two reasons: Maven refreshes `SNAPSHOT` metadata on its own daily schedule, so
 the parent re-resolves anyway at a moment nobody chose; and `actions/setup-java` restores `~/.m2`

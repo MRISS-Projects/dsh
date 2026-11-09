@@ -2,10 +2,9 @@
 # Tests the "Verify package credentials work" step of a workflow (issue #101).
 #
 # ============================================================================
-# NOT RUN AUTOMATICALLY. Run it by hand after editing that step in either
-# workflow, or when reviewing a change to it:
+# NOT RUN AUTOMATICALLY. Run it by hand after editing that step in ci.yml, or
+# when reviewing a change to it:
 #     ./scripts/test-credential-step.sh .github/workflows/ci.yml
-#     ./scripts/test-credential-step.sh .github/workflows/api-testing.yml
 # No CI job invokes it. The change it guards is a shell step in a workflow
 # file, so there is no unit test to hang it on - this script is the whole
 # regression net. See specs/stories/101-fail-ci-on-unusable-package-token.md.

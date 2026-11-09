@@ -1,0 +1,9 @@
+{
+  "name": "dsh-rest-api-newman",
+  "version": "0.0.0",
+  "private": true,
+  "description": "newman for PostmanCollectionsIT; installed by the http-integration-tests profile under target/newman (#137)",
+  "devDependencies": {
+    "newman": "6.2.3"
+  }
+}

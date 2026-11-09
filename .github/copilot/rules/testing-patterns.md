@@ -9,7 +9,7 @@ Four layers, most tests in the first. Each has a trigger that makes it required.
 | 1. Unit | Mockito, no Spring context, REST entry points included | always; the 95% gate counts only this layer | everywhere, `mvn -B clean install` |
 | 2. Spring context | `*IT`, full or sliced context, `@MockitoBean` for every external service, MockMvc or Spring's test framework for REST entry points | a story creates or changes a Spring bean class, REST entry points included | staging, deploy, local gate |
 | 3. Over the wire | `*HttpIT`, the application forked by Maven, real ports, real external services in Docker | a story adds a REST endpoint or changes one's contract | staging, deploy, local gate |
-| 4. External client | Postman collections run by newman: a consumer that sees only the API contract, not the internals | when collections exist, `#137` | staging, deploy, local gate |
+| 4. External client | Postman collections run by newman against layer 3's server: a consumer that sees only the API contract, not the internals | a story adds a REST endpoint or changes one's contract | staging, deploy, local gate |
 
 - **Layers 2 and 3 share a vantage point.** We write both the client and the provider. Layer 4 is
   the only one that tests as an outsider, which is why it is needed at all.
@@ -19,7 +19,7 @@ Four layers, most tests in the first. Each has a trigger that makes it required.
 ## Where integration tests run
 
 Layers 2 to 4 run in three places, and **never on pull requests**: `ci.yml` does not pass
-`-DintegrationTests`, and `api-testing.yml` builds with `-DskipTests`.
+`-DintegrationTests`.
 
 - **Staging:** every staging build passes `-DintegrationTests`.
 - **Deploy:** a deploy workflow from `DEVELOP`. It does not exist yet.
@@ -180,14 +180,31 @@ is the example.
   `spring-boot:start` or `spring-boot:stop`, a failsafe fork that crashes or times out, a build
   that ends at `package` (`mvn package -DintegrationTests`), and Ctrl-C. Remove the containers with
   `docker rm -f $(docker ps -aq --filter name=dsh-it-)`
-- **Skip with `-DskipITs`**, which skips the containers and the application too. `-DskipTests`
-  alone skips the tests but still starts both
+- **Skip with `-DskipITs`**, which skips the containers, the application, and layer 4's Node and
+  newman install too. `-DskipTests` alone skips the tests but still starts and installs all of them
 
 ## Layer 4: external client
 
-Postman collections, run by newman against a lifecycle-managed server, test as a consumer that
-sees only the API contract. **Not yet in force:** no collections exist, and wiring newman into the
-lifecycle is `#137`. Until then no story is required to add one.
+- One collection per file, `specs/api/postman/*.postman_collection.json`, Collection v2.1
+- **Required when a story adds a REST endpoint or changes one's contract**, as layer 3 is. Both
+  change: layer 3 holds what we mean the code to do, layer 4 what the contract promises a client
+- Assert against `specs/api/openapi/dsh-rest-api.yaml`, never against the code's constants
+
+`PostmanCollectionsIT` runs every collection with newman under `-DintegrationTests`, against the
+server and the container of layer 3. The `http-integration-tests` profile installs Node and
+newman into `dsh-rest-api/target/newman/`, so neither has to be on the `PATH`.
+
+- **The base URL is the only input**, `baseUrl`, from `dsh.it.baseUrl`. A collection gives it no
+  value
+- **Uploads name a fixture by its bare file name**, resolved against `target/test-classes/pdf/`.
+  newman reads no file outside it
+- **An empty directory fails, and so does a collection that runs no assertion.** newman alone
+  exits `0` for both
+- **A failing collection does not leak**, as a failing layer-3 test does not
+- **Reports** are in `dsh-rest-api/target/newman/reports/`: newman's output, JSON and JUnit XML,
+  per collection
+- **The network is a prerequisite**, as Docker is: Node comes from nodejs.org, cached in the local
+  Maven repository after the first run, and newman from registry.npmjs.org on every run
 
 ## Test Data & Fixtures
 
@@ -225,4 +242,4 @@ lifecycle is `#137`. Until then no story is required to add one.
 - Unit tests run on every build: `mvn -B install`
 - Integration tests run under `mvn -B install -DintegrationTests`; where and when is "Where
   integration tests run" above. Profiles in this estate are activated by `-D` properties, never `-P`
-- Performance tests run on release: reference `.github/workflows/api-testing.yml`
+- Performance tests are meant to run on release; no workflow runs them yet

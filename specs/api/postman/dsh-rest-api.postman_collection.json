@@ -1,0 +1,191 @@
+{
+  "info": {
+    "name": "DSH REST API",
+    "description": "Layer 4 of .github/copilot/rules/testing-patterns.md: the REST API as an external client sees it, asserted against specs/api/openapi/dsh-rest-api.yaml. PostmanCollectionsIT runs it under -DintegrationTests (#137).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Submit a document",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('answers 200 with JSON', () => {",
+              "  pm.response.to.have.status(200);",
+              "  pm.response.to.be.json;",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('accepts the document and answers its token', () => {",
+              "  pm.expect(body.token).to.be.a('string').and.not.empty;",
+              "  pm.expect(body.token).to.not.equal('ERROR');",
+              "  pm.expect(body.message).to.equal('');",
+              "});",
+              "if (typeof body.token === 'string' && body.token !== '' && body.token !== 'ERROR') {",
+              "  pm.collectionVariables.set('token', body.token);",
+              "  pm.collectionVariables.set('statusDeadline', Date.now() + 15000);",
+              "} else {",
+              "  // No document to follow: skip the poll, so the failure above is the only one.",
+              "  pm.execution.setNextRequest('Status of an unknown token');",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/v1/dsh/document/submit",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "title", "value": "CNN page, layer 4", "type": "text" },
+            { "key": "contents", "type": "file", "src": "edition.cnn.com-1.pdf" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Status of the submitted document",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// The contract lets /status answer TOKEN_NOT_FOUND for a moment after /submit, so this request polls.",
+              "setTimeout(() => {}, 250);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('answers 200 with JSON', () => {",
+              "  pm.response.to.have.status(200);",
+              "  pm.response.to.be.json;",
+              "});",
+              "const status = pm.response.json().status;",
+              "const settled = status === 'QUEUED_FOR_INDEXING_SUCCESS' || status === 'QUEUED_FOR_INDEXING_ERROR';",
+              "if (!settled && Date.now() < Number(pm.collectionVariables.get('statusDeadline'))) {",
+              "  pm.execution.setNextRequest(pm.info.requestName);",
+              "} else {",
+              "  pm.test('reaches QUEUED_FOR_INDEXING_SUCCESS within 15 s', () => {",
+              "    pm.expect(status).to.equal('QUEUED_FOR_INDEXING_SUCCESS');",
+              "  });",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/v1/dsh/document/status/{{token}}"
+      }
+    },
+    {
+      "name": "Status of an unknown token",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('unknownToken', 'no-such-token-' + pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('answers 200 with JSON', () => {",
+              "  pm.response.to.have.status(200);",
+              "  pm.response.to.be.json;",
+              "});",
+              "pm.test('answers TOKEN_NOT_FOUND and names the token', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.status).to.equal('TOKEN_NOT_FOUND');",
+              "  pm.expect(body.message).to.equal('No token was found with the contents: ' + pm.collectionVariables.get('unknownToken'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/v1/dsh/document/status/{{unknownToken}}"
+      }
+    },
+    {
+      "name": "Submit with a blank title",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('answers 200 with JSON', () => {",
+              "  pm.response.to.have.status(200);",
+              "  pm.response.to.be.json;",
+              "});",
+              "pm.test('rejects the submission with token ERROR and the reason', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.token).to.equal('ERROR');",
+              "  pm.expect(body.message).to.equal(\"Error submitting file: Document title and contents can't be null.\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/v1/dsh/document/submit",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "title", "value": "", "type": "text" },
+            { "key": "contents", "type": "file", "src": "edition.cnn.com-1.pdf" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Submit without contents",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('answers 400 with JSON', () => {",
+              "  pm.response.to.have.status(400);",
+              "  pm.response.to.be.json;",
+              "});",
+              "pm.test('answers the error body', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.status).to.equal(400);",
+              "  pm.expect(body.error).to.equal('Bad Request');",
+              "  pm.expect(body.path).to.equal('/v1/dsh/document/submit');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/v1/dsh/document/submit",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "title", "value": "No contents", "type": "text" }
+          ]
+        }
+      }
+    }
+  ]
+}
