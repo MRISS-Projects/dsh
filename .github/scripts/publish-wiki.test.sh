@@ -24,11 +24,12 @@ failures=0
 OUT=""
 STATUS=0
 
-# new_case -> prints a fresh fixture directory holding an empty "src" and "wiki".
+# new_case -> prints a fresh fixture directory holding an empty "src", and a
+# "wiki" that holds only a .git directory, as a clone does.
 new_case() {
   local dir
   dir="$(mktemp -d "${WORK}/case-XXXXXX")"
-  mkdir -p "${dir}/src" "${dir}/wiki"
+  mkdir -p "${dir}/src" "${dir}/wiki/.git"
   printf %s "$dir"
 }
 
@@ -38,9 +39,9 @@ run_publisher() {
   STATUS=$?
 }
 
-# listing DIR -> the top-level entries of DIR, sorted, one per line, .git included.
+# listing DIR -> the top-level entries of DIR except .git, sorted, one per line.
 listing() {
-  (cd "$1" && ls -A | LC_ALL=C sort)
+  (cd "$1" && ls -A | grep -vx '\.git' | LC_ALL=C sort)
 }
 
 # check NAME EXPECTED_STATUS EXPECTED_TEXT [ACTUAL_LISTING EXPECTED_LISTING]
@@ -103,12 +104,11 @@ check "a README.md in the wiki is removed" 0 "Removed: README.md" \
 # --- .git and files that are not Markdown are left alone -----------------------
 d="$(new_case)"
 echo "home" > "${d}/src/Home.md"
-mkdir -p "${d}/wiki/.git"
 echo "ref" > "${d}/wiki/.git/HEAD"
 echo "png" > "${d}/wiki/diagram.png"
 run_publisher "${d}/src" "${d}/wiki"
 check ".git and files that are not Markdown are left alone" 0 "" \
-  "$(listing "${d}/wiki"; cat "${d}/wiki/.git/HEAD")" "$(printf '.git\nHome.md\ndiagram.png\nref')"
+  "$(listing "${d}/wiki"; cat "${d}/wiki/.git/HEAD")" "$(printf 'Home.md\ndiagram.png\nref')"
 
 # --- Markdown below the top level is not a page --------------------------------
 d="$(new_case)"
@@ -144,6 +144,25 @@ d="$(new_case)"
 echo "home" > "${d}/src/Home.md"
 run_publisher "${d}/src" "${d}/absent"
 check "a missing wiki directory is an error" 1 "not a directory: ${d}/absent"
+
+# --- a wiki directory that is not a clone is refused, and is untouched ---------
+d="$(new_case)"
+rmdir "${d}/wiki/.git"
+echo "home" > "${d}/src/Home.md"
+echo "keep" > "${d}/wiki/README.md"
+run_publisher "${d}/src" "${d}/wiki"
+check "a wiki directory that is not a clone is refused, and is untouched" 1 \
+  "not a clone of a repository: ${d}/wiki" \
+  "$(listing "${d}/wiki")" "README.md"
+
+# --- one directory as both source and wiki is refused, and is untouched --------
+d="$(new_case)"
+echo "home" > "${d}/wiki/Home.md"
+echo "about" > "${d}/wiki/README.md"
+run_publisher "${d}/wiki" "${d}/wiki/."
+check "one directory as both source and wiki is refused, and is untouched" 1 \
+  "SOURCE_DIR and WIKI_DIR are the same directory" \
+  "$(listing "${d}/wiki")" "$(printf 'Home.md\nREADME.md')"
 
 # --- a wrong number of arguments prints the usage ------------------------------
 run_publisher "only-one"

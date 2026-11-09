@@ -9,11 +9,18 @@
 # not Markdown -- is left alone. README.md describes the source directory and is
 # never a page.
 #
+# Names are compared as the filesystem compares them. On a case-insensitive one,
+# Windows' included, a wiki page whose name differs from its source only in case
+# is overwritten in place and keeps the wiki's case; on Linux, where the
+# workflow runs, it is removed and published under the source's name.
+#
 # Usage: publish-wiki.sh SOURCE_DIR WIKI_DIR
 #
-# Exits 2 on a wrong number of arguments, and 1 when either directory is missing
-# or SOURCE_DIR holds no page at all: mirroring an empty source would delete
-# every page of the wiki.
+# Exits 2 on a wrong number of arguments, and 1 when either directory is missing,
+# when both name the same directory, when WIKI_DIR is not a clone (it holds no
+# .git), or when SOURCE_DIR holds no page at all: mirroring an empty source would
+# delete every page of the wiki. The two guards on WIKI_DIR keep a mistyped
+# argument from deleting the Markdown of whatever directory it names.
 
 set -euo pipefail
 
@@ -31,6 +38,16 @@ for dir in "$SOURCE" "$WIKI"; do
     exit 1
   fi
 done
+
+if [ "$(cd "$SOURCE" && pwd -P)" = "$(cd "$WIKI" && pwd -P)" ]; then
+  echo "ERROR: SOURCE_DIR and WIKI_DIR are the same directory: $SOURCE"
+  exit 1
+fi
+
+if [ ! -e "$WIKI/.git" ]; then
+  echo "ERROR: not a clone of a repository: $WIKI"
+  exit 1
+fi
 
 shopt -s nullglob
 
