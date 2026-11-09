@@ -29,7 +29,7 @@ Copilot will automatically use this context when suggesting code in this reposit
 ### Spec-First Development
 
 1. **Read the specification** – Before writing code, read the relevant spec in `specs/features/`
-2. **Check the wiki** – Browse `/docs/wiki/` for broader context, architecture decisions, and how-to guides that live in the [project wiki](https://github.com/MRISS-Projects/dsh/wiki)
+2. **Check the wiki** – Browse `/docs/wiki/`, the source of the [project wiki](https://github.com/MRISS-Projects/dsh/wiki), for the overview, the pipeline and the components; the decisions behind them are the ADRs in `specs/architecture/`
 3. **Check the OpenAPI spec** – For API work, review `specs/api/openapi/dsh-rest-api.yaml`
 4. **Use prompt templates** – Copy a template from `.github/copilot/prompts/` to Copilot Chat
 5. **Generate and review** – Generate code with Copilot and review against the spec
