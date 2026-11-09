@@ -1,66 +1,84 @@
-<!-- AUTO-GENERATED: do not edit directly. Source: https://github.com/MRISS-Projects/dsh/wiki/Home -->
 # Document Smart Highlights
 
- Document Smart Highlights aims to provide a set of web services to allow uploading
- of PDF and HTML files and return a list of keywords and most relevant sentences.
- This system applies state of the art algorithms, using NLP techniques to produce
- both the list of keywords and most relevant sentences. This last one, using
- automatic document summarization techniques.
- 
-## Overall Process Description
+Document Smart Highlights (DSH) aims to provide web services that accept PDF and HTML files and
+return a list of keywords and the most relevant sentences, extracted with NLP techniques; the
+sentences through automatic document summarization.
 
- The overall process of file submission and keywords/relevant sentence extraction is
- described as follows:
- 
-### File Submission
+## What DSH does today
 
- A web service is established in a way that:
- 
- * User uses a web service call to submit/upload a file.
- 
-   * System submit the file to process asynchronously and return a token to the user
- 
- * User uses a web service call to keep probing the status of file processing, using
-   the token previously returned.
-   
- * When the file processing is done, the previous call return success and user uses
-   another call to retrieve the results having two parts:
-   
-   * A list of keywords
-   
-   * A list of most relevant sentences
-   
-### File Indexing
+DSH accepts a PDF document, keeps it in a document store, in memory by default, puts the
+document's id on a queue for indexing, and reports the document's processing status. Nothing takes
+the id off that queue yet, so DSH does not index documents and does not extract keywords or
+sentences. The REST API has two operations: submit a document and receive a token, and ask for the
+status of the document a token was issued for.
 
- * The first processing task is to submit files to a database where it will 
-   be indexed and processed to be able to identify individual terms or tokens
-   inside the file context. This is used submitting the files to be stored at
-   a database provided by [Apache SOLR](http://lucene.apache.org/solr/).
-   
-### File Keyword Extraction
+## The pipeline
 
- * The keyword extraction is executed by setting scores to each term in
-   the document's text. This is using a [TF/IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) approach through several
-   different implementations of TF and IDF, as shown at [this paper](https://doi.org/10.2352/issn.2168-3204.2017.1.0.105).
-   
- * Those terms having the best scores obtained by a 
-   [meta-algorithmic]({https://www.amazon.com/Meta-Algorithmics-Patterns-Robust-Quality-Systems/dp/1118343360)
-   combination of all TF/IDF combination, will then be returned as the best ranked 
-   keywords.
+```mermaid
+flowchart LR
+    client([Client]) -->|/submit| gateway[Gateway]
+    gateway --> hop1[(Hop 1<br/>queue)]
+    hop1 -.-> indexing["Indexing<br/>(planned)"]
+    indexing -.-> hop2[("Hop 2<br/>queue<br/>(planned)")]
+    hop2 -.-> keywords["Keywords<br/>(planned)"]
+    keywords -.-> sentences["Sentences<br/>(planned)"]
+    classDef planned stroke-dasharray: 5 5
+    class indexing,hop2,keywords,sentences planned
+```
 
-### Most Relevant Sentences Extraction
+A document passes six steps: the gateway, two hops and three stages. The gateway is the API's `/submit`: it stores the document and
+sends its id on hop 1. A message carries the document's id and nothing else, and each stage reads
+what it needs from the stores. The parts marked planned, with a dashed outline, have no code yet:
+today nothing receives from hop 1.
 
- * This is achieved applying typical [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization)
-   techniques like extractive summarization or [key phrase extraction](https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction).
-   
- * The sentence relevance is calculated taking into account two main criteria:
- 
-   * Similarity of the sentence with the title: using the algorithm provided from
-     [this paper](https://doi.org/10.1016/j.csl.2016.01.003).
-          
-   * Multiple combinations of the TF/IDF of each term of the sentence, using the keyword
-     extraction mechanism described above.
-   
- * The sum of two criteria will define the score. The best scored sentences are returned
-   aside with their respective paragraph numbers.
-      
+The diagram is drawn by hand from section 1 of
+[ADR-003](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-003-document-pipeline.md),
+which decides the pipeline. Once the pipeline's code exists, the diagram will be generated from it.
+[Architecture](Architecture) shows the modules and the systems they use.
+
+## Planned processing
+
+### File submission
+
+1. The user submits a file with a web service call. DSH accepts it for asynchronous processing and
+   returns a token.
+2. The user asks for the processing status with the token, as often as needed.
+3. When processing is done, the user retrieves the results with another call, in two parts:
+   - a list of keywords
+   - a list of the most relevant sentences
+
+   Retrieving the results is not available yet.
+
+### File indexing
+
+The indexing stage extracts the document's text and identifies its individual terms, inside the
+application. It stores the result, and updates the statistics of every term across all documents,
+which keyword scoring needs.
+
+### Keyword extraction
+
+1. Each term in the document's text is scored with a
+   [TF/IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) approach, through several implementations
+   of TF and IDF, as shown in [this paper](https://doi.org/10.2352/issn.2168-3204.2017.1.0.105).
+2. The terms with the best scores, obtained by a
+   [meta-algorithmic](https://www.amazon.com/Meta-Algorithmics-Patterns-Robust-Quality-Systems/dp/1118343360)
+   combination of all the TF/IDF combinations, are returned as the best ranked keywords.
+
+### Most relevant sentences
+
+1. Typical [automatic summarization](https://en.wikipedia.org/wiki/Automatic_summarization)
+   techniques are applied, such as extractive summarization or
+   [keyphrase extraction](https://en.wikipedia.org/wiki/Automatic_summarization#Keyphrase_extraction).
+2. A sentence's relevance takes two criteria into account:
+   - its similarity to the title, using the algorithm of
+     [this paper](https://doi.org/10.1016/j.csl.2016.01.003);
+   - combinations of the TF/IDF of each of its terms, using the keyword extraction above.
+3. The sum of the two criteria is the sentence's score. The best scored sentences are returned with
+   their paragraph numbers.
+
+## More
+
+- [Architecture](Architecture): the patterns DSH follows, and its components.
+- [Developers](Developers): where to start working on DSH.
+- [Workflow](Workflow): the statuses a document moves through.
+- [Code Based Site and Reports](Code-Based-Site-and-Reports): the Maven sites and their reports.

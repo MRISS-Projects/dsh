@@ -1,0 +1,58 @@
+name: Wiki Publish
+
+# docs/wiki is the wiki's source. Every push to DEVELOP that changes it mirrors
+# it into the wiki's own repository (see docs/wiki/README.md).
+on:
+  push:
+    branches:
+      - DEVELOP
+    paths:
+      - 'docs/wiki/**'
+      - '.github/scripts/publish-wiki.sh'
+      - '.github/scripts/publish-wiki.test.sh'
+      - '.github/workflows/wiki-publish.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: wiki-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish docs/wiki to the wiki
+    if: github.ref == 'refs/heads/DEVELOP'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Test the publisher
+        run: bash .github/scripts/publish-wiki.test.sh
+
+      - name: Clone the wiki
+        run: |
+          git clone --depth=1 \
+            "https://x-access-token:${WIKI_TOKEN}@github.com/${{ github.repository }}.wiki.git" \
+            "${RUNNER_TEMP}/wiki"
+        env:
+          WIKI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Mirror docs/wiki into the wiki
+        run: bash .github/scripts/publish-wiki.sh docs/wiki "${RUNNER_TEMP}/wiki"
+
+      - name: Commit and push
+        working-directory: ${{ runner.temp }}/wiki
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "The wiki already matches docs/wiki."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Publish docs/wiki from ${GITHUB_REPOSITORY}@${GITHUB_SHA}"
+          git push

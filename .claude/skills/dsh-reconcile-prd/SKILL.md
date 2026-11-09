@@ -67,7 +67,7 @@ it is the thing GitHub cannot tell the next reader.
 
     PATH="$HOME/apps/node-v24.21.0-win-x64:$PATH" \
       markdownlint 'specs/**/*.md' '.github/**/*.md' 'docs/**/*.md' \
-      --ignore 'docs/wiki/**' --config .markdownlint.json
+      --config .markdownlint.json
 
 Docs-only changes do not need `mvn -B install`. If the reconciliation touched anything outside
 markdown, it is no longer a reconciliation — it is a story, and it goes back to step 2.

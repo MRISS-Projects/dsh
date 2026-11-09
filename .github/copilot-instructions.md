@@ -67,14 +67,17 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 
 ## Wiki References
 
-The `/docs/wiki/` directory contains Markdown copies of the [DSH GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki) pages, automatically synced daily by `.github/workflows/wiki-sync.yml`. Use these files as `@workspace` context in Copilot prompts exactly like any spec file.
+The `/docs/wiki/` directory is the source of the [DSH GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki). `.github/workflows/wiki-publish.yml` publishes it to the wiki on every push to `DEVELOP` that changes it. Use these files as `@workspace` context in Copilot prompts exactly like any spec file.
 
 | Wiki Page | Location in repo |
 | ----------- | ----------------- |
-| Wiki index / Home | `/docs/wiki/Home.md` |
-| *(additional pages appear here after first sync)* | `/docs/wiki/` plus the page name |
+| Home: the overview and the pipeline | `/docs/wiki/Home.md` |
+| Architecture: the patterns and the components | `/docs/wiki/Architecture.md` |
+| Developers | `/docs/wiki/Developers.md` |
+| Workflow: the document statuses | `/docs/wiki/Workflow.md` |
+| Code Based Site and Reports | `/docs/wiki/Code-Based-Site-and-Reports.md` |
 
-> **Note:** Wiki files are auto-generated. Edit them only via the [GitHub Wiki](https://github.com/MRISS-Projects/dsh/wiki). Run **Actions → Wiki Sync → Run workflow** to pull the latest content immediately.
+> **Note:** Edit wiki pages in `/docs/wiki/`, by pull request. An edit made on the GitHub wiki is overwritten by the next publish. `/docs/wiki/README.md` has the rules for writing a page.
 
 ## Component Guidelines
 

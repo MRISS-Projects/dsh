@@ -29,7 +29,7 @@ Copilot will automatically use this context when suggesting code in this reposit
 ### Spec-First Development
 
 1. **Read the specification** – Before writing code, read the relevant spec in `specs/features/`
-2. **Check the wiki** – Browse `/docs/wiki/` for broader context, architecture decisions, and how-to guides that live in the [project wiki](https://github.com/MRISS-Projects/dsh/wiki)
+2. **Check the wiki** – Browse `/docs/wiki/`, the source of the [project wiki](https://github.com/MRISS-Projects/dsh/wiki), for the overview, the pipeline and the components; the decisions behind them are the ADRs in `specs/architecture/`
 3. **Check the OpenAPI spec** – For API work, review `specs/api/openapi/dsh-rest-api.yaml`
 4. **Use prompt templates** – Copy a template from `.github/copilot/prompts/` to Copilot Chat
 5. **Generate and review** – Generate code with Copilot and review against the spec
@@ -48,13 +48,13 @@ Generate a Spring Boot service for document analysis following the conventions i
 You can also attach wiki pages from `/docs/wiki/` for broader architectural context:
 
 ```text
-@workspace /docs/wiki/Architecture-Decisions.md /specs/features/indexing-workflow.md
-Implement the indexing service described in the wiki's architecture decisions,
+@workspace /docs/wiki/Architecture.md /specs/features/indexing-workflow.md
+Implement the indexing service described in the wiki's Architecture page,
 following the workflow spec and Java conventions in /.github/copilot/rules/java-conventions.md
 ```
 
-> Wiki pages in `/docs/wiki/` are synced automatically from the [project wiki](https://github.com/MRISS-Projects/dsh/wiki).
-> To get the latest pages immediately, run **Actions → Wiki Sync → Run workflow**.
+> Wiki pages are written in `/docs/wiki/` and published to the [project wiki](https://github.com/MRISS-Projects/dsh/wiki)
+> from there, so the copy here is always the current one.
 
 ### Inline Completion Tips
 
