@@ -1141,7 +1141,9 @@ are.
 8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
    the wiki's source moves into `docs/wiki/`, and task 4's reachability check needs that answer.
    That move would also retire `wiki-sync.yml`, so its disabling for inactivity (task 1's outcome)
-   waits on task 5 rather than getting an issue now.
+   waits on task 5 rather than getting an issue now. **Task 5 was done on 2026-11-09:** `#44` —
+   **closed** — PR #189. The answer task 4 needed: the wiki's source is `docs/wiki/`, Markdown in
+   the repository like any other, and `wiki-sync.yml` is retired.
 9. Tasks 9 and 10, the new behaviour in `dsh-data`. They come after `#120`, so that new code is
    written on the final Spring Boot line, and after `#132`.
 10. `#148`, last, before the 0.4.0 release candidate. It should learn from everything this wave
@@ -1236,8 +1238,18 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   `#120`. `#188` is `#137`'s Task 7 Step 7. `#137` writes newman's reports, but nothing publishes
   them, and how they reach the site is a story of its own. The three sit in this wave because
   none depends on ADR-003.
-- `#44` — Add architecture and components diagrams. It moves here from the product backlog, and
-  task 5 below is written as its body, so no new issue is opened for that task.
+- `#190` — README describes DSH today: correct the storage sentence, and point the overview at
+  the wiki.
+
+  Not an ADR-001 phase task. It came out of `#44` on 2026-11-09, which made the wiki's Home the
+  one overview and shrank the site index to a pointer, but whose scope did not name the README.
+  It was not folded into `#44`, which changed no README. It sits in this wave because the 0.4.0
+  release regenerates the root `README.md` from `src/site/markdown/README.md`, and would otherwise
+  ship "What 0.3.0 does today" with a store `DEVELOP` no longer uses. Wave 10 task 5 later
+  rewrites the README as the user guide.
+- `#44` — **closed** — PR #189. Restructure the wiki: overview, architecture and developer pages,
+  by the three patterns of Agile Architecture. It moves here from the product backlog, and task 5
+  below is written as its body, so no new issue is opened for that task.
 - `#144` — **closed** — PR #184. Swagger UI is not served: `/swagger-ui/` returns 404 and the
   webjar page fails to load.
 
@@ -1310,8 +1322,10 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    **Outcome.** The diagram is `specs/architecture/document-status-workflow.md`, generated and
    checked by `DocumentStatusDiagramTest`. The wiki's Workflow page links to it, and the sync PR,
    #154, brought that page into `docs/wiki/`. `wiki-sync.yml` had been disabled by GitHub for
-   inactivity since 2026-07-21. It was re-enabled on 2026-10-06 to run that sync, and it will be
-   disabled again after 60 days without activity on `master`. No issue is open for that yet.
+   inactivity since 2026-07-21. It was re-enabled on 2026-10-06 to run that sync, and would have
+   been disabled again after 60 days without activity on `master`. It no longer matters: `#44`
+   moved the wiki's source into `docs/wiki/` on 2026-11-09, deleted `wiki-sync.yml` on `DEVELOP`,
+   and disabled it on GitHub, where `master`'s copy stays until the next release removes it.
 2. **Done on 2026-10-13: ADR-003 — the document pipeline.** `#160` — **closed** — PR #161.
    ADR-003: decide the document pipeline, and revise ADR-001 to match. Its spec,
    `specs/stories/160-adr-003-document-pipeline.md`, holds the evidence. The plan as written is
@@ -1413,13 +1427,22 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    like `check-spec-references`, fails when a Markdown file under `docs/`, `specs/` or `.github/`
    cannot be reached from `CLAUDE.md` by links. The same task deletes the empty scaffolding READMEs
    (`specs/testing/*`, `specs/requirements/*`, `docs/user-guides`).
-5. **Wiki restructure** (`#44`). Home carries the overview and a Mermaid diagram of the pipeline's
+5. **Done on 2026-11-09: wiki restructure.** `#44` — **closed** — PR #189. Its spec,
+   `specs/stories/44-restructure-wiki.md`, holds the evidence. The plan as written is kept below.
+
+   Home carries the overview and a Mermaid diagram of the pipeline's
    stages, marking stages not yet built as planned. It adds an Architecture page, and a Developers
    page that points at `CLAUDE.md` rather than restating it. `src/site/markdown/index.md` shrinks to
    one paragraph and links, so the overview exists once. User-facing and overview pages use generic
    terms (indexer, NoSQL store, queue); ADRs and developer pages keep the product names. The task
    also decides whether the wiki's source moves into `docs/wiki/`, published to the wiki rather
    than synced from it, so its pages get review and markdownlint.
+
+   **Outcome.** The source moved. The wiki is written in `docs/wiki/`, linted with the rest of the
+   repository, and published by `wiki-publish.yml` on every push to `DEVELOP` that changes it,
+   through a tested script, `.github/scripts/publish-wiki.sh`. The first publish, from the merge,
+   wrote all five pages. `wiki-sync.yml` is deleted, and editing on the wiki is restricted to
+   people with push access, since the next publish would overwrite an edit made there.
 6. **Wiki page on Spring Integration**, with a diagram of the flow. It follows task 2. Its
    diagrams, and task 5's, draw from ADR-003 sections 1 and 4, and the page can link to the
    ADR's sequence diagram.
