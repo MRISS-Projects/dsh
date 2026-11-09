@@ -109,7 +109,10 @@ overviews that disagree
 - **D4. Mirror semantics.** Every top-level `*.md` in `docs/wiki/` except `README.md` is a page.
   A top-level `*.md` in the wiki with no source is deleted. Anything else in the wiki, `.git` and
   any file that is not Markdown, is left alone; there are none today. A source with no page at
-  all is an error, because mirroring it would delete every page.
+  all is an error, because mirroring it would delete every page. So is a wiki directory with no
+  `.git`, or one that is the source itself: the script is also run by hand, for dry runs, and a
+  mistyped argument must not delete the Markdown of the directory it names (added by the local
+  review).
 - **D5. Links.** Between wiki pages, the wiki's form: `[Architecture](Architecture)`. To a
   repository file, absolute, to `https://github.com/MRISS-Projects/dsh/blob/DEVELOP/...`.
 - **D6. What counts as built (AC001, AC003).** A stage or component is built when code on
@@ -185,7 +188,9 @@ flowchart LR
 - **Request/Response**: the REST API, `/submit` and `/status/{token}`. The client asks and
   waits, polls the status, and retries on its own.
 - **Event Driven**: the pipeline. Each stage reacts to a message carrying only the document's id,
-  and its result moves the document on. Redelivery after a failure is the system's job.
+  and its result moves the document on. Delivery is at least once, and a message is delivered
+  again when a store cannot be reached, so a stage is idempotent; a stage's own failure is
+  recorded and final (ADR-003 §1, "Failures").
 - **Batch**: DSH has no Batch part today, and the PRD plans none (`grep -n -i batch
   specs/product/PRD.md` returns nothing on 2026-11-08).
 
@@ -205,9 +210,10 @@ flowchart TB
     end
     rest -.-> keywords
     rest -.-> sentences
+    data -.-> files[("File store<br/>(planned)")]
     rest -.-> provider["dsh-gcp<br/>cloud adapters<br/>(planned)"]
     provider -.-> nosql[("NoSQL store<br/>(planned)")]
-    provider -.-> files[("File store<br/>(planned)")]
+    provider -.-> files
     classDef planned stroke-dasharray: 5 5
     class indexer,keywords,sentences,provider,nosql,files planned
 ```
@@ -222,8 +228,11 @@ drawing edges from the stage modules, which would contradict ADR-003.
 
 No edge runs from `dsh-gcp` to the queue. Which adapter the application uses, today's or the cloud
 provider's in `dsh-gcp`, is selected inside the application (ADR-003 section 3), so such an edge
-would draw one queue with two ways in. The NoSQL store and the file store are drawn from
-`dsh-gcp`, because nothing reaches them except through that planned module.
+would draw one queue with two ways in. The NoSQL store is drawn from `dsh-gcp`, because nothing
+reaches it except through that planned module. The file store is drawn from both: ADR-003 makes
+`dsh.file-store=local`, `LocalFileStorageService` in `dsh-data`, the default, and Cloud Storage
+in `dsh-gcp` the `gcp` profile's (ADR-003 §3). The `data` edge was added by the local review,
+approved by the owner on 2026-11-09; the first draft drew the file store from `dsh-gcp` alone.
 
 `dsh-test-dataset` and `dsh-coverage-report` are left out: they hold no production code. The page
 links ADR-001, ADR-003 and ADR-004 for the decisions, and `system-design.md` for today's detail.
@@ -321,8 +330,10 @@ test. A workflow on `DEVELOP` runs it and pushes. The pages are Markdown with Me
 **Interfaces:**
 
 - Produces: `bash .github/scripts/publish-wiki.sh SOURCE_DIR WIKI_DIR`. Exit 0 on success,
-  printing one `Published: <file>` or `Removed: <file>` line per change; exit 1 when a directory
-  is missing or the source holds no page; exit 2 on a wrong number of arguments.
+  printing one `Removed: <file>` line per page removed and one `Published: <file>` line per page
+  copied, every page on every run, changed or not; exit 1 when a directory is missing, when both
+  arguments name one directory, when the wiki directory holds no `.git`, or when the source holds
+  no page; exit 2 on a wrong number of arguments.
 - Produces: `bash .github/scripts/publish-wiki.test.sh`, exit 0 when every case passes.
 
 - [ ] **Step 1: Write the test.** Create `.github/scripts/publish-wiki.test.sh`:
