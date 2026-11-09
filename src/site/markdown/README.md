@@ -8,42 +8,22 @@ ${project.build.version}
 
 ## Introduction
 
-Welcome to **DSH - Document Smart Highlights**. Document Smart Highlights aims to provide web
-services that accept PDF and HTML files and return a list of keywords and the most relevant
-sentences, extracted with NLP techniques; the sentences through automatic document summarization.
-More details at the [wiki](https://github.com/MRISS-Projects/dsh/wiki).
+Welcome to **DSH - Document Smart Highlights**. What DSH is, what it is planned to do and how it
+is built are described once, on the [wiki's Home page](https://github.com/MRISS-Projects/dsh/wiki).
+The development documentation is at <https://mriss-projects.github.io/dsh-docs/>.
 
-**What 0.3.0 does today.** It accepts a PDF document, stores it in a NoSQL store, puts its id on a
-queue for indexing, and reports the document's processing status. Nothing consumes that queue
-yet, so 0.3.0 does not index documents and does not extract keywords or sentences.
+**What this version does.** It accepts a PDF document, keeps it in a document store, in memory by
+default, puts the document's id on a queue for indexing, and reports the document's processing
+status. Nothing takes the id off that queue yet, so it does not index documents and does not
+extract keywords or sentences.
 
 This project is distributed as source code; no binary distribution is provided yet. Building it
 produces the REST API as an executable Spring Boot jar, which runs on its own, with no separate
 server to install.
 
-The goals for this project are basically two:
-
-1. Implement an NLP based system to extract relevant information from PDF files in a potentially
-   scalable fashion, using a NoSQL store and queues. This infrastructure stores requests and chains
-   a workflow of operations (workers) that extract keywords and relevant sentences, all provided as
-   a REST API.
-
-2. Learn concepts of NLP associated with scaleable cloud based REST API building. The
-technology used is java based, so as another goal here we can mention the build
-learning process using [Spring Framework](http://spring.io/) in order to build the
-API and infrastructure.
-
-As part of the goals is learning about technologies, comments and contributions are
-welcome. However, this is not a final product, application or concept. Just a
-point for experimentation and proofing.
-
-If anyone out there is interested in contribute or apply this project on a more
-product-oriented environment, please get in touch through the email:
-<marcelo.riss@gmail.com>.
-
-Wiki: <https://github.com/MRISS-Projects/dsh/wiki>
-
-Project Development Documentation: <https://mriss-projects.github.io/dsh-docs/>
+DSH is an experiment: a place to learn NLP, and how to build a scalable REST API with the
+[Spring Framework](http://spring.io/). It is not a finished product. Comments and contributions
+are welcome. To use it in a more product-oriented setting, write to <marcelo.riss@gmail.com>.
 
 ## Package/Folders Description
 
@@ -361,7 +341,7 @@ The REST API has the two operations of the document resource:
   returns a token. If the submission fails, the token is `ERROR` and the message says why.
 * **status**, `GET /v1/dsh/document/status/{token}`: returns the processing status of the document
   the token was issued for. Right after a submit it can show `QUEUED_FOR_INDEXING` for a moment;
-  in 0.3.0 a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and its id queued for
+  a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and its id queued for
   indexing. It shows `QUEUED_FOR_INDEXING_ERROR` if the id could not be queued, and an unknown
   token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing worker exists.
 
