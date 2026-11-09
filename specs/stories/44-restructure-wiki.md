@@ -178,7 +178,7 @@ flowchart LR
     hop1 -.-> indexing["Indexing<br/>(planned)"]
     indexing -.-> hop2[("Hop 2<br/>queue<br/>(planned)")]
     hop2 -.-> keywords["Keywords<br/>(planned)"]
-    hop2 -.-> sentences["Sentences<br/>(planned)"]
+    keywords -.-> sentences["Sentences<br/>(planned)"]
     classDef planned stroke-dasharray: 5 5
     class indexing,hop2,keywords,sentences planned
 ```
@@ -732,7 +732,7 @@ flowchart LR
     hop1 -.-> indexing["Indexing<br/>(planned)"]
     indexing -.-> hop2[("Hop 2<br/>queue<br/>(planned)")]
     hop2 -.-> keywords["Keywords<br/>(planned)"]
-    hop2 -.-> sentences["Sentences<br/>(planned)"]
+    keywords -.-> sentences["Sentences<br/>(planned)"]
     classDef planned stroke-dasharray: 5 5
     class indexing,hop2,keywords,sentences planned
 ```
@@ -1144,6 +1144,18 @@ After the fixes: lint `exit=0`; the AC004 and AC006 greps return nothing; `13 ca
 failure(s)`; `Checked 46 referenced path(s); 0 missing.`; the dry run against a fresh clone of
 the wiki gives the same four lines as before, `publish exit=0`; gate 1, `maven exit=0`, nine
 modules, 71 and 43 tests, no failure, the coverage checks met in both.
+
+### PR review round 1 (step 7), 2026-11-09
+
+PR `#189`. Copilot reviewed `0a294adfe` automatically at the repository's default, Balanced, and
+opened one thread. CI was green.
+
+| Thread | Finding | Verdict | Outcome |
+|---|---|---|---|
+| `docs/wiki/Home.md:24` | The pipeline drew sentences from hop 2, in parallel with keywords. ADR-003 §1 starts sentences from `KEYWORDS_PROCESSED_SUCCESS` (status table, rows 10 and 11) | Valid: line 113 and the run-time sequence diagram give the same order, and no hop lies between the two | `keywords -.-> sentences` on Home and in §3.3 and §6. Architecture's two edges from `dsh-rest-api` are calls, not order, and stay |
+
+AC001's check confirmed the six steps and their order of first appearance, not the edges between
+them, so neither it nor the local review caught this.
 
 Still open, and not part of the build:
 

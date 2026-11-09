@@ -21,7 +21,7 @@ flowchart LR
     hop1 -.-> indexing["Indexing<br/>(planned)"]
     indexing -.-> hop2[("Hop 2<br/>queue<br/>(planned)")]
     hop2 -.-> keywords["Keywords<br/>(planned)"]
-    hop2 -.-> sentences["Sentences<br/>(planned)"]
+    keywords -.-> sentences["Sentences<br/>(planned)"]
     classDef planned stroke-dasharray: 5 5
     class indexing,hop2,keywords,sentences planned
 ```
