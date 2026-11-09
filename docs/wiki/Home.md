@@ -26,7 +26,7 @@ flowchart LR
     class indexing,hop2,keywords,sentences planned
 ```
 
-A document passes six stages. The gateway is the API's `/submit`: it stores the document and
+A document passes six steps: the gateway, two hops and three stages. The gateway is the API's `/submit`: it stores the document and
 sends its id on hop 1. A message carries the document's id and nothing else, and each stage reads
 what it needs from the stores. The parts marked planned, with a dashed outline, have no code yet:
 today nothing receives from hop 1.
