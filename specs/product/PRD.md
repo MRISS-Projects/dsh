@@ -1137,6 +1137,7 @@ are.
    to Wave 10 task 7 on the same day (§4, "The 2026-11-07 re-plan"), and is `#183` — open.
 7. `#144`, then `#137`. Both are about the REST API, and both waited for the Spring Boot line,
    which `#120` settled at 4.1.1. **`#144` was done on 2026-11-07:** `#144` — **closed** — PR #184.
+   **`#137` was done on 2026-11-08:** `#137` — **closed** — PR #187. Step 7 is complete.
 8. Task 5 (`#44`), task 6, then task 4. Tasks 5 and 6 draw from ADR-003. Task 5 decides whether
    the wiki's source moves into `docs/wiki/`, and task 4's reachability check needs that answer.
    That move would also retire `wiki-sync.yml`, so its disabling for inactivity (task 1's outcome)
@@ -1212,11 +1213,11 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   site reports that parent-poms `3.9.0` already ships, so it closed as met instead of being
   repurposed. The analysers it did not cover became this new issue. Their configuration belongs
   in parent-poms, which is why it waits for 0.3.0.
-- `#137` — Run the Postman collections against a lifecycle-managed server.
+- `#137` — **closed** — PR #187. Run the Postman collections against a lifecycle-managed server.
 - `#140` — **closed** — PR #176. Give dsh-rest-api's tests a `test` profile file, so that it stops
   replacing the main `application.properties`.
 
-  Neither is an ADR-001 phase task. Both came out of `#46` on 2026-09-28. `#137` is the open
+  Neither is an ADR-001 phase task. Both came out of `#46` on 2026-09-28. `#137` took up the
   question `#46`'s spec deferred rather than answered: whether newman joins the Maven lifecycle,
   and what becomes of `api-testing.yml`. It is layer 4 of the test layers in `testing-patterns.md`.
   `#140` came from `#46`'s code review, as "Remove the unused `spring.data.mongodb.*` settings
