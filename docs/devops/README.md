@@ -53,7 +53,7 @@ flowchart LR
     end
     subgraph docs["Documentation - automated"]
         DS["documentation-sync.yml<br/>OpenAPI to HTML + specs TOC"]
-        WS["wiki-sync.yml<br/>daily 02:00 UTC to docs/wiki"]
+        WP["wiki-publish.yml<br/>docs/wiki to the wiki, on push to DEVELOP"]
     end
     subgraph rel["Release - manual dispatch"]
         ST["stage.yml"] --> PP1[["parent-poms<br/>project-stage.yml"]]
@@ -71,9 +71,9 @@ table below) and matches it; no trigger shown here is invented.
 | Workflow | Trigger(s) | What it gates / does |
 | --- | --- | --- |
 | `ci.yml` | `pull_request` (any branch); `push` to `DEVELOP`, `staging-*-RC`, `*.x`; `workflow_dispatch` | Builds and tests all modules (`mvn -B install`). That single command *is* the coverage gate: `jacoco:check` enforces a 95% LINE and BRANCH minimum per module, and `enforce-coverage-data-exists` fails a module that produced no coverage data at all. Both are bound to `verify` and inherited from `parent-poms` rather than declared here. This is the primary correctness gate. |
-| `spec-validation.yml` | `push` and `pull_request`, both scoped to paths `specs/**`, `docs/**`, `.github/copilot-instructions.md`, `.github/copilot/**`, `.github/roles.md`, `.github/scripts/**`, `.github/skills/**`, `.github/workflows/spec-validation.yml`, `.markdownlint.json`, `CLAUDE.md`, `.claude/**` | Lints the OpenAPI spec with Redocly, lints Markdown under `specs/`, `.github/`, `docs/` (excluding `docs/wiki/**`), `CLAUDE.md` and `.claude/` with markdownlint, and verifies that every path referenced from `copilot-instructions.md` resolves. That last check is enforcing: it fails the job on an unresolved reference, on a source file it cannot read, and when it extracts no references at all. Its logic is covered by `.github/scripts/check-spec-references.test.sh`, which the same job runs first. |
+| `spec-validation.yml` | `push` and `pull_request`, both scoped to paths `specs/**`, `docs/**`, `.github/copilot-instructions.md`, `.github/copilot/**`, `.github/roles.md`, `.github/scripts/**`, `.github/skills/**`, `.github/workflows/spec-validation.yml`, `.markdownlint.json`, `CLAUDE.md`, `.claude/**` | Lints the OpenAPI spec with Redocly, lints Markdown under `specs/`, `.github/`, `docs/`, `CLAUDE.md` and `.claude/` with markdownlint, and verifies that every path referenced from `copilot-instructions.md` resolves. That last check is enforcing: it fails the job on an unresolved reference, on a source file it cannot read, and when it extracts no references at all. Its logic is covered by `.github/scripts/check-spec-references.test.sh`, which the same job runs first. It also runs `.github/scripts/publish-wiki.test.sh`, the wiki publisher's tests. |
 | `documentation-sync.yml` | `push` to `DEVELOP`, scoped to paths `specs/api/openapi/**`, `specs/architecture/**`, `specs/features/**`, `docs/wiki/**`; `workflow_dispatch` | Two jobs: regenerates HTML API docs from the OpenAPI spec into `docs/api/`, and refreshes the table of contents in `specs/features/*.md` and `specs/architecture/*.md`. Both auto-commit with `[skip ci]`. |
-| `wiki-sync.yml` | `schedule` (`0 2 * * *`, daily 02:00 UTC); `workflow_dispatch` | Because the cron fires on the default branch (`master`), a `redispatch` job re-triggers the workflow on `DEVELOP` when it isn't already running there; the `sync-wiki` job then copies the GitHub wiki's Markdown pages into `docs/wiki/` via a pull request. |
+| `wiki-publish.yml` | `push` to `DEVELOP`, scoped to paths `docs/wiki/**`, `.github/scripts/publish-wiki.sh`, `.github/scripts/publish-wiki.test.sh`, `.github/workflows/wiki-publish.yml`; `workflow_dispatch` | Publishes `docs/wiki/`, the wiki's source, to the GitHub wiki. It tests `.github/scripts/publish-wiki.sh`, clones the wiki, runs the script to mirror the directory into it, and pushes when a page changed. See `docs/wiki/README.md`. |
 | `stage.yml` | `workflow_dispatch` only | Delegates to the reusable `project-stage.yml` workflow in `MRISS-Projects/parent-poms` to cut a `staging-<version>-SNAPSHOT-RC` branch from `DEVELOP`. |
 | `staging.yml` | `workflow_dispatch` only | Delegates to `project-staging.yml` in `parent-poms` to stabilise/build an existing RC branch. |
 | `deploy.yml` | `workflow_dispatch` only | Deploys the snapshot artifacts and site of the branch it is dispatched on, normally `DEVELOP`, to `snapshots/products/dsh/`. Delegates to the same `project-staging.yml`, with `release_type: snapshots` (parent-poms#104): the build number has no `RC` prefix, and the generated `README.md` is committed back to the branch. A placeholder of this file sits on `master`, because GitHub dispatches a workflow only if its file exists on the default branch; that placeholder refuses to run (`#127`). |
@@ -274,7 +274,7 @@ Without this step an unusable credential surfaces much later as a Maven `401` on
 or, when the runner's restored `~/.m2` still holds a usable parent, as a `WARNING` on an otherwise
 green build compiling against a frozen one.
 
-The two remaining workflows hold neither secret, and that is not an oversight: `wiki-sync.yml` uses
+The two remaining workflows hold neither secret, and that is not an oversight: `wiki-publish.yml` uses
 the built-in `secrets.GITHUB_TOKEN`, and `spec-validation.yml` touches no Maven build and no package
 registry.
 

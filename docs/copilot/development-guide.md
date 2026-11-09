@@ -48,13 +48,13 @@ Generate a Spring Boot service for document analysis following the conventions i
 You can also attach wiki pages from `/docs/wiki/` for broader architectural context:
 
 ```text
-@workspace /docs/wiki/Architecture-Decisions.md /specs/features/indexing-workflow.md
-Implement the indexing service described in the wiki's architecture decisions,
+@workspace /docs/wiki/Architecture.md /specs/features/indexing-workflow.md
+Implement the indexing service described in the wiki's Architecture page,
 following the workflow spec and Java conventions in /.github/copilot/rules/java-conventions.md
 ```
 
-> Wiki pages in `/docs/wiki/` are synced automatically from the [project wiki](https://github.com/MRISS-Projects/dsh/wiki).
-> To get the latest pages immediately, run **Actions → Wiki Sync → Run workflow**.
+> Wiki pages are written in `/docs/wiki/` and published to the [project wiki](https://github.com/MRISS-Projects/dsh/wiki)
+> from there, so the copy here is always the current one.
 
 ### Inline Completion Tips
 
