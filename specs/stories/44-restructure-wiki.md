@@ -96,8 +96,8 @@ overviews that disagree
     one).
 
   The cost: an edit made on github.com is overwritten by the next publish. The owner turns on the
-  wiki setting "Restrict editing to collaborators only" (§3.2), and `docs/wiki/README.md` says
-  so.
+  wiki setting "Restrict editing to users in teams with push access only" (§3.2), and
+  `docs/wiki/README.md` says so.
 - **D2. The wiki publishes from `DEVELOP`.** It describes what is built on `DEVELOP`, as AC001
   asks, and is updated by every merge that touches it. Publishing from `master` would need the
   release workflows, which belong to parent-poms.
@@ -158,8 +158,10 @@ cannot race. It runs the test, clones the wiki with `GITHUB_TOKEN`, runs the scr
 2. The merge's push runs `wiki-publish.yml`. Claude reads the run. A `403` on the push means the
    token cannot write to the wiki; one follow-up commit then switches the clone to
    `secrets.DEPLOY_TOKEN`, which other workflows here already use to push, and the run is repeated.
-3. The owner turns on "Restrict editing to collaborators only" under Settings → Features → Wikis.
-   Claude cannot change that setting.
+3. The owner turns on "Restrict editing to users in teams with push access only" under Settings →
+   General → Features → Wikis. That is the label in a repository owned by an organization; one
+   owned by a personal account says "Restrict editing to collaborators only". Claude cannot change
+   that setting.
 
 ### 3.3 The pages
 
@@ -1157,11 +1159,16 @@ opened one thread. CI was green.
 AC001's check confirmed the six steps and their order of first appearance, not the edges between
 them, so neither it nor the local review caught this.
 
-Still open, and not part of the build:
+### After the push and the merge, 2026-11-09
 
-- **Diagrams**: rendered on github.com in the branch's blob view, after the push (step 6).
-- **AC007, at the merge**: §3.2's three steps, then the wiki shows five pages and its Home matches
-  `docs/wiki/Home.md`. Before merging, check that no `wiki-sync/docs-wiki` pull request has
-  appeared: merged after this story, it would bring the old pages back. After the publish, click
-  each link on the wiki's Home: no page of this wiki used the wiki's link form before.
-- **The follow-up issue (D9)**: drafted, and opened only once the owner approves its text.
+Recorded by the reconciliation of step 8, since the story's branch was merged.
+
+| Check | Result |
+|---|---|
+| Diagrams | Both render in the branch's blob view on github.com, checked by the owner: the browser automation's screenshots timed out twice |
+| `wiki-sync.yml` | No `wiki-sync/docs-wiki` pull request was open. `gh workflow disable wiki-sync.yml`: GitHub lists it as `disabled_manually` |
+| The first publish | Run `42703250374`, on the merge commit `821d5d8`: `13 case(s), 0 failure(s)`, five `Published:` lines, and the wiki's `master` moved `a7f5ae9..f5001fb`. `GITHUB_TOKEN` can push to the wiki, so the `DEPLOY_TOKEN` fallback of §3.2 was not needed |
+| AC007 | A fresh clone of the wiki holds exactly the five pages, each byte for byte `docs/wiki/` on `DEVELOP` at `821d5d8` |
+| Links | The rendered Home links `/wiki/Architecture`, `/wiki/Developers`, `/wiki/Workflow` and `/wiki/Code-Based-Site-and-Reports`, and each returns 200 |
+| Wiki editing | Restricted by the owner. The setting's label is the organization's, "Restrict editing to users in teams with push access only"; §3.2 corrected |
+| The follow-up issue (D9) | Opened on the owner's approval: `#190` |
