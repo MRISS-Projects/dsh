@@ -23,9 +23,10 @@ Actors react to events, and may produce new ones.
 
 In DSH this is the pipeline that processes a document after `/submit`, drawn on [Home](Home). Each
 stage reacts to a message on a queue that carries the document's id and nothing else, and its
-result moves the document to its next status. A message whose stage fails will be delivered again,
-so a stage must be safe to run twice. Only the first step exists today: `/submit` puts the id on
-the first queue, and nothing receives it yet.
+result moves the document to its next status. A message is delivered at least once, and delivered
+again when a store cannot be reached, so a stage must be safe to run twice. A stage's own failure
+is recorded, and is final. Only the first step exists today: `/submit` puts the id on the first
+queue, and nothing receives it yet.
 
 ## Batch
 
@@ -50,9 +51,10 @@ flowchart TB
     end
     rest -.-> keywords
     rest -.-> sentences
+    data -.-> files[("File store<br/>(planned)")]
     rest -.-> provider["dsh-gcp<br/>cloud adapters<br/>(planned)"]
     provider -.-> nosql[("NoSQL store<br/>(planned)")]
-    provider -.-> files[("File store<br/>(planned)")]
+    provider -.-> files
     classDef planned stroke-dasharray: 5 5
     class indexer,keywords,sentences,provider,nosql,files planned
 ```
@@ -66,10 +68,10 @@ flowchart TB
   `dsh-top-sentences-extractor`. The modules exist and hold no code yet. A stage never touches the
   queue: the pipeline in `dsh-rest-api` receives a document's id from a hop, calls the stage, and
   sends the id on the next hop, which is why every edge to and from the queue is
-  `dsh-rest-api`'s. `dsh-gcp` will hold the adapters to a cloud provider's NoSQL store and file
-  store, and to its queue: the application will then reach the same queue through that adapter
-  instead of today's. The NoSQL store will hold each document's record, and the file store the
-  document and whatever grows with it.
+  `dsh-rest-api`'s. The file store will hold the document and whatever grows with it: by default
+  a local directory, through an implementation in `dsh-data`. `dsh-gcp` will hold the adapters to
+  a cloud provider's NoSQL store, file store and queue: with them, the application reaches the
+  hops through that adapter, and the NoSQL store holds each document's record.
 - The modules that hold only test fixtures or build reports are not drawn.
 
 ## The decisions behind it
