@@ -1122,9 +1122,34 @@ Run on 2026-11-09, on `issue-44-restructure-wiki`.
 | Gate 1 | `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`, `BUILD SUCCESS`, nine modules, 71 tests in `dsh-data` and 43 in `dsh-rest-api`, no failure, the coverage checks met in both |
 | Gate 3 | Not applicable: no code touches an external system or an API entry point |
 
+### Local review round (step 5), 2026-11-09
+
+A reviewer read `6cc2f3fb0..38d5bf580` and found nothing critical. The owner approved every
+fix as proposed. §6's code blocks are the build's starting point; the files carry the fixes
+below.
+
+| # | Finding | Outcome |
+|---|---|---|
+| 1 | `Architecture.md` said a failed stage's message is delivered again. ADR-003 §1, "Failures": a stage's own failure is final, a store's is retried | Fixed, `dc004e9a7`; §3.3 too |
+| 2 | The components diagram drew the file store from `dsh-gcp` only. ADR-003 §3 makes `dsh.file-store=local`, in `dsh-data`, the default; and `dsh-gcp` reaches the hops, not today's queue | Fixed, `dc004e9a7`: a planned `data` edge to the file store, and the prose. §3.3 too |
+| 3 | `Home.md` called the gateway and the hops stages | Fixed, `4be19708a`: six steps, three of them stages |
+| 4 | Run by hand with a mistyped argument, the script deleted the Markdown of the directory it named | Fixed test first, `2146fb736`: two new cases failed (`13 case(s), 2 failure(s)`, `README.md` deleted in both), then passed. The script refuses a wiki directory with no `.git`, or one that is the source. D4 too |
+| 5 | On a case-insensitive filesystem a page differing only in case keeps the wiki's case | A note in the script's header, `2146fb736` |
+| 6 | Task 1's interface said one `Published:` line per change; every page is printed on every run | The spec sentence corrected |
+| 7 | The repository checkout persisted a write token the job does not need | Fixed, `9b007ec5a`: `persist-credentials: false` |
+| 8 | `development-guide.md` said architecture decisions live in the wiki | Fixed, `0dc9b959b` |
+| 9 | "`dsh-rest-api` is the one application", while `dsh-data` has a `DshDataApplication` class | Left: it is true of what is deployed |
+
+After the fixes: lint `exit=0`; the AC004 and AC006 greps return nothing; `13 case(s), 0
+failure(s)`; `Checked 46 referenced path(s); 0 missing.`; the dry run against a fresh clone of
+the wiki gives the same four lines as before, `publish exit=0`; gate 1, `maven exit=0`, nine
+modules, 71 and 43 tests, no failure, the coverage checks met in both.
+
 Still open, and not part of the build:
 
 - **Diagrams**: rendered on github.com in the branch's blob view, after the push (step 6).
 - **AC007, at the merge**: §3.2's three steps, then the wiki shows five pages and its Home matches
-  `docs/wiki/Home.md`.
+  `docs/wiki/Home.md`. Before merging, check that no `wiki-sync/docs-wiki` pull request has
+  appeared: merged after this story, it would bring the old pages back. After the publish, click
+  each link on the wiki's Home: no page of this wiki used the wiki's link form before.
 - **The follow-up issue (D9)**: drafted, and opened only once the owner approves its text.
