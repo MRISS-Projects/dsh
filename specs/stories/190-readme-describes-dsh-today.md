@@ -58,7 +58,8 @@ second overview that drifts from the wiki's Home
 
 ### 3.1 Decisions
 
-All three were made with the owner on 2026-11-09.
+D1 to D3 were made with the owner on 2026-11-09. D4 and D5 came from the local review (step 5)
+and were approved by the owner on 2026-11-10.
 
 - **D1. The Introduction keeps what belongs to a release, and points at Home for the rest.** Parts
   (a) and (d) go: Home is the overview, and goal 1 is the overview restated. A one-sentence pointer
@@ -68,13 +69,24 @@ All three were made with the owner on 2026-11-09.
   contact or the project's experimental status. Moving (d) and (e) into Home was rejected: it would
   edit the wiki and reopen what `#44` settled as Home's content.
 - **D2. The prose names no version.** Line 16 becomes "**What this version does.**", line 18 says
-  "it" in place of "0.3.0", and line 364 drops "in 0.3.0". The Version section right above already shows the version, from
-  `${project.build.version}`. Filtering the version into the sentences was rejected, because
+  "it" in place of "0.3.0", and line 364 drops "in 0.3.0". The Version section right above
+  already shows the version, from `${project.build.version}`. Filtering the version into the sentences was rejected, because
   `DEVELOP`'s site build would read "0.4.0-SNAPSHOT"; writing "0.4.0" by hand was rejected, because
   it claims behaviour for a release that does not exist yet, and Wave 2 is on the same milestone.
   When later work changes the behaviour, the story that changes it updates this text, as today.
 - **D3. The storage wording follows Home.** "keeps it in a document store, in memory by default",
   so the README and the wiki say the same thing in the same words.
+- **D4. The pointer names the wiki, and Home as where it starts.** "What DSH is, what it is planned
+  to do and how it is built" spans two pages: Home holds the overview and the pipeline, and
+  Architecture holds the modules and the components. So the sentence says they are described "in
+  the project's wiki, starting from its Home page", and keeps its one link, to the wiki's root,
+  which GitHub serves as Home.
+- **D5. The status bullet says "indexing stage", not "indexing worker".** Its last sentence, "No
+  later status is reached until the indexing worker exists", uses the wording `#177` and ADR-003
+  retired: the workers became stages of the pipeline, and the module list of the same README
+  calls `dsh-doc-indexer` the library that "will hold the indexing stage". The bullet is the one
+  this story already edits, and leaving stale wording out of the 0.4.0 README is the story's
+  point.
 
 ### 3.2 The text
 
@@ -83,8 +95,9 @@ Lines 11 to 46 of `src/site/markdown/README.md`, everything between `## Introduc
 
 ```markdown
 Welcome to **DSH - Document Smart Highlights**. What DSH is, what it is planned to do and how it
-is built are described once, on the [wiki's Home page](https://github.com/MRISS-Projects/dsh/wiki).
-The development documentation is at <https://mriss-projects.github.io/dsh-docs/>.
+is built are described once, in the [project's wiki](https://github.com/MRISS-Projects/dsh/wiki),
+starting from its Home page. The development documentation is at
+<https://mriss-projects.github.io/dsh-docs/>.
 
 **What this version does.** It accepts a PDF document, keeps it in a document store, in memory by
 default, puts the document's id on a queue for indexing, and reports the document's processing
@@ -102,18 +115,18 @@ are welcome. To use it in a more product-oriented setting, write to <marcelo.ris
 
 followed by one blank line before `## Package/Folders Description`.
 
-Under `### Calling the API`, the status bullet's second and third lines change from
+Under `### Calling the API`, the status bullet's third line (D2) and last line (D5) change from
 
 ```markdown
-  the token was issued for. Right after a submit it can show `QUEUED_FOR_INDEXING` for a moment;
   in 0.3.0 a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and its id queued for
+  token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing worker exists.
 ```
 
 to
 
 ```markdown
-  the token was issued for. Right after a submit it can show `QUEUED_FOR_INDEXING` for a moment;
   a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and its id queued for
+  token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing stage exists.
 ```
 
 Nothing else in the file changes.
@@ -133,7 +146,7 @@ Nothing else in the file changes.
 |---|---|
 | AC001 | `grep -n -E 'NoSQL\|0\.3\.0' src/site/markdown/README.md` returns nothing |
 | AC002 | The Introduction is the four paragraphs of §3.2, byte for byte; the first links `https://github.com/MRISS-Projects/dsh/wiki` |
-| AC003 | The status bullet under Calling the API reads as §3.2 gives it |
+| AC003 | The status bullet under Calling the API reads as §3.2 gives it; `grep -n 'indexing worker' src/site/markdown/README.md` returns nothing |
 | AC004 | `git diff --stat DEVELOP` lists only `src/site/markdown/README.md` and this spec; the root `README.md` is unchanged |
 | AC005 | markdownlint over `src/site/markdown/README.md` and over the `CLAUDE.md` scope exits 0 |
 | Gate 1 | `mvn -B clean install` exits 0. Gate 3 does not apply: no code changes |
@@ -142,7 +155,7 @@ Nothing else in the file changes.
 
 | File | Change |
 |---|---|
-| `src/site/markdown/README.md` | The Introduction (§3.2, D1 to D3), and the status bullet (D2) |
+| `src/site/markdown/README.md` | The Introduction (§3.2, D1 to D4), and the status bullet (D2, D5) |
 | `specs/stories/190-readme-describes-dsh-today.md` | This spec, and its verification results |
 
 ## 6. Implementation plan
@@ -225,13 +238,49 @@ git commit -m "docs(#190): describe the in-memory store, and point the overview 
 - [ ] **Step 4: Record the results in §8**, and commit:
   `docs(#190): record the verification results`.
 
+### Task 3: The local review's fixes (D4, D5)
+
+Added after the local review of step 5, on 2026-11-10.
+
+**Files:**
+
+- Modify: `src/site/markdown/README.md:11-13` (the Introduction's first paragraph)
+- Modify: `src/site/markdown/README.md:346` (the status bullet's last line)
+
+- [ ] **Step 1: Red.** Run
+  `grep -n -E "wiki's Home page\]|indexing worker" src/site/markdown/README.md; echo "grep exit=$?"`.
+  Expected: two lines, 12 and 346, then `grep exit=0`.
+
+- [ ] **Step 2: Replace the Introduction's first paragraph** with the first paragraph of §3.2's
+  block, which is now four lines long.
+
+- [ ] **Step 3: Edit the status bullet's last line**, changing `indexing worker` to
+  `indexing stage`, as §3.2 shows.
+
+- [ ] **Step 4: Green.** Run the grep of Step 1 again. Expected: no lines, then `grep exit=1`.
+  Then the AC002 check: the Introduction, now lines 11 to 27, is identical by `diff` to §3.2's
+  block, and the grep of Task 1, Step 1, still finds nothing.
+
+- [ ] **Step 5: Lint** the source, as in Task 1, Step 5, and the `CLAUDE.md` scope, as in Task 2,
+  Step 2. Expected: `lint exit=0` for each.
+
+- [ ] **Step 6: Commit.**
+
+```bash
+git add src/site/markdown/README.md specs/stories/190-readme-describes-dsh-today.md
+git commit -m "docs(#190): point at the wiki from its Home, and say indexing stage"
+```
+
+- [ ] **Step 7: Gate 1 again, AC004 again, and the results in §8.1**, then commit:
+  `docs(#190): record the review round's verification results`.
+
 ## 7. Acceptance criteria
 
 | AC | Where it is met |
 |---|---|
 | AC001: the source names no NoSQL store and no 0.3.0 | Task 1, Steps 2 and 3; checked by Task 1, Step 4 |
-| AC002: the Introduction is §3.2's text, pointing at the wiki's Home | Task 1, Step 2; checked by Task 1, Step 6 |
-| AC003: the status bullet names no version | Task 1, Step 3; checked by Task 1, Step 6 |
+| AC002: the Introduction is §3.2's text, pointing at the wiki's Home | Task 1, Step 2, and Task 3, Step 2; checked by Task 3, Step 4 |
+| AC003: the status bullet names no version and no worker | Task 1, Step 3, and Task 3, Step 3; checked by Task 3, Step 4 |
 | AC004: the root `README.md` is unchanged | Task 2, Step 1 |
 | AC005: markdownlint passes | Task 1, Step 5; Task 2, Step 2 |
 

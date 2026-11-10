@@ -9,8 +9,9 @@ ${project.build.version}
 ## Introduction
 
 Welcome to **DSH - Document Smart Highlights**. What DSH is, what it is planned to do and how it
-is built are described once, on the [wiki's Home page](https://github.com/MRISS-Projects/dsh/wiki).
-The development documentation is at <https://mriss-projects.github.io/dsh-docs/>.
+is built are described once, in the [project's wiki](https://github.com/MRISS-Projects/dsh/wiki),
+starting from its Home page. The development documentation is at
+<https://mriss-projects.github.io/dsh-docs/>.
 
 **What this version does.** It accepts a PDF document, keeps it in a document store, in memory by
 default, puts the document's id on a queue for indexing, and reports the document's processing
@@ -343,7 +344,7 @@ The REST API has the two operations of the document resource:
   the token was issued for. Right after a submit it can show `QUEUED_FOR_INDEXING` for a moment;
   a document then ends at `QUEUED_FOR_INDEXING_SUCCESS`: stored, and its id queued for
   indexing. It shows `QUEUED_FOR_INDEXING_ERROR` if the id could not be queued, and an unknown
-  token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing worker exists.
+  token returns `TOKEN_NOT_FOUND`. No later status is reached until the indexing stage exists.
 
 Submit a PDF file, then ask for its status with the token the submit returned:
 
