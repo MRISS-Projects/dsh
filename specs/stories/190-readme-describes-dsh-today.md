@@ -298,3 +298,19 @@ Run on 2026-11-09, on the task branch after Task 1's commit `99842e694`.
 | AC005 | markdownlint over the source: `lint exit=0`. Over the `CLAUDE.md` scope: `lint exit=0` |
 | Gate 1 | `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`, `BUILD SUCCESS`, every module of the reactor `SUCCESS`. 71 tests in `dsh-data` and 43 in `dsh-rest-api`, none failing or skipped. "All coverage checks have been met" for both |
 | Gate 3 | Not run: no code changed |
+
+### 8.1 After the local review, 2026-11-10
+
+The local review (step 5) found nothing Critical or Important, and three minor points, all three
+confirmed against the files and fixed with the owner's approval: D4, D5, and the wrapping of D2's
+prose. Run on the task branch after Task 3's commit `35cb9b353`.
+
+| Check | Result |
+|---|---|
+| Red, Task 3 Step 1 | The grep found two lines, 12 and 346; `grep exit=0` |
+| Green, Task 3 Step 4 | The same grep found nothing; `grep exit=1`. The AC001 grep still finds nothing; `grep exit=1` |
+| AC002 | Lines 11 to 27 of the source are identical to §3.2's block, by `diff` |
+| AC003 | The status bullet's last line reads "until the indexing stage exists"; `indexing worker` appears nowhere in the source |
+| AC004 | `git diff --stat DEVELOP` lists `specs/stories/190-readme-describes-dsh-today.md` and `src/site/markdown/README.md`, nothing else |
+| AC005 | markdownlint over the source: `lint exit=0`. Over the `CLAUDE.md` scope: `lint exit=0` |
+| Gate 1 | `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`, `BUILD SUCCESS`, all 9 modules `SUCCESS`. 71 tests in `dsh-data` and 43 in `dsh-rest-api`, none failing or skipped. "All coverage checks have been met" for both. The build's copy, `target/generated-site/markdown/README.md`, carries the new text |
