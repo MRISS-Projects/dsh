@@ -1238,14 +1238,14 @@ Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the r
   `#120`. `#188` is `#137`'s Task 7 Step 7. `#137` writes newman's reports, but nothing publishes
   them, and how they reach the site is a story of its own. The three sit in this wave because
   none depends on ADR-003.
-- `#190` — README describes DSH today: correct the storage sentence, and point the overview at
-  the wiki.
+- `#190` — **closed** — PR #191. README describes DSH today: correct the storage sentence, and
+  point the overview at the wiki.
 
   Not an ADR-001 phase task. It came out of `#44` on 2026-11-09, which made the wiki's Home the
   one overview and shrank the site index to a pointer, but whose scope did not name the README.
   It was not folded into `#44`, which changed no README. It sits in this wave because the 0.4.0
   release regenerates the root `README.md` from `src/site/markdown/README.md`, and would otherwise
-  ship "What 0.3.0 does today" with a store `DEVELOP` no longer uses. Wave 10 task 5 later
+  have shipped "What 0.3.0 does today" with a store `DEVELOP` no longer uses. Wave 10 task 5 later
   rewrites the README as the user guide.
 - `#44` — **closed** — PR #189. Restructure the wiki: overview, architecture and developer pages,
   by the three patterns of Agile Architecture. It moves here from the product backlog, and task 5
