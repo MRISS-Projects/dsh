@@ -590,4 +590,88 @@ git commit -m "docs(#192): record the read against ADR-003 and the verification 
 
 ## 8. Verification results
 
-Filled in by Task 3.
+Run on 2026-11-17, on `issue-192-wiki-spring-integration`, cut from `DEVELOP` at `82c8d184b`.
+
+### 8.1 Red, then green
+
+| Check | Before the edit | After the edit |
+|---|---|---|
+| `grep -n 'names the role' docs/wiki/README.md` (AC008) | no lines, exit 1 | line 29, exit 0 |
+| `grep -n 'Architecture and Spring Integration' specs/product/PRD.md` (D4) | no lines, exit 1 | line 1568, inside `### Wave 2` (line 1530 to 1615), exit 0 |
+| `check-anchors.sh` against ADR-003 | `missing page`, exit 1 | 15 anchors, all `ok`, exit 0 |
+| `check-anchors.sh` against the PRD | not run: the page did not exist | `wave-2--pipeline-walking-skeleton` `ok`, exit 0 |
+| `check-anchors.sh` against `CLAUDE.md` | not run: the page did not exist | `cost-rule-for-gcp` `ok`, exit 0 |
+| `grep -n '(Spring-Integration)' docs/wiki/Developers.md` (AC001) | no lines, exit 1 | line 18, exit 0 |
+| The stray-link grep (AC001) | not run: the page did not exist | no lines, exit 1: every link is absolute to `blob/DEVELOP/`, or `Workflow` or `Architecture` |
+
+### 8.2 The diagram (AC005)
+
+- Solid edges, `grep -nE -- '-->'` over the Mermaid block: none, exit 1.
+- Nodes whose label lacks "(planned)": only `submit["POST /submit"]`.
+- The `class ... planned` line names gateway, send1, join1, recv1, indexing, send2, join2, recv2,
+  keywords, sentences and recorder: every node but `submit`. Both subgraphs carry
+  `stroke-dasharray`.
+- The render on github.com is checked after the push, by `dsh-ship-story`.
+
+### 8.3 Lint, gate 1 and scope
+
+- markdownlint, the command in `CLAUDE.md`: exit 0.
+- Gate 1, `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`, `BUILD SUCCESS`, 42 s.
+- Gate 3: does not apply, no code changes.
+- `git diff --stat DEVELOP`: the five files of §5 and no other (854 insertions and 4 deletions, counted before this section was written).
+
+### 8.4 "Today", against the code at `82c8d184b`
+
+| Claim | Evidence | Agrees |
+|---|---|---|
+| The POM declares `spring-boot-starter-integration`, `spring-integration-amqp`, `spring-integration-stream` | `dsh-rest-api/pom.xml` lines 33, 56, 60 | yes |
+| `DshRestApplication` imports `enqueue-docId-context.xml` with `@ImportResource` | `DshRestApplication.java` line 17 | yes |
+| The context declares `toRabbit` and an AMQP outbound adapter on it, publishing with publisher confirms | `enqueue-docId-context.xml`: `int:channel id="toRabbit"`, `int-amqp:outbound-channel-adapter channel="toRabbit"`, `confirm-type="CORRELATED"` | yes |
+| The confirms come back on `toRabbitResponse` | the three transformers from `good`, `errors` and `returns` output to `toRabbitResponse`. The page simplifies: nacks and returns arrive there too | yes |
+| `DocumentQueueServiceImpl` sends the id on `toRabbit` | `@Qualifier("toRabbit")`, line 17 | yes |
+| It is called after `/submit` has answered, on an `@Async` thread | `DocumentSubmissionServiceImpl` lines 64 to 70; ADR-003, "What exists today" | yes |
+| `dequeue-docId-context.xml` is a test resource referenced by nothing | `git ls-files`: `dsh-rest-api/src/test/resources/`; `git grep` over `*.java`, `*.xml`, `*.properties`, `*.yml`: exit 1 | yes |
+| None of the flow is built | `git grep -n 'IntegrationFlow' -- '*.java'`: exit 1 | yes |
+| Wave 2 task 1 deletes the context, the service and its handlers, the AMQP dependencies, and `dequeue-docId-context.xml` | PRD, Wave 2 task 1, "The RabbitMQ enqueue path is deleted"; ADR-003 section 7 | yes |
+| It builds the flow in their place; all new wiring is Java configuration | PRD, Wave 2 task 1, "The flow"; ADR-003 section 7, "All new wiring is Java configuration" | yes |
+
+### 8.5 The design, against ADR-003
+
+| Claim on the page | Source in ADR-003 | Agrees |
+|---|---|---|
+| One `IntegrationFlow`, Java DSL, in `dsh-rest-api` | §1, Decision | yes |
+| In order: gateway, hop 1, indexing, hop 2, keywords, sentences | §1, "The flow at run time" | yes |
+| Both hops are asynchronous | §1, Decision: "two asynchronous hops" | yes |
+| Sentences straight after keywords, no hop between | §1, Decision: "keywords and sentences together"; "What exists today", `DocumentStatus` row | yes |
+| `/submit` stores as `CREATED`, hands the id on, answers after point 2 | §1, "`/submit`"; the table's note "stored as `CREATED` before point 1" | yes |
+| A message carries only the id; a stage reads from the stores; results written back to them | §1, "The flow at run time"; "What each step reads and writes" | yes |
+| The three stages' modules | §2, "The modules" | yes |
+| A stage imports nothing from Spring Integration, never writes a status, fails by throwing | §1, "A stage" | yes |
+| The flow calls the stage | §2, Reason: running the extractors "the flow now does" | yes |
+| A stage knows nothing of channels, hops or transports | follows from §1, "A stage" (no Spring Integration import; `MessageChannel` is the transport's interface, §3 "The interfaces") and §3 "How the build checks rules 1 and 2" (no provider type outside `dsh-gcp`). A restatement, not a new decision | yes |
+| One recorder in `dsh-rest-api`, every change of status | §1, "The status recorder" | yes |
+| Advice around each stage: start, end in success or error | §1, the recorder's paragraph and points 4, 5, 9 to 12 | yes |
+| Interceptor on each hop's channel: sent, outcome, received | §1, the recorder's paragraph and points 1 to 3, 6 to 8 | yes |
+| Seeing all twelve is A1, proved by Wave 2 task 1 | Assumptions, A1 | yes |
+| Applies a `TransitionType` (`NEUTRAL`, `SUCCESS`, `ERROR`); `DocumentStatus.transition` picks the status | §1, "The status recorder" and the table's "Applies" column | yes |
+| The recorder knows each point's expected status, because of compare-and-set | §1, the recorder's second paragraph; "Compare-and-set" | yes |
+| The table's columns: applies, expects, leads to | §1, the table: Applies, From, To | yes |
+| A hop is two `MessageChannel`s the flow names, one sent on and one received from | §3, "The interfaces", transport row; §4, "The hops, by transport", Send and Receive | yes |
+| No DSH interface in front of `MessageChannel`; the flow is its only consumer | §3, "The interfaces" | yes |
+| `dsh.transport` selects what joins them: `memory` with no profile, `pubsub` under `gcp` | §3, "The keys" | yes |
+| `memory`: an executor joins them; its thread carries the id on | §3, "The interfaces"; §4, the table's `memory` column | yes |
+| `gcp`: a topic per hop with a push subscription to the same Cloud Run service | §4, Decision | yes |
+| The send awaits the outcome, needed inside the publishing request; A2 | §4, "The send"; Assumptions, A2 | yes |
+| Pub/Sub posts to an endpoint, which reads the id and hands it to the flow | §4, the table's Receive row and "The receive" | yes |
+| Both sides in `dsh-gcp`, new in Wave 5, Pub/Sub side in Wave 6 | §2, "The modules"; §3, "The interfaces" | yes |
+| No other module can compile against a Pub/Sub type | §3, "How the build checks rules 1 and 2" | yes |
+| The inbound adapter pulls; pulling needs a live instance; that breaks the cost rule | §4, Rejected (F8, G8) | yes |
+| Push needs no waiting instance; each message is a request; CPU while it runs | §4, Reason (G8) | yes |
+| Three requests under `gcp`: the client's and one per hop | §4, "The request sequence under `gcp`" | yes |
+| Endpoint paths and topic names are placeholders, fixed by Wave 6 | §4, the sequence's note and "The names" | yes |
+| The diagram's points: 1 to 3 hop 1, 4 and 5 indexing, 6 to 8 hop 2, 9 and 10 keywords, 11 and 12 sentences | §1, the table | yes |
+| The join under each transport: an executor, or a topic and push endpoint | §3, "The interfaces", transport row | yes |
+| Wave 2 task 5 replaces the hand-drawn diagram | PRD, Wave 2 task 5: "their hand-drawn diagrams are retired" | yes |
+
+No claim lacked a source, so nothing was taken out of the page (D2). No claim disagreed with its
+source, so the page did not change in Task 3 and no issue was drafted against ADR-003 (§3.4).
