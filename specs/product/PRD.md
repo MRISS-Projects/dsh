@@ -1450,6 +1450,12 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    The diagrams in tasks 5 and 6 are drawn by hand from ADR-003, because no flow exists yet to
    generate them from. They are interim: Wave 2 task 5 generates the pipeline diagram from the flow
    and keeps it in sync.
+
+   The task also adds one sentence to the "Names" rule in `docs/wiki/README.md`: "document store"
+   names the role, which DSH fills in memory by default, and "NoSQL store" names the planned
+   service behind it. Home and Architecture already use the two terms that way, but the rule lists
+   only the second. This came out of `#190`'s local review on 2026-11-10. It got no issue of its
+   own, because it clarifies the rule and fixes nothing, and this is the next task to edit the wiki.
 7. **Done on 2026-10-16: the reference papers are recorded.** `#173` — **closed** — PR #174.
    Record the reference papers Wave 3 is built from, and keep their full text out of git unless a
    licence allows it. Neither licence allows it, so both papers are cited from
