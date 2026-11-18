@@ -708,3 +708,22 @@ After the fixes, re-run on the branch:
   exit 0.
 - markdownlint: exit 0.
 - Gate 1, `mvn -B clean install`: `maven exit=0`, `BUILD SUCCESS`.
+
+### 8.7 PR review, round 1
+
+PR `#194`, opened on 2026-11-18 at 00:43:19Z against `DEVELOP`. CI passed on `69062d869`.
+
+- **No automatic review ran.** Unlike `#191`, where Copilot was requested one second after the PR
+  opened, no request was logged on `#194`. The owner reported that Copilot's credits had run out.
+  Once they were back, the owner asked for a review, which was requested by hand at 00:45:46Z;
+  work started at 00:46:15Z.
+- **Review `5949143948`**, by `copilot-pull-request-reviewer[bot]`, on `69062d869`, submitted at
+  00:50:31Z. Effort: Lite (adaptive), the repository default. Overview: "Needs a closer look". No
+  inline comments, so no threads.
+
+| Finding | Verdict | Outcome |
+|---|---|---|
+| "The page presents conflicting ADR-003 channel models, and issue #193 remains unresolved, so human approval is needed to confirm the intended interpretation." | Incorrect as stated. The page gives one model, ADR-003 §3's: two `MessageChannel`s that an executor joins. The conflict is between ADR-003 §3 and §4, raised as `#193` (§8.6). The reviewer took it from the PR body and §8.6 | no change to the page; answered on the PR (`issuecomment-6965593754`). If `#193` settles on §4's model, Wave 2 task 1 corrects the page, as the PRD clause of D4 says |
+
+The render on github.com (§8.2) is still to be checked; the owner checks it in the branch's blob
+view.
