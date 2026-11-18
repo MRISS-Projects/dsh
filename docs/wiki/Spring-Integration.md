@@ -152,7 +152,8 @@ flowchart LR
 ```
 
 - **Built.** Only `POST /submit`. Today it sends the id to RabbitMQ, as "Today" says above, and
-  not to a gateway.
+  not to a gateway. Home still draws the gateway and hop 1 as built, and Architecture hop 1's
+  send, until Wave 2 task 1 corrects them.
 - **The points** are the twelve of
   [ADR-003's table](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-003-document-pipeline.md#the-status-recorder).
   The recorder's edge to a hop goes to the whole hop, because ADR-003 does not say which of its

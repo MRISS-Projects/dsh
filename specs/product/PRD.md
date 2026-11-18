@@ -1566,7 +1566,7 @@ runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1
      `-DintegrationTests` starts, and the unused test resource `dequeue-docId-context.xml`. The
      story corrects `CLAUDE.md`, `specs/architecture/system-design.md` and the wiki pages Home,
      Architecture and Spring Integration, in `docs/wiki/`, where they describe RabbitMQ or the
-     enqueue path as current.
+     enqueue path as current, or present `/submit` as the gateway and its RabbitMQ send as hop 1.
    - **Three proofs.** `#142`'s test of two overlapping submissions, which proves ADR-003's
      assumption A1. A context test started with a value of `dsh.transport` that matches no
      transport, which proves A6. And the table of twelve points against

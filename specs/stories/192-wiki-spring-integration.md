@@ -73,7 +73,10 @@ On `DEVELOP` at `82c8d184b`:
   over an undated section and over a dated one with no follow-up.
 - **D4. The PRD's Wave 2 task 1 gains the wiki.** Its sentence on what the story corrects adds the
   wiki pages Home, Architecture and Spring Integration. One clause, outside `docs/wiki/`, beyond
-  the issue's "Affected modules: none"; the owner approved it with D3.
+  the issue's "Affected modules: none"; the owner approved it with D3. After the local review
+  (§8.6), the owner approved widening it to the pages that present `/submit` as the gateway and
+  its RabbitMQ send as hop 1, as Home and Architecture do, and one sentence on the page that says
+  so until then.
 - **D5. The gateway is where `/submit` hands the id to the flow.** ADR-003 lists "a gateway" first
   in the flow, and says `/submit` stores, sends on hop 1, and answers after point 2. The PRD's Wave
   2 task 1 says "a gateway receives a submitted document id". The page states both and links them.
@@ -252,7 +255,8 @@ flowchart LR
 ```
 
 - **Built.** Only `POST /submit`. Today it sends the id to RabbitMQ, as "Today" says above, and
-  not to a gateway.
+  not to a gateway. Home still draws the gateway and hop 1 as built, and Architecture hop 1's
+  send, until Wave 2 task 1 corrects them.
 - **The points** are the twelve of
   [ADR-003's table](https://github.com/MRISS-Projects/dsh/blob/DEVELOP/specs/architecture/ADR-003-document-pipeline.md#the-status-recorder).
   The recorder's edge to a hop goes to the whole hop, because ADR-003 does not say which of its
@@ -295,7 +299,7 @@ path is deleted" becomes:
      `-DintegrationTests` starts, and the unused test resource `dequeue-docId-context.xml`. The
      story corrects `CLAUDE.md`, `specs/architecture/system-design.md` and the wiki pages Home,
      Architecture and Spring Integration, in `docs/wiki/`, where they describe RabbitMQ or the
-     enqueue path as current.
+     enqueue path as current, or present `/submit` as the gateway and its RabbitMQ send as hop 1.
 ```
 
 ### 3.4 Out of scope
