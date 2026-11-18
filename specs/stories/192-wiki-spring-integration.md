@@ -613,7 +613,8 @@ Run on 2026-11-17, on `issue-192-wiki-spring-integration`, cut from `DEVELOP` at
 - The `class ... planned` line names gateway, send1, join1, recv1, indexing, send2, join2, recv2,
   keywords, sentences and recorder: every node but `submit`. Both subgraphs carry
   `stroke-dasharray`.
-- The render on github.com is checked after the push, by `dsh-ship-story`.
+- The render on github.com: checked by the owner on 2026-11-18, in the branch's blob view of
+  `docs/wiki/Spring-Integration.md` at `4ac655a27`. The diagram renders.
 
 ### 8.3 Lint, gate 1 and scope
 
@@ -725,5 +726,4 @@ PR `#194`, opened on 2026-11-18 at 00:43:19Z against `DEVELOP`. CI passed on `69
 |---|---|---|
 | "The page presents conflicting ADR-003 channel models, and issue #193 remains unresolved, so human approval is needed to confirm the intended interpretation." | Incorrect as stated. The page gives one model, ADR-003 §3's: two `MessageChannel`s that an executor joins. The conflict is between ADR-003 §3 and §4, raised as `#193` (§8.6). The reviewer took it from the PR body and §8.6 | no change to the page; answered on the PR (`issuecomment-6965593754`). If `#193` settles on §4's model, Wave 2 task 1 corrects the page, as the PRD clause of D4 says |
 
-The render on github.com (§8.2) is still to be checked; the owner checks it in the branch's blob
-view.
+The render on github.com was checked by the owner after this round, and is recorded in §8.2.
