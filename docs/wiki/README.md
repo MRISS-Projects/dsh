@@ -25,8 +25,9 @@ publish overwrites the edit.
   `https://github.com/MRISS-Projects/dsh/blob/DEVELOP/...`. A wiki page cannot resolve a path in
   the repository.
 - **Names.** Home and Architecture use generic terms: queue, NoSQL store, file store. The products
-  behind them are changing, under ADR-001, and an overview that names them goes stale. Developer
-  pages keep the product names.
+  behind them are changing, under ADR-001, and an overview that names them goes stale. "Document
+  store" names the role, which DSH fills in memory by default, and "NoSQL store" names the planned
+  service behind it. Developer pages keep the product names.
 - **Planned parts of a diagram** carry "(planned)" in their label, a dashed outline, and dashed
   edges into them. A planned edge between two built parts is dashed, and carries "(planned)" in
   its label.

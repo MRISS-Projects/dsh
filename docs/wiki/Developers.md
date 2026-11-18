@@ -15,3 +15,5 @@ overwritten by the next publish.
 
 - [Workflow](Workflow): the statuses a document moves through.
 - [Code Based Site and Reports](Code-Based-Site-and-Reports): the Maven sites and their reports.
+- [Spring Integration](Spring-Integration): how the pipeline's flow is built, and what a hop is
+  under each transport.
