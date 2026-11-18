@@ -18,8 +18,8 @@ in `dsh-rest-api`, wired in XML, and does one thing: it sends a document's id to
   declares a channel, `toRabbit`, and an AMQP outbound channel adapter on it, which publishes to
   RabbitMQ with publisher confirms. The confirms come back on a second channel,
   `toRabbitResponse`.
-- `DocumentQueueServiceImpl` sends the id on `toRabbit`. It is called after `/submit` has
-  answered, on an `@Async` thread.
+- `DocumentQueueServiceImpl` sends the id on `toRabbit`. It runs on an `@Async` thread, which
+  `/submit` starts and does not wait for.
 - Nothing receives the id. `dequeue-docId-context.xml`, a test resource that only logs what it
   receives, is referenced by nothing.
 

@@ -41,8 +41,8 @@ On `DEVELOP` at `82c8d184b`:
   `si.test.exchange` with correlated publisher confirms. Confirms, nacks and returns are turned
   into text and published on `toRabbitResponse`.
 - **`DocumentQueueServiceImpl` sends the id on `toRabbit`.** `DocumentSubmissionServiceImpl`
-  calls it after `/submit` has answered, on an `@Async` thread (ADR-003, "What exists today").
-  `DocumentEnqueueResponseMessageHandler` handles the confirm.
+  calls it on an `@Async` thread, which `/submit` starts and does not wait for (`DocumentResource`
+  line 49, before its `return`). `DocumentEnqueueResponseMessageHandler` handles the confirm.
 - **Nothing receives the id.** `dequeue-docId-context.xml` is a test resource of `dsh-rest-api`
   that only logs what it receives, and nothing references it.
 - **None of the decided flow is built.** No `IntegrationFlow` exists, the three stage modules hold
@@ -121,8 +121,8 @@ On `DEVELOP` at `SHA`, on DATE, none of the flow below is built. Spring Integrat
   declares a channel, `toRabbit`, and an AMQP outbound channel adapter on it, which publishes to
   RabbitMQ with publisher confirms. The confirms come back on a second channel,
   `toRabbitResponse`.
-- `DocumentQueueServiceImpl` sends the id on `toRabbit`. It is called after `/submit` has
-  answered, on an `@Async` thread.
+- `DocumentQueueServiceImpl` sends the id on `toRabbit`. It runs on an `@Async` thread, which
+  `/submit` starts and does not wait for.
 - Nothing receives the id. `dequeue-docId-context.xml`, a test resource that only logs what it
   receives, is referenced by nothing.
 
@@ -633,7 +633,7 @@ Run on 2026-11-17, on `issue-192-wiki-spring-integration`, cut from `DEVELOP` at
 | The context declares `toRabbit` and an AMQP outbound adapter on it, publishing with publisher confirms | `enqueue-docId-context.xml`: `int:channel id="toRabbit"`, `int-amqp:outbound-channel-adapter channel="toRabbit"`, `confirm-type="CORRELATED"` | yes |
 | The confirms come back on `toRabbitResponse` | the three transformers from `good`, `errors` and `returns` output to `toRabbitResponse`. The page simplifies: nacks and returns arrive there too | yes |
 | `DocumentQueueServiceImpl` sends the id on `toRabbit` | `@Qualifier("toRabbit")`, line 17 | yes |
-| It is called after `/submit` has answered, on an `@Async` thread | `DocumentSubmissionServiceImpl` lines 64 to 70; ADR-003, "What exists today" | yes |
+| It runs on an `@Async` thread, which `/submit` starts and does not wait for | `DocumentSubmissionServiceImpl` lines 64 to 70; `DocumentResource` line 49 calls it before the `return` on line 50. Corrected after the local review (§8.6): the page first said "after `/submit` has answered", from ADR-003's "What exists today", but nothing orders the call after the response | yes |
 | `dequeue-docId-context.xml` is a test resource referenced by nothing | `git ls-files`: `dsh-rest-api/src/test/resources/`; `git grep` over `*.java`, `*.xml`, `*.properties`, `*.yml`: exit 1 | yes |
 | None of the flow is built | `git grep -n 'IntegrationFlow' -- '*.java'`: exit 1 | yes |
 | Wave 2 task 1 deletes the context, the service and its handlers, the AMQP dependencies, and `dequeue-docId-context.xml` | PRD, Wave 2 task 1, "The RabbitMQ enqueue path is deleted"; ADR-003 section 7 | yes |
