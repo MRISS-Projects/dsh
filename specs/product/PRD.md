@@ -1143,7 +1143,8 @@ are.
    That move would also retire `wiki-sync.yml`, so its disabling for inactivity (task 1's outcome)
    waits on task 5 rather than getting an issue now. **Task 5 was done on 2026-11-09:** `#44` —
    **closed** — PR #189. The answer task 4 needed: the wiki's source is `docs/wiki/`, Markdown in
-   the repository like any other, and `wiki-sync.yml` is retired.
+   the repository like any other, and `wiki-sync.yml` is retired. **Task 6 was done on
+   2026-11-18:** `#192` — **closed** — PR #194.
 9. Tasks 9 and 10, the new behaviour in `dsh-data`. They come after `#120`, so that new code is
    written on the final Spring Boot line, and after `#132`.
 10. `#148`, last, before the 0.4.0 release candidate. It should learn from everything this wave
@@ -1443,7 +1444,12 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    through a tested script, `.github/scripts/publish-wiki.sh`. The first publish, from the merge,
    wrote all five pages. `wiki-sync.yml` is deleted, and editing on the wiki is restricted to
    people with push access, since the next publish would overwrite an edit made there.
-6. **Wiki page on Spring Integration**, with a diagram of the flow. It follows task 2. Its
+6. **Done on 2026-11-18: wiki page on Spring Integration.** `#192` — **closed** — PR #194. Wiki
+   page on Spring Integration: how the pipeline's flow is built, with a diagram. Its spec,
+   `specs/stories/192-wiki-spring-integration.md`, holds the evidence. The plan as written is kept
+   below.
+
+   **Wiki page on Spring Integration**, with a diagram of the flow. It follows task 2. Its
    diagrams, and task 5's, draw from ADR-003 sections 1 and 4, and the page can link to the
    ADR's sequence diagram.
 
@@ -1456,6 +1462,11 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
    service behind it. Home and Architecture already use the two terms that way, but the rule lists
    only the second. This came out of `#190`'s local review on 2026-11-10. It got no issue of its
    own, because it clarifies the rule and fixes nothing, and this is the next task to edit the wiki.
+
+   **Outcome.** The page is published as "Spring Integration" and linked from Developers, and the
+   "Names" rule carries the sentence above. The story also widened Wave 2 task 1's correction of
+   the wiki to the pages that present `/submit` as the gateway and its RabbitMQ send as hop 1, and
+   it raised `#193` against ADR-003 (Wave 2, triaged issues).
 7. **Done on 2026-10-16: the reference papers are recorded.** `#173` — **closed** — PR #174.
    Record the reference papers Wave 3 is built from, and keep their full text out of git unless a
    licence allows it. Neither licence allows it, so both papers are cited from
@@ -1533,22 +1544,33 @@ Milestone: `0.4.0-SNAPSHOT`. It runs on the in-memory `DocumentDao` (Wave 1 task
 in-memory channels, with no RabbitMQ and no Solr. Every task depends on ADR-003. Until
 2026-10-13 this line said "the existing persistence layer", which was MongoDB.
 
-**Triaged issue:** `#142` — Enqueue acks are applied to every in-flight document, not the one they
-confirm. It came out of Copilot's review of PR #141. The defect lives in `DocumentQueueServiceImpl`
-and `DocumentEnqueueResponseMessageHandler`, which task 1 deletes, and the re-plan rules out fixing
-RabbitMQ code. But the defect is about behaviour, not about RabbitMQ: a document must end in its own
-status when submissions overlap. So it is not closed as won't-fix. Task 1's story carries the test
-`#142` describes as an acceptance criterion against the new flow: two overlapping submissions, one
-forced to fail, each ending in its own status. That story closes `#142`. It was briefly proposed
-for won't-fix on 2026-09-28, and moved here the same day instead. **0.3.0 ships with the defect**,
-knowingly: status is wrong for overlapping submissions until Wave 2. **On 2026-11-08 `#137`'s runs
-reproduced it without any overlap.** A resubmitted file reuses its stored document, so one ack
-reaches two handlers, and the document moves past `QUEUED_FOR_INDEXING_SUCCESS`. The evidence is in
-a comment on `#142`, and the contract side of resubmission is `#185`.
+**Triaged issues:**
+
+- `#142` — Enqueue acks are applied to every in-flight document, not the one they confirm.
+
+  It came out of Copilot's review of PR #141. The defect lives in `DocumentQueueServiceImpl`
+  and `DocumentEnqueueResponseMessageHandler`, which task 1 deletes, and the re-plan rules out fixing
+  RabbitMQ code. But the defect is about behaviour, not about RabbitMQ: a document must end in its own
+  status when submissions overlap. So it is not closed as won't-fix. Task 1's story carries the test
+  `#142` describes as an acceptance criterion against the new flow: two overlapping submissions, one
+  forced to fail, each ending in its own status. That story closes `#142`. It was briefly proposed
+  for won't-fix on 2026-09-28, and moved here the same day instead. **0.3.0 ships with the defect**,
+  knowingly: status is wrong for overlapping submissions until Wave 2. **On 2026-11-08 `#137`'s runs
+  reproduced it without any overlap.** A resubmitted file reuses its stored document, so one ack
+  reaches two handlers, and the document moves past `QUEUED_FOR_INDEXING_SUCCESS`. The evidence is in
+  a comment on `#142`, and the contract side of resubmission is `#185`.
+- `#193` — ADR-003 gives two pictures of a hop with no profile: two channels an executor joins, or
+  one channel backed by an executor.
+
+  It came out of `#192`'s local review on 2026-11-17: ADR-003 section 3 and section 4's table
+  describe a hop under `memory` differently. It was not folded into `#192`, whose spec forbade
+  changing ADR-003; the wiki page follows section 3. It sits in this wave, ahead of task 1,
+  because task 1 builds the hops on its answer.
 
 **Tasks:**
 
-Task 1 comes first. Tasks 2, 4 and 5 follow it, in any order. Task 3 depends on none of them, and
+`#193` comes before task 1, because task 1 builds the hops on its answer. Of the tasks, task 1
+comes first. Tasks 2, 4 and 5 follow it, in any order. Task 3 depends on none of them, and
 runs at step 4 of Wave 1's order of work. Tasks 4 and 5 were split out of task 1 on 2026-10-13.
 
 1. **The flow, end to end.** A gateway receives a submitted document id, and pass-through stages carry
