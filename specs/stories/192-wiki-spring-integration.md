@@ -697,7 +697,7 @@ owner chose what to fix on 2026-11-17.
 The reviewer also found ADR-003 unclear on a hop with no profile. §3 "The interfaces" has two
 channels that an executor joins. §4 "The hops, by transport" has the send as "a channel backed by
 an executor", which in Spring Integration is one `ExecutorChannel`. The page follows §3. Under
-§3.4 the ADR is not changed here, and an issue is drafted for the owner's approval.
+§3.4 the ADR is not changed here. The owner approved an issue, raised as `#193`.
 
 After the fixes, re-run on the branch:
 
