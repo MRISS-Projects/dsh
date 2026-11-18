@@ -620,7 +620,8 @@ Run on 2026-11-17, on `issue-192-wiki-spring-integration`, cut from `DEVELOP` at
 - markdownlint, the command in `CLAUDE.md`: exit 0.
 - Gate 1, `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`, `BUILD SUCCESS`, 42 s.
 - Gate 3: does not apply, no code changes.
-- `git diff --stat DEVELOP`: the five files of §5 and no other (854 insertions and 4 deletions, counted before this section was written).
+- `git diff --stat DEVELOP`: the five files of §5 and no other (770 insertions and 4 deletions,
+  counted before this section was written).
 
 ### 8.4 "Today", against the code at `82c8d184b`
 
@@ -677,3 +678,33 @@ Run on 2026-11-17, on `issue-192-wiki-spring-integration`, cut from `DEVELOP` at
 
 No claim lacked a source, so nothing was taken out of the page (D2). No claim disagreed with its
 source, so the page did not change in Task 3 and no issue was drafted against ADR-003 (§3.4).
+
+### 8.6 Local review
+
+One reviewer, run on `DEVELOP..6e462a4a1` with a fresh context. It found nothing critical, one
+should-fix and five minor items. Each was checked against the code or the wiki before acting. The
+owner chose what to fix on 2026-11-17.
+
+| # | Finding | Checked | Outcome |
+|---|---|---|---|
+| 1 | Home draws the gateway and hop 1 as built and calls `/submit` the gateway; Architecture draws hop 1's send as built. The page says both are planned, and the PRD clause of D4 covers only what is "described as current" | `docs/wiki/Home.md` lines 19 to 29, `docs/wiki/Architecture.md` lines 44 and 65 | fixed in `78a85529d`: D4 widened, one sentence in the page's "Built" bullet, the PRD clause adds "or present `/submit` as the gateway and its RabbitMQ send as hop 1" |
+| 2 | "It is called after `/submit` has answered" is not what the code does | `DocumentResource` line 49 calls it before the `return` on line 50; `@Async` runs it alongside | fixed in `d7f88d8e2`: "It runs on an `@Async` thread, which `/submit` starts and does not wait for", in §2.1, §3.2, the page and §8.4 |
+| 3 | `direction TB` in the subgraphs is ignored, because their nodes link outside them | the render before and after is the same layout | fixed in `8a3c3d0a7`: both lines removed, from §3.2 and the page. The diagram is wide; its width is judged in the render check on github.com |
+| 4 | §8.3 gave 854 insertions as the count before §8; it was 770 | `git diff --shortstat DEVELOP 6e462a4a1~1` | fixed with this section |
+| 5 | "On each hop's channel" against "two `MessageChannel`s" | the singular is ADR-003's own wording (§1, A1); the diagram note says which channel is open | left, by the owner's choice |
+| 6 | "The confirms come back on `toRabbitResponse`" simplifies the routing through `good`, `errors` and `returns` | already noted in §8.4 | left, by the owner's choice |
+
+The reviewer also found ADR-003 unclear on a hop with no profile. §3 "The interfaces" has two
+channels that an executor joins. §4 "The hops, by transport" has the send as "a channel backed by
+an executor", which in Spring Integration is one `ExecutorChannel`. The page follows §3. Under
+§3.4 the ADR is not changed here, and an issue is drafted for the owner's approval.
+
+After the fixes, re-run on the branch:
+
+- `check-anchors.sh`: ADR-003, 15 anchors `ok`, exit 0; PRD exit 0; `CLAUDE.md` exit 0.
+- The stray-link grep: no lines, exit 1.
+- The diagram: no solid edges, exit 1; only `submit` lacks "(planned)"; `mmdc` renders it, exit 0.
+- The page against §3.2, whitespace-normalised, with `SHA` and `DATE` substituted: identical,
+  exit 0.
+- markdownlint: exit 0.
+- Gate 1, `mvn -B clean install`: `maven exit=0`, `BUILD SUCCESS`.
