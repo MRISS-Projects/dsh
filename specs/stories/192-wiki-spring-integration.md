@@ -229,14 +229,12 @@ flowchart LR
     submit["POST /submit"] -.-> gateway["gateway<br/>(planned)"]
     gateway -.-> send1
     subgraph hop1["hop 1 (planned)"]
-        direction TB
         send1["send channel<br/>(planned)"] -.-> join1["executor, or under gcp<br/>a Pub/Sub topic and push endpoint<br/>(planned)"]
         join1 -.-> recv1["receive channel<br/>(planned)"]
     end
     recv1 -.-> indexing["indexing stage<br/>dsh-doc-indexer<br/>(planned)"]
     indexing -.-> send2
     subgraph hop2["hop 2 (planned)"]
-        direction TB
         send2["send channel<br/>(planned)"] -.-> join2["executor, or under gcp<br/>a Pub/Sub topic and push endpoint<br/>(planned)"]
         join2 -.-> recv2["receive channel<br/>(planned)"]
     end
