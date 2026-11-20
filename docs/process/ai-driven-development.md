@@ -86,7 +86,8 @@ PRD from an earlier pass).
 Valuable, Estimable, Small, Testable — as a GitHub issue body.
 
 **Artifact.** A GitHub issue, numbered, with an INVEST-shaped body that links back to its PRD wave
-and task.
+and task. The body follows `.github/ISSUE_TEMPLATE/story.md`, one of the issue templates in
+`.github/ISSUE_TEMPLATE/`.
 
 **Hard stop.** The owner approves the issue body before `dsh-new-story` runs `gh issue create`.
 Claude drafts; it does not publish unreviewed issue text.
@@ -106,6 +107,7 @@ never `master`.
 
 **Artifact.** A task branch `issue-<n>-<slug>` cut from the resolved parent, with
 `specs/stories/<n>-<slug>.md` committed on it, front matter filled in per the contract below.
+`specs/stories/` holds one spec per story.
 
 **Hard stop.** Two, both absolute for different reasons: the `master`-as-parent check is a refusal
 the skill enforces itself (see the `G -->|yes| H["REFUSE"]` branch in the diagram above); the
