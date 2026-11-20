@@ -13,6 +13,7 @@ on:
       - '.markdownlint.json'
       - 'CLAUDE.md'
       - '.claude/**'
+      - '**/*.md'
   pull_request:
     paths:
       - 'specs/**'
@@ -26,6 +27,7 @@ on:
       - '.markdownlint.json'
       - 'CLAUDE.md'
       - '.claude/**'
+      - '**/*.md'
 
 jobs:
   validate-openapi:
@@ -85,6 +87,21 @@ jobs:
 
       - name: Verify referenced spec files exist
         run: bash .github/scripts/check-spec-references.sh
+
+  check-docs-reachable:
+    name: Check Documentation Map
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test the documentation map checker
+        run: bash .github/scripts/check-docs-reachable.test.sh
+
+      - name: Verify every document is reachable from CLAUDE.md
+        run: bash .github/scripts/check-docs-reachable.sh
 
   test-wiki-publisher:
     name: Test the Wiki Publisher
