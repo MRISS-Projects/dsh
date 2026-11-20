@@ -1218,4 +1218,85 @@ As amended by §3.6.
 
 ## 8. Verification results
 
-Filled in by §6 Task 5.
+Run on 2026-11-20, on `issue-195-documentation-map`, cut from `DEVELOP` at `72c589cff`, with this
+spec at `31beeb1b1`. Commits: `46f83bb0c` (Task 1), `848a56b14` (Task 2), `823b6e2e1` (Task 3),
+`d7b228b32` (Task 4).
+
+### 8.1 Red, then green
+
+| Check | Before | After |
+|---|---|---|
+| `check-docs-reachable.test.sh` (Task 1) | `26 case(s), 25 failure(s).`, exit 1; every failure is the missing checker, exit 127; the one `PASS` is "an untracked document is not checked", vacuous as Step 2 says | `26 case(s), 0 failure(s).`, exit 0, in about 24 s |
+| `grep -c "'\*\*/\*.md'"` on the workflow (Task 2) | `0`, exit 1 | `2`, exit 0 |
+| `grep -n 'check-docs-reachable'` on the workflow and `docs/devops/README.md` (Task 2) | no lines, exit 1 | workflow lines 91, 101 and 104; README line 74; exit 0 |
+| `grep -n 'documentation map' docs/devops/README.md` (Task 2) | not run | lines 52 and 74 |
+| The scaffolding `git grep` (Task 4) | 28 lines in the 11 files of §3.4, exit 0 | one line, `specs/product/PRD.md:1430`, Wave 1 task 4's plan text, exit 0 |
+| `check-spec-references.sh` (Task 4) | not run | `Checked 44 referenced path(s); 0 missing.`, exit 0 |
+| `check-docs-reachable.sh` on the tree (Task 4) | see §8.3, item 1 | `Reached 99 of 99 documents under docs/, specs/ and .github/ from CLAUDE.md.`, exit 0, in about 40 s |
+
+### 8.2 The mutants (Task 1, Step 5)
+
+Each was run on a copy of both scripts in the session's scratchpad. Each mutant is a one-line
+change, confirmed by `diff` against the committed checker.
+
+| Mutant | Cases that went red |
+|---|---|
+| A directory reaches every `.md` file under it | "a directory does not reach a subdirectory's file", "only the subdirectory's file is unreached" |
+| `find`, not `git ls-files` | "an untracked file reaches nothing", "an untracked document is not checked", "an untracked CLAUDE.md fails" |
+| The empty-scope guard is `if false` | "no documents in scope is a failure" |
+| `visit` queues a file it has seen | "a cycle of references ends" |
+| The `#anchor` is not stripped | "an anchor is stripped from a target" |
+| Only the path relative to the file | "reached through another document", "a path without / falls back to the root", "a cycle of references ends", "the walk passes through a tracked file outside the scope" |
+| Only the root-relative path | "a path relative to the file that names it" |
+
+All seven went red as the plan lists. None needed a new case.
+
+### 8.3 Where a result differed from the plan
+
+1. **Task 1, Step 6.** Expected exit 1 naming the two files of `specs/requirements/functional/`.
+   Got `Reached 108 of 108`, exit 0. The cause is this spec. It was committed after the
+   measurement at `72c589cff`. It is a story spec, reached through `specs/stories/`, which `#177`'s
+   spec names. It names `specs/requirements/functional/` and `docs/architecture/README.md` in
+   backticks, so it reaches them. Evidence: the checker on an export of `72c589cff`, and on an
+   export of `HEAD` with only this spec removed, prints `Reached 105 of 107`, exit 1, naming
+   exactly the two files. The two trees are the same: `git diff --stat 72c589cff 31beeb1b1` lists
+   this file alone. AC001's real-tree failure is shown on that export. For the same reason the
+   checker half of Task 4, Step 1 would also have exited 0. It was not re-run there.
+2. **Task 3, Step 1.** Got `Reached 72 of 106`, exit 1, listing what the plan describes, with one
+   difference: two templates, `api-change-request.md` and `bug-specification.md`, not three.
+   `feature-specification.md` was still reached through
+   `specs/requirements/acceptance-criteria/README.md`, which Task 4 deletes. Without this spec,
+   33 of 105 are unreached, where §2.1 gives 32 for the same tree. That figure is context, not a
+   step's expected result, and was not chased.
+3. **Task 3, Step 4.** Expected `docs/architecture/README.md` and the two functional files. As
+   written: `Reached 106 of 106`, exit 0, for the reason of item 1. Without this spec:
+   `Reached 103 of 105`, exit 1, listing only the two functional files.
+   `docs/architecture/README.md` is reached through `#113`'s spec, which names it in backticks, as
+   §2.1 says. The step's expectation contradicted §2.1.
+4. **Task 5, Step 1.** As expected: `Reached 97 of 97`, exit 0. Without this spec as well:
+   `Reached 96 of 96`, exit 0. No document depends on an accidental reach.
+5. **Timing.** About 40 s for the checker on the tree and 24 s for its tests, on Windows, against
+   §3.2's 16 s and 12 s.
+
+### 8.4 The acceptance criteria
+
+| AC | Evidence | Result |
+|---|---|---|
+| AC001 | "a document not reached fails and is named", "two documents not reached", "no documents in scope is a failure" pass; on the `72c589cff` export the checker exits 1 and names both functional files (§8.3, item 1) | met |
+| AC002 | The checker's header, lines 4 to 24, states the rule; `docs/devops/README.md` line 74 describes it; the only match for `exempt` in the script is line 23, "There are no exemptions." | met |
+| AC003 | 26 cases, 0 failures; the workflow runs the test step before the check; the mapping is in §6 Task 1, after Step 1; the seven mutants in §8.2 | met |
+| AC004 | `'**/*.md'` under both `push.paths` and `pull_request.paths`; the job's run on the pull request is recorded by `dsh-ship-story` | met locally; CI pending |
+| AC005 | `Reached 99 of 99`, exit 0; the export proof, `Reached 97 of 97`, exit 0 | met |
+| AC006 | `git ls-files specs/testing specs/requirements docs/user-guides docs/architecture` prints nothing | met |
+| AC007 | The scaffolding `git grep` prints only `specs/product/PRD.md:1430`; `check-spec-references.sh` exits 0 | met |
+| AC008 | markdownlint, the command in `CLAUDE.md`: exit 0 | met |
+
+### 8.5 Gates and scope
+
+- Gate 1, `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`: `maven exit=0`,
+  `BUILD SUCCESS`, 1 min 3 s.
+- Gate 3: does not apply, no code changes.
+- Both test scripts: `check-docs-reachable.test.sh` 26 cases, 0 failures;
+  `check-spec-references.test.sh` `All 10 case(s) passed; 1 skipped.`; both exit 0.
+- `git diff --stat DEVELOP`: 26 files, the files of §5 and no other, counted before this section
+  was written.
