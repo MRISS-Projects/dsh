@@ -191,13 +191,15 @@ Story specs under `specs/stories/` keep their text: they are a record.
 
 ### 3.6 Changes to the issue
 
-The design changes three acceptance criteria and corrects the issue's Context. Proposed for the
-owner's approval with this spec, and applied to the issue with `gh issue edit` once approved:
+The design changes four acceptance criteria and corrects the issue's Context. Proposed for the
+owner's approval with this spec, and applied to the issue with `gh issue edit` on 2026-11-20, once
+approved:
 
 - **AC002** becomes: "**What counts is written down.** What counts as a reference is stated in one
   place in the repository, the check's own source, and described in `docs/devops/README.md`. There
   are no exemptions: a document that should pass is given a reference."
 - **AC003**'s list loses "an exempt file" and gains "a file that is not tracked".
+- **AC005** loses "or exempt": every document is reached.
 - **AC006** gains `docs/architecture/`.
 - **Context**: the scaffolding is 9 files, `docs/architecture/README.md` added; the references are
   in 11 files, not twelve, and `.github/ISSUE_TEMPLATE/feature-specification.md` is not one of
