@@ -412,5 +412,3 @@ parent-poms/pom.xml  (root – plugin versions, Failsafe/Surefire/JaCoCo config,
 - Products POM: `D:/IdeaProjects/parent-poms/products/pom.xml`
 - DSH root POM: `D:/IdeaProjects/dsh/pom.xml`
 - Java conventions: `.github/copilot/rules/java-conventions.md`
-- Test plans: `specs/testing/test-plans/`
-- Acceptance criteria: `specs/requirements/acceptance-criteria/`

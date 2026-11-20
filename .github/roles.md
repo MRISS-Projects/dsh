@@ -9,14 +9,14 @@ This document defines the main roles within the DSH (Document Smart Highlights) 
 **Responsibilities:**
 
 - Create and maintain feature specifications in the `specs/features/` folder
-- Define and document functional and non-functional requirements in `specs/requirements/`
-- Write acceptance criteria in `specs/requirements/acceptance-criteria/`
+- Define functional and non-functional requirements in the feature specifications
+- Write acceptance criteria into each story, the GitHub issue `dsh-new-story` drafts
 - Collaborate with developers to ensure specifications are clear and actionable
 
 **Deliverables:**
 
 - Feature specifications (`specs/features/*.md`)
-- User stories and requirements (`specs/requirements/`)
+- User stories, as GitHub issues written from `.github/ISSUE_TEMPLATE/story.md`
 - Acceptance criteria documents
 
 ---
@@ -33,7 +33,7 @@ This document defines the main roles within the DSH (Document Smart Highlights) 
   - `dsh-doc-indexer` – Indexing stage library
   - `dsh-data` – Shared data models and persistence
 - Implement features according to specifications in `specs/features/` and `specs/api/`
-- Write unit and integration tests following patterns in `specs/testing/`
+- Write unit and integration tests following `.github/copilot/rules/testing-patterns.md`
 
 **Deliverables:**
 

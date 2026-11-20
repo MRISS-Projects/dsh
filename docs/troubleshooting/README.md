@@ -22,4 +22,3 @@ This directory contains troubleshooting documentation for the DSH system.
 ## References
 
 - Architecture: `/specs/architecture/system-design.md`
-- User guides: `../user-guides/`

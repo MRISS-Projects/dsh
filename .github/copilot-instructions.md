@@ -33,10 +33,9 @@ Document Smart Highlights (DSH) is a Java-based system for intelligent document 
 ### Testing Patterns
 
 - The four test layers, and when each is required: `/.github/copilot/rules/testing-patterns.md`
-- Integration tests: Reference `/specs/testing/test-plans/`
 - API tests as an external client (layer 4): Postman collections in `/specs/api/postman/`, run by
   `PostmanCollectionsIT` under `-DintegrationTests`
-- Performance tests: Reference `/specs/testing/performance-benchmarks/`
+- Performance tests: the target is FR004 in `/specs/features/indexing-workflow.md`
 
 ### Documentation
 
@@ -96,7 +95,7 @@ The `/docs/wiki/` directory is the source of the [DSH GitHub Wiki](https://githu
 ### Indexer (dsh-doc-indexer)
 
 - Follow workflow specification: `/specs/features/indexing-workflow.md`
-- Reference performance benchmarks: `/specs/testing/performance-benchmarks/`
+- Performance target: its FR004
 
 ## Code Generation Preferences
 
@@ -110,8 +109,7 @@ The `/docs/wiki/` directory is the source of the [DSH GitHub Wiki](https://githu
 
 ## Testing Approach
 
-- Generate tests based on specifications in `/specs/testing/`
+- Generate tests from the story's acceptance criteria, in its GitHub issue and its spec under `/specs/stories/`, and from the feature specs in `/specs/features/`
 - Include integration tests for API endpoints
 - Generate performance tests for indexing operations
-- Reference acceptance criteria in `/specs/requirements/acceptance-criteria/`
 - Follow patterns described in `/.github/copilot/rules/testing-patterns.md`

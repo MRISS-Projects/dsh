@@ -135,7 +135,7 @@ Requirements:
 - Include Bean Validation annotations (@NotNull, @Valid, etc.)
 - Generate comprehensive JavaDoc for all public classes and methods
 - Write unit tests following patterns in /.github/copilot/rules/testing-patterns.md
-- Cover acceptance criteria from /specs/requirements/acceptance-criteria/
+- Cover the acceptance criteria of the story: its GitHub issue and its spec in /specs/stories/
 ```
 
 **Expected Output:** New or updated Java classes across the relevant DSH modules, with services, controllers, data models, unit tests, and JavaDoc — all aligned with the feature specification.
@@ -154,7 +154,7 @@ specification at specs/features/smart-highlighting.md before implementation begi
 
 Requirements:
 - Verify the specification has clear, actionable functional requirements
-- Ensure acceptance criteria exist in /specs/requirements/acceptance-criteria/
+- Ensure the story states acceptance criteria that a test can check
 - Confirm data flow and technical notes are aligned with /specs/architecture/
 - Validate that the feature aligns with overall project goals in README.md
 - Update the specification if gaps are found
@@ -179,7 +179,7 @@ Requirements:
 - Update Maven pom.xml configurations if new modules or dependencies are needed
 - Update the release path if it is affected: the `.github/workflows/{staging,release,hotfix,stage}.yml` wrappers and the reusable workflows they call in MRISS-Projects/parent-poms
 - Ensure quality gates and automated tests run for the new feature
-- Reference /specs/testing/performance-benchmarks/ for any performance targets
+- Take performance targets from FR004 in /specs/features/indexing-workflow.md
 ```
 
 **Expected Output:** New or updated workflow YAML files, Maven configuration changes, and build script updates to support the indexing-workflow feature in CI/CD.

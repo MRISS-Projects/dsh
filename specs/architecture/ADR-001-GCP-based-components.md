@@ -178,7 +178,7 @@ There is no Phase 4.
 | Task | Detail |
 | ------ | -------- |
 | 5.2 | Execute the integration tests against the deployed application under the `gcp` profile. They run against `dsh-dev` from Wave 5 and against `dsh-staging` from Wave 7, so nothing of this task is left for Wave 9. |
-| 5.3 | Performance-test against benchmarks in `specs/testing/performance-benchmarks/` (FR004: 95% of docs < 10 MB within 30 s). Wave 9 task 1. |
+| 5.3 | Performance-test against FR004 in `specs/features/indexing-workflow.md` (95% of docs < 10 MB within 30 s). Wave 9 task 1. |
 | 5.4 | The jar sets no default profile. The deployment sets `gcp`, and has since Wave 4. A run with no profile keeps working, in memory, and is not a legacy mode. |
 
 ---

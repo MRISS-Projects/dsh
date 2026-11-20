@@ -25,7 +25,7 @@ Requirements:
 - Include Bean Validation annotations (@NotNull, @Valid, etc.)
 - Generate comprehensive JavaDoc for all public classes and methods
 - Write unit tests following patterns in /.github/copilot/rules/testing-patterns.md
-- Cover acceptance criteria from /specs/requirements/acceptance-criteria/
+- Cover the acceptance criteria of the story: its GitHub issue and its spec in /specs/stories/
 ```
 
 ---
@@ -40,8 +40,8 @@ Requirements:
 - Read and follow all functional requirements (FRxxx) in the feature specification
 - Consume REST APIs defined in /specs/api/openapi/dsh-rest-api.yaml
 - Implement UI components and views as described in the feature spec
-- Ensure the implementation matches acceptance criteria in
-  /specs/requirements/acceptance-criteria/[feature].md
+- Ensure the implementation matches the story's acceptance criteria
+  (its GitHub issue and its spec in /specs/stories/)
 - Write unit tests for all new components
 ```
 
@@ -58,7 +58,7 @@ Requirements:
 - Update Maven pom.xml configurations if new modules or dependencies are needed
 - Update the release path if it is affected: the `.github/workflows/{staging,release,hotfix,stage}.yml` wrappers and the reusable workflows they call in MRISS-Projects/parent-poms
 - Ensure quality gates and automated tests run for the new feature
-- Reference /specs/testing/performance-benchmarks/ for any performance targets
+- Take performance targets from FR004 in /specs/features/indexing-workflow.md
 ```
 
 ---
@@ -71,7 +71,7 @@ specification at specs/features/[feature-file].md before implementation begins.
 
 Requirements:
 - Verify the specification has clear, actionable functional requirements
-- Ensure acceptance criteria exist in /specs/requirements/acceptance-criteria/
+- Ensure the story states acceptance criteria that a test can check
 - Confirm data flow and technical notes are aligned with /specs/architecture/
 - Validate that the feature aligns with overall project goals in README.md
 - Update the specification if gaps are found

@@ -23,7 +23,7 @@ Requirements:
   - External dependency failure: [describe error propagation]
 - Use AssertJ for assertions
 - Follow patterns in /.github/copilot/rules/testing-patterns.md
-- Cover acceptance criteria from /specs/requirements/acceptance-criteria/[feature].md
+- Cover the acceptance criteria of the story: its GitHub issue and its spec in /specs/stories/
 ```
 
 ---
@@ -79,7 +79,7 @@ Requirements:
   (e.g. com.mriss.dsh.restapi.integration); the name is the selector, no tag is needed
 - Test the full flow: [describe end-to-end scenario]
 - Clean up test data in @AfterEach
-- Reference acceptance criteria in /specs/requirements/acceptance-criteria/[feature].md
+- Reference the story's acceptance criteria, in its GitHub issue and its spec in /specs/stories/
 - Use @SpringBootTest(webEnvironment = RANDOM_PORT)
 ```
 
@@ -117,6 +117,6 @@ Requirements:
 - Measure execution time using [JUnit Jupiter assertTimeout(...) / Micrometer]
 - Target: complete [operation] within [X] ms for [input size]
 - Test with dataset from /dsh-test-dataset/
-- Reference benchmark targets in /specs/testing/performance-benchmarks/
+- Take the target from FR004 in /specs/features/indexing-workflow.md
 - Log results for CI reporting
 ```
