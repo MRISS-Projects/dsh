@@ -201,6 +201,17 @@ run_checker "$d"
 check "a directory does not reach a subdirectory's file" 1 "  specs/sub/b.md"
 check_listed "only the subdirectory's file is unreached" "specs/sub/b.md "
 
+# --- the repository root is not a directory reference -------------------------
+# The root holds no document in scope, and a bare / is usually prose ("the base
+# name and `/`"); counting it would reach README.md and all it names.
+d="$(new_case)"
+track "$d" CLAUDE.md 'Start at `docs/index.md`.'
+track "$d" docs/index.md 'Up to [the root](../), whose separator is `/`.'
+track "$d" README.md 'The guide: `docs/guide.md`.'
+track "$d" docs/guide.md 'G.'
+run_checker "$d"
+check_listed "a reference to the repository root reaches nothing" "docs/guide.md "
+
 # --- a cycle ------------------------------------------------------------------
 d="$(new_case)"
 track "$d" CLAUDE.md 'Read `docs/a.md`.'

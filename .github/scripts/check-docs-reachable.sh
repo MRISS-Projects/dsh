@@ -13,6 +13,9 @@
 # to the repository root; any other is tried relative to the directory of the
 # file that names it, then relative to the root. A target naming a directory
 # reaches the tracked .md files directly inside it, not those in subdirectories.
+# The repository root is not such a directory: "/", or "../" climbing to it,
+# reaches nothing. The root holds no document in scope, and a bare "/" in a code
+# span is usually prose, which would otherwise reach README.md and all it names.
 # A target that names no tracked Markdown file or directory -- a command, a URL,
 # a placeholder, a file that no longer exists -- reaches nothing and is ignored:
 # broken links are not this check's concern. Nothing else counts: not a
