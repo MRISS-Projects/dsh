@@ -88,6 +88,9 @@ first and then with the checker of §6, Task 1, both kept out of the repository.
 | D10 | `CLAUDE.md` does not change | It is loaded in every session. The failure message says what to do, so the rule is met where it matters |
 | D11 | The workflow gains `'**/*.md'` as a trigger | D7 means any tracked Markdown file can change the answer. The cost is spec-validation also running when a module's site page changes |
 | D12 | A job of its own, "Check Documentation Map" | One job per check, as the workflow does, so the check list on a PR names it |
+| D13 | A story spec, any file under `specs/stories/`, is reached but not read. This narrows D7 | Owner's choice, after the local review (§3.7). A story spec is a record kept as written, and every one is reached once D4 names the directory. Read, it would reach for good whatever it once named, so a document nothing current points at would still pass |
+| D14 | `docs/troubleshooting/` is deleted with the scaffolding | Owner's choice, after the local review. Its table reads "*(to be added)*" and only story specs name it: the reasoning of D5 |
+| D15 | The two `docs/superpowers/` documents are named in `docs/process/ai-driven-development.md`, as the record of how the process was designed | D13 leaves them unreached: only story specs and each other name them. Retiring them is not this story's (§3.5), so they get a deliberate reference |
 
 ### 3.2 The checker
 
@@ -96,7 +99,7 @@ first and then with the checker of §6, Task 1, both kept out of the repository.
 1. **Root.** The walk starts at `CLAUDE.md`, which must be tracked at the root of the work tree.
 2. **Scope.** Every tracked `*.md` file whose path starts with `docs/`, `specs/` or `.github/`.
 3. **Walk.** Breadth first, with a visited set, over every tracked Markdown file reached (D7). A
-   file that is not Markdown is never read.
+   file that is not Markdown is never read, and neither is a story spec (D13).
 4. **References.** ``grep -oP '\]\([^)\s]+|`[^`]+`'``: a link target, or a code span matched as a
    pair so that a closing backtick cannot open the next span, as `check-spec-references.sh`
    does. A `#anchor` is stripped.
@@ -146,7 +149,8 @@ about 12.
 ### 3.4 The deletions and the references to them
 
 **Deleted, 9 files:** `specs/testing/` (3), `specs/requirements/` (4), `docs/user-guides/` (1),
-`docs/architecture/` (1).
+`docs/architecture/` (1). A tenth, `docs/troubleshooting/README.md`, was added by the local review
+(D14, §3.7).
 
 Each deleted path stood for something that lives elsewhere now. Each reference is pointed there, or
 removed when there is nowhere:
@@ -207,17 +211,46 @@ approved:
 
 §7 holds the criteria as amended.
 
+The local review adds one more change, approved by the owner on 2026-11-20 and applied to the issue
+with the pull request: **AC006** gains `docs/troubleshooting/` (D14).
+
+### 3.7 Changes from the local review
+
+The local review, on 2026-11-20, found that the design let a placeholder pass. Every story spec is
+reached once D4 names `specs/stories/`, and D7 read each one, so whatever an old story named stayed
+reached. `docs/troubleshooting/README.md` was such a document: a placeholder, named only by the
+specs of `#167`, `#177` and this story. The owner chose to fix the rule here, not in a follow-up:
+
+- **D13.** The checker reaches a story spec without reading it.
+- **D14.** `docs/troubleshooting/` is deleted.
+- **D15.** The two `docs/superpowers/` documents, which D13 leaves unreached, get one sentence in
+  the opening of `docs/process/ai-driven-development.md`.
+
+The review's smaller findings, all accepted by the owner:
+
+- The checker lists files with `git ls-files -z`, so a name that git would quote is not silently
+  dropped from the scope.
+- It reads with `grep -a`, so a file with a NUL byte keeps its references.
+- Its header says which link forms do not count.
+- Four test cases are added. One pins the resolution order. One pins the `/` rule against a
+  same-named file beside the referring file. One covers a reached file that cannot be read. One
+  covers each robustness change.
+- Wording is fixed in `docs/devops/README.md` (the sentence on `publish-wiki.test.sh`, and the
+  diagram label), `.github/roles.md` (the deliverable that named acceptance criteria documents),
+  and `.github/copilot-instructions.md` ("its FR004").
+- `docs/devops/README.md` describes D13.
+
 ## 4. Verification design
 
 | AC | Check |
 |---|---|
 | AC001 | Test cases "a document not reached fails and is named", "two documents not reached", "no documents in scope is a failure"; the checker on the real tree before Task 4 exits 1 and names the two files of `specs/requirements/functional/` |
 | AC002 | The checker's header states the rule; `grep -n 'documentation map' docs/devops/README.md` finds the description; the script has no exemption list |
-| AC003 | `check-docs-reachable.test.sh` exits 0 with its 26 cases; each case of the issue's list maps to a named case (§6 Task 1, Step 1); seven mutants of the checker each turn at least one case red (§6 Task 1, Step 5) |
+| AC003 | `check-docs-reachable.test.sh` exits 0 with its 26 cases, 33 after the local review (§3.7); each case of the issue's list maps to a named case (§6 Task 1, Step 1); seven mutants of the checker each turn at least one case red (§6 Task 1, Step 5), thirteen after the local review |
 | AC004 | `grep -c "'\*\*/\*.md'" .github/workflows/spec-validation.yml` prints 2; the new job is in the run of the pull request |
-| AC005 | The checker on the branch prints `Reached 99 of 99 documents …` and exits 0; in a scratch export with the three accidental reaches removed it still exits 0 (§6 Task 3) |
-| AC006 | `git ls-files specs/testing specs/requirements docs/user-guides docs/architecture` prints nothing |
-| AC007 | `git grep -n -E 'specs/testing\|specs/requirements\|user-guides\|docs/architecture' -- . ':!specs/stories/'` prints exactly one line, Wave 1 task 4's plan text in the PRD; `check-spec-references.sh` exits 0 |
+| AC005 | The checker on the branch prints `Reached 99 of 99 documents …` and exits 0; in a scratch export with the three accidental reaches removed it still exits 0 (§6 Task 3). After the local review: `Reached 98 of 98`, with story specs no longer read (D13) |
+| AC006 | `git ls-files specs/testing specs/requirements docs/user-guides docs/architecture docs/troubleshooting` prints nothing |
+| AC007 | `git grep -n -E 'specs/testing\|specs/requirements\|user-guides\|docs/architecture\|docs/troubleshooting/' -- . ':!specs/stories/'` prints exactly one line, Wave 1 task 4's plan text in the PRD; `check-spec-references.sh` exits 0 |
 | AC008 | The markdownlint command in `CLAUDE.md` exits 0 |
 | Gate 1 | `mvn -B clean install`, logged to `.logs/mvn-clean-install.log`, exits 0, as `#192` ran it for a change with no Java code |
 | Gate 3 | Does not apply: nothing touches an external system or a REST entry point |
@@ -231,8 +264,9 @@ approved:
 | `.github/scripts/check-docs-reachable.test.sh` | New, mode 100755 (§6 Task 1) |
 | `.github/workflows/spec-validation.yml` | Trigger and job (§6 Task 2) |
 | `docs/devops/README.md` | The row and the diagram label (§6 Task 2) |
-| `docs/process/ai-driven-development.md` | Two sentences (§6 Task 3) |
+| `docs/process/ai-driven-development.md` | Two sentences (§6 Task 3), and the sentence of D15 (§3.7) |
 | 9 scaffolding files | Deleted (§6 Task 4) |
+| `docs/troubleshooting/README.md` | Deleted (D14, §3.7) |
 | The 11 files of §3.4 | Edited (§6 Task 4) |
 | `specs/stories/195-documentation-map.md` | This spec, and its verification results |
 
@@ -1209,7 +1243,7 @@ As amended by §3.6.
 - [ ] AC005: **The tree passes.** On the merged branch the check passes: every Markdown file under
   the three directories is reached from `CLAUDE.md`.
 - [ ] AC006: **The scaffolding is gone.** `specs/testing/`, `specs/requirements/`,
-  `docs/user-guides/` and `docs/architecture/` no longer exist.
+  `docs/user-guides/`, `docs/architecture/` and `docs/troubleshooting/` no longer exist.
 - [ ] AC007: **Nothing current points at it.** No current document names a deleted path. The
   references are removed or repointed, and Wave 9 task 1 and ADR-001 task 5.3 point at FR004 in
   `specs/features/indexing-workflow.md`. Story specs under `specs/stories/` keep their text.
@@ -1274,7 +1308,10 @@ All seven went red as the plan lists. None needed a new case.
    `docs/architecture/README.md` is reached through `#113`'s spec, which names it in backticks, as
    §2.1 says. The step's expectation contradicted §2.1.
 4. **Task 5, Step 1.** As expected: `Reached 97 of 97`, exit 0. Without this spec as well:
-   `Reached 96 of 96`, exit 0. No document depends on an accidental reach.
+   `Reached 96 of 96`, exit 0. This was first recorded as "No document depends on an accidental
+   reach", and that was wrong. The proof deletes `docs/superpowers/` and leaves every story spec
+   readable, so it cannot see a document that only story specs reach. The local review found
+   three: `docs/troubleshooting/README.md` and the two `docs/superpowers/` documents (§3.7, §8.6).
 5. **Timing.** About 40 s for the checker on the tree and 24 s for its tests, on Windows, against
    §3.2's 16 s and 12 s.
 
@@ -1283,12 +1320,12 @@ All seven went red as the plan lists. None needed a new case.
 | AC | Evidence | Result |
 |---|---|---|
 | AC001 | "a document not reached fails and is named", "two documents not reached", "no documents in scope is a failure" pass; on the `72c589cff` export the checker exits 1 and names both functional files (§8.3, item 1) | met |
-| AC002 | The checker's header, lines 4 to 24, states the rule; `docs/devops/README.md` line 74 describes it; the only match for `exempt` in the script is line 23, "There are no exemptions." | met |
-| AC003 | 26 cases, 0 failures; the workflow runs the test step before the check; the mapping is in §6 Task 1, after Step 1; the seven mutants in §8.2 | met |
+| AC002 | After the local review: the checker's header, lines 4 to 31, states the rule, D13 included; `docs/devops/README.md` line 74 describes it; the only match for `exempt` in the script is line 30, "There are no exemptions." | met |
+| AC003 | After the local review: 33 cases, 0 failures; the workflow runs the test step before the check; the mapping is in §6 Task 1, after Step 1; the thirteen mutants in §8.6 | met |
 | AC004 | `'**/*.md'` under both `push.paths` and `pull_request.paths`; the job's run on the pull request is recorded by `dsh-ship-story` | met locally; CI pending |
-| AC005 | `Reached 99 of 99`, exit 0; the export proof, `Reached 97 of 97`, exit 0 | met |
-| AC006 | `git ls-files specs/testing specs/requirements docs/user-guides docs/architecture` prints nothing | met |
-| AC007 | The scaffolding `git grep` prints only `specs/product/PRD.md:1430`; `check-spec-references.sh` exits 0 | met |
+| AC005 | After the local review: `Reached 98 of 98`, exit 0, with story specs not read (§8.6) | met |
+| AC006 | `git ls-files specs/testing specs/requirements docs/user-guides docs/architecture docs/troubleshooting` prints nothing | met |
+| AC007 | The scaffolding `git grep`, with `docs/troubleshooting/` added, prints only `specs/product/PRD.md:1430`; `check-spec-references.sh` exits 0 | met |
 | AC008 | markdownlint, the command in `CLAUDE.md`: exit 0 | met |
 
 ### 8.5 Gates and scope
@@ -1300,3 +1337,65 @@ All seven went red as the plan lists. None needed a new case.
   `check-spec-references.test.sh` `All 10 case(s) passed; 1 skipped.`; both exit 0.
 - `git diff --stat DEVELOP`: 26 files, the files of §5 and no other, counted before this section
   was written.
+
+### 8.6 The local review round
+
+Reviewed on 2026-11-20 against `31beeb1b1..57d5dc071`: ready with fixes, nothing critical. The
+owner took every fix (§3.7). Commits: `a45ef9733` (the checker and its tests), `997021d5c` (D14 and
+D15), `13405c1f8` (the wording and the description of D13).
+
+**Red, then green.**
+
+| Check | Before | After |
+|---|---|---|
+| `check-docs-reachable.test.sh` with the seven new cases | `33 case(s), 4 failure(s).`: the two story-spec cases, the quoted name and the NUL byte. The other three pass, because they pin behaviour that was already there; the mutants below show each can fail | `33 case(s), 0 failure(s).`, exit 0 |
+| `check-docs-reachable.sh` on the tree, with D13 in place | `Reached 96 of 99`, exit 1, naming the two `docs/superpowers/` documents and `docs/troubleshooting/README.md` | after D14 and D15: `Reached 98 of 98`, exit 0 |
+| The four wording greps (`It also runs`, `Acceptance criteria documents`, `its FR004`, `copilot files<br/>`) | one match each | none |
+| `grep -cF 'Story specs under'` on `docs/devops/README.md` | not present | one match |
+
+The first run of the new NUL-byte case also failed because its fixture wrote into a `docs/` that
+did not exist yet. The fixture was fixed before the run recorded above.
+
+**The mutants, rerun on the changed checker.** Each is a one-line change, confirmed by `diff`.
+
+| Mutant | Cases that went red |
+|---|---|
+| 1. A directory reaches every `.md` file under it | the two subdirectory cases |
+| 2. `find`, not `git ls-files` | the three untracked cases, "a reached file that cannot be read fails", "a name git would quote is still checked" |
+| 3. The empty-scope guard is `if false` | "no documents in scope is a failure" |
+| 4. `visit` queues a file it has seen | "a cycle of references ends" |
+| 5. The `#anchor` is not stripped | "an anchor is stripped from a target" |
+| 6. Only the path relative to the file | the four of §8.2, and "a file with a NUL byte is still read" |
+| 7. Only the root-relative path | "a path relative to the file that names it", "a path without / resolves beside the file first" |
+| 8. The `/` branch is `if false` | "a path starting with / does not resolve beside the file" |
+| 9. The root before the file's directory | "a path without / resolves beside the file first" |
+| 10. Story specs are read | "a story spec does not pass reach on", "only the document the story spec names is unreached" |
+| 11. The listing quoted, as without `-z` | "a name git would quote is still checked" |
+| 12. `grep` without `-a` | "a file with a NUL byte is still read" |
+| 13. A `grep` failure is swallowed | "a reached file that cannot be read fails" |
+
+Before this round, mutants 8, 9 and 13 survived all 26 cases. The review found them.
+
+**Gates, rerun after the fixes.**
+
+- markdownlint, the command in `CLAUDE.md`: exit 0.
+- `check-docs-reachable.test.sh`: 33 cases, 0 failures. `check-spec-references.test.sh`:
+  `All 10 case(s) passed; 1 skipped.` Both exit 0.
+- `check-docs-reachable.sh`: `Reached 98 of 98`, exit 0. `check-spec-references.sh`:
+  `Checked 44 referenced path(s); 0 missing.`, exit 0.
+- The scaffolding `git grep`, with `docs/troubleshooting/` added: only `specs/product/PRD.md:1430`.
+  Without the trailing slash, the pattern also matches a Cloud Run documentation URL in ADR-004,
+  `run/docs/troubleshooting`, which is not this directory.
+- Gate 1, `mvn -B clean install`, logged: `maven exit=0`, `BUILD SUCCESS`, 27 s.
+- `git diff --stat DEVELOP`: 26 files, the files of §5. `docs/troubleshooting/README.md` was
+  already among them, edited; it is now deleted.
+
+**Set aside by the reviewer, and kept out of scope.**
+
+- Fenced code blocks and HTML comments count as references. This is lenient, and within D1.
+- Other "*(to be added)*" placeholders remain: `specs/api/schemas/README.md`, and the READMEs of
+  `specs/architecture/component-diagrams/`, `data-models/` and `sequence-diagrams/`. They are not
+  on this story's list. They are a candidate for an issue of their own.
+- `*.MD` and `*.markdown` are not checked. The repository has none.
+- A name holding a newline would still split in the per-directory index. No such name exists.
+- The checker needs bash 4.3 or later. CI runs Ubuntu, and Git Bash is 5.3.
