@@ -1152,15 +1152,16 @@ are.
     changes in the build. The commit gate and the production smoke check that the findings (§9.1)
     give the skill are not part of it: no tier exists before Wave 4. They are Wave 7 task 3.
 
-Task 7, `#132`, task 11 and task 12 have no fixed step. They fill gaps, such as an ADR in review,
-but each has a latest point. `#132` lands before tasks 9 and 10, so that the new `dsh-data` code
+Task 7, `#132`, task 11, task 12 and task 13 have no fixed step. They fill gaps, such as an ADR in
+review, but each has a latest point. `#132` lands before tasks 9 and 10, so that the new `dsh-data` code
 is written to the analysers' rules, and before `#148` in any case, because it changes the build.
 Task 8 is written before it, which the re-plan of 2026-10-13 accepted. Task 7 lands before `#148`,
 inside the wave, because Wave 3's stories cite the papers. Task 11 lands before Wave 2 task 2,
 which adds to the OpenAPI document. Task 12 lands before Wave 2 task 1, whose flow is the first
 thing that can leave a document in `NOT_INDEXED_ERROR`. **Tasks 11 and 12 landed on 2026-10-16**,
 ahead of both: `#162` — **closed** — PR #164, and `#171` — **closed** — PR #172. **Task 7 landed
-the same day**, ahead of `#148`: `#173` — **closed** — PR #174.
+the same day**, ahead of `#148`: `#173` — **closed** — PR #174. Task 13 lands before `#148`, so
+that the 0.4.0 release candidate ships no document that promises content it does not have.
 
 Every open parent-poms issue has a milestone since 2026-10-02 (§3). Since the re-plan of
 2026-10-10, `parent-poms#90` and `#109` belong to Wave 4, `#91` to Wave 7, `#92` to Wave 10, and
@@ -1552,6 +1553,20 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
     the description and the message of `DEQUEUED_FOR_INDEXING`, and a client reads both through
     `/status/{token}`. The task is the fix, and a test that holds every status to a description
     of its own. It gets an issue, so that the fix is in 0.4.0's release notes.
+13. **The last placeholder directories go.** Added on 2026-11-21, from `#195`'s local review. Four
+    directories hold only a README whose table reads "*(to be added)*": `specs/api/schemas/`,
+    `specs/architecture/component-diagrams/`, `specs/architecture/data-models/` and
+    `specs/architecture/sequence-diagrams/`. What they promise lives elsewhere. The OpenAPI document
+    defines its schemas inline. ADR-003 holds the pipeline's sequence diagram. The wiki's Home and
+    Architecture pages show the components. `specs/architecture/document-status-workflow.md` is
+    generated from code (task 1), and Wave 2 task 5 generates the pipeline diagram. The task deletes
+    the four, and points their references at those documents: two lines in
+    `.github/copilot-instructions.md`, which `check-spec-references.sh` checks, two in
+    `.github/copilot/prompts/component-generation.md`, and the "Further Reading" list of
+    `specs/architecture/system-design.md`. Documentation only.
+
+    It was not folded into `#195`. That story's issue named the scaffolding it deleted, and these
+    four are reachable from `CLAUDE.md`, so its check cannot flag them.
 
 ### Wave 2 — Pipeline walking skeleton
 
