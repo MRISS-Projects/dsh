@@ -95,7 +95,7 @@ The `/docs/wiki/` directory is the source of the [DSH GitHub Wiki](https://githu
 ### Indexer (dsh-doc-indexer)
 
 - Follow workflow specification: `/specs/features/indexing-workflow.md`
-- Performance target: its FR004
+- Performance target: FR004 in that specification
 
 ## Code Generation Preferences
 

@@ -17,7 +17,7 @@ This document defines the main roles within the DSH (Document Smart Highlights) 
 
 - Feature specifications (`specs/features/*.md`)
 - User stories, as GitHub issues written from `.github/ISSUE_TEMPLATE/story.md`
-- Acceptance criteria documents
+- Acceptance criteria, written into each story
 
 ---
 
