@@ -230,6 +230,19 @@ track "$d" docs/a.md 'A.'
 run_checker "$d"
 check "a URL reaches nothing, even one naming a tracked path" 1 "  docs/a.md"
 
+# --- a URL whose .. segments would climb back into the repository -------------
+d="$(new_case)"
+track "$d" CLAUDE.md 'See [a](https://example.com/../../docs/a.md).'
+track "$d" docs/a.md 'A.'
+run_checker "$d"
+check "a URL with .. segments reaches nothing" 1 "  docs/a.md"
+
+d="$(new_case)"
+track "$d" CLAUDE.md 'See [a](//example.com/../docs/a.md).'
+track "$d" docs/a.md 'A.'
+run_checker "$d"
+check "a protocol-relative URL reaches nothing" 1 "  docs/a.md"
+
 # --- the walk passes through a tracked file outside the scope -----------------
 d="$(new_case)"
 track "$d" CLAUDE.md 'Skills: `.claude/skills/s/SKILL.md`.'

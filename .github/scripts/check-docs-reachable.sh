@@ -110,6 +110,12 @@ follow() {
   local from="$1" target="${2%%#*}" dir="" candidate child
   local -a candidates=()
   [ -n "$target" ] || return 0
+  # A URL is never a path: one with a scheme (https:, mailto:) or a
+  # protocol-relative one (//host). Rejected before normalising, or its ".."
+  # segments could climb back to a tracked path.
+  if [[ "$target" =~ ^[A-Za-z][A-Za-z0-9+.-]*: || "$target" == //* ]]; then
+    return 0
+  fi
   if [ "${target:0:1}" = / ]; then
     candidates=("$target")
   else
