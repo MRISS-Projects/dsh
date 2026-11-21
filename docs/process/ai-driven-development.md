@@ -5,6 +5,11 @@ This document is that detail: for each step, what it takes as input, which skill
 what artifact it produces, what the hard stop is, and what "done" looks like. Branch rules and
 quality gates are defined once in `CLAUDE.md` and referenced, not restated, below.
 
+The design and the plan this process was first built from, on 2026-09-16, are kept as a record of
+its reasoning: `docs/superpowers/specs/2026-09-16-ai-driven-development-process-design.md` and
+`docs/superpowers/plans/2026-09-16-ai-driven-development-process.md`. Where they differ from this
+document, this document is correct.
+
 **Status of the seven project skills.** `dsh-plan-wave`, `dsh-new-story`, `dsh-story-spec`,
 `dsh-build-story`, `dsh-ship-story`, `dsh-pr-cycle` and `dsh-reconcile-prd` are specified here as
 the process's entry points. They exist in the repo today, under
