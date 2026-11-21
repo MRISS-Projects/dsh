@@ -1144,7 +1144,8 @@ are.
    waits on task 5 rather than getting an issue now. **Task 5 was done on 2026-11-09:** `#44` —
    **closed** — PR #189. The answer task 4 needed: the wiki's source is `docs/wiki/`, Markdown in
    the repository like any other, and `wiki-sync.yml` is retired. **Task 6 was done on
-   2026-11-18:** `#192` — **closed** — PR #194.
+   2026-11-18:** `#192` — **closed** — PR #194. **Task 4 was done on 2026-11-21:** `#195` —
+   **closed** — PR #196. Step 8 is complete.
 9. Tasks 9 and 10, the new behaviour in `dsh-data`. They come after `#120`, so that new code is
    written on the final Spring Boot line, and after `#132`.
 10. `#148`, last, before the 0.4.0 release candidate. It should learn from everything this wave
@@ -1424,10 +1425,24 @@ no MongoDB dependency, and no `spring-data-solr` either, because Wave 2 task 3 r
 
    ADR-004's "Consequences for the waves" were applied to this document by the re-plan of
    2026-11-07 (§4).
-4. **Documentation map.** `CLAUDE.md` is the root of the developer documentation tree. A CI check,
+4. **Done on 2026-11-21: documentation map.** `#195` — **closed** — PR #196. Documentation map:
+   every Markdown document under docs/, specs/ and .github/ is reachable from CLAUDE.md, checked in
+   CI. Its spec, `specs/stories/195-documentation-map.md`, holds the evidence. The plan as written
+   is kept below.
+
+   **Documentation map.** `CLAUDE.md` is the root of the developer documentation tree. A CI check,
    like `check-spec-references`, fails when a Markdown file under `docs/`, `specs/` or `.github/`
    cannot be reached from `CLAUDE.md` by links. The same task deletes the empty scaffolding READMEs
    (`specs/testing/*`, `specs/requirements/*`, `docs/user-guides`).
+
+   **Outcome.** The check is `.github/scripts/check-docs-reachable.sh`, a job of its own in
+   `spec-validation.yml`, which now runs on every Markdown change. A reference is an inline link or
+   a path in backticks, and a path to a directory reaches the files directly inside it. A story
+   spec is reached but not read, so a path an old story names keeps nothing alive. There are no
+   exemptions. Ten scaffolding files went: the eight the plan names, and the architecture and
+   troubleshooting placeholders under `docs/`, which were the same kind. Their references point at
+   what replaced them, and Wave 9 task 1 and ADR-001 task 5.3 now name FR004 in
+   `specs/features/indexing-workflow.md`.
 5. **Done on 2026-11-09: wiki restructure.** `#44` — **closed** — PR #189. Its spec,
    `specs/stories/44-restructure-wiki.md`, holds the evidence. The plan as written is kept below.
 
