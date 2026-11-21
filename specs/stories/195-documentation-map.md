@@ -240,6 +240,23 @@ The review's smaller findings, all accepted by the owner:
   and `.github/copilot-instructions.md` ("its FR004").
 - `docs/devops/README.md` describes D13.
 
+### 3.8 Changes from the pull request's first review
+
+Copilot reviewed PR #196 at `345b9f92d` on 2026-11-21. The owner decided both findings:
+
+- **D16.** A URL is rejected before it is normalised. That covers a target with a scheme
+  (`https:`, `mailto:`) and a protocol-relative one (`//host`). Without this, the `..` segments of
+  `https://example.com/../../docs/a.md` climbed back to `docs/a.md` and reached it, against D8 and
+  D9. The review proposed rejecting a scheme only, which would have missed `//host/../docs/a.md`.
+- **D17.** The repository root is not a directory reference: `/`, or `../` climbing to it, reaches
+  nothing. This reading of D2 is now written down. The review proposed counting the root as a
+  directory. The owner kept the current behaviour, for two reasons. First, the root holds no
+  document in scope: its two `.md` files are `CLAUDE.md`, where the walk starts, and the generated
+  `README.md`. Second, the bare `/` code spans in the tree are prose, such as ADR-004's "the base
+  name and `/`". Counted, they would reach `README.md` and everything it names, the kind of
+  accidental reach D13 closed. The checker's header and `docs/devops/README.md` state the rule, and
+  a test pins it.
+
 ## 4. Verification design
 
 | AC | Check |
@@ -1321,7 +1338,7 @@ All seven went red as the plan lists. None needed a new case.
 |---|---|---|
 | AC001 | "a document not reached fails and is named", "two documents not reached", "no documents in scope is a failure" pass; on the `72c589cff` export the checker exits 1 and names both functional files (§8.3, item 1) | met |
 | AC002 | After the local review: the checker's header, lines 4 to 31, states the rule, D13 included; `docs/devops/README.md` line 74 describes it; the only match for `exempt` in the script is line 30, "There are no exemptions." | met |
-| AC003 | After the local review: 33 cases, 0 failures; the workflow runs the test step before the check; the mapping is in §6 Task 1, after Step 1; the thirteen mutants in §8.6 | met |
+| AC003 | After the pull request's first review: 36 cases, 0 failures; the workflow runs the test step before the check; the mapping is in §6 Task 1, after Step 1; the thirteen mutants in §8.6 and three more in §8.7 | met |
 | AC004 | `'**/*.md'` under both `push.paths` and `pull_request.paths`; the job's run on the pull request is recorded by `dsh-ship-story` | met locally; CI pending |
 | AC005 | After the local review: `Reached 98 of 98`, exit 0, with story specs not read (§8.6) | met |
 | AC006 | `git ls-files specs/testing specs/requirements docs/user-guides docs/architecture docs/troubleshooting` prints nothing | met |
@@ -1399,3 +1416,38 @@ Before this round, mutants 8, 9 and 13 survived all 26 cases. The review found t
 - `*.MD` and `*.markdown` are not checked. The repository has none.
 - A name holding a newline would still split in the per-directory index. No such name exists.
 - The checker needs bash 4.3 or later. CI runs Ubuntu, and Git Bash is 5.3.
+
+### 8.7 The pull request's first review round
+
+On 2026-11-21, `copilot-pull-request-reviewer` left a `COMMENTED` review on PR #196, pinned to
+`345b9f92d`. It ran at "Balanced (adaptive)" effort. It came after a review request at
+01:02:30Z and was posted at 01:08:46Z. It opened two threads, both on
+`.github/scripts/check-docs-reachable.sh`, and neither was stale. CI was green on both runs before
+the round: 11 checks, the new job printing `33 case(s), 0 failure(s).` and `Reached 98 of 98` on
+Ubuntu.
+
+| Thread | Finding | Verdict | Commit |
+|---|---|---|---|
+| `4649530282`, line 112 | A URL is normalised as a path, so `https://example.com/../../docs/a.md` reaches `docs/a.md` | Valid. Reproduced: exit 0 where 1 is right. The proposed remedy was incomplete, missing `//host/../`. Fixed for both forms (D16) | `c96bd6ba3` |
+| `4649530349`, line 121 | `/`, or `../` to the root, normalises to empty and reaches nothing, so a chain through `README.md` fails | The mechanism is right; the remedy was not adopted (D17). Reproduced as described. The behaviour is now documented and pinned | `940333379` |
+
+**Red, then green.**
+
+| Check | Before | After |
+|---|---|---|
+| The two URL cases | `35 case(s), 2 failure(s).`, both new cases exit 0 | `35 case(s), 0 failure(s).` |
+| "a reference to the repository root reaches nothing" | passes, pinning existing behaviour; mutant 16 shows it can fail | `36 case(s), 0 failure(s).` |
+| `check-docs-reachable.sh` on the tree | `Reached 98 of 98` | `Reached 98 of 98`: no reach in the tree depended on either behaviour |
+
+**Mutants.**
+
+| Mutant | Cases that went red |
+|---|---|
+| 14. The guard rejects `//` only, not a scheme | "a URL with .. segments reaches nothing" |
+| 15. The guard rejects a scheme only, the review's remedy | "a protocol-relative URL reaches nothing" |
+| 16. The root is a directory, the review's remedy: `.` keys the root's `.md` files, and an empty normalised path becomes `.` | "a reference to the repository root reaches nothing" |
+
+**Gates before the round's push.** markdownlint: exit 0. `check-docs-reachable.test.sh`: 36 cases,
+0 failures. `check-docs-reachable.sh`: `Reached 98 of 98`, exit 0. `check-spec-references.sh`: 0
+missing, exit 0. Gate 1, `mvn -B clean install`, logged: `maven exit=0`, `BUILD SUCCESS`, 27 s.
+Gate 3 does not apply: no code changed.
