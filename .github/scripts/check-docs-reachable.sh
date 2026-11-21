@@ -15,7 +15,14 @@
 # reaches the tracked .md files directly inside it, not those in subdirectories.
 # A target that names no tracked Markdown file or directory -- a command, a URL,
 # a placeholder, a file that no longer exists -- reaches nothing and is ignored:
-# broken links are not this check's concern.
+# broken links are not this check's concern. Nothing else counts: not a
+# reference-style link ([text][label]), not a target in angle brackets
+# (<target>), not a percent-encoded path (my%20guide.md).
+#
+# A story spec, any file under specs/stories/, is reached like any other
+# document, but it is not read. It is a record of what a story did, kept as
+# written, so a path it names reaches nothing: a document that only an old
+# story names is a document nothing current points at.
 #
 # Only tracked files count. The list comes from git ls-files, so a local run
 # answers as CI does, whatever untracked files lie in the work tree.
@@ -35,6 +42,7 @@ set -euo pipefail
 
 ROOT="${1:-.}"
 SCOPE_LABEL="docs/, specs/ and .github/"
+RECORDS="specs/stories/"   # reached, never read: see the header
 
 if ! top="$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null)"; then
   echo "ERROR: $ROOT is not in a git work tree."
@@ -42,7 +50,13 @@ if ! top="$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null)"; then
 fi
 cd "$top"
 
-if ! listing="$(git -c core.quotePath=false ls-files -- '*.md')"; then
+# NUL-separated, so that no name is quoted: without -z, git wraps a name holding
+# a double quote, a backslash or a control character in quotes, and the quoted
+# form would fall outside every scope prefix unnoticed. A variable cannot hold a
+# NUL, so the list goes through a file.
+listing="$(mktemp)"
+trap 'rm -f "$listing"' EXIT
+if ! git ls-files -z -- '*.md' > "$listing"; then
   echo "ERROR: git ls-files failed in $top."
   exit 1
 fi
@@ -52,13 +66,13 @@ declare -A dirmd=()   # a directory -> the tracked .md files directly inside it
 declare -A seen=()    # every file the walk has reached -> 1
 queue=()
 
-while IFS= read -r path; do
+while IFS= read -r -d '' path; do
   [ -n "$path" ] || continue
   doc[$path]=1
   if [[ "$path" == */* ]]; then
     dirmd[${path%/*}]+="$path"$'\n'
   fi
-done <<< "$listing"
+done < "$listing"
 
 if [ -z "${doc[CLAUDE.md]+x}" ]; then
   echo "ERROR: CLAUDE.md is not tracked at the repository root."
@@ -124,10 +138,15 @@ i=0
 while [ "$i" -lt "${#queue[@]}" ]; do
   file="${queue[$i]}"
   i=$((i + 1))
+  case "$file" in
+    "$RECORDS"*) continue ;;
+  esac
   # A link target, or a code span matched as a pair so that a closing backtick
   # cannot open the next span. grep exits 1 on no matches; anything higher is
   # the extractor failing and must not read as "this file references nothing".
-  if refs="$(grep -oP '\]\([^)\s]+|`[^`]+`' -- "$file")"; then
+  # -a: a file grep takes for binary, a NUL byte in it, is still read as text,
+  # instead of yielding "Binary file matches" and none of its references.
+  if refs="$(grep -a -oP '\]\([^)\s]+|`[^`]+`' -- "$file")"; then
     :
   else
     status=$?

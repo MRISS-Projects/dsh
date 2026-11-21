@@ -166,6 +166,24 @@ track "$d" specs/b.md 'B.'
 run_checker "$d"
 check "a path without / falls back to the root" 0 "Reached 2 of 2"
 
+# --- a path starting with / skips a same-named file beside the referrer -------
+d="$(new_case)"
+track "$d" CLAUDE.md 'Read `docs/x/a.md` and `docs/x/specs/b.md`.'
+track "$d" docs/x/a.md 'Then `/specs/b.md`.'
+track "$d" docs/x/specs/b.md 'The neighbour.'
+track "$d" specs/b.md 'B.'
+run_checker "$d"
+check "a path starting with / does not resolve beside the file" 0 "Reached 3 of 3"
+
+# --- a path without / tries the file's directory before the root --------------
+d="$(new_case)"
+track "$d" CLAUDE.md 'Read `docs/x/a.md`.'
+track "$d" docs/x/a.md 'Then `specs/b.md`.'
+track "$d" docs/x/specs/b.md 'The neighbour.'
+track "$d" specs/b.md 'B.'
+run_checker "$d"
+check_listed "a path without / resolves beside the file first" "specs/b.md "
+
 # --- a directory reaches the files directly inside it -------------------------
 d="$(new_case)"
 track "$d" CLAUDE.md 'Specs are in `specs/stories/`.'
@@ -255,6 +273,45 @@ put "$d" CLAUDE.md 'Read `docs/a.md`.'
 track "$d" docs/a.md 'A.'
 run_checker "$d"
 check "an untracked CLAUDE.md fails" 1 "CLAUDE.md is not tracked"
+
+# --- a story spec is reached, but what it names is not ------------------------
+d="$(new_case)"
+track "$d" CLAUDE.md 'Specs are in `specs/stories/`.'
+track "$d" specs/stories/1-one.md 'Touched `docs/a.md` once.'
+track "$d" docs/a.md 'A.'
+run_checker "$d"
+check "a story spec does not pass reach on" 1 "Reached 1 of 2"
+check_listed "only the document the story spec names is unreached" "docs/a.md "
+
+# --- a tracked file that cannot be read ---------------------------------------
+d="$(new_case)"
+track "$d" CLAUDE.md 'Read `docs/a.md`.'
+track "$d" docs/a.md 'A.'
+rm "$d/docs/a.md"
+run_checker "$d"
+check "a reached file that cannot be read fails" 1 \
+  "could not read references from docs/a.md"
+
+# --- a name git would quote ---------------------------------------------------
+# A double quote is not a legal character in a Windows file name, so the entry
+# goes straight into the index. It is never reached, so it is never read.
+d="$(new_case)"
+track "$d" CLAUDE.md 'Read `docs/a.md`.'
+track "$d" docs/a.md 'A.'
+blob="$(printf 'Q.\n' | git -C "$d" hash-object -w --stdin)"
+git -C "$d" -c core.protectNTFS=false update-index --add \
+  --cacheinfo "100644,${blob},docs/say\"hi\".md"
+run_checker "$d"
+check_listed "a name git would quote is still checked" "docs/say\"hi\".md "
+
+# --- a reached file that grep would call binary -------------------------------
+d="$(new_case)"
+track "$d" CLAUDE.md 'Read `docs/a.md`.'
+track "$d" docs/b.md 'B.'
+printf 'A NUL \000 here, then `docs/b.md`.\n' > "$d/docs/a.md"
+git -C "$d" add -- docs/a.md
+run_checker "$d"
+check "a file with a NUL byte is still read" 0 "Reached 2 of 2"
 
 # --- not a git repository -----------------------------------------------------
 d="$(mktemp -d "${WORK}/plain-XXXXXX")"
