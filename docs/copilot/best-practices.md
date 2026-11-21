@@ -100,4 +100,4 @@ In Copilot Chat, use `@workspace` and attach spec files to give Copilot addition
 **Generated tests are too shallow:**
 
 - Specify the exact test cases you want (happy path, edge cases, error scenarios)
-- Reference the acceptance criteria from `specs/requirements/acceptance-criteria/`
+- Reference the story's acceptance criteria, in its GitHub issue and its spec in `specs/stories/`

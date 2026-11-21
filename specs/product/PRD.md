@@ -2032,7 +2032,7 @@ Two of its four tasks were dropped on 2026-10-10, because earlier waves now do t
 
 **Tasks:**
 
-1. Performance-test against `specs/testing/performance-benchmarks/` (FR004: 95% of documents under
+1. Performance-test against FR004 in `specs/features/indexing-workflow.md` (95% of documents under
    10 MB processed within 30 s). It runs against `dsh-staging`, and the cost rule in `CLAUDE.md`
    holds for it as for everything else: minimum instances stays 0. It also revisits the maximum of
    instances, 1 by default on every tier since ADR-004 (section 1). That maximum is a guard on

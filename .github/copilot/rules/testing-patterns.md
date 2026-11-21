@@ -233,8 +233,8 @@ newman into `dsh-rest-api/target/newman/`, so neither has to be on the `PATH`.
 
 ## Performance Tests
 
-- Reference benchmark targets in `/specs/testing/performance-benchmarks/`
-- Use JMeter or Gatling for load tests; store scripts in `/specs/testing/performance-benchmarks/`
+- The performance target is FR004 in `/specs/features/indexing-workflow.md`
+- Use JMeter or Gatling for load tests. Wave 9 task 1, the first performance test, decides where their scripts live
 - Annotate performance-sensitive tests with a JUnit Jupiter `@Tag("performance")`
 
 ## Test Execution

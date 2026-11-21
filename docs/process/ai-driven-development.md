@@ -5,6 +5,11 @@ This document is that detail: for each step, what it takes as input, which skill
 what artifact it produces, what the hard stop is, and what "done" looks like. Branch rules and
 quality gates are defined once in `CLAUDE.md` and referenced, not restated, below.
 
+The design and the plan this process was first built from, on 2026-09-16, are kept as a record of
+its reasoning: `docs/superpowers/specs/2026-09-16-ai-driven-development-process-design.md` and
+`docs/superpowers/plans/2026-09-16-ai-driven-development-process.md`. Where they differ from this
+document, this document is correct.
+
 **Status of the seven project skills.** `dsh-plan-wave`, `dsh-new-story`, `dsh-story-spec`,
 `dsh-build-story`, `dsh-ship-story`, `dsh-pr-cycle` and `dsh-reconcile-prd` are specified here as
 the process's entry points. They exist in the repo today, under
@@ -86,7 +91,8 @@ PRD from an earlier pass).
 Valuable, Estimable, Small, Testable — as a GitHub issue body.
 
 **Artifact.** A GitHub issue, numbered, with an INVEST-shaped body that links back to its PRD wave
-and task.
+and task. The body follows `.github/ISSUE_TEMPLATE/story.md`, one of the issue templates in
+`.github/ISSUE_TEMPLATE/`.
 
 **Hard stop.** The owner approves the issue body before `dsh-new-story` runs `gh issue create`.
 Claude drafts; it does not publish unreviewed issue text.
@@ -106,6 +112,7 @@ never `master`.
 
 **Artifact.** A task branch `issue-<n>-<slug>` cut from the resolved parent, with
 `specs/stories/<n>-<slug>.md` committed on it, front matter filled in per the contract below.
+`specs/stories/` holds one spec per story.
 
 **Hard stop.** Two, both absolute for different reasons: the `master`-as-parent check is a refusal
 the skill enforces itself (see the `G -->|yes| H["REFUSE"]` branch in the diagram above); the
